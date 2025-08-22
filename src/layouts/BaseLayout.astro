@@ -1,0 +1,234 @@
+---
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  description: string;
+  keywords?: string[];
+  canonical?: string;
+  ogImage?: string;
+  jsonLd?: Record<string, any>;
+}
+
+const { 
+  title, 
+  description, 
+  keywords = [],
+  canonical,
+  ogImage,
+  jsonLd 
+} = Astro.props;
+
+const siteUrl = 'https://freeformathub.com'; // TODO: Update with actual domain
+const fullTitle = title === 'FreeFormatHub' ? title : `${title} | FreeFormatHub`;
+const canonicalURL = canonical || new URL(Astro.url.pathname, siteUrl).href;
+const imageUrl = ogImage || `${siteUrl}/og-image.jpg`;
+---
+
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    
+    <!-- Primary Meta Tags -->
+    <title>{fullTitle}</title>
+    <meta name="title" content={fullTitle} />
+    <meta name="description" content={description} />
+    {keywords.length > 0 && <meta name="keywords" content={keywords.join(', ')} />}
+    <link rel="canonical" href={canonicalURL} />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:site_name" content="FreeFormatHub" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={fullTitle} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={imageUrl} />
+    
+    <!-- Theme -->
+    <meta name="theme-color" content="#3b82f6" />
+    <meta name="color-scheme" content="light dark" />
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin />
+    
+    <!-- JSON-LD Structured Data -->
+    {jsonLd && (
+      <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    )}
+    
+    <!-- Performance hints -->
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  </head>
+  
+  <body class="h-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <!-- Skip to main content -->
+    <a 
+      href="#main-content" 
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 
+             bg-blue-600 text-white px-4 py-2 rounded-md z-50 
+             focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+    >
+      Skip to main content
+    </a>
+
+    <div class="min-h-full flex flex-col">
+      <!-- Header -->
+      <header class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between items-center h-16">
+            <!-- Logo -->
+            <div class="flex items-center">
+              <a href="/" class="text-xl font-bold text-blue-600 dark:text-blue-400">
+                FreeFormatHub
+              </a>
+            </div>
+            
+            <!-- Search (will be enhanced with React) -->
+            <div class="flex-1 max-w-lg mx-8">
+              <div class="relative">
+                <input
+                  type="search"
+                  placeholder="Search tools..."
+                  class="w-full px-4 py-2 pl-10 pr-4 text-sm border border-gray-300 
+                         dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 
+                         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                  <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Theme toggle -->
+            <button 
+              id="theme-toggle"
+              type="button"
+              class="p-2 rounded-lg text-gray-500 dark:text-gray-400 
+                     hover:bg-gray-100 dark:hover:bg-gray-800
+                     focus:outline-none focus:ring-2 focus:ring-blue-500"
+              aria-label="Toggle theme"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main content -->
+      <main id="main-content" class="flex-1">
+        <slot />
+      </main>
+
+      <!-- Footer -->
+      <footer class="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div>
+              <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider">Tools</h3>
+              <ul class="mt-4 space-y-2">
+                <li><a href="/tools/json-formatter" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">JSON Formatter</a></li>
+                <li><a href="/tools/base64-encoder" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Base64 Encoder</a></li>
+                <li><a href="/tools/url-encoder" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">URL Encoder</a></li>
+                <li><a href="/tools/jwt-decoder" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">JWT Decoder</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider">Categories</h3>
+              <ul class="mt-4 space-y-2">
+                <li><a href="/categories/formatters" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Formatters</a></li>
+                <li><a href="/categories/converters" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Converters</a></li>
+                <li><a href="/categories/encoders" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Encoders</a></li>
+                <li><a href="/categories/text" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Text Tools</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider">Support</h3>
+              <ul class="mt-4 space-y-2">
+                <li><a href="/about" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">About</a></li>
+                <li><a href="/privacy" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Privacy Policy</a></li>
+                <li><a href="/terms" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Terms of Service</a></li>
+                <li><a href="/contact" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Contact</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider">Connect</h3>
+              <ul class="mt-4 space-y-2">
+                <li><a href="https://github.com/freeformathub" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">GitHub</a></li>
+                <li><a href="https://twitter.com/freeformathub" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Twitter</a></li>
+                <li><a href="/rss.xml" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">RSS Feed</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
+            <p class="text-sm text-gray-600 dark:text-gray-400 text-center">
+              © 2024 FreeFormatHub. All rights reserved. Privacy-first developer tools.
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Initialize app -->
+    <script>
+      import('../lib/init').then(({ initializeApp }) => {
+        initializeApp();
+      });
+    </script>
+
+    <!-- Theme toggle script -->
+    <script>
+      function initTheme() {
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
+        // Get initial theme
+        const savedTheme = localStorage.getItem('theme') || 'auto';
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        const applyTheme = (theme: string) => {
+          if (theme === 'dark' || (theme === 'auto' && systemPrefersDark)) {
+            html.classList.add('dark');
+          } else {
+            html.classList.remove('dark');
+          }
+        };
+        
+        applyTheme(savedTheme);
+        
+        themeToggle?.addEventListener('click', () => {
+          const currentTheme = html.classList.contains('dark') ? 'light' : 'dark';
+          localStorage.setItem('theme', currentTheme);
+          applyTheme(currentTheme);
+        });
+        
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+          if (localStorage.getItem('theme') === 'auto') {
+            applyTheme('auto');
+          }
+        });
+      }
+      
+      initTheme();
+    </script>
+  </body>
+</html>

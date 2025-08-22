@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { ImageToBase64Converter } from '../../../components/tools/converters/ImageToBase64Converter';
+import { IMAGE_TO_BASE64_CONVERTER_TOOL } from '../../../tools/converters/image-to-base64-converter';
+---
+
+<ToolShell tool={IMAGE_TO_BASE64_CONVERTER_TOOL}>
+  <ImageToBase64Converter client:load />
+</ToolShell>

@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { CertificateDecoder } from '../../../components/tools/encoders/CertificateDecoder';
+import { CERTIFICATE_DECODER_TOOL } from '../../../tools/encoders/certificate-decoder';
+---
+
+<ToolShell tool={CERTIFICATE_DECODER_TOOL}>
+  <CertificateDecoder client:load />
+</ToolShell>

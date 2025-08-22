@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { LoadTestingConfigGenerator } from '../../../components/tools/development/LoadTestingConfigGenerator';
+import { LOAD_TESTING_CONFIG_GENERATOR_TOOL } from '../../../tools/development/load-testing-config-generator';
+---
+
+<ToolShell tool={LOAD_TESTING_CONFIG_GENERATOR_TOOL}>
+  <LoadTestingConfigGenerator client:load />
+</ToolShell>

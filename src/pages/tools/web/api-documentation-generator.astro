@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { ApiDocumentationGenerator } from '../../../components/tools/web/ApiDocumentationGenerator';
+import { API_DOCUMENTATION_GENERATOR_TOOL } from '../../../tools/web/api-documentation-generator';
+---
+
+<ToolShell tool={API_DOCUMENTATION_GENERATOR_TOOL}>
+  <ApiDocumentationGenerator client:load />
+</ToolShell>

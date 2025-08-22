@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { UrlEncoder } from '../../../components/tools/encoders/UrlEncoder';
+import { URL_ENCODER_TOOL } from '../../../tools/encoders/url-encoder';
+---
+
+<ToolShell tool={URL_ENCODER_TOOL}>
+  <UrlEncoder client:load />
+</ToolShell>

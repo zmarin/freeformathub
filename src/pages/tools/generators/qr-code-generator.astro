@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { QrCodeGenerator } from '../../../components/tools/generators/QrCodeGenerator';
+import { QR_CODE_GENERATOR_TOOL } from '../../../tools/generators/qr-code-generator';
+---
+
+<ToolShell tool={QR_CODE_GENERATOR_TOOL}>
+  <QrCodeGenerator client:load />
+</ToolShell>

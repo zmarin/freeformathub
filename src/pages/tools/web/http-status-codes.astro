@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { HttpStatusCodes } from '../../../components/tools/web/HttpStatusCodes';
+import { HTTP_STATUS_CODES_TOOL } from '../../../tools/web/http-status-codes';
+---
+
+<ToolShell tool={HTTP_STATUS_CODES_TOOL}>
+  <HttpStatusCodes client:load />
+</ToolShell>

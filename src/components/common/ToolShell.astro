@@ -1,0 +1,230 @@
+---
+import type { Tool } from '../../types';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export interface Props {
+  tool: Tool;
+  children?: any;
+}
+
+const { tool } = Astro.props;
+
+// Generate structured data for the tool
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": tool.name,
+  "description": tool.description,
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any",
+  "permissions": "no-storage",
+  "isAccessibleForFree": true,
+  "creator": {
+    "@type": "Organization",
+    "name": "FreeFormatHub"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+};
+---
+
+<BaseLayout 
+  title={tool.seoTitle}
+  description={tool.seoDescription}
+  keywords={tool.keywords}
+  jsonLd={jsonLd}
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Tool Header -->
+    <header class="mb-8">
+      <div class="flex items-center gap-4 mb-4">
+        <div class={`w-12 h-12 rounded-lg bg-${tool.category?.color || 'gray'}-100 dark:bg-${tool.category?.color || 'gray'}-900 flex items-center justify-center`}>
+          <span class="text-2xl">{tool.icon}</span>
+        </div>
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            {tool.name}
+          </h1>
+          <p class="text-lg text-gray-600 dark:text-gray-400 mt-1">
+            {tool.description}
+          </p>
+        </div>
+      </div>
+      
+      <!-- Breadcrumb -->
+      <nav class="flex" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2 text-sm">
+          <li>
+            <a href="/" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+              Home
+            </a>
+          </li>
+          <li>
+            <svg class="w-4 h-4 text-gray-400 mx-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+          </li>
+          <li>
+            <a href={`/categories/${tool.category?.id || 'unknown'}`} class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+              {tool.category?.name || 'Unknown'}
+            </a>
+          </li>
+          <li>
+            <svg class="w-4 h-4 text-gray-400 mx-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+          </li>
+          <li class="text-gray-900 dark:text-gray-100 font-medium">
+            {tool.name}
+          </li>
+        </ol>
+      </nav>
+    </header>
+
+    <!-- Tool Interface -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+      <slot />
+    </div>
+
+    <!-- Tool Information Sections -->
+    <div class="mt-12 grid gap-8 lg:grid-cols-2">
+      <!-- How it Works -->
+      <section>
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          How it Works
+        </h2>
+        <div class="prose prose-gray dark:prose-invert max-w-none">
+          <p class="text-gray-600 dark:text-gray-400">
+            This {tool.name.toLowerCase()} processes your data entirely in your browser. 
+            No data is uploaded to any server, ensuring complete privacy and security of your information.
+          </p>
+        </div>
+      </section>
+
+      <!-- Use Cases -->
+      <section>
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          Common Use Cases
+        </h2>
+        <ul class="space-y-2">
+          {tool.useCases?.map(useCase => (
+            <li class="flex items-start">
+              <svg class="w-5 h-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+              </svg>
+              <span class="text-gray-600 dark:text-gray-400">{useCase}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <!-- Examples -->
+      {(tool.examples?.length ?? 0) > 0 && (
+        <section>
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            Examples
+          </h2>
+          <div class="space-y-4">
+            {tool.examples?.map((example, index) => (
+              <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <h3 class="font-medium text-gray-900 dark:text-gray-100 mb-2">
+                  {example.title}
+                </h3>
+                {example.description && (
+                  <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                    {example.description}
+                  </p>
+                )}
+                <div class="grid gap-2">
+                  <div>
+                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Input
+                    </label>
+                    <pre class="mt-1 text-sm bg-gray-50 dark:bg-gray-900 p-2 rounded border overflow-x-auto">
+                      <code>{example.input}</code>
+                    </pre>
+                  </div>
+                  <div>
+                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Output
+                    </label>
+                    <pre class="mt-1 text-sm bg-gray-50 dark:bg-gray-900 p-2 rounded border overflow-x-auto">
+                      <code>{example.output}</code>
+                    </pre>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <!-- Common Errors -->
+      {(tool.commonErrors?.length ?? 0) > 0 && (
+        <section>
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            Common Issues & Solutions
+          </h2>
+          <div class="space-y-3">
+            {tool.commonErrors?.map(error => (
+              <div class="flex items-start">
+                <svg class="w-5 h-5 text-yellow-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                </svg>
+                <span class="text-gray-600 dark:text-gray-400">{error}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+
+    <!-- FAQ Section -->
+    {(tool.faq?.length ?? 0) > 0 && (
+      <section class="mt-12">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6">
+          Frequently Asked Questions
+        </h2>
+        <div class="space-y-6">
+          {tool.faq?.map((faqItem, index) => (
+            <details class="group">
+              <summary class="flex justify-between items-center cursor-pointer p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <span class="font-medium text-gray-900 dark:text-gray-100">
+                  {faqItem.question}
+                </span>
+                <svg class="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div class="p-4 text-gray-600 dark:text-gray-400">
+                {faqItem.answer}
+              </div>
+            </details>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Related Tools -->
+    {(tool.relatedTools?.length ?? 0) > 0 && (
+      <section class="mt-12">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6">
+          Related Tools
+        </h2>
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {tool.relatedTools?.map(relatedToolId => (
+            <a href={`/tools/${relatedToolId}`} class="block p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-sm transition-all">
+              <div class="font-medium text-gray-900 dark:text-gray-100">
+                {/* Tool name would be fetched from registry */}
+                {relatedToolId.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+  </div>
+</BaseLayout>

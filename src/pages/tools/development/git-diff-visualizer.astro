@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { GitDiffVisualizer } from '../../../components/tools/development/GitDiffVisualizer';
+import { GIT_DIFF_VISUALIZER_TOOL } from '../../../tools/development/git-diff-visualizer';
+---
+
+<ToolShell tool={GIT_DIFF_VISUALIZER_TOOL}>
+  <GitDiffVisualizer client:load />
+</ToolShell>

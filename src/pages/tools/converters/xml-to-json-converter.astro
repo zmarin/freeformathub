@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { XmlToJsonConverter } from '../../../components/tools/converters/XmlToJsonConverter';
+import { XML_TO_JSON_CONVERTER_TOOL } from '../../../tools/converters/xml-to-json-converter';
+---
+
+<ToolShell tool={XML_TO_JSON_CONVERTER_TOOL}>
+  <XmlToJsonConverter client:load />
+</ToolShell>

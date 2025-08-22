@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { CronGenerator } from '../../../components/tools/datetime/CronGenerator';
+import { CRON_GENERATOR_TOOL } from '../../../tools/datetime/cron-generator';
+---
+
+<ToolShell tool={CRON_GENERATOR_TOOL}>
+  <CronGenerator client:load />
+</ToolShell>

@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { HashGenerator } from '../../../components/tools/crypto/HashGenerator';
+import { HASH_GENERATOR_TOOL } from '../../../tools/crypto/hash-generator';
+---
+
+<ToolShell tool={HASH_GENERATOR_TOOL}>
+  <HashGenerator client:load />
+</ToolShell>

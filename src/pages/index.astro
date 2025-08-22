@@ -1,0 +1,245 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { TOOL_CATEGORIES } from '../lib/tools/registry';
+import ToolCategories from '../components/ui/ToolCategories.tsx';
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "FreeFormatHub",
+  "description": "Free online developer tools for formatting, converting, and validating data. Privacy-first with client-side processing.",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any",
+  "permissions": "no-storage",
+  "isAccessibleForFree": true,
+  "author": {
+    "@type": "Organization",
+    "name": "FreeFormatHub"
+  }
+};
+---
+
+<BaseLayout 
+  title="FreeFormatHub - Free Online Developer Tools"
+  description="Free online developer tools for formatting, converting, encoding, and validating data. JSON formatter, Base64 encoder, URL decoder, and more. Privacy-first with client-side processing."
+  keywords={['developer tools', 'json formatter', 'base64 encoder', 'url decoder', 'online tools', 'free tools']}
+  jsonLd={jsonLd}
+>
+  <!-- Hero Section -->
+  <section class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+        Free Developer Tools
+      </h1>
+      <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
+        Format, convert, encode, and validate your data instantly. 
+        <span class="text-blue-600 dark:text-blue-400 font-semibold">Privacy-first</span> tools that work entirely in your browser.
+      </p>
+      
+      <!-- Search Bar -->
+      <div class="max-w-2xl mx-auto mb-8">
+        <div class="relative">
+          <input
+            type="search"
+            placeholder="Search for tools... (e.g., JSON formatter, Base64 encoder)"
+            class="w-full px-6 py-4 pl-12 pr-4 text-lg border-2 border-gray-300 dark:border-gray-600 
+                   rounded-xl bg-white dark:bg-gray-800 shadow-lg
+                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                   placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+          />
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center">
+            <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="grid grid-cols-3 gap-6 max-w-lg mx-auto">
+        <div class="text-center">
+          <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">50+</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">Tools Available</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-green-600 dark:text-green-400">100%</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">Client-Side</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">0</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">Data Uploaded</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Tools -->
+  <section class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">
+        Popular Tools
+      </h2>
+      
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <!-- JSON Formatter -->
+        <a href="/tools/json-formatter" class="group block p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-lg transition-all duration-200">
+          <div class="flex items-center mb-4">
+            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+              <span class="text-2xl">{}</span>
+            </div>
+            <div class="ml-4">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                JSON Formatter
+              </h3>
+            </div>
+          </div>
+          <p class="text-gray-600 dark:text-gray-400 text-sm">
+            Format, validate, and beautify JSON data with syntax highlighting
+          </p>
+        </a>
+
+        <!-- Base64 Encoder -->
+        <a href="/tools/base64-encoder" class="group block p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-600 hover:shadow-lg transition-all duration-200">
+          <div class="flex items-center mb-4">
+            <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+              <span class="text-2xl">🔒</span>
+            </div>
+            <div class="ml-4">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400">
+                Base64 Encoder
+              </h3>
+            </div>
+          </div>
+          <p class="text-gray-600 dark:text-gray-400 text-sm">
+            Encode and decode Base64 strings for data transmission
+          </p>
+        </a>
+
+        <!-- URL Encoder -->
+        <a href="/tools/url-encoder" class="group block p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-600 hover:shadow-lg transition-all duration-200">
+          <div class="flex items-center mb-4">
+            <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+              <span class="text-2xl">🔗</span>
+            </div>
+            <div class="ml-4">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400">
+                URL Encoder
+              </h3>
+            </div>
+          </div>
+          <p class="text-gray-600 dark:text-gray-400 text-sm">
+            Encode and decode URLs and query parameters safely
+          </p>
+        </a>
+
+        <!-- JWT Decoder -->
+        <a href="/tools/jwt-decoder" class="group block p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-red-300 dark:hover:border-red-600 hover:shadow-lg transition-all duration-200">
+          <div class="flex items-center mb-4">
+            <div class="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+              <span class="text-2xl">🎫</span>
+            </div>
+            <div class="ml-4">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400">
+                JWT Decoder
+              </h3>
+            </div>
+          </div>
+          <p class="text-gray-600 dark:text-gray-400 text-sm">
+            Decode and verify JSON Web Tokens securely
+          </p>
+        </a>
+      </div>
+
+      <div class="text-center mt-8">
+        <a href="/tools" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+          View All Tools
+          <svg class="ml-2 -mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tool Categories -->
+  <section class="py-16 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">
+        Tool Categories
+      </h2>
+
+      <ToolCategories categories={TOOL_CATEGORIES} client:load />
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">
+        Why Choose FreeFormatHub?
+      </h2>
+      
+      <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Privacy First</h3>
+          <p class="text-gray-600 dark:text-gray-400">All processing happens in your browser. No data is uploaded or stored on our servers.</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Lightning Fast</h3>
+          <p class="text-gray-600 dark:text-gray-400">Optimized for speed with instant results and minimal loading times.</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Always Free</h3>
+          <p class="text-gray-600 dark:text-gray-400">No subscriptions, no limits, no ads. Just powerful tools when you need them.</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Smart & Intuitive</h3>
+          <p class="text-gray-600 dark:text-gray-400">Intelligent error detection and helpful suggestions guide you to success.</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 bg-indigo-100 dark:bg-indigo-900 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Mobile Friendly</h3>
+          <p class="text-gray-600 dark:text-gray-400">Fully responsive design works perfectly on desktop, tablet, and mobile.</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 bg-pink-100 dark:bg-pink-900 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-pink-600 dark:text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Open Source</h3>
+          <p class="text-gray-600 dark:text-gray-400">Transparent, community-driven development. Contribute on GitHub.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

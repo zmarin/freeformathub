@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { TextStatistics } from '../../../components/tools/text/TextStatistics';
+import { TEXT_STATISTICS_TOOL } from '../../../tools/text/text-statistics';
+---
+
+<ToolShell tool={TEXT_STATISTICS_TOOL}>
+  <TextStatistics client:load />
+</ToolShell>

@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { LoremIpsum } from '../../../components/tools/text/LoremIpsum';
+import { LOREM_IPSUM_TOOL } from '../../../tools/text/lorem-ipsum';
+---
+
+<ToolShell tool={LOREM_IPSUM_TOOL}>
+  <LoremIpsum client:load />
+</ToolShell>

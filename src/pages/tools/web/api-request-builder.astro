@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { ApiRequestBuilder } from '../../../components/tools/web/ApiRequestBuilder';
+import { API_REQUEST_BUILDER_TOOL } from '../../../tools/web/api-request-builder';
+---
+
+<ToolShell tool={API_REQUEST_BUILDER_TOOL}>
+  <ApiRequestBuilder client:load />
+</ToolShell>

@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { NumberBaseConverter } from '../../../components/tools/converters/NumberBaseConverter';
+import { NUMBER_BASE_CONVERTER_TOOL } from '../../../tools/converters/number-base-converter';
+---
+
+<ToolShell tool={NUMBER_BASE_CONVERTER_TOOL}>
+  <NumberBaseConverter client:load />
+</ToolShell>

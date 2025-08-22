@@ -1,0 +1,24 @@
+User-agent: *
+Allow: /
+
+# Tools
+Allow: /tools/
+Allow: /tools/json-formatter/
+Allow: /tools/base64-encoder/
+
+# Categories
+Allow: /categories/
+
+# Sitemaps
+Sitemap: https://freeformathub.com/sitemap.xml
+Sitemap: https://freeformathub.com/sitemap-tools.xml
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /private/
+Disallow: /_astro/
+Disallow: /grafana/
+Disallow: /prometheus/
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1

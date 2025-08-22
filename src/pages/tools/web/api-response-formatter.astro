@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { ApiResponseFormatter } from '../../../components/tools/web/ApiResponseFormatter';
+import { API_RESPONSE_FORMATTER_TOOL } from '../../../tools/web/api-response-formatter';
+---
+
+<ToolShell tool={API_RESPONSE_FORMATTER_TOOL}>
+  <ApiResponseFormatter client:load />
+</ToolShell>

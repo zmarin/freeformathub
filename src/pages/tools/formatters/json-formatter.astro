@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { JsonFormatter } from '../../../components/tools/formatters/JsonFormatter';
+import { JSON_FORMATTER_TOOL } from '../../../tools/formatters/json-formatter';
+---
+
+<ToolShell tool={JSON_FORMATTER_TOOL}>
+  <JsonFormatter client:load />
+</ToolShell>

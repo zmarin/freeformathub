@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { CssToTailwindConverter } from '../../../components/tools/converters/CssToTailwindConverter';
+import { CSS_TO_TAILWIND_CONVERTER_TOOL } from '../../../tools/converters/css-to-tailwind-converter';
+---
+
+<ToolShell tool={CSS_TO_TAILWIND_CONVERTER_TOOL}>
+  <CssToTailwindConverter client:load />
+</ToolShell>

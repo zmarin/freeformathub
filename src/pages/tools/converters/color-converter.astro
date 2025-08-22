@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { ColorConverter } from '../../../components/tools/converters/ColorConverter';
+import { COLOR_CONVERTER_TOOL } from '../../../tools/converters/color-converter';
+---
+
+<ToolShell tool={COLOR_CONVERTER_TOOL}>
+  <ColorConverter client:load />
+</ToolShell>

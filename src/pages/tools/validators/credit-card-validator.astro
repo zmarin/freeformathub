@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { CreditCardValidator } from '../../../components/tools/validators/CreditCardValidator';
+import { CREDIT_CARD_VALIDATOR_TOOL } from '../../../tools/validators/credit-card-validator';
+---
+
+<ToolShell tool={CREDIT_CARD_VALIDATOR_TOOL}>
+  <CreditCardValidator client:load />
+</ToolShell>

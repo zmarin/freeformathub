@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { UrlValidator } from '../../../components/tools/validators/UrlValidator';
+import { URL_VALIDATOR_TOOL } from '../../../tools/validators/url-validator';
+---
+
+<ToolShell tool={URL_VALIDATOR_TOOL}>
+  <UrlValidator client:load />
+</ToolShell>

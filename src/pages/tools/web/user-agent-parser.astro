@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { UserAgentParser } from '../../../components/tools/web/UserAgentParser';
+import { USER_AGENT_PARSER_TOOL } from '../../../tools/web/user-agent-parser';
+---
+
+<ToolShell tool={USER_AGENT_PARSER_TOOL}>
+  <UserAgentParser client:load />
+</ToolShell>

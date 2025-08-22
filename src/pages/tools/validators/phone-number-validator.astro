@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { PhoneNumberValidator } from '../../../components/tools/validators/PhoneNumberValidator';
+import { PHONE_NUMBER_VALIDATOR_TOOL } from '../../../tools/validators/phone-number-validator';
+---
+
+<ToolShell tool={PHONE_NUMBER_VALIDATOR_TOOL}>
+  <PhoneNumberValidator client:load />
+</ToolShell>

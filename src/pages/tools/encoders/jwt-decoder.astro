@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { JwtDecoder } from '../../../components/tools/encoders/JwtDecoder';
+import { JWT_DECODER_TOOL } from '../../../tools/encoders/jwt-decoder';
+---
+
+<ToolShell tool={JWT_DECODER_TOOL}>
+  <JwtDecoder client:load />
+</ToolShell>

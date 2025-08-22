@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { FileHashIntegrityChecker } from '../../../components/tools/crypto/FileHashIntegrityChecker';
+import { FILE_HASH_INTEGRITY_CHECKER_TOOL } from '../../../tools/crypto/file-hash-integrity-checker';
+---
+
+<ToolShell tool={FILE_HASH_INTEGRITY_CHECKER_TOOL}>
+  <FileHashIntegrityChecker client:load />
+</ToolShell>

@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { DiffChecker } from '../../../components/tools/text/DiffChecker';
+import { DIFF_CHECKER_TOOL } from '../../../tools/text/diff-checker';
+---
+
+<ToolShell tool={DIFF_CHECKER_TOOL}>
+  <DiffChecker client:load />
+</ToolShell>

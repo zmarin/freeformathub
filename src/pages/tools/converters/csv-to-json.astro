@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { CsvToJson } from '../../../components/tools/converters/CsvToJson';
+import { CSV_TO_JSON_TOOL } from '../../../tools/converters/csv-to-json';
+---
+
+<ToolShell tool={CSV_TO_JSON_TOOL}>
+  <CsvToJson client:load />
+</ToolShell>

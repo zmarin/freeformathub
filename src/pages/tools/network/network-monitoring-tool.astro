@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { NetworkMonitoringTool } from '../../../components/tools/network/NetworkMonitoringTool';
+import { NETWORK_MONITORING_TOOL } from '../../../tools/network/network-monitoring-tool';
+---
+
+<ToolShell tool={NETWORK_MONITORING_TOOL}>
+  <NetworkMonitoringTool client:load />
+</ToolShell>

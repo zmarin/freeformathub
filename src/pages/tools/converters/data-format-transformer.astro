@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { DataFormatTransformer } from '../../../components/tools/converters/DataFormatTransformer';
+import { DATA_FORMAT_TRANSFORMER_TOOL } from '../../../tools/converters/data-format-transformer';
+---
+
+<ToolShell tool={DATA_FORMAT_TRANSFORMER_TOOL}>
+  <DataFormatTransformer client:load />
+</ToolShell>

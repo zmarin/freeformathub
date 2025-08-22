@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { DatabaseSchemaVisualizer } from '../../../components/tools/development/DatabaseSchemaVisualizer';
+import { DATABASE_SCHEMA_VISUALIZER_TOOL } from '../../../tools/development/database-schema-visualizer';
+---
+
+<ToolShell tool={DATABASE_SCHEMA_VISUALIZER_TOOL}>
+  <DatabaseSchemaVisualizer client:load />
+</ToolShell>

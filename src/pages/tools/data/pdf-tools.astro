@@ -1,0 +1,24 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { PDF_TOOLS_TOOL } from '../../../tools/data/pdf-tools';
+
+const tool = PDF_TOOLS_TOOL;
+---
+
+<ToolShell {tool}>
+  <div id="pdf-tools-container"></div>
+  <script>
+    import('../../../components/tools/data/PdfTools').then((module) => {
+      const PdfTools = module.default;
+      const container = document.getElementById('pdf-tools-container');
+      if (container) {
+        import('react').then((React) => {
+          import('react-dom/client').then((ReactDOM) => {
+            const root = ReactDOM.createRoot(container);
+            root.render(React.createElement(PdfTools));
+          });
+        });
+      }
+    });
+  </script>
+</ToolShell>

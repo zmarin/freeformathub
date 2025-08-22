@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { CssSelectorGenerator } from '../../../components/tools/web/CssSelectorGenerator';
+import { CSS_SELECTOR_GENERATOR_TOOL } from '../../../tools/web/css-selector-generator';
+---
+
+<ToolShell tool={CSS_SELECTOR_GENERATOR_TOOL}>
+  <CssSelectorGenerator client:load />
+</ToolShell>

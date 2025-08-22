@@ -1,0 +1,22 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { COLOR_BLINDNESS_SIMULATOR_TOOL } from '../../../tools/color/color-blindness-simulator';
+
+const tool = COLOR_BLINDNESS_SIMULATOR_TOOL;
+---
+
+<ToolShell tool={tool}>
+  <div id="color-blindness-simulator-root"></div>
+</ToolShell>
+
+<script>
+  import ColorBlindnessSimulator from '../../../components/tools/color/ColorBlindnessSimulator';
+  import React from 'react';
+  import { createRoot } from 'react-dom/client';
+
+  const container = document.getElementById('color-blindness-simulator-root');
+  if (container) {
+    const root = createRoot(container);
+    root.render(React.createElement(ColorBlindnessSimulator));
+  }
+</script>

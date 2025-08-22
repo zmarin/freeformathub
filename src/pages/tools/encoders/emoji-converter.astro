@@ -1,0 +1,24 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { EMOJI_CONVERTER_TOOL } from '../../../tools/encoders/emoji-converter';
+
+const tool = EMOJI_CONVERTER_TOOL;
+---
+
+<ToolShell {tool}>
+  <div id="emoji-converter-container"></div>
+  <script>
+    import('../../../components/tools/encoders/EmojiConverter').then((module) => {
+      const EmojiConverter = module.default;
+      const container = document.getElementById('emoji-converter-container');
+      if (container) {
+        import('react').then((React) => {
+          import('react-dom/client').then((ReactDOM) => {
+            const root = ReactDOM.createRoot(container);
+            root.render(React.createElement(EmojiConverter));
+          });
+        });
+      }
+    });
+  </script>
+</ToolShell>

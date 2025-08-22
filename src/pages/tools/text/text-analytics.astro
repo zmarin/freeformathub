@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { TextAnalytics } from '../../../components/tools/text/TextAnalytics';
+import { TEXT_ANALYTICS_TOOL } from '../../../tools/text/text-analytics';
+---
+
+<ToolShell tool={TEXT_ANALYTICS_TOOL}>
+  <TextAnalytics client:load />
+</ToolShell>

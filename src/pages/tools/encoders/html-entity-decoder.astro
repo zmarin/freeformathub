@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { HtmlEntityDecoder } from '../../../components/tools/encoders/HtmlEntityDecoder';
+import { HTML_ENTITY_DECODER_TOOL } from '../../../tools/encoders/html-entity-decoder';
+---
+
+<ToolShell tool={HTML_ENTITY_DECODER_TOOL}>
+  <HtmlEntityDecoder client:load />
+</ToolShell>

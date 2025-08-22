@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { PortScanner } from '../../../components/tools/network/PortScanner';
+import { PORT_SCANNER_TOOL } from '../../../tools/network/port-scanner';
+---
+
+<ToolShell tool={PORT_SCANNER_TOOL}>
+  <PortScanner client:load />
+</ToolShell>

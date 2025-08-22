@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { RegexPatternAnalyzer } from '../../../components/tools/text/RegexPatternAnalyzer';
+import { REGEX_PATTERN_ANALYZER_TOOL } from '../../../tools/text/regex-pattern-analyzer';
+---
+
+<ToolShell tool={REGEX_PATTERN_ANALYZER_TOOL}>
+  <RegexPatternAnalyzer client:load />
+</ToolShell>

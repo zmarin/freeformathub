@@ -1,0 +1,22 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { WEBP_CONVERTER_TOOL } from '../../../tools/converters/webp-converter';
+
+const tool = WEBP_CONVERTER_TOOL;
+---
+
+<ToolShell tool={tool}>
+  <div id="webp-converter-root"></div>
+</ToolShell>
+
+<script>
+  import WebPConverter from '../../../components/tools/converters/WebPConverter';
+  import React from 'react';
+  import { createRoot } from 'react-dom/client';
+
+  const container = document.getElementById('webp-converter-root');
+  if (container) {
+    const root = createRoot(container);
+    root.render(React.createElement(WebPConverter));
+  }
+</script>

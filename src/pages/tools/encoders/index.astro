@@ -1,0 +1,81 @@
+---
+import CategoryShell from '../../../components/common/CategoryShell.astro';
+import { getToolsByCategory, getCategory } from '../../../lib/tools/registry';
+
+const category = getCategory('encoders')!;
+const tools = getToolsByCategory('encoders');
+---
+
+<CategoryShell category={category} tools={tools}>
+  <div class="mb-8 prose prose-gray dark:prose-invert max-w-none">
+    <p class="text-lg leading-relaxed">
+      Safely encode and decode data for web transmission, storage, and security. Our encoding tools support 
+      Base64, Base32, URL encoding, HTML entities, JWT tokens, and more. Essential for web developers, 
+      security professionals, and anyone working with data transmission.
+    </p>
+    
+    <h3>Encoding & Decoding Tools:</h3>
+    <div class="grid gap-4 md:grid-cols-2 not-prose">
+      <div class="p-5 border border-blue-200 dark:border-blue-700 rounded-lg hover:shadow-md transition-shadow">
+        <h4 class="font-semibold text-blue-900 dark:text-blue-100 mb-3 flex items-center">
+          <span class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mr-3 text-sm">🔗</span>
+          Base Encoding
+        </h4>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Base64 and Base32 encoding for safe data transmission</p>
+        <div class="flex flex-wrap gap-1">
+          <span class="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">Base64</span>
+          <span class="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">Base32</span>
+          <span class="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">Images</span>
+        </div>
+      </div>
+      
+      <div class="p-5 border border-green-200 dark:border-green-700 rounded-lg hover:shadow-md transition-shadow">
+        <h4 class="font-semibold text-green-900 dark:text-green-100 mb-3 flex items-center">
+          <span class="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mr-3 text-sm">🌐</span>
+          Web Encoding
+        </h4>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">URL encoding and HTML entity encoding/decoding</p>
+        <div class="flex flex-wrap gap-1">
+          <span class="px-2 py-1 text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded">URL</span>
+          <span class="px-2 py-1 text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded">HTML</span>
+          <span class="px-2 py-1 text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded">Entities</span>
+        </div>
+      </div>
+      
+      <div class="p-5 border border-purple-200 dark:border-purple-700 rounded-lg hover:shadow-md transition-shadow">
+        <h4 class="font-semibold text-purple-900 dark:text-purple-100 mb-3 flex items-center">
+          <span class="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mr-3 text-sm">🔐</span>
+          Security Tokens
+        </h4>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">JWT token decoding and certificate analysis</p>
+        <div class="flex flex-wrap gap-1">
+          <span class="px-2 py-1 text-xs bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded">JWT</span>
+          <span class="px-2 py-1 text-xs bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded">X.509</span>
+          <span class="px-2 py-1 text-xs bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded">Certificates</span>
+        </div>
+      </div>
+      
+      <div class="p-5 border border-orange-200 dark:border-orange-700 rounded-lg hover:shadow-md transition-shadow">
+        <h4 class="font-semibold text-orange-900 dark:text-orange-100 mb-3 flex items-center">
+          <span class="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mr-3 text-sm">📝</span>
+          Text Processing
+        </h4>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">String escaping, emoji conversion, and text encoding</p>
+        <div class="flex flex-wrap gap-1">
+          <span class="px-2 py-1 text-xs bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded">Escape</span>
+          <span class="px-2 py-1 text-xs bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded">Unicode</span>
+          <span class="px-2 py-1 text-xs bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded">Emoji</span>
+        </div>
+      </div>
+    </div>
+    
+    <h3>Common use cases:</h3>
+    <ul>
+      <li><strong>API Development</strong> - Encode data for safe transmission over HTTP</li>
+      <li><strong>Email Attachments</strong> - Convert binary files to text format</li>
+      <li><strong>Web Security</strong> - Decode JWT tokens and analyze certificates</li>
+      <li><strong>Data Storage</strong> - Store binary data in text-based databases</li>
+      <li><strong>HTML Processing</strong> - Handle special characters in web content</li>
+    </ul>
+  </div>
+</CategoryShell>

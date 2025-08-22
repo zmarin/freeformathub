@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { MarkdownTableGenerator } from '../../../components/tools/text/MarkdownTableGenerator';
+import { MARKDOWN_TABLE_GENERATOR_TOOL } from '../../../tools/text/markdown-table-generator';
+---
+
+<ToolShell tool={MARKDOWN_TABLE_GENERATOR_TOOL}>
+  <MarkdownTableGenerator client:load />
+</ToolShell>

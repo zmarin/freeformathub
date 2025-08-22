@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { DnsLookup } from '../../../components/tools/network/DnsLookup';
+import { DNS_LOOKUP_TOOL } from '../../../tools/network/dns-lookup';
+---
+
+<ToolShell tool={DNS_LOOKUP_TOOL}>
+  <DnsLookup client:load />
+</ToolShell>

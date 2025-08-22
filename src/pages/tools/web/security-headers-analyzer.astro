@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { SecurityHeadersAnalyzer } from '../../../components/tools/web/SecurityHeadersAnalyzer';
+import { SECURITY_HEADERS_ANALYZER_TOOL } from '../../../tools/web/security-headers-analyzer';
+---
+
+<ToolShell tool={SECURITY_HEADERS_ANALYZER_TOOL}>
+  <SecurityHeadersAnalyzer client:load />
+</ToolShell>

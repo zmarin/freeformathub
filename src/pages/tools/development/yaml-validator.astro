@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { YamlValidator } from '../../../components/tools/development/YamlValidator';
+import { YAML_VALIDATOR_TOOL } from '../../../tools/development/yaml-validator';
+---
+
+<ToolShell tool={YAML_VALIDATOR_TOOL}>
+  <YamlValidator client:load />
+</ToolShell>

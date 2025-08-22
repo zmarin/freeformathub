@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { UrlShortener } from '../../../components/tools/web/UrlShortener';
+import { URL_SHORTENER_TOOL } from '../../../tools/web/url-shortener';
+---
+
+<ToolShell tool={URL_SHORTENER_TOOL}>
+  <UrlShortener client:load />
+</ToolShell>

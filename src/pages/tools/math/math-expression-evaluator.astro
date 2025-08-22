@@ -1,0 +1,24 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { MATH_EXPRESSION_EVALUATOR_TOOL } from '../../../tools/math/math-expression-evaluator';
+
+const tool = MATH_EXPRESSION_EVALUATOR_TOOL;
+---
+
+<ToolShell {tool}>
+  <div id="math-expression-evaluator-container"></div>
+  <script>
+    import('../../../components/tools/math/MathExpressionEvaluator').then((module) => {
+      const MathExpressionEvaluator = module.default;
+      const container = document.getElementById('math-expression-evaluator-container');
+      if (container) {
+        import('react').then((React) => {
+          import('react-dom/client').then((ReactDOM) => {
+            const root = ReactDOM.createRoot(container);
+            root.render(React.createElement(MathExpressionEvaluator));
+          });
+        });
+      }
+    });
+  </script>
+</ToolShell>

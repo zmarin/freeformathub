@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { CssMinifier } from '../../../components/tools/web/CssMinifier';
+import { CSS_MINIFIER_TOOL } from '../../../tools/web/css-minifier';
+---
+
+<ToolShell tool={CSS_MINIFIER_TOOL}>
+  <CssMinifier client:load />
+</ToolShell>

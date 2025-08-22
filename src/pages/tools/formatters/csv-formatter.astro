@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { CsvFormatter } from '../../../components/tools/formatters/CsvFormatter';
+import { CSV_FORMATTER_TOOL } from '../../../tools/formatters/csv-formatter';
+---
+
+<ToolShell tool={CSV_FORMATTER_TOOL}>
+  <CsvFormatter client:load />
+</ToolShell>

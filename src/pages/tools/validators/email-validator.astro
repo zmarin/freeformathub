@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { EmailValidator } from '../../../components/tools/validators/EmailValidator';
+import { EMAIL_VALIDATOR_TOOL } from '../../../tools/validators/email-validator';
+---
+
+<ToolShell tool={EMAIL_VALIDATOR_TOOL}>
+  <EmailValidator client:load />
+</ToolShell>

@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { ImageMetadataExtractor } from '../../../components/tools/data/ImageMetadataExtractor';
+import { IMAGE_METADATA_EXTRACTOR_TOOL } from '../../../tools/data/image-metadata-extractor';
+---
+
+<ToolShell tool={IMAGE_METADATA_EXTRACTOR_TOOL}>
+  <ImageMetadataExtractor client:load />
+</ToolShell>

@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { TextDiff } from '../../../components/tools/text/TextDiff';
+import { TEXT_DIFF_TOOL } from '../../../tools/text/text-diff';
+---
+
+<ToolShell tool={TEXT_DIFF_TOOL}>
+  <TextDiff client:load />
+</ToolShell>

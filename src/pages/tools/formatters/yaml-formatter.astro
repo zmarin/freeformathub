@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { YamlFormatter } from '../../../components/tools/formatters/YamlFormatter';
+import { YAML_FORMATTER_TOOL } from '../../../tools/formatters/yaml-formatter';
+---
+
+<ToolShell tool={YAML_FORMATTER_TOOL}>
+  <YamlFormatter client:load />
+</ToolShell>

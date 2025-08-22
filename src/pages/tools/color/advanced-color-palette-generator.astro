@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { AdvancedColorPaletteGenerator } from '../../../components/tools/color/AdvancedColorPaletteGenerator';
+import { ADVANCED_COLOR_PALETTE_GENERATOR_TOOL } from '../../../tools/color/advanced-color-palette-generator';
+---
+
+<ToolShell tool={ADVANCED_COLOR_PALETTE_GENERATOR_TOOL}>
+  <AdvancedColorPaletteGenerator client:load />
+</ToolShell>

@@ -1,0 +1,22 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { databaseQueryOptimizerTool } from '../../../tools/development/database-query-optimizer';
+
+const tool = databaseQueryOptimizerTool;
+---
+
+<ToolShell tool={tool}>
+  <div id="database-query-optimizer-root"></div>
+  
+  <script>
+    import('../../../components/tools/development/DatabaseQueryOptimizer').then(module => {
+      const { DatabaseQueryOptimizer } = module;
+      const root = document.getElementById('database-query-optimizer-root');
+      if (root) {
+        const React = (window as any).React;
+        const ReactDOM = (window as any).ReactDOM;
+        ReactDOM.render(React.createElement(DatabaseQueryOptimizer), root);
+      }
+    });
+  </script>
+</ToolShell>

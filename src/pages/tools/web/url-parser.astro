@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { UrlParser } from '../../../components/tools/web/UrlParser';
+import { URL_PARSER_TOOL } from '../../../tools/web/url-parser';
+---
+
+<ToolShell tool={URL_PARSER_TOOL}>
+  <UrlParser client:load />
+</ToolShell>

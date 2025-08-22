@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { JsonToTypescript } from '../../../components/tools/converters/JsonToTypescript';
+import { JSON_TO_TYPESCRIPT_TOOL } from '../../../tools/converters/json-to-typescript';
+---
+
+<ToolShell tool={JSON_TO_TYPESCRIPT_TOOL}>
+  <JsonToTypescript client:load />
+</ToolShell>

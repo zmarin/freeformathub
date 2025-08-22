@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { DataUriConverter } from '../../../components/tools/converters/DataUriConverter';
+import { DATA_URI_CONVERTER_TOOL } from '../../../tools/converters/data-uri-converter';
+---
+
+<ToolShell tool={DATA_URI_CONVERTER_TOOL}>
+  <DataUriConverter client:load />
+</ToolShell>

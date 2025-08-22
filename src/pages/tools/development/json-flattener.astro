@@ -1,0 +1,24 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { JSON_FLATTENER_TOOL } from '../../../tools/development/json-flattener';
+
+const tool = JSON_FLATTENER_TOOL;
+---
+
+<ToolShell {tool}>
+  <div id="json-flattener-container"></div>
+  <script>
+    import('../../../components/tools/development/JSONFlattener').then((module) => {
+      const JSONFlattener = module.default;
+      const container = document.getElementById('json-flattener-container');
+      if (container) {
+        import('react').then((React) => {
+          import('react-dom/client').then((ReactDOM) => {
+            const root = ReactDOM.createRoot(container);
+            root.render(React.createElement(JSONFlattener));
+          });
+        });
+      }
+    });
+  </script>
+</ToolShell>

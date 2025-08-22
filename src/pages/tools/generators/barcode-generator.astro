@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { BarcodeGenerator } from '../../../components/tools/generators/BarcodeGenerator';
+import { BARCODE_GENERATOR_TOOL } from '../../../tools/generators/barcode-generator';
+---
+
+<ToolShell tool={BARCODE_GENERATOR_TOOL}>
+  <BarcodeGenerator client:load />
+</ToolShell>

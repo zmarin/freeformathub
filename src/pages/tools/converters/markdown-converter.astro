@@ -1,0 +1,9 @@
+---
+import ToolShell from '../../../components/common/ToolShell.astro';
+import { MarkdownConverter } from '../../../components/tools/converters/MarkdownConverter';
+import { MARKDOWN_CONVERTER_TOOL } from '../../../tools/converters/markdown-converter';
+---
+
+<ToolShell tool={MARKDOWN_CONVERTER_TOOL}>
+  <MarkdownConverter client:load />
+</ToolShell>
