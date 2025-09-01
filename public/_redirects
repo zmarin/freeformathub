@@ -1,1 +1,3 @@
 /tools/*  /:splat  301!
+ /tools  /formatters  301!
+ /categories/*  /:splat  301!

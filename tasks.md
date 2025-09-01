@@ -3,8 +3,8 @@
 ## Overview
 This document tracks the implementation progress of developer tools for the FreeFormatHub platform. Each tool follows a 4-file architecture pattern:
 1. Tool logic (`src/tools/tool-name.ts`)
-2. React component (`src/components/tools/ToolName.tsx`)
-3. Astro page (`src/pages/tools/tool-name.astro`)
+2. React component (`src/components/tools/Category/ToolComponent.tsx`)
+3. Dynamic route (no per-tool Astro page): tools render via `src/pages/[category]/[slug].astro` based on registry + component naming
 4. Registry integration (`src/lib/tools/index.ts`)
 
 ## Implementation Status

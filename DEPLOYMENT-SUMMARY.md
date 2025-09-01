@@ -198,8 +198,8 @@ After deployment, access your application at:
 - **Network**: `http://your-server-ip:4600`
 
 ### **Available Tools**
-- **JSON Formatter**: `http://localhost:4600/tools/json-formatter`
-- **Base64 Encoder**: `http://localhost:4600/tools/base64-encoder`
+- **JSON Formatter**: `http://localhost:4600/formatters/json-formatter`
+- **Base64 Encoder**: `http://localhost:4600/encoders/base64-encoder`
 
 ### **Monitoring** (Docker with monitoring)
 - **Prometheus**: `http://localhost:4601`

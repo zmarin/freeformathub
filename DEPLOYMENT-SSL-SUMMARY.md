@@ -200,8 +200,8 @@ curl -I https://yourdomain.com/ | grep -E "(Strict-Transport|X-Frame|X-Content)"
 
 ### **✅ Application Functionality**
 - **Homepage**: `https://yourdomain.com/`
-- **JSON Formatter**: `https://yourdomain.com/tools/json-formatter/`
-- **Base64 Encoder**: `https://yourdomain.com/tools/base64-encoder/`
+- **JSON Formatter**: `https://yourdomain.com/formatters/json-formatter/`
+- **Base64 Encoder**: `https://yourdomain.com/encoders/base64-encoder/`
 - **Health Check**: `https://yourdomain.com/health`
 
 ### **✅ Security Features**

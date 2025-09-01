@@ -117,6 +117,9 @@ server {
     location /tools/ {
         rewrite ^/tools/(.*)$ /$1 permanent;
     }
+    location = /tools {
+        return 301 /formatters;
+    }
 
     # Main location
     location / {
@@ -261,6 +264,9 @@ server {
     # 301 redirects for old tool URLs to new clean URLs
     location /tools/ {
         rewrite ^/tools/(.*)$ /$1 permanent;
+    }
+    location = /tools {
+        return 301 /formatters;
     }
 
     # Main location

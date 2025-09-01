@@ -142,7 +142,7 @@ Add DNS records:
 curl -I https://yourdomain.com/health
 
 # Test tools
-curl -s https://yourdomain.com/tools/json-formatter | grep "JSON Formatter"
+curl -s https://yourdomain.com/formatters/json-formatter | grep "JSON Formatter"
 ```
 
 ---
@@ -216,8 +216,8 @@ Type: A, Name: www, Target: your-server-ip
 
 ### **4. Access**
 - Site: `https://myformattools.tk`
-- JSON Tool: `https://myformattools.tk/tools/json-formatter`
-- Base64 Tool: `https://myformattools.tk/tools/base64-encoder`
+- JSON Tool: `https://myformattools.tk/formatters/json-formatter`
+- Base64 Tool: `https://myformattools.tk/encoders/base64-encoder`
 
 ---
 

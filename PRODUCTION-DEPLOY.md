@@ -76,8 +76,8 @@ sudo ./scripts/ssl-deploy.sh yourdomain.com admin@yourdomain.com
 curl -I https://yourdomain.com/
 
 # Check tools
-curl -s https://yourdomain.com/tools/json-formatter | grep "JSON Formatter"
-curl -s https://yourdomain.com/tools/base64-encoder | grep "Base64 Encoder"
+curl -s https://yourdomain.com/formatters/json-formatter | grep "JSON Formatter"
+curl -s https://yourdomain.com/encoders/base64-encoder | grep "Base64 Encoder"
 
 # Check SSL certificate
 openssl s_client -servername yourdomain.com -connect yourdomain.com:443 -verify_return_error < /dev/null
@@ -292,7 +292,7 @@ sudo /opt/freeformathub/scripts/health-check.sh
 
 # Manual checks
 curl -I https://yourdomain.com/health
-curl -I https://yourdomain.com/tools/json-formatter/
+curl -I https://yourdomain.com/formatters/json-formatter/
 openssl s_client -servername yourdomain.com -connect yourdomain.com:443 < /dev/null
 ```
 

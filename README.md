@@ -120,18 +120,7 @@ export function YourTool() {
 }
 ```
 
-3. **Create Astro Page** (`src/pages/tools/your-tool.astro`):
-```astro
----
-import ToolShell from '../../components/common/ToolShell.astro';
-import { YourTool } from '../../components/tools/YourTool';
-import { YOUR_TOOL } from '../../tools/your-tool';
----
-
-<ToolShell tool={YOUR_TOOL}>
-  <YourTool client:load />
-</ToolShell>
-```
+3. **Routing**: No per-tool Astro page. Tools are rendered by the dynamic route `src/pages/[category]/[slug].astro` using the registry and a component in `src/components/tools/<category>/<ComponentName>.tsx` where `<ComponentName>` is derived from `tool.name` (PascalCase, non-alphanumeric removed).
 
 4. **Register Tool** (`src/lib/tools/index.ts`):
 ```typescript

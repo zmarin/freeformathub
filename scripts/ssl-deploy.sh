@@ -219,12 +219,16 @@ server {
     location /tools/ {
         rewrite ^/tools/(.*)$ /$1 permanent;
     }
+    location = /tools {
+        return 301 /formatters;
+    }
+    location = /tools {
+        return 301 /formatters;
+    }
 
-    # Handle categories
+    # Legacy categories prefix
     location /categories/ {
-        try_files \$uri \$uri/ \$uri.html \$uri/index.html =404;
-        expires 1h;
-        add_header Cache-Control "public";
+        rewrite ^/categories/(.*)$ /$1 permanent;
     }
 
     # Main location block

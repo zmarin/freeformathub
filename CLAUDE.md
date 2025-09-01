@@ -47,9 +47,7 @@ Every tool follows a consistent 4-file pattern:
    - Interactive UI using shared components (InputPanel, OutputPanel, OptionsPanel)
    - Zustand store for state management
 
-3. **Astro Page** (`src/pages/tools/tool-name.astro`):
-   - Uses ToolShell wrapper for consistent SEO and layout
-   - Hydrates React component with `client:load`
+3. **Routing**: No per-tool Astro page. The dynamic route `src/pages/[category]/[slug].astro` renders tools using ToolShell + React component based on the registry.
 
 4. **Registration** (`src/lib/tools/index.ts`):
    - Import and register tool in TOOL_REGISTRY
@@ -85,7 +83,7 @@ Every tool follows a consistent 4-file pattern:
 
 1. **Create tool definition** following the existing pattern in `src/tools/`
 2. **Implement React component** using shared UI components
-3. **Create Astro page** with ToolShell wrapper
+3. **No per-tool Astro page**; verify component name matches the route mapping
 4. **Register in tool registry** for discoverability
 5. **Add tests** in `src/test/` following existing patterns
 

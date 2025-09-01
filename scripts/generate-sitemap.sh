@@ -26,16 +26,16 @@ cat > "$SITEMAP_FILE" << EOF
         <priority>1.0</priority>
     </url>
     
-    <!-- Tools -->
+    <!-- Tools (examples) -->
     <url>
-        <loc>$DOMAIN/json-formatter/</loc>
+        <loc>$DOMAIN/formatters/json-formatter/</loc>
         <lastmod>$(date -u +%Y-%m-%dT%H:%M:%S+00:00)</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
     </url>
     
     <url>
-        <loc>$DOMAIN/base64-encoder/</loc>
+        <loc>$DOMAIN/encoders/base64-encoder/</loc>
         <lastmod>$(date -u +%Y-%m-%dT%H:%M:%S+00:00)</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
@@ -43,14 +43,14 @@ cat > "$SITEMAP_FILE" << EOF
     
     <!-- Categories -->
     <url>
-        <loc>$DOMAIN/categories/formatters/</loc>
+        <loc>$DOMAIN/formatters/</loc>
         <lastmod>$(date -u +%Y-%m-%dT%H:%M:%S+00:00)</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
     
     <url>
-        <loc>$DOMAIN/categories/encoders/</loc>
+        <loc>$DOMAIN/encoders/</loc>
         <lastmod>$(date -u +%Y-%m-%dT%H:%M:%S+00:00)</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
