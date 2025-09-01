@@ -1,0 +1,24 @@
+---
+import { getCategoryStaticPaths } from '../../lib/routing/category-routes';
+import CategoryShell from '../../components/common/CategoryShell.astro';
+
+export async function getStaticPaths() {
+  return getCategoryStaticPaths();
+}
+
+const { category: categoryId } = Astro.params;
+const { category, tools } = Astro.props;
+
+if (!category) {
+  return Astro.redirect('/404');
+}
+---
+
+<CategoryShell category={category} tools={tools}>
+  <div class="mb-8 prose prose-gray dark:prose-invert max-w-none">
+    <p class="text-lg leading-relaxed">
+      {category.description} Explore our collection of {tools.length} tools designed to help you work more efficiently.
+    </p>
+  </div>
+</CategoryShell>
+

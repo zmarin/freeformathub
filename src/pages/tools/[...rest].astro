@@ -1,0 +1,9 @@
+---
+const rest = Astro.params.rest as string;
+const target = `/${rest}`;
+export const prerender = true;
+---
+
+<!-- Legacy catch-all redirect for any /tools/* path -->
+<meta http-equiv="refresh" content={`0;url=${target}`} />
+<link rel="canonical" href={target} />

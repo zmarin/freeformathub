@@ -1,6 +1,8 @@
 ---
 import type { Tool } from '../../types';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getTool } from '../../lib/tools/registry';
+import { getToolUrl } from '../../lib/routing/category-routes';
 
 export interface Props {
   tool: Tool;
@@ -68,7 +70,7 @@ const jsonLd = {
             </svg>
           </li>
           <li>
-            <a href={`/categories/${tool.category?.id || 'unknown'}`} class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+            <a href={`/${tool.category?.id || 'unknown'}`} class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
               {tool.category?.name || 'Unknown'}
             </a>
           </li>
@@ -215,14 +217,16 @@ const jsonLd = {
           Related Tools
         </h2>
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {tool.relatedTools?.map(relatedToolId => (
-            <a href={`/tools/${relatedToolId}`} class="block p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-sm transition-all">
-              <div class="font-medium text-gray-900 dark:text-gray-100">
-                {/* Tool name would be fetched from registry */}
-                {relatedToolId.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-              </div>
-            </a>
-          ))}
+          {tool.relatedTools?.map(relatedToolId => {
+            const t = getTool(relatedToolId);
+            const href = t ? getToolUrl(t) : '/search';
+            const name = t?.name || relatedToolId.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+            return (
+              <a href={href} class="block p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-sm transition-all">
+                <div class="font-medium text-gray-900 dark:text-gray-100">{name}</div>
+              </a>
+            );
+          })}
         </div>
       </section>
     )}

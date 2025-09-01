@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { TOOL_CATEGORIES, getAllTools } from '../../lib/tools/registry';
-import { getFeaturedTools } from '../../lib/routing/category-routes';
+import { getFeaturedTools, getCategoryUrl, getToolUrl } from '../../lib/routing/category-routes';
 
 const allTools = getAllTools();
 const featuredTools = getFeaturedTools(8);
@@ -21,7 +21,7 @@ const jsonLd = {
       "position": index + 1,
       "name": category.name,
       "description": category.description,
-      "url": `/tools/${category.id}`
+      "url": `/${category.id}`
     }))
   }
 };
@@ -53,7 +53,7 @@ const jsonLd = {
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {featuredTools.map(tool => (
           <a 
-            href={`/tools/${tool.category.id}/${tool.slug}`}
+            href={getToolUrl(tool)}
             class="group block p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-lg transition-all duration-200"
           >
             <div class="flex items-center gap-3 mb-3">
@@ -85,7 +85,7 @@ const jsonLd = {
           const toolCount = allTools.filter(tool => tool.category.id === category.id).length;
           return (
             <a 
-              href={`/tools/${category.id}`}
+              href={getCategoryUrl(category)}
               class="group block p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-lg transition-all duration-200"
             >
               <div class="flex items-start gap-4">

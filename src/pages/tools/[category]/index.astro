@@ -9,40 +9,10 @@ export async function getStaticPaths() {
 const { category: categoryId } = Astro.params;
 const { category, tools } = Astro.props;
 
-if (!category) {
-  return Astro.redirect('/404');
+// Permanent redirect to new route without /tools prefix
+if (category) {
+  return Astro.redirect(`/${categoryId}`, 301);
 }
 ---
 
-<CategoryShell category={category} tools={tools}>
-  <div class="mb-8 prose prose-gray dark:prose-invert max-w-none">
-    <p class="text-lg leading-relaxed">
-      {category.description} Explore our collection of {tools.length} tools designed to help you work more efficiently.
-    </p>
-    
-    <h3>Featured Tools in {category.name}</h3>
-    <p>
-      This category contains powerful tools for {category.name.toLowerCase()}. Each tool is designed with privacy and performance in mind, 
-      processing all data locally in your browser without sending anything to external servers.
-    </p>
-    
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 not-prose">
-      {tools.slice(0, 6).map(tool => (
-        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-          <h4 class="font-semibold text-gray-900 dark:text-gray-100 mb-2">
-            <a href={`/tools/${categoryId}/${tool.slug}`} class="hover:text-blue-600 dark:hover:text-blue-400">
-              {tool.name}
-            </a>
-          </h4>
-          <p class="text-sm text-gray-600 dark:text-gray-400">{tool.description}</p>
-        </div>
-      ))}
-    </div>
-    
-    {tools.length > 6 && (
-      <p class="text-sm text-gray-600 dark:text-gray-400 mt-4">
-        And {tools.length - 6} more tools available below...
-      </p>
-    )}
-  </div>
-</CategoryShell>
+<!-- Legacy route redirected in frontmatter -->

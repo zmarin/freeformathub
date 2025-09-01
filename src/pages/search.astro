@@ -1,7 +1,7 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getAllTools, TOOL_CATEGORIES } from '../../lib/tools/registry';
-import { searchToolsAdvanced } from '../../lib/routing/category-routes';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getAllTools, TOOL_CATEGORIES } from '../lib/tools/registry';
+import { searchToolsAdvanced } from '../lib/routing/category-routes';
 
 // Get search parameters from URL
 const url = new URL(Astro.request.url);
@@ -227,3 +227,4 @@ const jsonLd = {
     overflow: hidden;
   }
 </style>
+

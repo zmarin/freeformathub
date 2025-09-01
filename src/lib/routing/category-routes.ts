@@ -84,21 +84,22 @@ export function getToolByCategoryAndSlug(categoryId: string, slug: string): Tool
  * Generate tool URL
  */
 export function getToolUrl(tool: Tool): string {
-  return `/tools/${tool.category.id}/${tool.slug}`;
+  return `/${tool.category.id}/${tool.slug}`;
 }
 
 /**
  * Generate category URL
  */
 export function getCategoryUrl(category: ToolCategory): string {
-  return `/tools/${category.id}`;
+  return `/${category.id}`;
 }
 
 /**
  * Parse tool URL to extract category and slug
  */
 export function parseToolUrl(url: string): CategoryRoute | null {
-  const match = url.match(/^\/tools\/([^\/]+)(?:\/([^\/]+))?$/);
+  // Support both legacy /tools/<category>/<slug> and new /<category>/<slug>
+  const match = url.match(/^\/(?:tools\/)?([^\/]+)(?:\/([^\/]+))?$/);
   if (!match) return null;
   
   const [, category, slug] = match;
@@ -182,7 +183,7 @@ export function generateSitemapEntries(baseUrl: string = 'https://freeformathub.
   // Categories
   for (const category of TOOL_CATEGORIES) {
     entries.push({
-      url: `${baseUrl}/tools/${category.id}`,
+      url: `${baseUrl}/${category.id}`,
       lastmod,
       changefreq: 'weekly',
       priority: '0.8'
@@ -193,7 +194,7 @@ export function generateSitemapEntries(baseUrl: string = 'https://freeformathub.
   const allTools = getAllTools();
   for (const tool of allTools) {
     entries.push({
-      url: `${baseUrl}/tools/${tool.category.id}/${tool.slug}`,
+      url: `${baseUrl}/${tool.category.id}/${tool.slug}`,
       lastmod,
       changefreq: 'monthly',
       priority: '0.9'
@@ -252,19 +253,11 @@ export function getBreadcrumbs(path: string): Array<{
   const category = getCategoryById(route.category);
   if (!category) return breadcrumbs;
   
-  breadcrumbs.push({ name: 'Tools', url: '/tools' });
-  breadcrumbs.push({ 
-    name: category.name, 
-    url: `/tools/${category.id}`,
-    current: !route.slug
-  });
+  // In new structure, we don’t include the generic Tools hub in the breadcrumb.
+  breadcrumbs.push({ name: category.name, url: `/${category.id}`, current: !route.slug });
   
   if (route.slug && route.tool) {
-    breadcrumbs.push({ 
-      name: route.tool.name, 
-      url: `/tools/${category.id}/${route.slug}`,
-      current: true
-    });
+    breadcrumbs.push({ name: route.tool.name, url: `/${category.id}/${route.slug}`, current: true });
   }
   
   return breadcrumbs;

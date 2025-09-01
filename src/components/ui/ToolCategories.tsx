@@ -12,7 +12,7 @@ export const ToolCategories: React.FC<ToolCategoriesProps> = ({ categories }) =>
       {categories.map(category => (
         <a 
           key={category.id}
-          href={`/categories/${category.id}`} 
+          href={`/${category.id}`} 
           className="group block p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200"
         >
           <div className="flex items-center mb-4">

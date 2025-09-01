@@ -8,8 +8,8 @@ export const GET: APIRoute = () => {
   // Add static pages
   const staticPages = [
     { url: baseUrl, lastmod: new Date().toISOString().split('T')[0], changefreq: 'daily', priority: '1.0' },
-    { url: `${baseUrl}/tools`, lastmod: new Date().toISOString().split('T')[0], changefreq: 'daily', priority: '0.9' },
-    { url: `${baseUrl}/tools/search`, lastmod: new Date().toISOString().split('T')[0], changefreq: 'weekly', priority: '0.7' }
+    { url: `${baseUrl}/tools`, lastmod: new Date().toISOString().split('T')[0], changefreq: 'daily', priority: '0.7' },
+    { url: `${baseUrl}/search`, lastmod: new Date().toISOString().split('T')[0], changefreq: 'weekly', priority: '0.6' }
   ];
 
   const allEntries = [...staticPages, ...entries];

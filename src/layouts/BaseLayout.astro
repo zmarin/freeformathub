@@ -22,7 +22,12 @@ const {
 
 const siteUrl = 'https://freeformathub.com'; // TODO: Update with actual domain
 const fullTitle = title === 'FreeFormatHub' ? title : `${title} | FreeFormatHub`;
-const canonicalURL = canonical || new URL(Astro.url.pathname, siteUrl).href;
+// Normalize canonical to prefer new URL structure without the /tools prefix
+const rawPath = Astro.url.pathname;
+const normalizedPath = rawPath.startsWith('/tools/')
+  ? rawPath.replace(/^\/tools\//, '/')
+  : rawPath;
+const canonicalURL = canonical || new URL(normalizedPath, siteUrl).href;
 const imageUrl = ogImage || `${siteUrl}/og-image.jpg`;
 ---
 
@@ -137,19 +142,19 @@ const imageUrl = ogImage || `${siteUrl}/og-image.jpg`;
             <div>
               <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider">Tools</h3>
               <ul class="mt-4 space-y-2">
-                <li><a href="/tools/json-formatter" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">JSON Formatter</a></li>
-                <li><a href="/tools/base64-encoder" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Base64 Encoder</a></li>
-                <li><a href="/tools/url-encoder" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">URL Encoder</a></li>
-                <li><a href="/tools/jwt-decoder" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">JWT Decoder</a></li>
+                <li><a href="/formatters/json-formatter" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">JSON Formatter</a></li>
+                <li><a href="/encoders/base64-encoder" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Base64 Encoder</a></li>
+                <li><a href="/encoders/url-encoder" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">URL Encoder</a></li>
+                <li><a href="/encoders/jwt-decoder" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">JWT Decoder</a></li>
               </ul>
             </div>
             <div>
               <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider">Categories</h3>
               <ul class="mt-4 space-y-2">
-                <li><a href="/categories/formatters" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Formatters</a></li>
-                <li><a href="/categories/converters" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Converters</a></li>
-                <li><a href="/categories/encoders" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Encoders</a></li>
-                <li><a href="/categories/text" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Text Tools</a></li>
+                <li><a href="/formatters" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Formatters</a></li>
+                <li><a href="/converters" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Converters</a></li>
+                <li><a href="/encoders" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Encoders</a></li>
+                <li><a href="/text" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Text Tools</a></li>
               </ul>
             </div>
             <div>

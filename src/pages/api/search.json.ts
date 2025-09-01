@@ -40,7 +40,7 @@ export const GET: APIRoute = ({ url }) => {
       },
       icon: tool.icon,
       keywords: tool.keywords,
-      url: `/tools/${tool.category.id}/${tool.slug}`
+      url: `/${tool.category.id}/${tool.slug}`
     }));
 
     return new Response(JSON.stringify({
