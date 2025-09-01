@@ -12,10 +12,11 @@ export default defineConfig({
     plugins: [tailwindcss()]
   },
 
-  // GitHub Pages configuration
+  // Site configuration for different deployment environments
   site: process.env.NODE_ENV === 'production'
-    ? 'https://yourusername.github.io/freeformathub'
+    ? 'https://freeformathub.com'
     : undefined,
 
-  base: '/freeformathub'
+  // Use base path only for GitHub Pages, not for Coolify deployment
+  base: process.env.DEPLOY_TARGET === 'github-pages' ? '/freeformathub' : undefined
 });
