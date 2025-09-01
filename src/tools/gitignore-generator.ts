@@ -580,7 +580,7 @@ export const GITIGNORE_GENERATOR_TOOL: Tool = {
   name: 'Git Ignore Generator',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'development')!,
   slug: 'gitignore-generator',
-  icon: '=Â',
+  icon: 'ðŸ“„',
   keywords: ['git', 'gitignore', 'ignore', 'repository', 'vcs', 'exclude', 'files', 'patterns'],
   seoTitle: 'Git Ignore Generator - Create .gitignore Files | FreeFormatHub',
   seoDescription: 'Generate comprehensive .gitignore files for any project. Pre-built templates for Node.js, Python, Java, React and more. Exclude unwanted files from Git.',
