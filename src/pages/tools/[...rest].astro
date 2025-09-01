@@ -1,4 +1,31 @@
 ---
+import { getAllTools } from '../../lib/tools/registry';
+
+export async function getStaticPaths() {
+  const tools = getAllTools();
+  const paths: Array<{ params: { rest: string } }> = [];
+  
+  // Generate all possible /tools/* redirect paths
+  tools.forEach(tool => {
+    paths.push({
+      params: { rest: `${tool.category.id}/${tool.slug}` }
+    });
+    paths.push({
+      params: { rest: tool.slug }
+    });
+  });
+  
+  // Add category redirects
+  const categories = [...new Set(tools.map(t => t.category.id))];
+  categories.forEach(categoryId => {
+    paths.push({
+      params: { rest: categoryId }
+    });
+  });
+  
+  return paths;
+}
+
 const rest = Astro.params.rest as string;
 const target = `/${rest}`;
 export const prerender = true;
