@@ -1,0 +1,38 @@
+{
+  "mcpServers": {
+    "coolify": {
+      "command": "npx",
+      "args": ["@felixallistar/coolify-mcp"],
+      "env": {
+        "COOLIFY_API_TOKEN": "2|diasyTmnTPzLvdFnrk6XP56foxAXnP9SXE5QSZDJ2de741a7",
+        "COOLIFY_API_URL": "http://31.97.125.102:8000/api/v1",
+        "COOLIFY_TEAM_ID": "0"
+      }
+    },
+    "context7": {
+      "command": "context7-mcp",
+      "args": [],
+      "env": {}
+    },
+    "puppeteer": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+    },
+    "shadcn-ui": {
+      "command": "npx",
+      "args": ["-y", "@jpisnice/shadcn-ui-mcp-server"]
+    },
+    "docker": {
+      "command": "npx",
+      "args": ["docker-mcp"]
+    },
+    "playwright": {
+      "command": "npx", 
+      "args": ["@playwright/mcp"]
+    }
+  }
+}

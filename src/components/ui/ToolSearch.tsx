@@ -1,0 +1,154 @@
+import { useState, useEffect, useRef } from 'react';
+import { searchTools, getAllTools } from '../../lib/tools/registry';
+import type { Tool } from '../../types';
+
+interface ToolSearchProps {
+  placeholder?: string;
+  className?: string;
+  size?: 'small' | 'large';
+}
+
+export default function ToolSearch({ 
+  placeholder = "Search tools...", 
+  className = "",
+  size = 'small'
+}: ToolSearchProps) {
+  const [query, setQuery] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const [results, setResults] = useState<Tool[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Get popular tools to show when no search query
+  const popularTools = getAllTools().slice(0, 6);
+
+  useEffect(() => {
+    if (query.trim()) {
+      const searchResults = searchTools(query);
+      setResults(searchResults.slice(0, 8)); // Show max 8 results
+    } else {
+      setResults(popularTools);
+    }
+    setSelectedIndex(0);
+  }, [query]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!isOpen) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setSelectedIndex(prev => (prev + 1) % results.length);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedIndex(prev => (prev - 1 + results.length) % results.length);
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (results[selectedIndex]) {
+          window.location.href = `/tools/${results[selectedIndex].slug}`;
+        }
+        break;
+      case 'Escape':
+        setIsOpen(false);
+        inputRef.current?.blur();
+        break;
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+    setIsOpen(true);
+  };
+
+  const handleFocus = () => {
+    setIsOpen(true);
+  };
+
+  const handleToolClick = (tool: Tool) => {
+    window.location.href = `/tools/${tool.slug}`;
+  };
+
+  const inputClasses = size === 'large' 
+    ? "w-full px-6 py-4 pl-12 pr-4 text-lg border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+    : "w-full px-4 py-2 pl-10 pr-4 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100";
+
+  return (
+    <div className={`relative ${className}`} ref={dropdownRef}>
+      <div className="relative">
+        <input
+          ref={inputRef}
+          type="search"
+          placeholder={placeholder}
+          value={query}
+          onChange={handleInputChange}
+          onFocus={handleFocus}
+          onKeyDown={handleKeyDown}
+          className={inputClasses}
+          autoComplete="off"
+        />
+        <div className={`absolute inset-y-0 left-0 ${size === 'large' ? 'pl-4' : 'pl-3'} flex items-center`}>
+          <svg className={`${size === 'large' ? 'h-6 w-6' : 'h-5 w-5'} text-gray-400`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+      </div>
+
+      {isOpen && results.length > 0 && (
+        <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+          {!query.trim() && (
+            <div className="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b border-gray-100 dark:border-gray-700">
+              Popular Tools
+            </div>
+          )}
+          {results.map((tool, index) => (
+            <button
+              key={tool.slug}
+              className={`w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0 ${
+                index === selectedIndex 
+                  ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800' 
+                  : ''
+              }`}
+              onClick={() => handleToolClick(tool)}
+              onMouseEnter={() => setSelectedIndex(index)}
+            >
+              <div className="flex items-center">
+                <div className="flex-shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-md flex items-center justify-center">
+                  <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+                    {tool.name.charAt(0)}
+                  </span>
+                </div>
+                <div className="ml-3 flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                    {tool.name}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                    {tool.description}
+                  </p>
+                </div>
+              </div>
+            </button>
+          ))}
+          {query.trim() && results.length === 0 && (
+            <div className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 text-center">
+              No tools found for "{query}"
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

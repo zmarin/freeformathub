@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { TOOL_CATEGORIES } from '../lib/tools/registry';
 import ToolCategories from '../components/ui/ToolCategories.tsx';
+import ToolSearch from '../components/ui/ToolSearch.tsx';
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -38,21 +39,11 @@ const jsonLd = {
       
       <!-- Search Bar -->
       <div class="max-w-2xl mx-auto mb-8">
-        <div class="relative">
-          <input
-            type="search"
-            placeholder="Search for tools... (e.g., JSON formatter, Base64 encoder)"
-            class="w-full px-6 py-4 pl-12 pr-4 text-lg border-2 border-gray-300 dark:border-gray-600 
-                   rounded-xl bg-white dark:bg-gray-800 shadow-lg
-                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                   placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
-          />
-          <div class="absolute inset-y-0 left-0 pl-4 flex items-center">
-            <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-        </div>
+        <ToolSearch 
+          placeholder="Search for tools... (e.g., JSON formatter, Base64 encoder)"
+          size="large"
+          client:load 
+        />
       </div>
 
       <!-- Quick Stats -->
