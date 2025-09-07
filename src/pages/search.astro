@@ -37,6 +37,7 @@ const jsonLd = {
   description={query ? `Found ${searchResults.length} tools matching "${query}". Search across ${totalTools} free developer tools.` : `Search across ${totalTools} free developer tools for formatting, converting, encoding, and validating data.`}
   keywords={['search tools', 'find developer tools', 'tool finder', query]}
   jsonLd={jsonLd}
+  robotsContent="noindex, follow"
 >
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Search Header -->
@@ -132,7 +133,7 @@ const jsonLd = {
                   {tool.description}
                 </p>
                 <div class="flex flex-wrap gap-1">
-                  {tool.keywords.slice(0, 3).map(keyword => (
+                  {(tool.keywords ?? []).slice(0, 3).map(keyword => (
                     <span class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded">
                       {keyword}
                     </span>

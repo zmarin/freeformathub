@@ -7,12 +7,9 @@ export async function getStaticPaths() {
   
   // Generate all possible /tools/* redirect paths
   tools.forEach(tool => {
-    paths.push({
-      params: { rest: `${tool.category.id}/${tool.slug}` }
-    });
-    paths.push({
-      params: { rest: tool.slug }
-    });
+    if (!tool.slug) return;
+    paths.push({ params: { rest: `${tool.category.id}/${tool.slug}` } });
+    paths.push({ params: { rest: tool.slug } });
   });
   
   // Add category redirects
@@ -34,3 +31,4 @@ export const prerender = true;
 <!-- Legacy catch-all redirect for any /tools/* path -->
 <meta http-equiv="refresh" content={`0;url=${target}`} />
 <link rel="canonical" href={target} />
+<meta name="robots" content="noindex, follow" />

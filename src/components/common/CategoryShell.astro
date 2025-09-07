@@ -10,6 +10,7 @@ export interface Props {
 }
 
 const { category, tools } = Astro.props;
+const safeTools = tools ?? [];
 
 // Generate structured data for the category
 const jsonLd = {
@@ -21,8 +22,8 @@ const jsonLd = {
     "@type": "ItemList",
     "name": `${category.name} Tools`,
     "description": `Free online ${category.name.toLowerCase()} tools for developers`,
-    "numberOfItems": tools.length,
-    "itemListElement": tools.map((tool, index) => ({
+    "numberOfItems": safeTools.length,
+    "itemListElement": safeTools.map((tool, index) => ({
       "@type": "SoftwareApplication",
       "position": index + 1,
       "name": tool.name,
@@ -52,13 +53,13 @@ const jsonLd = {
 };
 
 const seoTitle = `${category.name} | Free Online Developer Tools | FreeFormatHub`;
-const seoDescription = `${category.description}. ${tools.length} free online tools including ${tools.slice(0, 3).map(t => t.name).join(', ')} and more. All tools work offline with complete privacy.`;
+const seoDescription = `${category.description}. ${safeTools.length} free online tools including ${safeTools.slice(0, 3).map(t => t.name).join(', ')} and more. All tools work offline with complete privacy.`;
 ---
 
 <BaseLayout 
   title={seoTitle}
   description={seoDescription}
-  keywords={[category.id, ...tools.flatMap(t => t.keywords)]}
+  keywords={[category.id, ...(safeTools.flatMap ? safeTools.flatMap(t => t.keywords) : [])]}
   jsonLd={jsonLd}
 >
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -76,7 +77,7 @@ const seoDescription = `${category.description}. ${tools.length} free online too
             {category.description}
           </p>
           <p class="text-sm text-gray-500 dark:text-gray-500 mt-1">
-            {tools.length} tools available
+            {safeTools.length} tools available
           </p>
         </div>
       </div>
@@ -112,7 +113,7 @@ const seoDescription = `${category.description}. ${tools.length} free online too
         Available Tools
       </h2>
       <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {tools.map(tool => (
+        {safeTools.map(tool => (
           <a 
             href={getToolUrl(tool)}
             class="group block p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-lg transition-all duration-200"
@@ -132,7 +133,7 @@ const seoDescription = `${category.description}. ${tools.length} free online too
             </p>
             <div class="flex items-center justify-between mt-4">
               <div class="flex flex-wrap gap-1">
-                {tool.keywords.slice(0, 2).map(keyword => (
+                {(tool.keywords ?? []).slice(0, 2).map(keyword => (
                   <span class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded">
                     {keyword}
                   </span>

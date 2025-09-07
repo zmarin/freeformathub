@@ -29,6 +29,14 @@ const jsonLd = {
     "@type": "Offer",
     "price": "0",
     "priceCurrency": "USD"
+  },
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "/" },
+      { "@type": "ListItem", "position": 2, "name": tool.category?.name || 'Category', "item": `/${tool.category?.id || ''}` },
+      { "@type": "ListItem", "position": 3, "name": tool.name, "item": `/${tool.category?.id || ''}/${tool.slug}` }
+    ]
   }
 };
 ---

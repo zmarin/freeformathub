@@ -1,8 +1,8 @@
 import type { APIRoute } from 'astro';
 import { generateSitemapEntries } from '../lib/routing/category-routes';
 
-export const GET: APIRoute = () => {
-  const baseUrl = 'https://freeformathub.com'; // Update with your actual domain
+export const GET: APIRoute = ({ site }) => {
+  const baseUrl = site?.href ?? 'https://freeformathub.com';
   const entries = generateSitemapEntries(baseUrl);
   
   // Add static pages

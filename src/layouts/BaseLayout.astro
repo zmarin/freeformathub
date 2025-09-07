@@ -9,6 +9,7 @@ export interface Props {
   canonical?: string;
   ogImage?: string;
   jsonLd?: Record<string, any>;
+  robotsContent?: string;
 }
 
 const { 
@@ -17,10 +18,12 @@ const {
   keywords = [],
   canonical,
   ogImage,
-  jsonLd 
+  jsonLd,
+  robotsContent
 } = Astro.props;
 
-const siteUrl = 'https://freeformathub.com'; // TODO: Update with actual domain
+// Prefer configured site from astro.config, fall back to production domain
+const siteUrl = Astro.site?.href || 'https://freeformathub.com';
 const fullTitle = title === 'FreeFormatHub' ? title : `${title} | FreeFormatHub`;
 // Normalize canonical to prefer new URL structure without the /tools prefix
 const rawPath = Astro.url.pathname;
@@ -28,7 +31,10 @@ const normalizedPath = rawPath.startsWith('/tools/')
   ? rawPath.replace(/^\/tools\//, '/')
   : rawPath;
 const canonicalURL = canonical || new URL(normalizedPath, siteUrl).href;
-const imageUrl = ogImage || `${siteUrl}/og-image.jpg`;
+const imageUrl = ogImage || new URL('/og-image.png', siteUrl).href;
+const ogLocale = 'en_US';
+const twitterSite = '@freeformathub';
+const robots = robotsContent || 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
 ---
 
 <!DOCTYPE html>
@@ -54,7 +60,11 @@ const imageUrl = ogImage || `${siteUrl}/og-image.jpg`;
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:site_name" content="FreeFormatHub" />
+    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:image:alt" content={fullTitle} />
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
@@ -62,22 +72,22 @@ const imageUrl = ogImage || `${siteUrl}/og-image.jpg`;
     <meta property="twitter:title" content={fullTitle} />
     <meta property="twitter:description" content={description} />
     <meta property="twitter:image" content={imageUrl} />
+    <meta name="twitter:site" content={twitterSite} />
     
     <!-- Theme -->
     <meta name="theme-color" content="#3b82f6" />
     <meta name="color-scheme" content="light dark" />
     
-    <!-- Preload critical resources -->
-    <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin />
+    <!-- Preload critical resources (restore when asset exists) -->
     
     <!-- JSON-LD Structured Data -->
     {jsonLd && (
       <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     )}
     
-    <!-- Performance hints -->
+    <!-- Performance + robots -->
     <meta name="format-detection" content="telephone=no" />
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="robots" content={robots} />
   </head>
   
   <body class="h-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">

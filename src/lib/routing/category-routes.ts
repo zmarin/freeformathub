@@ -1,4 +1,6 @@
 import { TOOL_CATEGORIES, getAllTools, getToolsByCategory, getTool } from '../tools/registry';
+// Ensure tool registry is populated at build time
+import '../tools/index';
 import type { Tool, ToolCategory } from '../../types';
 
 /**
@@ -48,6 +50,7 @@ export function getToolStaticPaths(): CategoryStaticPath[] {
   for (const category of TOOL_CATEGORIES) {
     const tools = getToolsByCategory(category.id);
     for (const tool of tools) {
+      if (!tool.slug) continue;
       paths.push({
         params: {
           category: category.id,
@@ -179,11 +182,12 @@ export function generateSitemapEntries(baseUrl: string = 'https://freeformathub.
 }> {
   const entries = [];
   const lastmod = new Date().toISOString().split('T')[0];
+  const base = baseUrl.replace(/\/$/, '');
   
   // Categories
   for (const category of TOOL_CATEGORIES) {
     entries.push({
-      url: `${baseUrl}/${category.id}`,
+      url: `${base}/${category.id}`,
       lastmod,
       changefreq: 'weekly',
       priority: '0.8'
@@ -194,7 +198,7 @@ export function generateSitemapEntries(baseUrl: string = 'https://freeformathub.
   const allTools = getAllTools();
   for (const tool of allTools) {
     entries.push({
-      url: `${baseUrl}/${tool.category.id}/${tool.slug}`,
+      url: `${base}/${tool.category.id}/${tool.slug}`,
       lastmod,
       changefreq: 'monthly',
       priority: '0.9'

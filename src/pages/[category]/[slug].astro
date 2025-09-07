@@ -13,17 +13,16 @@ if (!tool) {
   return Astro.redirect('/404');
 }
 
-// Dynamically import the tool component based on category and tool name
-const componentName = tool.name
-  .split(' ')
-  .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-  .join('')
-  .replace(/[^a-zA-Z0-9]/g, '');
+// Dynamically import the tool component based on slug (kebab-case -> PascalCase)
+const componentName = slug
+  .split('-')
+  .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+  .join('');
 
 let ToolComponent;
 try {
   const componentModule = await import(`../../components/tools/${category}/${componentName}.tsx`);
-  ToolComponent = componentModule.default;
+  ToolComponent = componentModule[componentName] || componentModule.default;
 } catch (error) {
   console.error(`Failed to load component for ${tool.name}:`, error);
   return Astro.redirect('/404');
@@ -31,6 +30,19 @@ try {
 ---
 
 <ToolShell tool={tool}>
-  <ToolComponent client:load />
+  <div id="tool-container"></div>
+  <script define:vars={{ category, componentName }}>
+    import(`../../components/tools/${category}/${componentName}.tsx`).then((module) => {
+      const Comp = module[componentName] || module.default;
+      if (!Comp) return;
+      import('react').then((React) => {
+        import('react-dom/client').then((ReactDOM) => {
+          const root = ReactDOM.createRoot(document.getElementById('tool-container'));
+          root.render(React.createElement(Comp));
+        });
+      });
+    }).catch((err) => {
+      console.error('Failed to load tool component', err);
+    });
+  </script>
 </ToolShell>
-

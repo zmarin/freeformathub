@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+// Populate tool registry for curated and trending sections
+import '../lib/tools/index';
 import { TOOL_CATEGORIES, getToolsByCategory, getCategory, getTool } from '../lib/tools/registry';
 import ToolCategories from '../components/ui/ToolCategories.tsx';
 import ToolSearch from '../components/ui/ToolSearch.tsx';

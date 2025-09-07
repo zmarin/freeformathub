@@ -1,17 +1,8 @@
 User-agent: *
 Allow: /
 
-# Tools
-Allow: /tools/
-Allow: /tools/json-formatter/
-Allow: /tools/base64-encoder/
-
-# Categories
-Allow: /categories/
-
-# Sitemaps
+# Sitemap
 Sitemap: https://freeformathub.com/sitemap.xml
-Sitemap: https://freeformathub.com/sitemap-tools.xml
 
 # Disallow admin and private areas
 Disallow: /admin/
