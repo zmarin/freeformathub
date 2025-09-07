@@ -88,6 +88,35 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
     <!-- Performance + robots -->
     <meta name="format-detection" content="telephone=no" />
     <meta name="robots" content={robots} />
+
+    <!-- Early theme init to prevent FOUC -->
+    <script>
+      (function() {
+        const html = document.documentElement;
+        const systemDarkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        const getSaved = () => localStorage.getItem('theme') || 'auto';
+        const applyTheme = (theme) => {
+          const systemPrefersDark = systemDarkQuery.matches;
+          const dark = theme === 'dark' || (theme === 'auto' && systemPrefersDark);
+          html.classList.toggle('dark', dark);
+        };
+        // Apply immediately based on saved/system
+        applyTheme(getSaved());
+        // Bind toggle after DOM is ready
+        window.addEventListener('DOMContentLoaded', () => {
+          const themeToggle = document.getElementById('theme-toggle');
+          themeToggle?.addEventListener('click', () => {
+            const current = html.classList.contains('dark') ? 'light' : 'dark';
+            localStorage.setItem('theme', current);
+            applyTheme(current);
+          });
+        });
+        // React to system changes when in auto
+        systemDarkQuery.addEventListener('change', () => {
+          if (getSaved() === 'auto') applyTheme('auto');
+        });
+      })();
+    </script>
   </head>
   
   <body class="h-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
@@ -201,41 +230,6 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
       });
     </script>
 
-    <!-- Theme toggle script -->
-    <script>
-      function initTheme() {
-        const themeToggle = document.getElementById('theme-toggle');
-        const html = document.documentElement;
-        
-        // Get initial theme
-        const savedTheme = localStorage.getItem('theme') || 'auto';
-        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        
-        const applyTheme = (theme: string) => {
-          if (theme === 'dark' || (theme === 'auto' && systemPrefersDark)) {
-            html.classList.add('dark');
-          } else {
-            html.classList.remove('dark');
-          }
-        };
-        
-        applyTheme(savedTheme);
-        
-        themeToggle?.addEventListener('click', () => {
-          const currentTheme = html.classList.contains('dark') ? 'light' : 'dark';
-          localStorage.setItem('theme', currentTheme);
-          applyTheme(currentTheme);
-        });
-        
-        // Listen for system theme changes
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-          if (localStorage.getItem('theme') === 'auto') {
-            applyTheme('auto');
-          }
-        });
-      }
-      
-      initTheme();
-    </script>
+    <!-- Theme toggle logic moved to <head> to minimize FOUC -->
   </body>
 </html>
