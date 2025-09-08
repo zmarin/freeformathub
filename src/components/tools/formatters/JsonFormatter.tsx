@@ -27,128 +27,86 @@ const DEFAULT_CONFIG: JsonFormatterConfig = {
   detectDuplicateKeys: true,
 };
 
-const OPTIONS = [
+// Essential options only - simplified UX
+const ESSENTIAL_OPTIONS = [
   {
     key: 'indent',
-    label: 'Indentation',
+    label: 'Indent',
     type: 'select' as const,
     default: 2,
     options: [
-      { value: '0', label: 'Minified (no spaces)' },
       { value: '2', label: '2 spaces' },
       { value: '4', label: '4 spaces' },
-      { value: '8', label: '8 spaces' },
+      { value: '0', label: 'Minified' },
     ],
-    description: 'Number of spaces for indentation (0 for minified)',
-  },
-  {
-    key: 'useTabs',
-    label: 'Use Tabs for Indent',
-    type: 'boolean' as const,
-    default: false,
-    description: 'Indent with tabs instead of spaces (ignored when minified)',
-    showWhen: (cfg) => Number(cfg.indent ?? 2) > 0,
+    description: 'Indentation style',
   },
   {
     key: 'sortKeys',
     label: 'Sort Keys',
     type: 'boolean' as const,
     default: false,
-    description: 'Alphabetically sort object keys',
-  },
-  {
-    key: 'sortKeysCaseInsensitive',
-    label: 'Case-Insensitive Sort',
-    type: 'boolean' as const,
-    default: false,
-    description: 'Sort keys without case sensitivity',
-    showWhen: (cfg) => !!cfg.sortKeys,
+    description: 'Sort object keys alphabetically',
   },
   {
     key: 'removeComments',
     label: 'Remove Comments',
     type: 'boolean' as const,
     default: true,
-    description: 'Strip // and /* */ comments (makes invalid JSON valid)',
-  },
-  {
-    key: 'allowSingleQuotes',
-    label: 'Allow Single Quotes',
-    type: 'boolean' as const,
-    default: true,
-    description: 'Convert single-quoted strings to JSON-safe double quotes',
-  },
-  {
-    key: 'replaceSpecialNumbers',
-    label: 'Special Numbers (NaN/Infinity)',
-    type: 'select' as const,
-    default: 'none',
-    options: [
-      { value: 'none', label: 'Leave as-is (may error)' },
-      { value: 'null', label: 'Replace with null' },
-      { value: 'string', label: 'Replace with strings' },
-    ],
-    description: 'Handle NaN/Infinity tokens outside of strings',
-  },
-  {
-    key: 'inlineShortArrays',
-    label: 'Inline Short Arrays',
-    type: 'boolean' as const,
-    default: true,
-    description: 'Keep short arrays of primitives on one line',
-    showWhen: (cfg) => Number(cfg.indent ?? 2) > 0,
-  },
-  {
-    key: 'inlineArrayMaxLength',
-    label: 'Inline Array Max Items',
-    type: 'select' as const,
-    default: 5,
-    options: [
-      { value: '3', label: '3' },
-      { value: '5', label: '5' },
-      { value: '8', label: '8' },
-      { value: '12', label: '12' },
-    ],
-    description: 'Max number of primitive items to inline',
-    showWhen: (cfg) => !!cfg.inlineShortArrays && Number(cfg.indent ?? 2) > 0,
-  },
-  {
-    key: 'inlineArrayMaxLineLength',
-    label: 'Inline Array Max Line Length',
-    type: 'number' as const,
-    default: 80,
-    min: 20,
-    max: 200,
-    description: 'Limit the inline array length (characters)',
-    showWhen: (cfg) => !!cfg.inlineShortArrays && Number(cfg.indent ?? 2) > 0,
-  },
-  {
-    key: 'escapeUnicode',
-    label: 'Escape Non-ASCII (Unicode)',
-    type: 'boolean' as const,
-    default: false,
-    description: 'Escape all non-ASCII characters as Unicode sequences',
-  },
-  {
-    key: 'ensureFinalNewline',
-    label: 'Final Newline',
-    type: 'boolean' as const,
-    default: false,
-    description: 'Ensure a trailing newline at end of file',
+    description: 'Strip comments from JSONC input',
   },
   {
     key: 'validateOnly',
     label: 'Validate Only',
     type: 'boolean' as const,
     default: false,
-    description: 'Only validate JSON without formatting output',
+    description: 'Only validate without formatting',
+  },
+];
+
+// Advanced options for power users
+const ADVANCED_OPTIONS = [
+  {
+    key: 'useTabs',
+    label: 'Use Tabs',
+    type: 'boolean' as const,
+    default: false,
+    description: 'Use tabs instead of spaces',
+    showWhen: (cfg: any) => Number(cfg.indent ?? 2) > 0,
   },
   {
-    key: 'detectDuplicateKeys',
-    label: 'Detect Duplicate Keys',
+    key: 'sortKeysCaseInsensitive',
+    label: 'Case-Insensitive Sort',
+    type: 'boolean' as const,
+    default: false,
+    description: 'Ignore case when sorting keys',
+    showWhen: (cfg: any) => !!cfg.sortKeys,
+  },
+  {
+    key: 'allowSingleQuotes',
+    label: 'Allow Single Quotes',
     type: 'boolean' as const,
     default: true,
-    description: 'Report duplicate object keys (may indicate data issues)',
+    description: 'Convert single quotes to double quotes',
+  },
+  {
+    key: 'replaceSpecialNumbers',
+    label: 'Special Numbers',
+    type: 'select' as const,
+    default: 'none',
+    options: [
+      { value: 'none', label: 'Keep as-is' },
+      { value: 'null', label: 'Convert to null' },
+      { value: 'string', label: 'Convert to string' },
+    ],
+    description: 'How to handle NaN/Infinity',
+  },
+  {
+    key: 'escapeUnicode',
+    label: 'Escape Unicode',
+    type: 'boolean' as const,
+    default: false,
+    description: 'Escape non-ASCII characters',
   },
 ];
 
@@ -183,28 +141,10 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [config, setConfig] = useState<JsonFormatterConfig>(DEFAULT_CONFIG);
   const [metadata, setMetadata] = useState<Record<string, any> | undefined>();
-  const [activeTab, setActiveTab] = useState<'formatted' | 'tree' | 'jsonpath' | 'schema'>('formatted');
-  // JSONPath
-  const [pathExpr, setPathExpr] = useState<string>('$');
-  const [pathResults, setPathResults] = useState<JsonPathResult[]>([]);
-  const [pathError, setPathError] = useState<string | undefined>();
-  // Schema
-  const [schemaText, setSchemaText] = useState<string>('');
-  const [schemaResult, setSchemaResult] = useState<{ valid: boolean; errors: Array<{ path: string; message: string }> } | undefined>();
-  const [schemaParseError, setSchemaParseError] = useState<string | undefined>();
-  // Tree controls
-  const [treeExpandAllTick, setTreeExpandAllTick] = useState(0);
-  const [treeCollapseAllTick, setTreeCollapseAllTick] = useState(0);
-  const [collapseToMatchesTick, setCollapseToMatchesTick] = useState(0);
-  // Toast queue
-  const [toasts, setToasts] = useState<Array<{ id: number; text: string }>>([]);
-  const enqueueToast = useCallback((text: string) => {
-    const id = Date.now() + Math.random();
-    setToasts((prev) => [...prev, { id, text }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 1600);
-  }, []);
+  const [copied, setCopied] = useState(false);
+  const [autoFormat, setAutoFormat] = useState(true);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
 
   const { addToHistory, getConfig: getSavedConfig, updateConfig: updateSavedConfig } = useToolStore();
 
@@ -224,125 +164,123 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
     indent: parseInt(String(config.indent)) || 2,
   }), [config]);
 
-  // Debounced processing to avoid excessive re-computation
-  const debouncedProcess = useMemo(
-    () => debounce((inputText: string, cfg: JsonFormatterConfig) => {
-      if (!inputText.trim()) {
-        setOutput('');
-        setError(undefined);
-        setMetadata(undefined);
-        setIsLoading(false);
-        return;
-      }
+  // Process JSON function
+  const processJson = useCallback((inputText: string = input, cfg: JsonFormatterConfig = processedConfig) => {
+    if (!inputText.trim()) {
+      setOutput('');
+      setError(undefined);
+      setMetadata(undefined);
+      setIsLoading(false);
+      return;
+    }
 
-      setIsLoading(true);
+    setIsLoading(true);
+    
+    // Process immediately for manual format button
+    const result = formatJson(inputText, cfg);
+    
+    if (result.success) {
+      setOutput(result.output || '');
+      setError(undefined);
+      setMetadata(result.metadata);
       
-      // Small delay to show loading state
-      setTimeout(() => {
-        const result = formatJson(inputText, cfg);
-        
-        if (result.success) {
-          setOutput(result.output || '');
-          setError(undefined);
-          setMetadata(result.metadata);
-          
-          // Add to history for successful operations
-          addToHistory({
-            toolId: 'json-formatter',
-            input: inputText,
-            output: result.output || '',
-            config: cfg,
-            timestamp: Date.now(),
-          });
-        } else {
-          setOutput('');
-          setError(result.error);
-          setMetadata(undefined);
-        }
-        
-        setIsLoading(false);
-      }, 100);
-    }, 300),
-    [addToHistory]
+      // Add to history for successful operations
+      addToHistory({
+        toolId: 'json-formatter',
+        input: inputText,
+        output: result.output || '',
+        config: cfg,
+        timestamp: Date.now(),
+      });
+    } else {
+      setOutput('');
+      setError(result.error);
+      setMetadata(undefined);
+    }
+    
+    setIsLoading(false);
+  }, [input, processedConfig, addToHistory]);
+
+  // Debounced processing for auto-format
+  const debouncedProcess = useMemo(
+    () => debounce(processJson, 500),
+    [processJson]
   );
 
-  // Process input when it changes
+  // Process input when it changes (only if auto-format is enabled)
   useEffect(() => {
-    debouncedProcess(input, processedConfig);
-  }, [input, processedConfig, debouncedProcess]);
-
-  // Parsed data for Tree/JSONPath/Schema panels
-  const parsedData = useMemo(() => {
-    try {
-      if (!error && output) {
-        return JSON.parse(output);
-      }
-    } catch {}
-    return undefined;
-  }, [output, error]);
-
-  // JSONPath evaluation (debounced)
-  const runPathDebounced = useMemo(
-    () => debounce((expr: string, data: any) => {
-      if (!data || !expr || !expr.trim()) {
-        setPathResults([]);
-        setPathError(undefined);
-        return;
-      }
-      try {
-        const results = runJsonPath(data, expr.trim());
-        setPathResults(results);
-        setPathError(undefined);
-      } catch (e: any) {
-        setPathResults([]);
-        setPathError(e?.message || 'Invalid JSONPath');
-      }
-    }, 200),
-    []
-  );
-
-  useEffect(() => {
-    // Keep results up-to-date even across tabs for highlighting
-    runPathDebounced(pathExpr, parsedData);
-  }, [pathExpr, parsedData, runPathDebounced]);
-
-  // Set of matched paths for highlighting in tree
-  const matchedPaths = useMemo(() => {
-    if (!parsedData || !pathExpr || !pathExpr.trim().startsWith('$')) return new Set<string>();
-    try {
-      const results = runJsonPath(parsedData, pathExpr.trim());
-      return new Set(results.map(r => r.path));
-    } catch {
-      return new Set<string>();
+    if (autoFormat) {
+      debouncedProcess(input, processedConfig);
     }
-  }, [parsedData, pathExpr]);
+  }, [input, processedConfig, debouncedProcess, autoFormat]);
 
-  // Schema validation
-  const parseSchema = useCallback((text: string) => {
+  // Quick action handlers
+  const handleBeautify = useCallback(() => {
+    const beautifyConfig = { ...processedConfig, indent: 2, sortKeys: false };
+    setConfig(beautifyConfig);
+    processJson(input, beautifyConfig);
+  }, [input, processedConfig, processJson]);
+
+  const handleMinify = useCallback(() => {
+    const minifyConfig = { ...processedConfig, indent: 0 };
+    setConfig(minifyConfig);
+    processJson(input, minifyConfig);
+  }, [input, processedConfig, processJson]);
+
+  const handleSortKeys = useCallback(() => {
+    const sortConfig = { ...processedConfig, sortKeys: true };
+    setConfig(sortConfig);
+    processJson(input, sortConfig);
+  }, [input, processedConfig, processJson]);
+
+  // File upload handler
+  const handleFileUpload = useCallback(async (file: File) => {
     try {
-      const s = JSON.parse(text);
-      setSchemaParseError(undefined);
-      return s;
-    } catch (e: any) {
-      setSchemaParseError(e?.message || 'Invalid schema JSON');
-      return undefined;
+      const content = await file.text();
+      setInput(content);
+      if (autoFormat) {
+        processJson(content, processedConfig);
+      }
+    } catch (error) {
+      setError('Failed to read file. Please make sure it\'s a valid text file.');
     }
+  }, [autoFormat, processedConfig, processJson]);
+
+  // Drag and drop handlers
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(true);
   }, []);
 
-  useEffect(() => {
-    if (activeTab !== 'schema') return;
-    if (!schemaText || !parsedData) {
-      setSchemaResult(undefined);
-      return;
+  const handleDragLeave = useCallback(() => {
+    setDragActive(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(false);
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      handleFileUpload(files[0]);
     }
-    const s = parseSchema(schemaText);
-    if (!s) {
-      setSchemaResult(undefined);
-      return;
+  }, [handleFileUpload]);
+
+  // Copy handler
+  const handleCopy = useCallback(async () => {
+    try {
+      await copyToClipboard(output);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy:', error);
     }
-    const res = validateJsonAgainstSchema(parsedData, s);
-    setSchemaResult(res);
-  }, [schemaText, parsedData, parseSchema, activeTab]);
+  }, [output]);
+
+  // Download handler
+  const handleDownload = useCallback(() => {
+    const filename = config.indent === 0 ? 'formatted.min.json' : 'formatted.json';
+    downloadFile(output, filename, 'application/json');
+  }, [output, config.indent]);
 
   const handleInputChange = (value: string) => {
     setInput(value);
@@ -351,532 +289,315 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
   const handleConfigChange = (newConfig: JsonFormatterConfig) => {
     setConfig(newConfig);
     try { updateSavedConfig?.('json-formatter', newConfig); } catch {}
+    
+    // If not auto-formatting, don't process automatically
+    if (!autoFormat) return;
+    processJson(input, { ...processedConfig, ...newConfig });
+  };
+
+  // Essential config options handler
+  const handleEssentialConfigChange = (key: string, value: any) => {
+    const newConfig = { ...config, [key]: value };
+    handleConfigChange(newConfig);
   };
 
   return (
-    <div className={`grid grid-cols-1 lg:grid-cols-2 gap-0 ${className}`}>
-      {/* Input Panel */}
-      <div className="border-r border-gray-200 dark:border-gray-700">
-        <InputPanel
-          value={input}
-          onChange={handleInputChange}
-          label="JSON Input"
-          placeholder="Paste your JSON here..."
-          syntax="json"
-          examples={EXAMPLES}
-          accept=".json,.txt"
-        />
-        
-        {/* Options */}
-        <OptionsPanel
-          options={OPTIONS}
-          config={config}
-          onChange={handleConfigChange}
-        />
-      </div>
-
-      {/* Right Side: Tabs */}
-      <div className="flex flex-col h-full relative">
-        {/* Tabs */}
-        <div className="flex items-center border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
-          {[
-            { id: 'formatted', label: 'Formatted' },
-            { id: 'tree', label: 'Tree' },
-            { id: 'jsonpath', label: 'JSONPath' },
-            { id: 'schema', label: 'Schema' },
-          ].map((t) => (
+    <div className={`flex flex-col ${className}`}>
+      {/* Tool Header with Quick Actions */}
+      <div className="flex flex-col sm:flex-row gap-4 p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+        {/* Quick Actions */}
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={handleBeautify}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+            title="Format JSON with 2-space indentation"
+          >
+            ✨ Beautify
+          </button>
+          <button
+            onClick={handleMinify}
+            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors"
+            title="Minimize JSON to single line"
+          >
+            🗜️ Minify
+          </button>
+          <button
+            onClick={handleSortKeys}
+            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"
+            title="Sort object keys alphabetically"
+          >
+            🔤 Sort Keys
+          </button>
+          {!autoFormat && (
             <button
-              key={t.id}
-              onClick={() => setActiveTab(t.id as any)}
-              className={`px-4 py-2 -mb-px border-b-2 transition-colors ${
-                activeTab === t.id
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-blue-600'
-              }`}
+              onClick={() => processJson()}
+              disabled={!input.trim() || isLoading}
+              className="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 text-white text-sm font-medium rounded-lg transition-colors"
             >
-              {t.label}
+              {isLoading ? '⏳' : '⚡'} Format
             </button>
-          ))}
+          )}
         </div>
 
-        {/* Tab content */}
-        {activeTab === 'formatted' && (
-          <div>
-            <OutputPanel
-              value={output}
-              error={error}
-              isLoading={isLoading}
-              label="Formatted JSON"
-              syntax="json"
-              showLineNumbers={true}
-              downloadFilename="formatted.json"
-              downloadContentType="application/json"
-              onOpenInNewTab={() => {
-                try {
-                  const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-                  sessionStorage.setItem(`ffh.json.${id}`, output || '');
-                  const base = (import.meta as any).env?.BASE_URL || '/';
-                  const url = `${base.replace(/\/$/, '')}/viewer/json?id=${encodeURIComponent(id)}`;
-                  window.open(url, '_blank');
-                } catch (e) {
-                  // no-op
-                }
-              }}
-              openButtonLabel="Open viewer"
+        {/* Auto-format toggle */}
+        <div className="flex items-center gap-2 ml-auto">
+          <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <input
+              type="checkbox"
+              checked={autoFormat}
+              onChange={(e) => setAutoFormat(e.target.checked)}
+              className="rounded"
             />
+            Auto-format
+          </label>
+        </div>
+      </div>
 
-            {/* Analysis panel */}
-            {metadata && !error && !isLoading && (
-              <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-xs text-gray-700 dark:text-gray-300">
-                <div className="flex flex-wrap gap-x-6 gap-y-2">
-                  {metadata.type && <span><strong>Type:</strong> {metadata.type}</span>}
-                  {typeof metadata.depth === 'number' && <span><strong>Depth:</strong> {metadata.depth}</span>}
-                  {typeof metadata.topLevelKeys === 'number' && metadata.type === 'object' && (
-                    <span><strong>Top-level keys:</strong> {metadata.topLevelKeys}</span>
-                  )}
-                  {typeof metadata.topLevelLength === 'number' && metadata.type === 'array' && (
-                    <span><strong>Top-level length:</strong> {metadata.topLevelLength}</span>
-                  )}
-                  {typeof metadata.originalSize === 'number' && typeof metadata.formattedSize === 'number' && (
-                    <span>
-                      <strong>Size:</strong> {metadata.formattedSize} chars ({metadata.compressionRatio}% delta)
-                    </span>
-                  )}
-                  {typeof metadata.duplicateCount === 'number' && (
-                    <span className={metadata.duplicateCount > 0 ? 'text-red-600 dark:text-red-400' : ''}>
-                      <strong>Duplicate keys:</strong> {metadata.duplicateCount}
-                    </span>
-                  )}
-                  {typeof metadata.processingTimeMs === 'number' && (
-                    <span><strong>Processed:</strong> {Math.round(metadata.processingTimeMs)} ms</span>
-                  )}
-                </div>
-                {Array.isArray(metadata.duplicates) && metadata.duplicates.length > 0 && (
-                  <div className="mt-2 text-[11px] text-red-700 dark:text-red-300">
-                    <div className="font-medium">Duplicate keys detected (last occurrence wins):</div>
-                    <ul className="list-disc ml-5 mt-1 space-y-0.5">
-                      {metadata.duplicates.slice(0, 5).map((d: any, idx: number) => (
-                        <li key={idx}>{d.path ? d.path + '.' : ''}{d.key} @ line {d.line}, col {d.column}</li>
-                      ))}
-                      {metadata.duplicates.length > 5 && (
-                        <li>...and {metadata.duplicates.length - 5} more</li>
-                      )}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-        {activeTab === 'tree' && (
-          <div className="bg-white dark:bg-gray-800">
-            <div className="flex items-center justify-between p-2 border-b border-gray-200 dark:border-gray-700 text-xs">
-              <div className="flex items-center gap-2">
-                <button onClick={() => setTreeExpandAllTick(t => t + 1)} className="px-2 py-1 rounded border bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600">Expand all</button>
-                <button onClick={() => setTreeCollapseAllTick(t => t + 1)} className="px-2 py-1 rounded border bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600">Collapse all</button>
-                <button
-                  onClick={() => setCollapseToMatchesTick(t => t + 1)}
-                  disabled={!parsedData || matchedPaths.size === 0}
-                  className={`px-2 py-1 rounded border ${matchedPaths.size === 0 ? 'bg-gray-50 dark:bg-gray-900 text-gray-400 border-gray-200 dark:border-gray-700' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}`}
-                  title="Collapse all non-matching branches"
-                >
-                  Collapse to matches
-                </button>
-              </div>
-              <div className="flex-1 flex items-center justify-end gap-2">
+      {/* Main Content */}
+      <div className="flex flex-col lg:flex-row flex-1 min-h-[600px]">
+        {/* Input Section */}
+        <div className="flex-1 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700">
+          {/* Input Header */}
+          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              JSON Input
+            </h3>
+            <div className="flex items-center gap-2">
+              <label className="cursor-pointer text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded border transition-colors">
+                📁 Upload
                 <input
-                  value={pathExpr}
-                  onChange={(e) => setPathExpr(e.target.value)}
-                  placeholder="JSONPath e.g. $.store.book[*].author"
-                  className="min-w-[200px] max-w-[360px] flex-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  type="file"
+                  accept=".json,.txt"
+                  className="hidden"
+                  onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
                 />
-                {pathError ? (
-                  <span className="text-red-600 dark:text-red-400">{pathError}</span>
-                ) : (
-                  <span className="text-gray-500 dark:text-gray-400">Matches: {matchedPaths.size}</span>
-                )}
-              </div>
-            </div>
-            {parsedData ? (
-              <JsonTree
-                data={parsedData}
-                highlightPaths={matchedPaths}
-                expandAllSignal={treeExpandAllTick}
-                collapseAllSignal={treeCollapseAllTick}
-                focusSignal={collapseToMatchesTick}
-                focusPaths={matchedPaths}
-                onCopyFeedback={(msg) => {
-                  enqueueToast(msg || 'Copied!');
-                }}
-              />
-            ) : (
-              <div className="p-4 text-sm text-gray-500 dark:text-gray-400">Provide valid JSON to view the tree.</div>
-            )}
-          </div>
-        )}
-
-        {activeTab === 'jsonpath' && (
-          <div className="bg-white dark:bg-gray-800">
-            <div className="flex items-center gap-2 p-4 border-b border-gray-200 dark:border-gray-700">
-              <label className="text-sm text-gray-700 dark:text-gray-300">Path:</label>
-              <input
-                value={pathExpr}
-                onChange={(e) => setPathExpr(e.target.value)}
-                placeholder="$.store.book[*].author"
-                className="flex-1 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <span className="text-xs text-gray-500 dark:text-gray-400">{pathResults.length} result(s)</span>
-            </div>
-            {!parsedData && (
-              <div className="p-4 text-sm text-gray-500 dark:text-gray-400">Provide valid JSON to run queries.</div>
-            )}
-            {parsedData && pathError && (
-              <div className="p-4 text-sm text-red-600 dark:text-red-400">{pathError}</div>
-            )}
-            {parsedData && !pathError && (
-              <div className="p-2">
-                {pathResults.length === 0 ? (
-                  <div className="p-4 text-sm text-gray-500 dark:text-gray-400">No results.</div>
-                ) : (
-                  <div className="max-h-[480px] overflow-auto divide-y divide-gray-200 dark:divide-gray-700">
-                    {pathResults.slice(0, 500).map((r, idx) => (
-                      <div key={idx} className="p-3 text-sm font-mono">
-                        <div className="text-blue-700 dark:text-blue-300 break-all">{r.path}</div>
-                        <pre className="mt-1 text-xs whitespace-pre-wrap break-words text-gray-800 dark:text-gray-100">{JSON.stringify(r.value, null, 2)}</pre>
-                      </div>
-                    ))}
-                    {pathResults.length > 500 && (
-                      <div className="p-2 text-xs text-gray-500">Showing first 500 of {pathResults.length} results</div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-        {activeTab === 'schema' && (
-          <div className="bg-white dark:bg-gray-800">
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-              <div className="text-sm text-gray-700 dark:text-gray-300">Paste a JSON Schema to validate the current JSON.</div>
-              <label className="text-xs cursor-pointer bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded border text-gray-700 dark:text-gray-300">
-                Upload Schema
-                <input type="file" accept=".json" className="hidden" onChange={async (e) => {
-                  const f = e.target.files?.[0];
-                  if (!f) return;
-                  try {
-                    const text = await f.text();
-                    setSchemaText(text);
-                  } catch {}
-                }} />
               </label>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2">
-              <div className="border-r border-gray-200 dark:border-gray-700">
-                <textarea
-                  value={schemaText}
-                  onChange={(e) => setSchemaText(e.target.value)}
-                  placeholder={`{
-  "type": "object",
-  "properties": {
-    "name": { "type": "string" }
-  },
-  "required": ["name"]
-}`}
-                  rows={14}
-                  className="w-full p-3 text-sm font-mono bg-transparent border-none resize-none text-gray-900 dark:text-gray-100 focus:outline-none"
-                />
-                {schemaParseError && (
-                  <div className="px-3 pb-3 text-xs text-red-600 dark:text-red-400">Schema parse error: {schemaParseError}</div>
-                )}
-              </div>
-              <div>
-                {!parsedData ? (
-                  <div className="p-4 text-sm text-gray-500 dark:text-gray-400">Provide valid JSON to validate.</div>
-                ) : !schemaText ? (
-                  <div className="p-4 text-sm text-gray-500 dark:text-gray-400">Paste or upload a JSON Schema.</div>
-                ) : schemaResult ? (
-                  <div className="p-3 text-sm">
-                    {schemaResult.valid ? (
-                      <div className="text-green-700 dark:text-green-400">Valid ✓</div>
-                    ) : (
-                      <div>
-                        <div className="text-red-700 dark:text-red-400 mb-2">{schemaResult.errors.length} error(s):</div>
-                        <ul className="text-xs space-y-1">
-                          {schemaResult.errors.slice(0, 200).map((e, idx) => (
-                            <li key={idx} className="break-words"><span className="text-gray-500">{e.path}:</span> {e.message}</li>
-                          ))}
-                          {schemaResult.errors.length > 200 && (
-                            <li>...and {schemaResult.errors.length - 200} more</li>
-                          )}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="p-4 text-sm text-gray-500 dark:text-gray-400">Validating...</div>
-                )}
-              </div>
+              {input && (
+                <button
+                  onClick={() => setInput('')}
+                  className="text-xs px-3 py-1 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                  title="Clear input"
+                >
+                  🗑️ Clear
+                </button>
+              )}
             </div>
           </div>
-        )}
-        {/* Toast */}
-        {toasts.length > 0 && (
-          <div className="absolute bottom-3 right-3 flex flex-col gap-2">
-            {toasts.map((t) => (
-              <div key={t.id} className="px-3 py-2 rounded shadow bg-gray-900 text-white text-xs flex items-center gap-2">
-                <svg className="w-3.5 h-3.5 text-green-400" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a1 1 0 00-1.414-1.414L9 10.586 7.557 9.143a1 1 0 10-1.414 1.414l2 2a1 1 0 001.414 0l4.3-4.366z" clipRule="evenodd"/></svg>
-                <span>{t.text}</span>
+
+          {/* Input Textarea */}
+          <div 
+            className={`flex-1 relative ${dragActive ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Paste your JSON here or drag & drop a file..."
+              className="w-full h-full p-4 resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-mono text-sm border-none focus:outline-none focus:ring-0"
+              spellCheck={false}
+            />
+            {dragActive && (
+              <div className="absolute inset-0 flex items-center justify-center bg-blue-50/80 dark:bg-blue-900/40 backdrop-blur-sm">
+                <div className="text-blue-600 dark:text-blue-400 text-lg font-medium">
+                  Drop JSON file here
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Example buttons */}
+          <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex flex-wrap gap-2">
+              <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">Examples:</span>
+              {EXAMPLES.map((example, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setInput(example.value)}
+                  className="text-xs px-2 py-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-colors"
+                  title={example.title}
+                >
+                  {example.title}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Output Section */}
+        <div className="flex-1 flex flex-col">
+          {/* Output Header */}
+          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              Formatted JSON
+              {isLoading && <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">Processing...</span>}
+              {!error && output && <span className="ml-2 text-xs text-green-600 dark:text-green-400">✓ Valid</span>}
+              {error && <span className="ml-2 text-xs text-red-600 dark:text-red-400">✗ Invalid</span>}
+            </h3>
+            <div className="flex items-center gap-2">
+              {output && (
+                <>
+                  <button
+                    onClick={handleCopy}
+                    className={`text-xs px-3 py-1 rounded border transition-colors ${
+                      copied 
+                        ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border-green-300 dark:border-green-600'
+                        : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
+                    }`}
+                  >
+                    {copied ? '✓ Copied' : '📋 Copy'}
+                  </button>
+                  <button
+                    onClick={handleDownload}
+                    className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded border border-gray-300 dark:border-gray-600 transition-colors"
+                  >
+                    💾 Download
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Output Content */}
+          <div className="flex-1 bg-white dark:bg-gray-800">
+            {error ? (
+              <div className="p-4 h-full">
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                  <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">JSON Error</h4>
+                  <pre className="text-xs text-red-700 dark:text-red-300 whitespace-pre-wrap font-mono">
+                    {error}
+                  </pre>
+                </div>
+              </div>
+            ) : (
+              <div className="h-full flex flex-col">
+                <textarea
+                  value={output}
+                  readOnly
+                  placeholder="Formatted JSON will appear here..."
+                  className="flex-1 p-4 resize-none bg-transparent text-gray-900 dark:text-gray-100 font-mono text-sm border-none focus:outline-none"
+                  spellCheck={false}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Simplified metadata */}
+          {metadata && !error && output && (
+            <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex flex-wrap gap-4 text-xs text-gray-600 dark:text-gray-400">
+                {metadata.type && (
+                  <span><strong>Type:</strong> {metadata.type}</span>
+                )}
+                {typeof metadata.formattedSize === 'number' && (
+                  <span><strong>Size:</strong> {metadata.formattedSize} chars</span>
+                )}
+                {typeof metadata.duplicateCount === 'number' && metadata.duplicateCount > 0 && (
+                  <span className="text-amber-600 dark:text-amber-400">
+                    <strong>⚠️ Duplicate keys:</strong> {metadata.duplicateCount}
+                  </span>
+                )}
+                {typeof metadata.processingTimeMs === 'number' && (
+                  <span><strong>Time:</strong> {Math.round(metadata.processingTimeMs)}ms</span>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Essential Options Panel */}
+      <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">Options</h4>
+            <button
+              onClick={() => setShowAdvanced(!showAdvanced)}
+              className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+            >
+              {showAdvanced ? '△ Less' : '▽ More'}
+            </button>
+          </div>
+          
+          {/* Essential options */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {ESSENTIAL_OPTIONS.map((option) => (
+              <div key={option.key} className="space-y-1">
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                  {option.label}
+                </label>
+                {option.type === 'boolean' ? (
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={!!config[option.key as keyof JsonFormatterConfig]}
+                      onChange={(e) => handleEssentialConfigChange(option.key, e.target.checked)}
+                      className="rounded"
+                    />
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      {option.description}
+                    </span>
+                  </label>
+                ) : option.type === 'select' ? (
+                  <select
+                    value={String(config[option.key as keyof JsonFormatterConfig] ?? option.default)}
+                    onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
+                    className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  >
+                    {option.options?.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                ) : null}
               </div>
             ))}
           </div>
-        )}
-      </div>
-    </div>
-  );
-}
 
-// Simple collapsible JSON tree view
-function JsonTree({ data, highlightPaths, expandAllSignal, collapseAllSignal, focusPaths, focusSignal, onCopyFeedback }: { data: any; highlightPaths?: Set<string>; expandAllSignal?: number; collapseAllSignal?: number; focusPaths?: Set<string>; focusSignal?: number; onCopyFeedback?: (msg: string) => void }) {
-  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
-
-  // Expand/collapse all via signals
-  useEffect(() => {
-    // expand all
-    setCollapsed(new Set());
-  }, [expandAllSignal]);
-
-  useEffect(() => {
-    // collapse all: collect container paths
-    const all = new Set<string>();
-    const walk = (node: any, path: string) => {
-      if (node && typeof node === 'object') {
-        all.add(path);
-        if (Array.isArray(node)) {
-          for (let i = 0; i < node.length; i++) walk(node[i], `${path}[${i}]`);
-        } else {
-          for (const [k, v] of Object.entries(node)) walk(v, `${path}.${k}`);
-        }
-      }
-    };
-    walk(data, '$');
-    setCollapsed(all);
-  }, [collapseAllSignal, data]);
-
-  // Collapse to focus (matches)
-  useEffect(() => {
-    if (!focusPaths || focusPaths.size === 0) return;
-    // Start collapsed on all containers
-    const all = new Set<string>();
-    const walk = (node: any, path: string) => {
-      if (node && typeof node === 'object') {
-        all.add(path);
-        if (Array.isArray(node)) {
-          for (let i = 0; i < node.length; i++) walk(node[i], `${path}[${i}]`);
-        } else {
-          for (const [k, v] of Object.entries(node)) walk(v, `${path}.${k}`);
-        }
-      }
-    };
-    walk(data, '$');
-
-    const open = new Set<string>();
-    const addAncestors = (p: string) => {
-      let cur = p;
-      while (cur && cur !== '$') {
-        open.add(cur);
-        // parent
-        if (cur.endsWith(']')) {
-          const i = cur.lastIndexOf('[');
-          cur = i > -1 ? cur.slice(0, i) : '$';
-          continue;
-        }
-        const j = cur.lastIndexOf('.');
-        cur = j > -1 ? cur.slice(0, j) : '$';
-      }
-      open.add('$');
-    };
-    focusPaths.forEach((p) => addAncestors(p));
-
-    // Remove all open paths from collapsed set
-    open.forEach((p) => all.delete(p));
-    setCollapsed(all);
-  }, [focusSignal, focusPaths, data]);
-
-  const toggle = (p: string) => {
-    setCollapsed(prev => {
-      const next = new Set(prev);
-      if (next.has(p)) next.delete(p); else next.add(p);
-      return next;
-    });
-  };
-
-  return (
-    <div className="p-3 max-h-[640px] overflow-auto text-sm font-mono">
-      <TreeNode data={data} path="$" level={0} collapsed={collapsed} toggle={toggle} highlightPaths={highlightPaths} onCopyFeedback={onCopyFeedback} />
-    </div>
-  );
-}
-
-function TreeNode({ data, path, level, collapsed, toggle, highlightPaths, onCopyFeedback }: { data: any; path: string; level: number; collapsed: Set<string>; toggle: (p: string) => void; highlightPaths?: Set<string>; onCopyFeedback?: (msg: string) => void }) {
-  const isObj = data && typeof data === 'object' && !Array.isArray(data);
-  const isArr = Array.isArray(data);
-  const indent = { paddingLeft: `${level * 16}px` } as const;
-  const isCollapsed = collapsed.has(path);
-  const isHighlighted = !!highlightPaths && highlightPaths.has(path);
-  const copyPath = async (p: string) => {
-    try { await copyToClipboard(p); onCopyFeedback?.('Path copied'); } catch { onCopyFeedback?.('Copy failed'); }
-  };
-  const copyValue = async (v: any) => {
-    try { await copyToClipboard(safeStringify(v)); onCopyFeedback?.('Value copied'); } catch { onCopyFeedback?.('Copy failed'); }
-  };
-  const pressTimer = useRef<any>(null);
-  const longPressFired = useRef(false);
-  const startLongPress = (val: any) => {
-    clearTimeout(pressTimer.current);
-    longPressFired.current = false;
-    pressTimer.current = setTimeout(() => {
-      longPressFired.current = true;
-      copyValue(val);
-    }, 600);
-  };
-  const endLongPress = () => {
-    clearTimeout(pressTimer.current);
-    // No action here; click handler will check longPressFired
-  };
-
-  if (!isObj && !isArr) {
-    return (
-      <div style={indent} className={`py-0.5 ${isHighlighted ? 'bg-yellow-50 dark:bg-yellow-900/30' : ''}`}>
-        <span
-          className="text-gray-500 cursor-pointer hover:underline"
-          title="Click to copy path (long-press to copy value)"
-          onMouseDown={() => startLongPress(data)}
-          onMouseUp={endLongPress}
-          onMouseLeave={endLongPress}
-          onTouchStart={() => startLongPress(data)}
-          onTouchEnd={endLongPress}
-          onTouchCancel={endLongPress}
-          onClick={() => {
-            if (longPressFired.current) { longPressFired.current = false; return; }
-            copyPath(path);
-          }}
-        >
-          {formatKey(path)}
-        </span>: <Value value={data} />
-        <span className="ml-2 inline-flex gap-1">
-          <SmallBtn onClick={() => copyPath(path)}>Copy path</SmallBtn>
-          <SmallBtn onClick={() => copyValue(data)}>Copy value</SmallBtn>
-        </span>
-      </div>
-    );
-  }
-
-  const entries = isArr ? data.map((v: any, i: number) => [i, v]) : Object.entries(data);
-  const summary = isArr ? `[${entries.length}]` : `{${entries.length}}`;
-
-  return (
-    <div>
-      <div style={indent} className={`py-0.5 ${isHighlighted ? 'bg-yellow-50 dark:bg-yellow-900/30' : ''}`}>
-        <button onClick={() => toggle(path)} className="mr-1 text-xs w-5 inline-flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300">
-          {isCollapsed ? '+' : '-'}
-        </button>
-        <span
-          className="text-blue-700 dark:text-blue-300 cursor-pointer hover:underline"
-          title="Click to copy path (long-press to copy value)"
-          onMouseDown={() => startLongPress(data)}
-          onMouseUp={endLongPress}
-          onMouseLeave={endLongPress}
-          onTouchStart={() => startLongPress(data)}
-          onTouchEnd={endLongPress}
-          onTouchCancel={endLongPress}
-          onClick={() => {
-            if (longPressFired.current) { longPressFired.current = false; return; }
-            copyPath(path);
-          }}
-        >
-          {formatKey(path)}
-        </span> <span className="text-gray-500">{summary}</span>
-        <span className="ml-2 inline-flex gap-1">
-          <SmallBtn onClick={() => copyPath(path)}>Copy path</SmallBtn>
-          <SmallBtn onClick={() => copyValue(data)}>Copy value</SmallBtn>
-        </span>
-      </div>
-      {!isCollapsed && (
-        <div>
-          {entries.map(([k, v]: any) => (
-            <div key={k}>
-              {(() => {
-                const childPath = `${path}${isArr ? `[${k}]` : `.${k}`}`;
-                const childHighlighted = !!highlightPaths && highlightPaths.has(childPath);
-                return (
-                  <div style={{ paddingLeft: `${(level + 1) * 16}px` }} className={`py-0.5 ${childHighlighted ? 'bg-yellow-50 dark:bg-yellow-900/30' : ''}`}>
-                    <span
-                      className="text-gray-500 cursor-pointer hover:underline"
-                      title="Click to copy path (long-press to copy value)"
-                      onMouseDown={() => startLongPress(v)}
-                      onMouseUp={endLongPress}
-                      onMouseLeave={endLongPress}
-                      onTouchStart={() => startLongPress(v)}
-                      onTouchEnd={endLongPress}
-                      onTouchCancel={endLongPress}
-                      onClick={() => {
-                        if (longPressFired.current) { longPressFired.current = false; return; }
-                        copyPath(childPath);
-                      }}
-                    >
-                      {String(k)}
-                    </span>
-                    {isPrimitive(v) ? (
-                      <span>: <Value value={v} /></span>
+          {/* Advanced options */}
+          {showAdvanced && (
+            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <h5 className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">Advanced Options</h5>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {ADVANCED_OPTIONS.filter(option => !option.showWhen || option.showWhen(config)).map((option) => (
+                  <div key={option.key} className="space-y-1">
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                      {option.label}
+                    </label>
+                    {option.type === 'boolean' ? (
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={!!config[option.key as keyof JsonFormatterConfig]}
+                          onChange={(e) => handleEssentialConfigChange(option.key, e.target.checked)}
+                          className="rounded"
+                        />
+                        <span className="text-xs text-gray-600 dark:text-gray-400">
+                          {option.description}
+                        </span>
+                      </label>
+                    ) : option.type === 'select' ? (
+                      <select
+                        value={String(config[option.key as keyof JsonFormatterConfig] ?? option.default)}
+                        onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
+                        className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      >
+                        {option.options?.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
                     ) : null}
-                    <span className="ml-2 inline-flex gap-1">
-                      <SmallBtn onClick={() => copyPath(childPath)}>Copy path</SmallBtn>
-                      <SmallBtn onClick={() => copyValue(v)}>Copy value</SmallBtn>
-                    </span>
                   </div>
-                );
-              })()}
-              {!isPrimitive(v) && (
-                <TreeNode data={v} path={`${path}${isArr ? `[${k}]` : `.${k}`}`} level={level + 1} collapsed={collapsed} toggle={toggle} highlightPaths={highlightPaths} />
-              )}
+                ))}
+              </div>
             </div>
-          ))}
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
-}
-
-function isPrimitive(v: any) { return v === null || typeof v !== 'object'; }
-function formatKey(path: string) {
-  if (path === '$') return '$';
-  const m = path.match(/[^.\[]+$/);
-  return m ? m[0] : path;
-}
-function Value({ value }: { value: any }) {
-  if (value === null) return <span className="text-purple-600">null</span> as any;
-  switch (typeof value) {
-    case 'string': return <span className="text-green-700 dark:text-green-400">"{value}"</span> as any;
-    case 'number': return <span className="text-orange-600">{String(value)}</span> as any;
-    case 'boolean': return <span className="text-indigo-600">{String(value)}</span> as any;
-    default: return <span>{String(value)}</span> as any;
-  }
-}
-
-function SmallBtn({ onClick, children }: { onClick: () => void; children: any }) {
-  return (
-    <button onClick={onClick} className="px-1.5 py-0.5 text-[10px] rounded border bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600">
-      {children}
-    </button>
-  ) as any;
-}
-
-function safeStringify(v: any): string {
-  try {
-    return JSON.stringify(v, null, 2);
-  } catch {
-    try { return String(v); } catch { return ''; }
-  }
 }
