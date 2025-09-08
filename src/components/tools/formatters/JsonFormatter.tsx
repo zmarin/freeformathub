@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { InputPanel, OutputPanel } from '../../ui';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { InputPanel, OutputPanel, OptionsPanel } from '../../ui';
 import { formatJson, type JsonFormatterConfig } from '../../../tools/formatters/json-formatter';
 import { useToolStore } from '../../../lib/store';
 import { debounce, copyToClipboard } from '../../../lib/utils';
@@ -9,14 +9,6 @@ import { validateJsonAgainstSchema } from '../../../lib/utils/jsonSchema';
 interface JsonFormatterProps {
   className?: string;
 }
-
-const DEFAULT_SCHEMA_PLACEHOLDER = `{
-  "type": "object",
-  "properties": {
-    "name": { "type": "string" }
-  },
-  "required": ["name"]
-}`;
 
 const DEFAULT_CONFIG: JsonFormatterConfig = {
   indent: 2,
@@ -351,10 +343,7 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
   };
 
   return (
-    <div className={`${className}`}>
-      <CompactOptionsBar config={config} onChange={handleConfigChange} />
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+    <div className={`grid grid-cols-1 lg:grid-cols-2 gap-0 ${className}`}>
       {/* Input Panel */}
       <div className="border-r border-gray-200 dark:border-gray-700">
         <InputPanel
@@ -366,9 +355,18 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
           examples={EXAMPLES}
           accept=".json,.txt"
         />
+        
+        {/* Options */}
+        <OptionsPanel
+          options={OPTIONS}
+          config={config}
+          onChange={handleConfigChange}
+        />
       </div>
 
+      {/* Right Side: Tabs */}
       <div className="flex flex-col h-full relative">
+        {/* Tabs */}
         <div className="flex items-center border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
           {[
             { id: 'formatted', label: 'Formatted' },
@@ -379,15 +377,18 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
             <button
               key={t.id}
               onClick={() => setActiveTab(t.id as any)}
-              className={(activeTab === t.id
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-blue-600') + ' px-4 py-2 -mb-px border-b-2 transition-colors'}
+              className={`px-4 py-2 -mb-px border-b-2 transition-colors ${
+                activeTab === t.id
+                  ? 'border-blue-600 text-blue-600'
+                  : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-blue-600'
+              }`}
             >
               {t.label}
             </button>
           ))}
         </div>
 
+        {/* Tab content */}
         {activeTab === 'formatted' && (
           <div>
             <OutputPanel
@@ -401,6 +402,7 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
               downloadContentType="application/json"
             />
 
+            {/* Analysis panel */}
             {metadata && !error && !isLoading && (
               <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-xs text-gray-700 dark:text-gray-300">
                 <div className="flex flex-wrap gap-x-6 gap-y-2">
@@ -447,9 +449,7 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
                 <button
                   onClick={() => setCollapseToMatchesTick(t => t + 1)}
                   disabled={!parsedData || matchedPaths.size === 0}
-                  className={(matchedPaths.size === 0
-                    ? 'bg-gray-50 dark:bg-gray-900 text-gray-400 border-gray-200 dark:border-gray-700'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600') + ' px-2 py-1 rounded border'}
+                  className={`px-2 py-1 rounded border ${matchedPaths.size === 0 ? 'bg-gray-50 dark:bg-gray-900 text-gray-400 border-gray-200 dark:border-gray-700' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}`}
                   title="Collapse all non-matching branches"
                 >
                   Collapse to matches
@@ -515,8 +515,73 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
           </div>
         )}
 
-        {activeTab === 'schema' && (<div className="p-4 text-sm text-gray-500 dark:text-gray-400">Schema panel disabled temporarily.</div>)}
-        {toasts.length > 0 ? (
+        {activeTab === 'schema' && (
+          <div className="bg-white dark:bg-gray-800">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+              <div className="text-sm text-gray-700 dark:text-gray-300">Paste a JSON Schema to validate the current JSON.</div>
+              <label className="text-xs cursor-pointer bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded border text-gray-700 dark:text-gray-300">
+                Upload Schema
+                <input type="file" accept=".json" className="hidden" onChange={async (e) => {
+                  const f = e.target.files?.[0];
+                  if (!f) return;
+                  try {
+                    const text = await f.text();
+                    setSchemaText(text);
+                  } catch {}
+                }} />
+              </label>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2">
+              <div className="border-r border-gray-200 dark:border-gray-700">
+                <textarea
+                  value={schemaText}
+                  onChange={(e) => setSchemaText(e.target.value)}
+                  placeholder={`{
+  "type": "object",
+  "properties": {
+    "name": { "type": "string" }
+  },
+  "required": ["name"]
+}`}
+                  rows={14}
+                  className="w-full p-3 text-sm font-mono bg-transparent border-none resize-none text-gray-900 dark:text-gray-100 focus:outline-none"
+                />
+                {schemaParseError && (
+                  <div className="px-3 pb-3 text-xs text-red-600 dark:text-red-400">Schema parse error: {schemaParseError}</div>
+                )}
+              </div>
+              <div>
+                {!parsedData ? (
+                  <div className="p-4 text-sm text-gray-500 dark:text-gray-400">Provide valid JSON to validate.</div>
+                ) : !schemaText ? (
+                  <div className="p-4 text-sm text-gray-500 dark:text-gray-400">Paste or upload a JSON Schema.</div>
+                ) : schemaResult ? (
+                  <div className="p-3 text-sm">
+                    {schemaResult.valid ? (
+                      <div className="text-green-700 dark:text-green-400">Valid ✓</div>
+                    ) : (
+                      <div>
+                        <div className="text-red-700 dark:text-red-400 mb-2">{schemaResult.errors.length} error(s):</div>
+                        <ul className="text-xs space-y-1">
+                          {schemaResult.errors.slice(0, 200).map((e, idx) => (
+                            <li key={idx} className="break-words"><span className="text-gray-500">{e.path}:</span> {e.message}</li>
+                          ))}
+                          {schemaResult.errors.length > 200 && (
+                            <li>...and {schemaResult.errors.length - 200} more</li>
+                          )}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="p-4 text-sm text-gray-500 dark:text-gray-400">Validating...</div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+        {/* Toast */}
+        {toasts.length > 0 && (
           <div className="absolute bottom-3 right-3 flex flex-col gap-2">
             {toasts.map((t) => (
               <div key={t.id} className="px-3 py-2 rounded shadow bg-gray-900 text-white text-xs flex items-center gap-2">
@@ -525,24 +590,14 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
               </div>
             ))}
           </div>
-        ) : null}
+        )}
       </div>
     </div>
   );
 }
 
 // Simple collapsible JSON tree view
-type JsonTreeProps = {
-  data: any;
-  highlightPaths?: Set<string>;
-  expandAllSignal?: number;
-  collapseAllSignal?: number;
-  focusPaths?: Set<string>;
-  focusSignal?: number;
-  onCopyFeedback?: (msg: string) => void;
-};
-
-function JsonTree({ data, highlightPaths, expandAllSignal, collapseAllSignal, focusPaths, focusSignal, onCopyFeedback }: JsonTreeProps) {
+function JsonTree({ data, highlightPaths, expandAllSignal, collapseAllSignal, focusPaths, focusSignal, onCopyFeedback }: { data: any; highlightPaths?: Set<string>; expandAllSignal?: number; collapseAllSignal?: number; focusPaths?: Set<string>; focusSignal?: number; onCopyFeedback?: (msg: string) => void }) {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
 
   // Expand/collapse all via signals
@@ -652,7 +707,7 @@ function TreeNode({ data, path, level, collapsed, toggle, highlightPaths, onCopy
 
   if (!isObj && !isArr) {
     return (
-      <div style={indent} className={(isHighlighted ? 'bg-yellow-50 dark:bg-yellow-900/30 ' : '') + 'py-0.5'}>
+      <div style={indent} className={`py-0.5 ${isHighlighted ? 'bg-yellow-50 dark:bg-yellow-900/30' : ''}`}>
         <span
           className="text-gray-500 cursor-pointer hover:underline"
           title="Click to copy path (long-press to copy value)"
@@ -682,7 +737,7 @@ function TreeNode({ data, path, level, collapsed, toggle, highlightPaths, onCopy
 
   return (
     <div>
-      <div style={indent} className={(isHighlighted ? 'bg-yellow-50 dark:bg-yellow-900/30 ' : '') + 'py-0.5'}>
+      <div style={indent} className={`py-0.5 ${isHighlighted ? 'bg-yellow-50 dark:bg-yellow-900/30' : ''}`}>
         <button onClick={() => toggle(path)} className="mr-1 text-xs w-5 inline-flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300">
           {isCollapsed ? '+' : '-'}
         </button>
@@ -715,7 +770,7 @@ function TreeNode({ data, path, level, collapsed, toggle, highlightPaths, onCopy
                 const childPath = `${path}${isArr ? `[${k}]` : `.${k}`}`;
                 const childHighlighted = !!highlightPaths && highlightPaths.has(childPath);
                 return (
-                  <div style={{ paddingLeft: `${(level + 1) * 16}px` }} className={(childHighlighted ? 'bg-yellow-50 dark:bg-yellow-900/30 ' : '') + 'py-0.5'}>
+                  <div style={{ paddingLeft: `${(level + 1) * 16}px` }} className={`py-0.5 ${childHighlighted ? 'bg-yellow-50 dark:bg-yellow-900/30' : ''}`}>
                     <span
                       className="text-gray-500 cursor-pointer hover:underline"
                       title="Click to copy path (long-press to copy value)"
@@ -783,113 +838,4 @@ function safeStringify(v: any): string {
   } catch {
     try { return String(v); } catch { return ''; }
   }
-}
-
-// Compact toolbar component (core options + advanced disclosure)
-function CompactOptionsBar({
-  config,
-  onChange,
-}: {
-  config: JsonFormatterConfig;
-  onChange: (cfg: JsonFormatterConfig) => void;
-}) {
-  const set = (k: keyof JsonFormatterConfig, v: any) => onChange({ ...config, [k]: v });
-  const num = (v: any, d: number) => {
-    const n = parseInt(String(v));
-    return Number.isFinite(n) ? n : d;
-  };
-
-  return (
-    <div className="sticky top-0 z-10 bg-white/70 dark:bg-gray-900/70 backdrop-blur border-b border-gray-200 dark:border-gray-700">
-      <div className="flex flex-wrap items-center gap-3 p-3 text-sm">
-        <div className="flex items-center gap-2">
-          <label className="text-gray-600 dark:text-gray-300">Indent</label>
-          <select
-            value={String(config.indent)}
-            onChange={(e) => set('indent', num(e.target.value, 2))}
-            className="px-2 py-1 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-          >
-            <option value="0">Minified</option>
-            <option value="2">2</option>
-            <option value="4">4</option>
-            <option value="8">8</option>
-          </select>
-          {config.indent > 0 && (
-            <label className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-300">
-              <input type="checkbox" checked={!!config.useTabs} onChange={(e) => set('useTabs', e.target.checked)} /> Tabs
-            </label>
-          )}
-        </div>
-
-        <label className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-300">
-          <input type="checkbox" checked={!!config.sortKeys} onChange={(e) => set('sortKeys', e.target.checked)} /> Sort keys
-        </label>
-
-        {config.sortKeys && (
-          <label className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-300">
-            <input type="checkbox" checked={!!config.sortKeysCaseInsensitive} onChange={(e) => set('sortKeysCaseInsensitive', e.target.checked)} /> Case-insensitive
-          </label>
-        )}
-
-        <label className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-300">
-          <input type="checkbox" checked={!!config.removeComments} onChange={(e) => set('removeComments', e.target.checked)} /> Comments
-        </label>
-
-        <label className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-300">
-          <input type="checkbox" checked={!!config.allowSingleQuotes} onChange={(e) => set('allowSingleQuotes', e.target.checked)} /> Single quotes
-        </label>
-
-        <details className="ml-auto">
-          <summary className="cursor-pointer select-none text-gray-600 dark:text-gray-300">Advanced</summary>
-          <div className="mt-2 flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2">
-              <label className="text-gray-600 dark:text-gray-300">Special numbers</label>
-              <select
-                value={config.replaceSpecialNumbers || 'none'}
-                onChange={(e) => set('replaceSpecialNumbers', e.target.value as any)}
-                className="px-2 py-1 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-              >
-                <option value="none">none</option>
-                <option value="null">null</option>
-                <option value="string">string</option>
-              </select>
-            </div>
-
-            <label className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-300">
-              <input type="checkbox" checked={!!config.inlineShortArrays} onChange={(e) => set('inlineShortArrays', e.target.checked)} /> Inline arrays
-            </label>
-
-            {config.inlineShortArrays && (
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2">
-                  <label className="text-gray-600 dark:text-gray-300">Items</label>
-                  <input type="number" min={1} max={20} value={config.inlineArrayMaxLength ?? 5} onChange={(e) => set('inlineArrayMaxLength', num(e.target.value, 5))} className="w-20 px-2 py-1 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600" />
-                </div>
-                <div className="flex items-center gap-2">
-                  <label className="text-gray-600 dark:text-gray-300">Line len</label>
-                  <input type="number" min={20} max={200} value={config.inlineArrayMaxLineLength ?? 80} onChange={(e) => set('inlineArrayMaxLineLength', num(e.target.value, 80))} className="w-24 px-2 py-1 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600" />
-                </div>
-              </div>
-            )}
-
-            <label className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-300">
-              <input type="checkbox" checked={!!config.escapeUnicode} onChange={(e) => set('escapeUnicode', e.target.checked)} /> \u escape
-            </label>
-
-            <label className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-300">
-              <input type="checkbox" checked={!!config.ensureFinalNewline} onChange={(e) => set('ensureFinalNewline', e.target.checked)} /> Final newline
-            </label>
-
-            <label className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-300">
-              <input type="checkbox" checked={!!config.detectDuplicateKeys} onChange={(e) => set('detectDuplicateKeys', e.target.checked)} /> Duplicates
-            </label>
-
-            <label className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-300">
-              <input type="checkbox" checked={!!config.validateOnly} onChange={(e) => set('validateOnly', e.target.checked)} /> Validate only
-            </label>
-          </div>
-        </details>
-      </div>
-    </div>
-  );
 }
