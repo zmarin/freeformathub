@@ -14,16 +14,30 @@ const description = 'View formatted JSON in a distraction‑free full‑page vie
           <span id="meta" class="text-xs text-gray-500 dark:text-gray-400"></span>
         </div>
         <div class="flex items-center gap-2">
+          <div class="hidden sm:flex items-center border border-gray-200 dark:border-gray-700 rounded overflow-hidden">
+            <button id="modeRaw" class="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-r border-gray-200 dark:border-gray-700">Raw</button>
+            <button id="modeTree" class="px-3 py-1 text-xs text-gray-700 dark:text-gray-300">Tree</button>
+          </div>
+          <input id="searchInput" placeholder="Search..." class="text-xs px-2 py-1 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100" />
+          <label class="hidden sm:inline-flex items-center gap-1 text-xs text-gray-600 dark:text-gray-300"><input id="filterToggle" type="checkbox" /> Filter</label>
           <button id="copyBtn" class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">Copy</button>
           <button id="downloadBtn" class="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded border text-gray-700 dark:text-gray-300">Download</button>
           <button id="wrapBtn" class="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded border text-gray-700 dark:text-gray-300">Wrap: On</button>
           <button id="linesBtn" class="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded border text-gray-700 dark:text-gray-300">Lines: On</button>
+          <div id="treeButtons" class="hidden sm:flex items-center gap-2">
+            <button id="expandAllBtn" class="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded border text-gray-700 dark:text-gray-300">Expand all</button>
+            <button id="collapseAllBtn" class="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded border text-gray-700 dark:text-gray-300">Collapse all</button>
+          </div>
         </div>
       </div>
 
-      <div class="relative">
+      <div class="relative" id="rawPane">
         <div id="lines" class="absolute left-0 top-0 bottom-0 w-12 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 overflow-hidden"></div>
         <pre id="content" class="pl-16 p-4 text-sm font-mono text-gray-900 dark:text-gray-100 whitespace-pre-wrap break-words overflow-auto" style="min-height: 60vh"></pre>
+      </div>
+
+      <div id="treePane" class="hidden">
+        <div id="tree" class="p-3 max-h-[70vh] overflow-auto text-sm font-mono"></div>
       </div>
     </div>
   </div>
@@ -42,12 +56,36 @@ const description = 'View formatted JSON in a distraction‑free full‑page vie
     const downloadBtn = document.getElementById('downloadBtn');
     const wrapBtn = document.getElementById('wrapBtn');
     const linesBtn = document.getElementById('linesBtn');
+    const modeRawBtn = document.getElementById('modeRaw');
+    const modeTreeBtn = document.getElementById('modeTree');
+    const searchInput = document.getElementById('searchInput');
+    const filterToggle = document.getElementById('filterToggle');
+    const treeButtons = document.getElementById('treeButtons');
+    const expandAllBtn = document.getElementById('expandAllBtn');
+    const collapseAllBtn = document.getElementById('collapseAllBtn');
+    const rawPane = document.getElementById('rawPane');
+    const treePane = document.getElementById('treePane');
+    const treeRoot = document.getElementById('tree');
 
     let wrap = true;
     let showLines = true;
+    let mode = 'raw'; // 'raw' | 'tree'
+    let parsed;
+    try { parsed = JSON.parse(text); } catch { parsed = undefined; }
 
-    function render(txt) {
-      contentEl.textContent = txt || 'No content';
+    function escapeHtml(s){
+      return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    function renderRaw(txt) {
+      const q = (searchInput.value || '').trim();
+      if (!q) {
+        contentEl.textContent = txt || 'No content';
+      } else {
+        const escaped = escapeHtml(txt || '');
+        const re = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+        contentEl.innerHTML = escaped.replace(re, m => `<mark class="bg-yellow-200 text-black">${m}</mark>`);
+      }
       updateLines();
       metaEl.textContent = txt ? `${txt.length} chars • ${txt.split('\n').length} lines` : '';
     }
@@ -100,7 +138,87 @@ const description = 'View formatted JSON in a distraction‑free full‑page vie
       URL.revokeObjectURL(url);
     });
 
-    render(text);
+    // Tree view
+    let collapsed = new Set();
+    function shouldShowNode(key, value){
+      const q = (searchInput.value || '').trim();
+      if (!q) return true;
+      const s = String(key ?? '') + ' ' + (value === null || typeof value === 'object' ? '' : String(value));
+      return s.toLowerCase().includes(q.toLowerCase());
+    }
+
+    function renderTree(){
+      treeRoot.innerHTML = '';
+      const q = (searchInput.value || '').trim();
+      const filter = !!filterToggle.checked && q;
+      function node(path, key, value, level){
+        const isObj = value && typeof value === 'object' && !Array.isArray(value);
+        const isArr = Array.isArray(value);
+        const isPrim = !isObj && !isArr;
+        const show = shouldShowNode(key, value);
+        if (filter && !show && (isObj || isArr)){
+          // if filtering, check any descendant matches
+          let matched = false;
+          const check = (v)=>{
+            if (matched) return; 
+            if (v && typeof v === 'object'){
+              for (const k in v){ if (shouldShowNode(k, v[k])) { matched = true; break; } check(v[k]); }
+            }
+          };
+          check(value);
+          if (!matched) return; // hide subtree
+        }
+        const row = document.createElement('div');
+        row.style.paddingLeft = `${level*16}px`;
+        row.className = `py-0.5 ${show && q ? 'bg-yellow-50 dark:bg-yellow-900/30' : ''}`;
+        const toggle = document.createElement('button');
+        toggle.className = 'mr-1 text-xs w-5 inline-flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300';
+        toggle.textContent = collapsed.has(path) ? '+' : '-';
+        toggle.addEventListener('click', ()=>{ if (collapsed.has(path)) collapsed.delete(path); else collapsed.add(path); renderTree(); });
+        const keySpan = document.createElement('span');
+        keySpan.className = isPrim ? 'text-gray-500' : 'text-blue-700 dark:text-blue-300';
+        keySpan.textContent = key !== undefined ? String(key) : '$';
+        const valueSpan = document.createElement('span');
+        if (isPrim){
+          valueSpan.innerHTML = `: <span class="${typeof value==='string'?'text-green-700 dark:text-green-400': typeof value==='number'?'text-orange-600': 'text-indigo-600'}">${escapeHtml(JSON.stringify(value))}</span>`;
+        }else{
+          const size = isArr ? value.length : Object.keys(value).length;
+          valueSpan.innerHTML = ` <span class="text-gray-500">${isArr?`[${size}]`:`{${size}}`}</span>`;
+        }
+        if (!isPrim) row.appendChild(toggle);
+        row.appendChild(keySpan);
+        row.appendChild(valueSpan);
+        treeRoot.appendChild(row);
+        if (isPrim || collapsed.has(path)) return;
+        if (isArr){
+          for (let i=0;i<value.length;i++) node(`${path}[${i}]`, i, value[i], level+1);
+        } else if (isObj){
+          for (const k of Object.keys(value)) node(`${path}.${k}`, k, value[k], level+1);
+        }
+      }
+      node('$', undefined, parsed, 0);
+    }
+
+    // Mode switching
+    function setModeRaw(){ mode='raw'; rawPane.classList.remove('hidden'); treePane.classList.add('hidden'); treeButtons.classList.add('hidden'); modeRawBtn.classList.add('bg-gray-100','dark:bg-gray-700'); modeTreeBtn.classList.remove('bg-gray-100','dark:bg-gray-700'); renderRaw(text); }
+    function setModeTree(){ if(!parsed){ try{parsed=JSON.parse(text);}catch{}} mode='tree'; rawPane.classList.add('hidden'); treePane.classList.remove('hidden'); treeButtons.classList.remove('hidden'); modeTreeBtn.classList.add('bg-gray-100','dark:bg-gray-700'); modeRawBtn.classList.remove('bg-gray-100','dark:bg-gray-700'); renderTree(); }
+
+    modeRawBtn.addEventListener('click', setModeRaw);
+    modeTreeBtn.addEventListener('click', setModeTree);
+    expandAllBtn.addEventListener('click', ()=>{ collapsed = new Set(); renderTree(); });
+    collapseAllBtn.addEventListener('click', ()=>{
+      collapsed = new Set();
+      // pre-collapse every path (collect)
+      const collect = (v, p)=>{ if(v && typeof v==='object'){ collapsed.add(p); if(Array.isArray(v)){ for(let i=0;i<v.length;i++) collect(v[i], `${p}[${i}]`);} else { for(const k in v) collect(v[k], `${p}.${k}`);} } };
+      collect(parsed,'$');
+      renderTree();
+    });
+
+    // Search
+    searchInput.addEventListener('input', ()=>{ mode==='raw'? renderRaw(text): renderTree(); });
+    filterToggle.addEventListener('change', ()=>{ if(mode==='tree') renderTree(); else renderRaw(text); });
+
+    // Initial render
+    renderRaw(text);
   </script>
 </BaseLayout>
-
