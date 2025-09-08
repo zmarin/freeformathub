@@ -20,9 +20,14 @@ const componentName = slug
   .join('');
 
 let ToolComponent;
+let componentUrl = '';
+let exportName = '';
+
 try {
   const componentModule = await import(`../../components/tools/${category}/${componentName}.tsx`);
   ToolComponent = componentModule[componentName] || componentModule.default;
+  componentUrl = `/_astro/${componentName}.js`; // This will be the bundled path
+  exportName = componentName;
 } catch (error) {
   console.error(`Failed to load component for ${tool.name}:`, error);
   return Astro.redirect('/404');
@@ -31,18 +36,83 @@ try {
 
 <ToolShell tool={tool}>
   <div id="tool-container"></div>
-  <script define:vars={{ category, componentName }}>
-    import(`../../components/tools/${category}/${componentName}.tsx`).then((module) => {
-      const Comp = module[componentName] || module.default;
-      if (!Comp) return;
-      import('react').then((React) => {
-        import('react-dom/client').then((ReactDOM) => {
-          const root = ReactDOM.createRoot(document.getElementById('tool-container'));
-          root.render(React.createElement(Comp));
-        });
-      });
-    }).catch((err) => {
-      console.error('Failed to load tool component', err);
-    });
-  </script>
 </ToolShell>
+
+<script define:vars={{ componentName, category }}>
+  // Use a more robust approach for production
+  async function loadComponent() {
+    try {
+      const componentPath = `/src/components/tools/${category}/${componentName}`;
+      
+      // Try multiple import strategies
+      let module;
+      try {
+        // First try the direct import (works in dev)
+        module = await import(`../../components/tools/${category}/${componentName}.tsx`);
+      } catch (e) {
+        console.warn('Direct import failed, trying alternative paths...', e);
+        
+        // Try without .tsx extension (for bundled files)
+        try {
+          module = await import(`../../components/tools/${category}/${componentName}`);
+        } catch (e2) {
+          // Try built asset path
+          module = await import(`/_astro/${componentName}.js`);
+        }
+      }
+      
+      const Component = module[componentName] || module.default;
+      if (!Component) {
+        console.error('Component not found in module:', Object.keys(module));
+        return;
+      }
+      
+      // Load React
+      const React = await import('react');
+      const ReactDOM = await import('react-dom/client');
+      
+      // Render the component
+      const container = document.getElementById('tool-container');
+      if (container) {
+        const root = ReactDOM.createRoot(container);
+        root.render(React.createElement(Component));
+      }
+      
+    } catch (error) {
+      console.error(`Failed to load ${componentName}:`, error);
+      
+      // Show error message to user
+      const container = document.getElementById('tool-container');
+      if (container) {
+        container.innerHTML = `
+          <div class="p-8 text-center">
+            <div class="text-red-600 dark:text-red-400 mb-4">
+              <svg class="w-12 h-12 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+              Component Loading Error
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              The ${componentName} tool failed to load. Please try refreshing the page.
+            </p>
+            <button 
+              onclick="window.location.reload()" 
+              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Refresh Page
+            </button>
+          </div>
+        `;
+      }
+    }
+  }
+  
+  // Load component when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadComponent);
+  } else {
+    loadComponent();
+  }
+</script>
