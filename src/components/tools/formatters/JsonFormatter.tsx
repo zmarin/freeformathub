@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { InputPanel, OutputPanel, OptionsPanel } from '../../ui';
+import { InputPanel, OutputPanel } from '../../ui';
 import { formatJson, type JsonFormatterConfig } from '../../../tools/formatters/json-formatter';
 import { useToolStore } from '../../../lib/store';
 import { debounce, copyToClipboard } from '../../../lib/utils';
@@ -343,7 +343,11 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
   };
 
   return (
-    <div className={`grid grid-cols-1 lg:grid-cols-2 gap-0 ${className}`}>
+    <div className={`${className}`}>
+      {/* Compact toolbar */}
+      <CompactOptionsBar config={config} onChange={handleConfigChange} />
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
       {/* Input Panel */}
       <div className="border-r border-gray-200 dark:border-gray-700">
         <InputPanel
@@ -354,13 +358,6 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
           syntax="json"
           examples={EXAMPLES}
           accept=".json,.txt"
-        />
-        
-        {/* Options */}
-        <OptionsPanel
-          options={OPTIONS}
-          config={config}
-          onChange={handleConfigChange}
         />
       </div>
 
@@ -838,4 +835,113 @@ function safeStringify(v: any): string {
   } catch {
     try { return String(v); } catch { return ''; }
   }
+}
+
+// Compact toolbar component (core options + advanced disclosure)
+function CompactOptionsBar({
+  config,
+  onChange,
+}: {
+  config: JsonFormatterConfig;
+  onChange: (cfg: JsonFormatterConfig) => void;
+}) {
+  const set = (k: keyof JsonFormatterConfig, v: any) => onChange({ ...config, [k]: v });
+  const num = (v: any, d: number) => {
+    const n = parseInt(String(v));
+    return Number.isFinite(n) ? n : d;
+  };
+
+  return (
+    <div className="sticky top-0 z-10 bg-white/70 dark:bg-gray-900/70 backdrop-blur border-b border-gray-200 dark:border-gray-700">
+      <div className="flex flex-wrap items-center gap-3 p-3 text-sm">
+        <div className="flex items-center gap-2">
+          <label className="text-gray-600 dark:text-gray-300">Indent</label>
+          <select
+            value={String(config.indent)}
+            onChange={(e) => set('indent', num(e.target.value, 2))}
+            className="px-2 py-1 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+          >
+            <option value="0">Minified</option>
+            <option value="2">2</option>
+            <option value="4">4</option>
+            <option value="8">8</option>
+          </select>
+          {config.indent > 0 && (
+            <label className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-300">
+              <input type="checkbox" checked={!!config.useTabs} onChange={(e) => set('useTabs', e.target.checked)} /> Tabs
+            </label>
+          )}
+        </div>
+
+        <label className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-300">
+          <input type="checkbox" checked={!!config.sortKeys} onChange={(e) => set('sortKeys', e.target.checked)} /> Sort keys
+        </label>
+
+        {config.sortKeys && (
+          <label className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-300">
+            <input type="checkbox" checked={!!config.sortKeysCaseInsensitive} onChange={(e) => set('sortKeysCaseInsensitive', e.target.checked)} /> Case-insensitive
+          </label>
+        )}
+
+        <label className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-300">
+          <input type="checkbox" checked={!!config.removeComments} onChange={(e) => set('removeComments', e.target.checked)} /> Comments
+        </label>
+
+        <label className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-300">
+          <input type="checkbox" checked={!!config.allowSingleQuotes} onChange={(e) => set('allowSingleQuotes', e.target.checked)} /> Single quotes
+        </label>
+
+        <details className="ml-auto">
+          <summary className="cursor-pointer select-none text-gray-600 dark:text-gray-300">Advanced</summary>
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2">
+              <label className="text-gray-600 dark:text-gray-300">Special numbers</label>
+              <select
+                value={config.replaceSpecialNumbers || 'none'}
+                onChange={(e) => set('replaceSpecialNumbers', e.target.value as any)}
+                className="px-2 py-1 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+              >
+                <option value="none">none</option>
+                <option value="null">null</option>
+                <option value="string">string</option>
+              </select>
+            </div>
+
+            <label className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-300">
+              <input type="checkbox" checked={!!config.inlineShortArrays} onChange={(e) => set('inlineShortArrays', e.target.checked)} /> Inline arrays
+            </label>
+
+            {config.inlineShortArrays && (
+              <>
+                <div className="flex items-center gap-2">
+                  <label className="text-gray-600 dark:text-gray-300">Items</label>
+                  <input type="number" min={1} max={20} value={config.inlineArrayMaxLength ?? 5} onChange={(e) => set('inlineArrayMaxLength', num(e.target.value, 5))} className="w-20 px-2 py-1 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-gray-600 dark:text-gray-300">Line len</label>
+                  <input type="number" min={20} max={200} value={config.inlineArrayMaxLineLength ?? 80} onChange={(e) => set('inlineArrayMaxLineLength', num(e.target.value, 80))} className="w-24 px-2 py-1 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600" />
+                </div>
+              </>
+            )}
+
+            <label className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-300">
+              <input type="checkbox" checked={!!config.escapeUnicode} onChange={(e) => set('escapeUnicode', e.target.checked)} /> \u escape
+            </label>
+
+            <label className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-300">
+              <input type="checkbox" checked={!!config.ensureFinalNewline} onChange={(e) => set('ensureFinalNewline', e.target.checked)} /> Final newline
+            </label>
+
+            <label className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-300">
+              <input type="checkbox" checked={!!config.detectDuplicateKeys} onChange={(e) => set('detectDuplicateKeys', e.target.checked)} /> Duplicates
+            </label>
+
+            <label className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-300">
+              <input type="checkbox" checked={!!config.validateOnly} onChange={(e) => set('validateOnly', e.target.checked)} /> Validate only
+            </label>
+          </div>
+        </details>
+      </div>
+    </div>
+  );
 }
