@@ -1,10 +1,7 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { InputPanel, OutputPanel, OptionsPanel } from '../../ui';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { formatJson, type JsonFormatterConfig } from '../../../tools/formatters/json-formatter';
 import { useToolStore } from '../../../lib/store';
-import { debounce, copyToClipboard } from '../../../lib/utils';
-import { runJsonPath, type JsonPathResult } from '../../../tools/development/json-path-extractor';
-import { validateJsonAgainstSchema } from '../../../lib/utils/jsonSchema';
+import { debounce, copyToClipboard, downloadFile } from '../../../lib/utils';
 
 interface JsonFormatterProps {
   className?: string;
@@ -15,6 +12,7 @@ const DEFAULT_CONFIG: JsonFormatterConfig = {
   sortKeys: false,
   removeComments: true,
   validateOnly: false,
+  // Keep advanced options with sensible defaults
   useTabs: false,
   sortKeysCaseInsensitive: false,
   allowSingleQuotes: true,
