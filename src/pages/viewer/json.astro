@@ -1,0 +1,106 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = 'JSON Viewer';
+const description = 'View formatted JSON in a distraction‑free full‑page viewer with copy and download controls.';
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+        <div class="flex items-center gap-3">
+          <h1 class="text-lg font-semibold text-gray-900 dark:text-gray-100">JSON Viewer</h1>
+          <span id="meta" class="text-xs text-gray-500 dark:text-gray-400"></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="copyBtn" class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">Copy</button>
+          <button id="downloadBtn" class="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded border text-gray-700 dark:text-gray-300">Download</button>
+          <button id="wrapBtn" class="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded border text-gray-700 dark:text-gray-300">Wrap: On</button>
+          <button id="linesBtn" class="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded border text-gray-700 dark:text-gray-300">Lines: On</button>
+        </div>
+      </div>
+
+      <div class="relative">
+        <div id="lines" class="absolute left-0 top-0 bottom-0 w-12 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 overflow-hidden"></div>
+        <pre id="content" class="pl-16 p-4 text-sm font-mono text-gray-900 dark:text-gray-100 whitespace-pre-wrap break-words overflow-auto" style="min-height: 60vh"></pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const qs = new URLSearchParams(window.location.search);
+    const id = qs.get('id');
+    let text = '';
+    if (id) {
+      try { text = sessionStorage.getItem(`ffh.json.${id}`) || ''; } catch {}
+    }
+    const contentEl = document.getElementById('content');
+    const linesEl = document.getElementById('lines');
+    const metaEl = document.getElementById('meta');
+    const copyBtn = document.getElementById('copyBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const wrapBtn = document.getElementById('wrapBtn');
+    const linesBtn = document.getElementById('linesBtn');
+
+    let wrap = true;
+    let showLines = true;
+
+    function render(txt) {
+      contentEl.textContent = txt || 'No content';
+      updateLines();
+      metaEl.textContent = txt ? `${txt.length} chars • ${txt.split('\n').length} lines` : '';
+    }
+
+    function updateLines() {
+      if (!showLines) { linesEl.style.display = 'none'; contentEl.classList.remove('pl-16'); return; }
+      linesEl.style.display = 'block';
+      contentEl.classList.add('pl-16');
+      const n = (contentEl.textContent || '').split('\n').length;
+      const frag = document.createDocumentFragment();
+      linesEl.innerHTML = '';
+      for (let i = 1; i <= n; i++) {
+        const d = document.createElement('div');
+        d.className = 'px-2 py-0.5 text-xs text-gray-500 dark:text-gray-400 text-right leading-normal select-none';
+        d.textContent = String(i);
+        frag.appendChild(d);
+      }
+      linesEl.appendChild(frag);
+    }
+
+    wrapBtn.addEventListener('click', () => {
+      wrap = !wrap;
+      if (wrap) {
+        contentEl.classList.remove('whitespace-pre');
+        contentEl.classList.add('whitespace-pre-wrap', 'break-words');
+        wrapBtn.textContent = 'Wrap: On';
+      } else {
+        contentEl.classList.remove('whitespace-pre-wrap', 'break-words');
+        contentEl.classList.add('whitespace-pre');
+        wrapBtn.textContent = 'Wrap: Off';
+      }
+      updateLines();
+    });
+
+    linesBtn.addEventListener('click', () => {
+      showLines = !showLines;
+      linesBtn.textContent = showLines ? 'Lines: On' : 'Lines: Off';
+      updateLines();
+    });
+
+    copyBtn.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(contentEl.textContent || ''); copyBtn.textContent = 'Copied!'; setTimeout(() => copyBtn.textContent = 'Copy', 1200); } catch {}
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      const blob = new Blob([contentEl.textContent || ''], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'formatted.json'; a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    render(text);
+  </script>
+</BaseLayout>
+

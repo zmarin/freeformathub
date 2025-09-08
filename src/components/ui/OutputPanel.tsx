@@ -11,6 +11,8 @@ interface OutputPanelProps {
   downloadFilename?: string;
   downloadContentType?: string;
   showLineNumbers?: boolean;
+  onOpenInNewTab?: () => void;
+  openButtonLabel?: string;
 }
 
 export function OutputPanel({
@@ -23,6 +25,8 @@ export function OutputPanel({
   downloadFilename = 'output.txt',
   downloadContentType = 'text/plain',
   showLineNumbers = false,
+  onOpenInNewTab,
+  openButtonLabel = 'Open in New Tab',
 }: OutputPanelProps) {
   const [copied, setCopied] = useState(false);
 
@@ -82,6 +86,18 @@ export function OutputPanel({
             >
               Download
             </button>
+
+            {/* Open in new tab */}
+            {onOpenInNewTab && (
+              <button
+                onClick={onOpenInNewTab}
+                className="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 
+                          px-3 py-1 rounded border transition-colors
+                          text-gray-700 dark:text-gray-300"
+              >
+                {openButtonLabel}
+              </button>
+            )}
           </div>
         )}
       </div>

@@ -400,6 +400,18 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
               showLineNumbers={true}
               downloadFilename="formatted.json"
               downloadContentType="application/json"
+              onOpenInNewTab={() => {
+                try {
+                  const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+                  sessionStorage.setItem(`ffh.json.${id}`, output || '');
+                  const base = (import.meta as any).env?.BASE_URL || '/';
+                  const url = `${base.replace(/\/$/, '')}/viewer/json?id=${encodeURIComponent(id)}`;
+                  window.open(url, '_blank');
+                } catch (e) {
+                  // no-op
+                }
+              }}
+              openButtonLabel="Open viewer"
             />
 
             {/* Analysis panel */}
