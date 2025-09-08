@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { InputPanel, OutputPanel, OptionsPanel } from '../../ui';
 import { formatJson, type JsonFormatterConfig } from '../../../tools/formatters/json-formatter';
 import { useToolStore } from '../../../lib/store';
@@ -206,7 +206,17 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
     }, 1600);
   }, []);
 
-  const { addToHistory } = useToolStore();
+  const { addToHistory, getConfig: getSavedConfig, updateConfig: updateSavedConfig } = useToolStore();
+
+  // Load saved config once on mount
+  useEffect(() => {
+    try {
+      const saved = (getSavedConfig?.('json-formatter') as Partial<JsonFormatterConfig>) || {};
+      if (saved && Object.keys(saved).length > 0) {
+        setConfig((prev) => ({ ...prev, ...saved }));
+      }
+    } catch {}
+  }, [getSavedConfig]);
 
   // Convert string values from select to numbers for indent
   const processedConfig = useMemo(() => ({
@@ -340,6 +350,7 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
 
   const handleConfigChange = (newConfig: JsonFormatterConfig) => {
     setConfig(newConfig);
+    try { updateSavedConfig?.('json-formatter', newConfig); } catch {}
   };
 
   return (
@@ -420,6 +431,12 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
                 <div className="flex flex-wrap gap-x-6 gap-y-2">
                   {metadata.type && <span><strong>Type:</strong> {metadata.type}</span>}
                   {typeof metadata.depth === 'number' && <span><strong>Depth:</strong> {metadata.depth}</span>}
+                  {typeof metadata.topLevelKeys === 'number' && metadata.type === 'object' && (
+                    <span><strong>Top-level keys:</strong> {metadata.topLevelKeys}</span>
+                  )}
+                  {typeof metadata.topLevelLength === 'number' && metadata.type === 'array' && (
+                    <span><strong>Top-level length:</strong> {metadata.topLevelLength}</span>
+                  )}
                   {typeof metadata.originalSize === 'number' && typeof metadata.formattedSize === 'number' && (
                     <span>
                       <strong>Size:</strong> {metadata.formattedSize} chars ({metadata.compressionRatio}% delta)
@@ -467,7 +484,19 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
                   Collapse to matches
                 </button>
               </div>
-              <div className="text-gray-500 dark:text-gray-400">Matches: {matchedPaths.size}</div>
+              <div className="flex-1 flex items-center justify-end gap-2">
+                <input
+                  value={pathExpr}
+                  onChange={(e) => setPathExpr(e.target.value)}
+                  placeholder="JSONPath e.g. $.store.book[*].author"
+                  className="min-w-[200px] max-w-[360px] flex-1 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                {pathError ? (
+                  <span className="text-red-600 dark:text-red-400">{pathError}</span>
+                ) : (
+                  <span className="text-gray-500 dark:text-gray-400">Matches: {matchedPaths.size}</span>
+                )}
+              </div>
             </div>
             {parsedData ? (
               <JsonTree

@@ -185,6 +185,10 @@ export function formatJson(input: string, config: JsonFormatterConfig): ToolResu
       if (!formatted.endsWith('\n')) formatted += '\n';
     }
 
+    const valueType = Array.isArray(parsed) ? 'array' : typeof parsed;
+    const topLevelKeys = valueType === 'object' && parsed !== null ? Object.keys(parsed).length : undefined;
+    const topLevelLength = Array.isArray(parsed) ? parsed.length : undefined;
+
     return {
       success: true,
       output: formatted,
@@ -193,8 +197,10 @@ export function formatJson(input: string, config: JsonFormatterConfig): ToolResu
         originalSize: input.length,
         formattedSize: formatted.length,
         compressionRatio: ((input.length - formatted.length) / input.length * 100).toFixed(1),
-        type: Array.isArray(parsed) ? 'array' : typeof parsed,
+        type: valueType,
         depth: calculateDepth(parsed),
+        topLevelKeys,
+        topLevelLength,
         duplicates: duplicateInfo.duplicates,
         duplicateCount: duplicateInfo.count,
         processingTimeMs: (performance.now?.() ?? Date.now()) - start,
@@ -204,33 +210,48 @@ export function formatJson(input: string, config: JsonFormatterConfig): ToolResu
 
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Invalid JSON format';
-    
+
     // Try to provide more helpful error messages
     let helpfulMessage = errorMessage;
+
+    // When available, compute error location against the actually parsed source (cleanInput)
+    // Fallback to the original input if preprocessing failed before producing cleanInput
+    const sourceForError = typeof cleanInput === 'string' ? cleanInput : input;
+
     // Extract position from error and compute line/column and caret
     const match = ('' + errorMessage).match(/position\s+(\d+)/i);
     if (match) {
       const pos = parseInt(match[1]);
-      const loc = indexToLineCol(input, pos);
-      const lineText = getLineText(input, loc.line);
+      const loc = indexToLineCol(sourceForError, pos);
+      const lineText = getLineText(sourceForError, loc.line);
       const caret = ' '.repeat(Math.max(0, loc.column - 1)) + '↑';
       helpfulMessage += `\n\nAt line ${loc.line}, column ${loc.column}`;
       helpfulMessage += `\n${lineText}\n${caret}`;
     }
 
-    // Common JSON errors with suggestions
-    if (input.includes("'")) {
+    // Common JSON errors with suggestions (check the same source used for location)
+    if (sourceForError.includes("'")) {
       helpfulMessage += '\n\nTip: Use double quotes (") instead of single quotes (\')';
     }
-    if (input.match(/,\s*[}\]]/)) {
+    if (sourceForError.match(/,\s*[}\]]/)) {
       helpfulMessage += '\n\nTip: Remove trailing commas before closing brackets';
     }
-    if (input.includes('undefined') || input.includes('function')) {
+    if (sourceForError.includes('undefined') || sourceForError.includes('function')) {
       helpfulMessage += '\n\nTip: undefined and functions are not valid in JSON';
     }
-    if (/^\uFEFF/.test(input)) {
+    if (/^\uFEFF/.test(sourceForError)) {
       helpfulMessage += '\n\nTip: Remove BOM (\uFEFF) at the start of the file';
     }
+
+    // If preprocessing was applied, surface that fact for clarity
+    try {
+      if (typeof cleaned === 'object' && cleaned && cleaned.transforms) {
+        const keys = Object.keys(cleaned.transforms);
+        if (keys.length > 0) {
+          helpfulMessage += `\n\nPre-processing applied: ${keys.join(', ')}`;
+        }
+      }
+    } catch {}
 
     return {
       success: false,
