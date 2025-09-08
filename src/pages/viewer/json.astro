@@ -20,6 +20,12 @@ const description = 'View formatted JSON in a distraction‑free full‑page vie
           </div>
           <input id="searchInput" placeholder="Search..." class="text-xs px-2 py-1 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100" />
           <label class="hidden sm:inline-flex items-center gap-1 text-xs text-gray-600 dark:text-gray-300"><input id="filterToggle" type="checkbox" /> Filter</label>
+          <div class="hidden sm:flex items-center gap-1 ml-2">
+            <input id="jpInput" placeholder="$.path[*]" class="text-xs px-2 py-1 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100" />
+            <span id="jpCount" class="text-[11px] text-gray-500 dark:text-gray-400">0</span>
+            <label class="inline-flex items-center gap-1 text-xs text-gray-600 dark:text-gray-300"><input id="jpFilterToggle" type="checkbox" /> Path filter</label>
+            <button id="jpCollapseBtn" class="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-2 py-1 rounded border text-gray-700 dark:text-gray-300">Collapse to matches</button>
+          </div>
           <button id="copyBtn" class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">Copy</button>
           <button id="downloadBtn" class="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded border text-gray-700 dark:text-gray-300">Download</button>
           <button id="wrapBtn" class="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded border text-gray-700 dark:text-gray-300">Wrap: On</button>
@@ -42,7 +48,8 @@ const description = 'View formatted JSON in a distraction‑free full‑page vie
     </div>
   </div>
 
-  <script>
+  <script type="module">
+    import { runJsonPath } from '../../tools/development/json-path-extractor';
     const qs = new URLSearchParams(window.location.search);
     const id = qs.get('id');
     let text = '';
@@ -66,12 +73,47 @@ const description = 'View formatted JSON in a distraction‑free full‑page vie
     const rawPane = document.getElementById('rawPane');
     const treePane = document.getElementById('treePane');
     const treeRoot = document.getElementById('tree');
+    const jpInput = document.getElementById('jpInput');
+    const jpCount = document.getElementById('jpCount');
+    const jpFilterToggle = document.getElementById('jpFilterToggle');
+    const jpCollapseBtn = document.getElementById('jpCollapseBtn');
 
     let wrap = true;
     let showLines = true;
     let mode = 'raw'; // 'raw' | 'tree'
     let parsed;
     try { parsed = JSON.parse(text); } catch { parsed = undefined; }
+    let matchedPaths = new Set();
+    let keepAncestors = new Set();
+
+    function updateJsonPathMatches(){
+      matchedPaths = new Set();
+      keepAncestors = new Set();
+      const expr = (jpInput?.value || '').trim();
+      if (!expr || !parsed) { if (jpCount) jpCount.textContent = '0'; return; }
+      try {
+        const results = runJsonPath(parsed, expr);
+        for (const r of results) {
+          matchedPaths.add(r.path);
+          // build ancestor chain
+          let cur = r.path;
+          while (cur && cur !== '$'){
+            keepAncestors.add(cur);
+            if (cur.endsWith(']')){
+              const i = cur.lastIndexOf('[');
+              cur = i > -1 ? cur.slice(0, i) : '$';
+            } else {
+              const j = cur.lastIndexOf('.');
+              cur = j > -1 ? cur.slice(0, j) : '$';
+            }
+          }
+          keepAncestors.add('$');
+        }
+        if (jpCount) jpCount.textContent = String(matchedPaths.size);
+      } catch (e){
+        if (jpCount) jpCount.textContent = '0';
+      }
+    }
 
     function escapeHtml(s){
       return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -151,12 +193,15 @@ const description = 'View formatted JSON in a distraction‑free full‑page vie
       treeRoot.innerHTML = '';
       const q = (searchInput.value || '').trim();
       const filter = !!filterToggle.checked && q;
+      const pathFilter = !!jpFilterToggle.checked && matchedPaths.size > 0;
+      const keepSet = new Set(keepAncestors);
+      for (const p of matchedPaths) keepSet.add(p);
       function node(path, key, value, level){
         const isObj = value && typeof value === 'object' && !Array.isArray(value);
         const isArr = Array.isArray(value);
         const isPrim = !isObj && !isArr;
         const show = shouldShowNode(key, value);
-        if (filter && !show && (isObj || isArr)){
+        if ((filter && !show && (isObj || isArr)) || (pathFilter && !keepSet.has(path) && (isObj || isArr))){
           // if filtering, check any descendant matches
           let matched = false;
           const check = (v)=>{
@@ -166,11 +211,13 @@ const description = 'View formatted JSON in a distraction‑free full‑page vie
             }
           };
           check(value);
-          if (!matched) return; // hide subtree
+          if (!matched && !pathFilter) return; // hide subtree by search
+          if (pathFilter && !keepSet.has(path)) return;
         }
         const row = document.createElement('div');
         row.style.paddingLeft = `${level*16}px`;
-        row.className = `py-0.5 ${show && q ? 'bg-yellow-50 dark:bg-yellow-900/30' : ''}`;
+        const isMatch = matchedPaths.has(path);
+        row.className = `py-0.5 ${isMatch ? 'bg-yellow-50 dark:bg-yellow-900/30' : (show && q ? 'bg-yellow-50 dark:bg-yellow-900/20' : '')}`;
         const toggle = document.createElement('button');
         toggle.className = 'mr-1 text-xs w-5 inline-flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300';
         toggle.textContent = collapsed.has(path) ? '+' : '-';
@@ -214,11 +261,26 @@ const description = 'View formatted JSON in a distraction‑free full‑page vie
       renderTree();
     });
 
+    // JSONPath controls
+    jpInput.addEventListener('input', ()=>{ updateJsonPathMatches(); if(mode==='tree') renderTree(); });
+    jpFilterToggle.addEventListener('change', ()=>{ if(mode==='tree') renderTree(); });
+    jpCollapseBtn.addEventListener('click', ()=>{
+      if (matchedPaths.size === 0) return;
+      // collapse all except ancestors of matches
+      collapsed = new Set();
+      const collect = (v, p)=>{ if(v && typeof v==='object'){ collapsed.add(p); if(Array.isArray(v)){ for(let i=0;i<v.length;i++) collect(v[i], `${p}[${i}]`);} else { for(const k in v) collect(v[k], `${p}.${k}`);} } };
+      collect(parsed,'$');
+      for (const p of keepAncestors) collapsed.delete(p);
+      for (const p of matchedPaths) collapsed.delete(p);
+      renderTree();
+    });
+
     // Search
     searchInput.addEventListener('input', ()=>{ mode==='raw'? renderRaw(text): renderTree(); });
     filterToggle.addEventListener('change', ()=>{ if(mode==='tree') renderTree(); else renderRaw(text); });
 
     // Initial render
+    updateJsonPathMatches();
     renderRaw(text);
   </script>
 </BaseLayout>
