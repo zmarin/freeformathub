@@ -2,6 +2,7 @@
 import type { ToolCategory, Tool } from '../../types';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getToolUrl, getCategoryUrl } from '../../lib/routing/category-routes';
+import Icon from '../ui/Icon.tsx';
 
 export interface Props {
   category: ToolCategory;
@@ -67,7 +68,7 @@ const seoDescription = `${category.description}. ${safeTools.length} free online
     <header class="mb-8">
       <div class="flex items-center gap-4 mb-4">
         <div class={`w-16 h-16 rounded-xl bg-${category.color}-100 dark:bg-${category.color}-900 flex items-center justify-center`}>
-          <span class="text-3xl">{category.icon}</span>
+          <Icon name={category.icon} className={`text-${category.color}-600 dark:text-${category.color}-400`} size={28} />
         </div>
         <div>
           <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100">
