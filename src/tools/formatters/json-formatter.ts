@@ -1,4 +1,4 @@
-import type { Tool, ToolResult, ToolConfig } from '../types';
+import type { Tool, ToolResult, ToolConfig } from '../../types';
 import { TOOL_CATEGORIES } from '../../lib/tools/registry';
 
 export interface JsonFormatterConfig extends ToolConfig {
@@ -6,19 +6,30 @@ export interface JsonFormatterConfig extends ToolConfig {
   sortKeys: boolean;
   removeComments: boolean;
   validateOnly: boolean;
+  // New advanced options (all optional for backward compatibility)
+  useTabs?: boolean;
+  sortKeysCaseInsensitive?: boolean;
+  allowSingleQuotes?: boolean;
+  replaceSpecialNumbers?: 'none' | 'null' | 'string';
+  inlineShortArrays?: boolean;
+  inlineArrayMaxLength?: number; // default 5
+  inlineArrayMaxLineLength?: number; // default 80
+  escapeUnicode?: boolean;
+  ensureFinalNewline?: boolean;
+  detectDuplicateKeys?: boolean;
 }
 
 export const JSON_FORMATTER_TOOL: Tool = {
   id: 'json-formatter',
   name: 'JSON Formatter & Validator',
-  description: 'Format, validate, and beautify JSON data with syntax highlighting and error detection.',
+  description: 'Format, validate, and beautify JSON/JSONC with key sorting, inline arrays, duplicate key detection, and rich error details—all locally.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!.subcategories!.find(sub => sub.id === 'json-formatting')!,
   slug: 'json-formatter',
   icon: '{}',
   keywords: ['json', 'format', 'beautify', 'validate', 'pretty print', 'minify', 'parser'],
-  seoTitle: 'Free JSON Formatter & Validator Online - Format & Beautify JSON',
-  seoDescription: 'Format, validate, and beautify JSON data instantly. Free online JSON formatter with syntax highlighting, error detection, and minification. No data upload required.',
+  seoTitle: 'Free JSON/JSONC Formatter & Validator | Sort Keys, Inline Arrays, Duplicate Keys',
+  seoDescription: 'Powerful JSON/JSONC formatter with safe comment stripping, key sorting, inline arrays, duplicate key detection, special-number coercion, and rich error details. 100% local.',
   examples: [
     {
       title: 'Basic JSON Formatting',
@@ -37,6 +48,18 @@ export const JSON_FORMATTER_TOOL: Tool = {
       input: '[{"id":1,"name":"Item 1"},{"id":2,"name":"Item 2"}]',
       output: '[\n  {\n    "id": 1,\n    "name": "Item 1"\n  },\n  {\n    "id": 2,\n    "name": "Item 2"\n  }\n]',
       description: 'Format arrays with proper indentation'
+    },
+    {
+      title: 'JSONC with Comments & Single Quotes',
+      input: `{
+  // User information (JSONC)
+  'name': 'John',
+  age: 30, /* trailing comma allowed below */
+  languages: ['en', 'es',],
+  rating: NaN, // special number
+}`,
+      output: '{\n  "name": "John",\n  "age": 30,\n  "languages": ["en", "es"],\n  "rating": null\n}',
+      description: 'Safely strip comments, convert single quotes, fix trailing commas, and coerce NaN'
     }
   ],
   useCases: [
@@ -45,7 +68,8 @@ export const JSON_FORMATTER_TOOL: Tool = {
     'Debug JSON structure and find syntax errors',
     'Beautify minified JSON configuration files',
     'Compare JSON objects by normalizing format',
-    'Prepare JSON for documentation or presentations'
+    'Prepare JSON for documentation or presentations',
+    'Accept JSONC-like input (comments, trailing commas) and output strict JSON'
   ],
   commonErrors: [
     'Missing quotes around property names - use double quotes',
@@ -53,7 +77,8 @@ export const JSON_FORMATTER_TOOL: Tool = {
     'Single quotes not supported - use double quotes only',
     'Undefined, functions, and comments are not valid JSON',
     'Check for unescaped special characters in strings',
-    'Ensure proper nesting and bracket matching'
+    'Ensure proper nesting and bracket matching',
+    'Duplicate keys in objects are allowed by parsers but cause data loss (last wins)'
   ],
   faq: [
     {
@@ -70,7 +95,7 @@ export const JSON_FORMATTER_TOOL: Tool = {
     },
     {
       question: 'What JSON features are supported?',
-      answer: 'Standard JSON including strings, numbers, booleans, null, objects, and arrays. Comments and trailing commas are automatically removed if present.'
+      answer: 'Standard JSON plus JSONC-style input conveniences: comments and trailing commas are safely removed. Optional support for single-quoted strings and coercion of NaN/Infinity.'
     },
     {
       question: 'Can I minify JSON as well as format it?',
@@ -95,17 +120,21 @@ export function formatJson(input: string, config: JsonFormatterConfig): ToolResu
   }
 
   try {
-    // Remove comments if requested
-    let cleanInput = input;
-    if (config.removeComments) {
-      // Remove single-line comments
-      cleanInput = cleanInput.replace(/\/\/.*$/gm, '');
-      // Remove multi-line comments
-      cleanInput = cleanInput.replace(/\/\*[\s\S]*?\*\//g, '');
-    }
+    const start = performance.now?.() ?? Date.now();
 
-    // Remove trailing commas (common in JavaScript but invalid in JSON)
-    cleanInput = cleanInput.replace(/,(\s*[}\]])/g, '$1');
+    // Normalize/clean input safely (JSONC-like handling)
+    const cleaned = cleanJsonInput(input, {
+      removeComments: !!config.removeComments,
+      allowSingleQuotes: config.allowSingleQuotes !== false, // default true
+      replaceSpecialNumbers: config.replaceSpecialNumbers ?? 'none',
+    });
+
+    const cleanInput = cleaned.text;
+
+    // Optionally detect duplicate keys on cleaned input (pre-parse)
+    const duplicateInfo = (config.detectDuplicateKeys ?? true)
+      ? detectDuplicateKeys(cleanInput)
+      : { duplicates: [], count: 0 };
 
     // Parse the JSON
     const parsed = JSON.parse(cleanInput);
@@ -118,20 +147,43 @@ export function formatJson(input: string, config: JsonFormatterConfig): ToolResu
         metadata: {
           valid: true,
           type: Array.isArray(parsed) ? 'array' : typeof parsed,
-          keys: typeof parsed === 'object' && parsed !== null ? Object.keys(parsed).length : 0
+          keys: typeof parsed === 'object' && parsed !== null ? Object.keys(parsed).length : 0,
+          duplicates: duplicateInfo.duplicates,
+          duplicateCount: duplicateInfo.count,
+          processingTimeMs: (performance.now?.() ?? Date.now()) - start,
         }
       };
     }
 
     // Sort keys if requested
-    const sortedJson = config.sortKeys ? sortJsonKeys(parsed) : parsed;
+    const sortedJson = config.sortKeys
+      ? sortJsonKeys(parsed, !!config.sortKeysCaseInsensitive)
+      : parsed;
 
     // Format with specified indentation
-    const formatted = JSON.stringify(
-      sortedJson, 
-      null, 
-      config.indent > 0 ? config.indent : undefined
-    );
+    let formatted: string;
+    const indentSize = Math.max(0, Number(config.indent ?? 2));
+    const indentUnit = config.useTabs ? '\t' : ' ';
+    const indentStr = indentSize > 0 && !config.useTabs ? ' '.repeat(indentSize) : (config.useTabs ? '\t' : '');
+
+    if (indentSize === 0) {
+      // Minified
+      formatted = JSON.stringify(sortedJson);
+    } else {
+      formatted = prettyStringify(sortedJson, {
+        indentStr: indentStr || '  ',
+        sortKeys: !!config.sortKeys,
+        sortKeysCaseInsensitive: !!config.sortKeysCaseInsensitive,
+        inlineShortArrays: config.inlineShortArrays ?? true,
+        inlineArrayMaxLength: config.inlineArrayMaxLength ?? 5,
+        inlineArrayMaxLineLength: config.inlineArrayMaxLineLength ?? 80,
+        escapeUnicode: !!config.escapeUnicode,
+      });
+    }
+
+    if (config.ensureFinalNewline) {
+      if (!formatted.endsWith('\n')) formatted += '\n';
+    }
 
     return {
       success: true,
@@ -142,7 +194,11 @@ export function formatJson(input: string, config: JsonFormatterConfig): ToolResu
         formattedSize: formatted.length,
         compressionRatio: ((input.length - formatted.length) / input.length * 100).toFixed(1),
         type: Array.isArray(parsed) ? 'array' : typeof parsed,
-        depth: calculateDepth(parsed)
+        depth: calculateDepth(parsed),
+        duplicates: duplicateInfo.duplicates,
+        duplicateCount: duplicateInfo.count,
+        processingTimeMs: (performance.now?.() ?? Date.now()) - start,
+        cleaning: cleaned.transforms,
       }
     };
 
@@ -151,13 +207,15 @@ export function formatJson(input: string, config: JsonFormatterConfig): ToolResu
     
     // Try to provide more helpful error messages
     let helpfulMessage = errorMessage;
-    if (errorMessage.includes('Unexpected token')) {
-      const match = errorMessage.match(/position (\d+)/);
-      if (match) {
-        const position = parseInt(match[1]);
-        const context = input.substring(Math.max(0, position - 20), position + 20);
-        helpfulMessage += `\n\nNear: "${context}"`;
-      }
+    // Extract position from error and compute line/column and caret
+    const match = ('' + errorMessage).match(/position\s+(\d+)/i);
+    if (match) {
+      const pos = parseInt(match[1]);
+      const loc = indexToLineCol(input, pos);
+      const lineText = getLineText(input, loc.line);
+      const caret = ' '.repeat(Math.max(0, loc.column - 1)) + '↑';
+      helpfulMessage += `\n\nAt line ${loc.line}, column ${loc.column}`;
+      helpfulMessage += `\n${lineText}\n${caret}`;
     }
 
     // Common JSON errors with suggestions
@@ -170,6 +228,9 @@ export function formatJson(input: string, config: JsonFormatterConfig): ToolResu
     if (input.includes('undefined') || input.includes('function')) {
       helpfulMessage += '\n\nTip: undefined and functions are not valid in JSON';
     }
+    if (/^\uFEFF/.test(input)) {
+      helpfulMessage += '\n\nTip: Remove BOM (\uFEFF) at the start of the file';
+    }
 
     return {
       success: false,
@@ -178,15 +239,19 @@ export function formatJson(input: string, config: JsonFormatterConfig): ToolResu
   }
 }
 
-function sortJsonKeys(obj: any): any {
+function sortJsonKeys(obj: any, caseInsensitive: boolean): any {
   if (Array.isArray(obj)) {
-    return obj.map(sortJsonKeys);
+    return obj.map((v) => sortJsonKeys(v, caseInsensitive));
   }
   
   if (obj !== null && typeof obj === 'object') {
     const sorted: any = {};
-    Object.keys(obj).sort().forEach(key => {
-      sorted[key] = sortJsonKeys(obj[key]);
+    const keys = Object.keys(obj).sort((a, b) => {
+      if (caseInsensitive) return a.toLowerCase().localeCompare(b.toLowerCase());
+      return a.localeCompare(b);
+    });
+    keys.forEach(key => {
+      sorted[key] = sortJsonKeys(obj[key], caseInsensitive);
     });
     return sorted;
   }
@@ -208,4 +273,436 @@ function calculateDepth(obj: any, currentDepth: number = 0): number {
   return Object.values(obj).reduce((maxDepth, value) => 
     Math.max(maxDepth, calculateDepth(value, currentDepth + 1)), currentDepth
   );
+}
+
+// Utilities
+type CleanOptions = {
+  removeComments: boolean;
+  allowSingleQuotes: boolean;
+  replaceSpecialNumbers: 'none' | 'null' | 'string';
+};
+
+function cleanJsonInput(text: string, opts: CleanOptions): { text: string; transforms: Record<string, any> } {
+  let src = text;
+  const transforms: Record<string, any> = {};
+
+  // Remove BOM
+  if (src.charCodeAt(0) === 0xFEFF) {
+    src = src.slice(1);
+    transforms.removedBOM = true;
+  }
+
+  // Remove comments safely
+  if (opts.removeComments) {
+    const removed = stripComments(src);
+    if (removed.modified) transforms.removedComments = true;
+    src = removed.text;
+  }
+
+  // Remove trailing commas safely
+  const noTrailing = stripTrailingCommas(src);
+  if (noTrailing.modified) transforms.removedTrailingCommas = true;
+  src = noTrailing.text;
+
+  // Convert single-quoted strings to double-quoted
+  if (opts.allowSingleQuotes) {
+    const conv = convertSingleQuotedStrings(src);
+    if (conv.modified) transforms.convertedSingleQuotes = true;
+    src = conv.text;
+  }
+
+  // Replace special numbers outside strings/comments
+  if (opts.replaceSpecialNumbers !== 'none') {
+    const rep = replaceSpecialNumbers(src, opts.replaceSpecialNumbers);
+    if (rep.modified) transforms.replacedSpecialNumbers = opts.replaceSpecialNumbers;
+    src = rep.text;
+  }
+
+  return { text: src, transforms };
+}
+
+function stripComments(src: string): { text: string; modified: boolean } {
+  let out = '';
+  let i = 0;
+  let modified = false;
+  let inString: false | 'single' | 'double' = false;
+  let escaped = false;
+  while (i < src.length) {
+    const ch = src[i];
+    const next = src[i + 1];
+
+    if (inString) {
+      out += ch;
+      if (!escaped && ((inString === 'double' && ch === '"') || (inString === 'single' && ch === "'"))) {
+        inString = false;
+      }
+      escaped = !escaped && ch === '\\';
+      i++;
+      continue;
+    }
+
+    // Enter string
+    if (ch === '"') { inString = 'double'; out += ch; i++; escaped = false; continue; }
+    if (ch === "'") { inString = 'single'; out += ch; i++; escaped = false; continue; }
+
+    // Line comment //...
+    if (ch === '/' && next === '/') {
+      modified = true;
+      i += 2;
+      while (i < src.length && src[i] !== '\n') i++;
+      continue; // skip until newline (drop comment)
+    }
+
+    // Block comment /* ... */
+    if (ch === '/' && next === '*') {
+      modified = true;
+      i += 2;
+      while (i < src.length && !(src[i] === '*' && src[i + 1] === '/')) i++;
+      i += 2; // skip closing */
+      continue;
+    }
+
+    out += ch;
+    i++;
+  }
+  return { text: out, modified };
+}
+
+function stripTrailingCommas(src: string): { text: string; modified: boolean } {
+  let out = '';
+  let i = 0;
+  let modified = false;
+  let inString: false | 'single' | 'double' = false;
+  let escaped = false;
+  while (i < src.length) {
+    const ch = src[i];
+    const next = src[i + 1];
+
+    if (inString) {
+      out += ch;
+      if (!escaped && ((inString === 'double' && ch === '"') || (inString === 'single' && ch === "'"))) {
+        inString = false;
+      }
+      escaped = !escaped && ch === '\\';
+      i++;
+      continue;
+    }
+
+    // Enter string
+    if (ch === '"') { inString = 'double'; out += ch; i++; escaped = false; continue; }
+    if (ch === "'") { inString = 'single'; out += ch; i++; escaped = false; continue; }
+
+    if (ch === ',') {
+      // Lookahead to see if the next non-whitespace/comment char is } or ]
+      let j = i + 1;
+      // Skip whitespace and comments
+      while (j < src.length) {
+        const cj = src[j];
+        if (cj === ' ' || cj === '\t' || cj === '\n' || cj === '\r') { j++; continue; }
+        if (cj === '/' && src[j + 1] === '/') { j += 2; while (j < src.length && src[j] !== '\n') j++; continue; }
+        if (cj === '/' && src[j + 1] === '*') { j += 2; while (j < src.length && !(src[j] === '*' && src[j + 1] === '/')) j++; j += 2; continue; }
+        break;
+      }
+      const endCh = src[j];
+      if (endCh === '}' || endCh === ']') {
+        // Skip this comma
+        modified = true;
+        i++; // do not append
+        continue;
+      }
+    }
+
+    out += ch;
+    i++;
+  }
+  return { text: out, modified };
+}
+
+function convertSingleQuotedStrings(src: string): { text: string; modified: boolean } {
+  let out = '';
+  let i = 0;
+  let modified = false;
+  let inDouble = false;
+  let inSingle = false;
+  let escaped = false;
+  while (i < src.length) {
+    const ch = src[i];
+    if (inDouble) {
+      out += ch;
+      if (!escaped && ch === '"') inDouble = false;
+      escaped = !escaped && ch === '\\';
+      i++;
+      continue;
+    }
+    if (inSingle) {
+      // Convert content into a double-quoted string
+      let content = '';
+      let esc = false;
+      while (i < src.length) {
+        const c = src[i++];
+        if (!esc && c === "'") {
+          break; // end of single-quoted string
+        }
+        if (!esc && c === '\\') {
+          esc = true;
+          continue;
+        }
+        if (esc) {
+          // Special case: \' should become '
+          if (c === "'") {
+            content += "'"; // drop the backslash
+          } else {
+            content += '\\' + c;
+          }
+          esc = false;
+          continue;
+        }
+        if (c === '"') {
+          content += '\\"';
+        } else if (c === '\n') {
+          content += '\\n';
+        } else if (c === '\r') {
+          content += '\\r';
+        } else {
+          content += c;
+        }
+      }
+      out += '"' + content + '"';
+      inSingle = false;
+      modified = true;
+      continue;
+    }
+
+    if (ch === '"') { inDouble = true; out += ch; i++; escaped = false; continue; }
+    if (ch === "'") { inSingle = true; i++; continue; }
+    out += ch;
+    i++;
+  }
+  return { text: out, modified };
+}
+
+function replaceSpecialNumbers(src: string, mode: 'null' | 'string'): { text: string; modified: boolean } {
+  let out = '';
+  let i = 0;
+  let modified = false;
+  let inString: false | 'single' | 'double' = false;
+  let escaped = false;
+  while (i < src.length) {
+    const ch = src[i];
+    const next = src[i + 1];
+    if (inString) {
+      out += ch;
+      if (!escaped && ((inString === 'double' && ch === '"') || (inString === 'single' && ch === "'"))) {
+        inString = false;
+      }
+      escaped = !escaped && ch === '\\';
+      i++;
+      continue;
+    }
+    if (ch === '"') { inString = 'double'; out += ch; i++; escaped = false; continue; }
+    if (ch === "'") { inString = 'single'; out += ch; i++; escaped = false; continue; }
+
+    // Handle -Infinity first
+    if (ch === '-' && src.slice(i + 1, i + 9) === 'Infinity') {
+      modified = true;
+      out += mode === 'null' ? 'null' : '"-Infinity"';
+      i += 9;
+      continue;
+    }
+    // Infinity
+    if (src.slice(i, i + 8) === 'Infinity') {
+      modified = true;
+      out += mode === 'null' ? 'null' : '"Infinity"';
+      i += 8;
+      continue;
+    }
+    // NaN
+    if (src.slice(i, i + 3) === 'NaN') {
+      modified = true;
+      out += mode === 'null' ? 'null' : '"NaN"';
+      i += 3;
+      continue;
+    }
+
+    out += ch;
+    i++;
+  }
+  return { text: out, modified };
+}
+
+function indexToLineCol(text: string, index: number): { line: number; column: number } {
+  let line = 1;
+  let col = 1;
+  for (let i = 0; i < index && i < text.length; i++) {
+    if (text[i] === '\n') { line++; col = 1; } else { col++; }
+  }
+  return { line, column: col };
+}
+
+function getLineText(text: string, line: number): string {
+  const lines = text.split(/\r?\n/);
+  return lines[Math.max(0, Math.min(lines.length - 1, line - 1))] ?? '';
+}
+
+function detectDuplicateKeys(src: string): { duplicates: Array<{ path: string; key: string; line: number; column: number }>; count: number } {
+  type Frame = { type: 'object' | 'array'; keys?: Record<string, true>; path: string[] };
+  const stack: Frame[] = [];
+  const dups: Array<{ path: string; key: string; line: number; column: number }> = [];
+
+  let i = 0;
+  let line = 1;
+  let col = 1;
+  let inString: false | 'single' | 'double' = false;
+  let escaped = false;
+
+  const pushObj = () => stack.push({ type: 'object', keys: {}, path: [...(stack.at(-1)?.path ?? [])] });
+  const pushArr = () => stack.push({ type: 'array', path: [...(stack.at(-1)?.path ?? [])] });
+
+  while (i < src.length) {
+    const ch = src[i];
+    const next = src[i + 1];
+
+    const advance = (n = 1) => {
+      for (let k = 0; k < n; k++) {
+        const c = src[i++];
+        if (c === '\n') { line++; col = 1; } else { col++; }
+      }
+    };
+
+    if (inString) {
+      if (!escaped && ((inString === 'double' && ch === '"') || (inString === 'single' && ch === "'"))) {
+        inString = false; advance(); continue;
+      }
+      escaped = !escaped && ch === '\\';
+      advance();
+      continue;
+    }
+
+    if (ch === '"') { inString = 'double'; advance(); continue; }
+    if (ch === "'") { inString = 'single'; advance(); continue; }
+
+    // skip whitespace
+    if (ch === ' ' || ch === '\t' || ch === '\r' || ch === '\n') { advance(); continue; }
+
+    // skip comments
+    if (ch === '/' && next === '/') { while (i < src.length && src[i] !== '\n') advance(); continue; }
+    if (ch === '/' && next === '*') { advance(2); while (i < src.length && !(src[i] === '*' && src[i + 1] === '/')) advance(); advance(2); continue; }
+
+    if (ch === '{') { pushObj(); advance(); continue; }
+    if (ch === '[') { pushArr(); advance(); continue; }
+    if (ch === '}' || ch === ']') { stack.pop(); advance(); continue; }
+
+    // Detect keys in objects: "key" :
+    if (ch === '"' && stack.at(-1)?.type === 'object') {
+      // read string key
+      let key = '';
+      advance();
+      let esc = false;
+      while (i < src.length) {
+        const c = src[i];
+        if (!esc && c === '"') { advance(); break; }
+        if (!esc && c === '\\') { esc = true; advance(); continue; }
+        if (esc) { key += c; esc = false; advance(); continue; }
+        key += c; advance();
+      }
+      // skip whitespace/comments
+      while (i < src.length) {
+        const c = src[i];
+        if (c === ' ' || c === '\t' || c === '\r' || c === '\n') { advance(); continue; }
+        if (c === '/' && src[i + 1] === '/') { while (i < src.length && src[i] !== '\n') advance(); continue; }
+        if (c === '/' && src[i + 1] === '*') { advance(2); while (i < src.length && !(src[i] === '*' && src[i + 1] === '/')) advance(); advance(2); continue; }
+        break;
+      }
+      if (src[i] === ':') {
+        const frame = stack.at(-1);
+        if (frame && frame.type === 'object' && frame.keys) {
+          if (Object.prototype.hasOwnProperty.call(frame.keys, key)) {
+            dups.push({ path: frame.path.join('.'), key, line, column: col });
+          } else {
+            frame.keys[key] = true;
+          }
+        }
+      }
+      continue;
+    }
+
+    // Track path using keys only on parse side; here we keep simple
+    advance();
+  }
+  return { duplicates: dups, count: dups.length };
+}
+
+type PrettyOptions = {
+  indentStr: string;
+  sortKeys: boolean;
+  sortKeysCaseInsensitive: boolean;
+  inlineShortArrays: boolean;
+  inlineArrayMaxLength: number;
+  inlineArrayMaxLineLength: number;
+  escapeUnicode: boolean;
+};
+
+function prettyStringify(value: any, opts: PrettyOptions, level = 0): string {
+  const indent = opts.indentStr.repeat(level);
+  const nextIndent = opts.indentStr.repeat(level + 1);
+
+  const stringifyString = (s: string) => {
+    const json = JSON.stringify(s);
+    if (!opts.escapeUnicode) return json;
+    // Escape non-ASCII
+    return json.replace(/[\u0080-\uFFFF]/g, (ch) => {
+      const code = ch.charCodeAt(0);
+      return '\\u' + code.toString(16).padStart(4, '0');
+    });
+  };
+
+  const stringifyPrimitive = (v: any) => {
+    if (v === null) return 'null';
+    switch (typeof v) {
+      case 'string':
+        return stringifyString(v);
+      case 'number':
+        return Number.isFinite(v) ? String(v) : 'null';
+      case 'boolean':
+        return v ? 'true' : 'false';
+      default:
+        return JSON.stringify(v);
+    }
+  };
+
+  if (value === null || typeof value !== 'object') {
+    return stringifyPrimitive(value);
+  }
+
+  if (Array.isArray(value)) {
+    if (value.length === 0) return '[]';
+
+    const allPrimitive = value.every(v => v === null || typeof v !== 'object');
+    if (opts.inlineShortArrays && allPrimitive && value.length <= opts.inlineArrayMaxLength) {
+      const parts = value.map(v => stringifyPrimitive(v));
+      const oneLine = `[${parts.join(', ')}]`;
+      if (oneLine.length <= opts.inlineArrayMaxLineLength) {
+        return oneLine;
+      }
+    }
+
+    const lines = value.map(v => `${nextIndent}${prettyStringify(v, opts, level + 1)}`);
+    return `[\n${lines.join(',\n')}\n${indent}]`;
+  }
+
+  // Object
+  const entries = Object.entries(value);
+  if (entries.length === 0) return '{}';
+  const keys = entries.map(([k]) => k);
+  if (opts.sortKeys) {
+    keys.sort((a, b) => opts.sortKeysCaseInsensitive
+      ? a.toLowerCase().localeCompare(b.toLowerCase())
+      : a.localeCompare(b)
+    );
+  }
+  const lines = keys.map((k) => {
+    const v = (value as any)[k];
+    return `${nextIndent}${stringifyString(k)}: ${prettyStringify(v, opts, level + 1)}`;
+  });
+  return `{\n${lines.join(',\n')}\n${indent}}`;
 }

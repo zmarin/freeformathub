@@ -596,6 +596,12 @@ export function processJsonPathExtractor(input: string, config: JsonPathExtracto
   }
 }
 
+// Lightweight public helper for other tools/components
+export function runJsonPath(json: any, pathExpression: string): JsonPathResult[] {
+  const nodes = parseJsonPath(pathExpression);
+  return executeJsonPath(json, nodes);
+}
+
 export const JSON_PATH_EXTRACTOR_TOOL: Tool = {
   id: 'json-path-extractor',
   name: 'JSON Path Extractor',
