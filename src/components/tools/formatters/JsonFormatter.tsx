@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { InputPanel, OutputPanel } from '../../ui';
 import { formatJson, type JsonFormatterConfig } from '../../../tools/formatters/json-formatter';
 import { useToolStore } from '../../../lib/store';
@@ -9,6 +9,14 @@ import { validateJsonAgainstSchema } from '../../../lib/utils/jsonSchema';
 interface JsonFormatterProps {
   className?: string;
 }
+
+const DEFAULT_SCHEMA_PLACEHOLDER = `{
+  "type": "object",
+  "properties": {
+    "name": { "type": "string" }
+  },
+  "required": ["name"]
+}`;
 
 const DEFAULT_CONFIG: JsonFormatterConfig = {
   indent: 2,
@@ -344,7 +352,6 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
 
   return (
     <div className={`${className}`}>
-      {/* Compact toolbar */}
       <CompactOptionsBar config={config} onChange={handleConfigChange} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
@@ -361,9 +368,7 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
         />
       </div>
 
-      {/* Right Side: Tabs */}
       <div className="flex flex-col h-full relative">
-        {/* Tabs */}
         <div className="flex items-center border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
           {[
             { id: 'formatted', label: 'Formatted' },
@@ -374,18 +379,15 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
             <button
               key={t.id}
               onClick={() => setActiveTab(t.id as any)}
-              className={`px-4 py-2 -mb-px border-b-2 transition-colors ${
-                activeTab === t.id
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-blue-600'
-              }`}
+              className={(activeTab === t.id
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-blue-600') + ' px-4 py-2 -mb-px border-b-2 transition-colors'}
             >
               {t.label}
             </button>
           ))}
         </div>
 
-        {/* Tab content */}
         {activeTab === 'formatted' && (
           <div>
             <OutputPanel
@@ -399,7 +401,6 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
               downloadContentType="application/json"
             />
 
-            {/* Analysis panel */}
             {metadata && !error && !isLoading && (
               <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-xs text-gray-700 dark:text-gray-300">
                 <div className="flex flex-wrap gap-x-6 gap-y-2">
@@ -446,7 +447,9 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
                 <button
                   onClick={() => setCollapseToMatchesTick(t => t + 1)}
                   disabled={!parsedData || matchedPaths.size === 0}
-                  className={`px-2 py-1 rounded border ${matchedPaths.size === 0 ? 'bg-gray-50 dark:bg-gray-900 text-gray-400 border-gray-200 dark:border-gray-700' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}`}
+                  className={(matchedPaths.size === 0
+                    ? 'bg-gray-50 dark:bg-gray-900 text-gray-400 border-gray-200 dark:border-gray-700'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600') + ' px-2 py-1 rounded border'}
                   title="Collapse all non-matching branches"
                 >
                   Collapse to matches
@@ -512,73 +515,8 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
           </div>
         )}
 
-        {activeTab === 'schema' && (
-          <div className="bg-white dark:bg-gray-800">
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-              <div className="text-sm text-gray-700 dark:text-gray-300">Paste a JSON Schema to validate the current JSON.</div>
-              <label className="text-xs cursor-pointer bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded border text-gray-700 dark:text-gray-300">
-                Upload Schema
-                <input type="file" accept=".json" className="hidden" onChange={async (e) => {
-                  const f = e.target.files?.[0];
-                  if (!f) return;
-                  try {
-                    const text = await f.text();
-                    setSchemaText(text);
-                  } catch {}
-                }} />
-              </label>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2">
-              <div className="border-r border-gray-200 dark:border-gray-700">
-                <textarea
-                  value={schemaText}
-                  onChange={(e) => setSchemaText(e.target.value)}
-                  placeholder={`{
-  "type": "object",
-  "properties": {
-    "name": { "type": "string" }
-  },
-  "required": ["name"]
-}`}
-                  rows={14}
-                  className="w-full p-3 text-sm font-mono bg-transparent border-none resize-none text-gray-900 dark:text-gray-100 focus:outline-none"
-                />
-                {schemaParseError && (
-                  <div className="px-3 pb-3 text-xs text-red-600 dark:text-red-400">Schema parse error: {schemaParseError}</div>
-                )}
-              </div>
-              <div>
-                {!parsedData ? (
-                  <div className="p-4 text-sm text-gray-500 dark:text-gray-400">Provide valid JSON to validate.</div>
-                ) : !schemaText ? (
-                  <div className="p-4 text-sm text-gray-500 dark:text-gray-400">Paste or upload a JSON Schema.</div>
-                ) : schemaResult ? (
-                  <div className="p-3 text-sm">
-                    {schemaResult.valid ? (
-                      <div className="text-green-700 dark:text-green-400">Valid ✓</div>
-                    ) : (
-                      <div>
-                        <div className="text-red-700 dark:text-red-400 mb-2">{schemaResult.errors.length} error(s):</div>
-                        <ul className="text-xs space-y-1">
-                          {schemaResult.errors.slice(0, 200).map((e, idx) => (
-                            <li key={idx} className="break-words"><span className="text-gray-500">{e.path}:</span> {e.message}</li>
-                          ))}
-                          {schemaResult.errors.length > 200 && (
-                            <li>...and {schemaResult.errors.length - 200} more</li>
-                          )}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="p-4 text-sm text-gray-500 dark:text-gray-400">Validating...</div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-        {/* Toast */}
-        {toasts.length > 0 && (
+        {activeTab === 'schema' && (<div className="p-4 text-sm text-gray-500 dark:text-gray-400">Schema panel disabled temporarily.</div>)}
+        {toasts.length > 0 ? (
           <div className="absolute bottom-3 right-3 flex flex-col gap-2">
             {toasts.map((t) => (
               <div key={t.id} className="px-3 py-2 rounded shadow bg-gray-900 text-white text-xs flex items-center gap-2">
@@ -587,14 +525,24 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
               </div>
             ))}
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );
 }
 
 // Simple collapsible JSON tree view
-function JsonTree({ data, highlightPaths, expandAllSignal, collapseAllSignal, focusPaths, focusSignal, onCopyFeedback }: { data: any; highlightPaths?: Set<string>; expandAllSignal?: number; collapseAllSignal?: number; focusPaths?: Set<string>; focusSignal?: number; onCopyFeedback?: (msg: string) => void }) {
+type JsonTreeProps = {
+  data: any;
+  highlightPaths?: Set<string>;
+  expandAllSignal?: number;
+  collapseAllSignal?: number;
+  focusPaths?: Set<string>;
+  focusSignal?: number;
+  onCopyFeedback?: (msg: string) => void;
+};
+
+function JsonTree({ data, highlightPaths, expandAllSignal, collapseAllSignal, focusPaths, focusSignal, onCopyFeedback }: JsonTreeProps) {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
 
   // Expand/collapse all via signals
@@ -704,7 +652,7 @@ function TreeNode({ data, path, level, collapsed, toggle, highlightPaths, onCopy
 
   if (!isObj && !isArr) {
     return (
-      <div style={indent} className={`py-0.5 ${isHighlighted ? 'bg-yellow-50 dark:bg-yellow-900/30' : ''}`}>
+      <div style={indent} className={(isHighlighted ? 'bg-yellow-50 dark:bg-yellow-900/30 ' : '') + 'py-0.5'}>
         <span
           className="text-gray-500 cursor-pointer hover:underline"
           title="Click to copy path (long-press to copy value)"
@@ -734,7 +682,7 @@ function TreeNode({ data, path, level, collapsed, toggle, highlightPaths, onCopy
 
   return (
     <div>
-      <div style={indent} className={`py-0.5 ${isHighlighted ? 'bg-yellow-50 dark:bg-yellow-900/30' : ''}`}>
+      <div style={indent} className={(isHighlighted ? 'bg-yellow-50 dark:bg-yellow-900/30 ' : '') + 'py-0.5'}>
         <button onClick={() => toggle(path)} className="mr-1 text-xs w-5 inline-flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300">
           {isCollapsed ? '+' : '-'}
         </button>
@@ -767,7 +715,7 @@ function TreeNode({ data, path, level, collapsed, toggle, highlightPaths, onCopy
                 const childPath = `${path}${isArr ? `[${k}]` : `.${k}`}`;
                 const childHighlighted = !!highlightPaths && highlightPaths.has(childPath);
                 return (
-                  <div style={{ paddingLeft: `${(level + 1) * 16}px` }} className={`py-0.5 ${childHighlighted ? 'bg-yellow-50 dark:bg-yellow-900/30' : ''}`}>
+                  <div style={{ paddingLeft: `${(level + 1) * 16}px` }} className={(childHighlighted ? 'bg-yellow-50 dark:bg-yellow-900/30 ' : '') + 'py-0.5'}>
                     <span
                       className="text-gray-500 cursor-pointer hover:underline"
                       title="Click to copy path (long-press to copy value)"
@@ -912,7 +860,7 @@ function CompactOptionsBar({
             </label>
 
             {config.inlineShortArrays && (
-              <>
+              <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
                   <label className="text-gray-600 dark:text-gray-300">Items</label>
                   <input type="number" min={1} max={20} value={config.inlineArrayMaxLength ?? 5} onChange={(e) => set('inlineArrayMaxLength', num(e.target.value, 5))} className="w-20 px-2 py-1 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600" />
@@ -921,7 +869,7 @@ function CompactOptionsBar({
                   <label className="text-gray-600 dark:text-gray-300">Line len</label>
                   <input type="number" min={20} max={200} value={config.inlineArrayMaxLineLength ?? 80} onChange={(e) => set('inlineArrayMaxLineLength', num(e.target.value, 80))} className="w-24 px-2 py-1 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600" />
                 </div>
-              </>
+              </div>
             )}
 
             <label className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-300">
