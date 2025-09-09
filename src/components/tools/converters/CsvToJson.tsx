@@ -1,8 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
-import { InputPanel, OutputPanel, OptionsPanel } from '../../ui';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { processCsvToJson, type CsvToJsonConfig } from '../../../tools/converters/csv-to-json';
 import { useToolStore } from '../../../lib/store';
-import { debounce } from '../../../lib/utils';
+import { debounce, copyToClipboard, downloadFile } from '../../../lib/utils';
 
 interface CsvToJsonProps {
   className?: string;
@@ -29,7 +28,8 @@ const DEFAULT_CONFIG: CsvToJsonConfig = {
   maxRows: 0,
 };
 
-const PARSING_OPTIONS = [
+// Essential options only - simplified UX
+const ESSENTIAL_OPTIONS = [
   {
     key: 'delimiter',
     label: 'Delimiter',
@@ -40,18 +40,39 @@ const PARSING_OPTIONS = [
       { value: 'semicolon', label: 'Semicolon (;)' },
       { value: 'tab', label: 'Tab (\\t)' },
       { value: 'pipe', label: 'Pipe (|)' },
-      { value: 'space', label: 'Space ( )' },
-      { value: 'custom', label: 'Custom' },
     ],
-    description: 'Character used to separate CSV fields',
+    description: 'CSV field separator',
   },
   {
     key: 'hasHeaders',
-    label: 'Has Headers',
-    type: 'checkbox' as const,
+    label: 'Headers',
+    type: 'boolean' as const,
     default: true,
-    description: 'First row contains column headers',
+    description: 'First row contains headers',
   },
+  {
+    key: 'outputFormat',
+    label: 'Output Format',
+    type: 'select' as const,
+    default: 'records',
+    options: [
+      { value: 'records', label: 'Objects' },
+      { value: 'array', label: 'Array' },
+      { value: 'object', label: 'Columns' },
+    ],
+    description: 'JSON structure format',
+  },
+  {
+    key: 'parseNumbers',
+    label: 'Data Types',
+    type: 'boolean' as const,
+    default: true,
+    description: 'Auto-detect numbers and booleans',
+  },
+];
+
+// Advanced options for power users
+const ADVANCED_OPTIONS = [
   {
     key: 'quoteChar',
     label: 'Quote Character',
@@ -66,75 +87,47 @@ const PARSING_OPTIONS = [
     default: '\\',
     description: 'Character used to escape special characters',
   },
-] as const;
-
-const DATA_PROCESSING_OPTIONS = [
-  {
-    key: 'parseNumbers',
-    label: 'Parse Numbers',
-    type: 'checkbox' as const,
-    default: true,
-    description: 'Convert numeric strings to numbers',
-  },
   {
     key: 'parseBooleans',
     label: 'Parse Booleans',
-    type: 'checkbox' as const,
+    type: 'boolean' as const,
     default: true,
-    description: 'Convert boolean strings (true/false, yes/no) to boolean values',
+    description: 'Convert boolean strings to boolean values',
   },
   {
     key: 'parseDates',
     label: 'Parse Dates',
-    type: 'checkbox' as const,
+    type: 'boolean' as const,
     default: false,
     description: 'Convert date strings to ISO format',
   },
   {
     key: 'trimWhitespace',
     label: 'Trim Whitespace',
-    type: 'checkbox' as const,
+    type: 'boolean' as const,
     default: true,
-    description: 'Remove leading and trailing whitespace from values',
+    description: 'Remove leading/trailing whitespace',
   },
   {
     key: 'skipEmptyLines',
     label: 'Skip Empty Lines',
-    type: 'checkbox' as const,
+    type: 'boolean' as const,
     default: true,
     description: 'Ignore completely empty rows',
   },
-] as const;
-
-const OUTPUT_OPTIONS = [
-  {
-    key: 'outputFormat',
-    label: 'Output Format',
-    type: 'select' as const,
-    default: 'records',
-    options: [
-      { value: 'records', label: '📋 Records - Array of objects [{}, {}]' },
-      { value: 'array', label: '📊 Array - 2D array [[],[]]' },
-      { value: 'object', label: '🗂️ Object - Columns as arrays {col: []}' },
-    ],
-    description: 'Structure of the JSON output',
-  },
-  {
-    key: 'includeLineNumbers',
-    label: 'Include Line Numbers',
-    type: 'checkbox' as const,
-    default: false,
-    description: 'Add __line property to each record',
-  },
-] as const;
-
-const ADVANCED_OPTIONS = [
   {
     key: 'strictMode',
     label: 'Strict Mode',
-    type: 'checkbox' as const,
+    type: 'boolean' as const,
     default: false,
-    description: 'Reject rows with parsing errors instead of attempting to fix them',
+    description: 'Reject rows with parsing errors',
+  },
+  {
+    key: 'includeLineNumbers',
+    label: 'Line Numbers',
+    type: 'boolean' as const,
+    default: false,
+    description: 'Add __line property to records',
   },
   {
     key: 'maxRows',
@@ -143,439 +136,508 @@ const ADVANCED_OPTIONS = [
     default: 0,
     min: 0,
     max: 100000,
-    description: 'Limit the number of rows to process',
+    description: 'Limit rows to process',
   },
-] as const;
+];
 
-export function CsvToJson({ className = '' }: CsvToJsonProps) {
-  const [input, setInput] = useState(`name,age,city,active,salary
-John Doe,30,New York,true,75000
-Jane Smith,25,Los Angeles,false,65000
-Bob Johnson,35,Chicago,true,80000
-Alice Brown,28,Houston,true,70000
-Charlie Davis,32,Phoenix,false,72000`);
-  const [output, setOutput] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [metadata, setMetadata] = useState<any>(null);
-  const [warnings, setWarnings] = useState<string[]>([]);
-  
-  const { setCurrentTool, addToHistory } = useToolStore();
-  const [config, setConfig] = useState<CsvToJsonConfig>(DEFAULT_CONFIG);
-
-  const processInput = useMemo(
-    () => debounce((currentInput: string, currentConfig: CsvToJsonConfig) => {
-      setIsProcessing(true);
-      setError(null);
-      setWarnings([]);
-
-      try {
-        const result = processCsvToJson(currentInput, currentConfig);
-        
-        if (result.success && result.output !== undefined) {
-          setOutput(result.output);
-          setMetadata(result.metadata);
-          setWarnings(result.warnings || []);
-          
-          // Add to history
-          addToHistory({
-            toolId: 'csv-to-json',
-            input: `${result.metadata?.rowCount || 0} rows → ${currentConfig.outputFormat}`,
-            output: result.output.substring(0, 200) + (result.output.length > 200 ? '...' : ''),
-            config: currentConfig,
-            timestamp: Date.now(),
-          });
-        } else {
-          setError(result.error || 'Failed to convert CSV to JSON');
-          setOutput('');
-          setMetadata(null);
-        }
-      } catch (err) {
-        setError('An unexpected error occurred during CSV to JSON conversion');
-        setOutput('');
-        setMetadata(null);
-      } finally {
-        setIsProcessing(false);
-      }
-    }, 300),
-    [addToHistory]
-  );
-
-  useEffect(() => {
-    setCurrentTool('csv-to-json');
-  }, [setCurrentTool]);
-
-  useEffect(() => {
-    processInput(input, config);
-  }, [input, config, processInput]);
-
-  const handleConfigChange = (key: string, value: any) => {
-    setConfig(prev => ({ ...prev, [key]: value }));
-  };
-
-  const handleQuickExample = (type: 'simple' | 'semicolon' | 'noheaders' | 'quotes' | 'complex' | 'numbers') => {
-    const examples = {
-      simple: `name,age,city
+const EXAMPLES = [
+  {
+    title: 'Simple CSV',
+    value: `name,age,city
 John,30,New York
 Jane,25,Los Angeles
-Bob,35,Chicago`,
-      
-      semicolon: `Product;Price;Stock;Available
+Bob,35,Chicago`
+  },
+  {
+    title: 'Semicolon Delimiter',
+    value: `Product;Price;Stock;Available
 Laptop;999.99;15;yes
 Mouse;29.99;50;yes
-Keyboard;79.99;0;no`,
-      
-      noheaders: `John,30,New York,true
+Keyboard;79.99;0;no`
+  },
+  {
+    title: 'No Headers',
+    value: `John,30,New York,true
 Jane,25,Los Angeles,false
-Bob,35,Chicago,true`,
-      
-      quotes: `"Name","Description","Price"
+Bob,35,Chicago,true`
+  },
+  {
+    title: 'Quoted Fields',
+    value: `"Name","Description","Price"
 "John's Laptop","High-end gaming laptop with ""NVIDIA"" graphics",1299.99
-"Jane's Mouse","Wireless optical mouse, ""ergonomic"" design",39.99
-"Bob's Keyboard","Mechanical keyboard with RGB lighting",129.99`,
-      
-      complex: `date,product,quantity,price,discount,tax_rate,notes
-2023-12-01,"MacBook Pro",2,2499.00,0.10,0.08,"Bulk order, priority shipping"
-2023-12-02,"iPhone 15",5,999.99,0.05,0.08,"Standard delivery"
-2023-12-03,"AirPods Pro",10,249.00,0.15,0.08,"Holiday promotion"`,
-      
-      numbers: `ID,Value,Scientific,Percentage,Currency
-1,42,1.23e10,85.5%,$1,234.56
-2,-17,6.02e23,0.01%,€567.89
-3,0,3.14e-5,100%,¥987.12`
-    };
-    
-    setInput(examples[type]);
-    
-    // Adjust config for different examples
-    if (type === 'semicolon') {
-      setConfig(prev => ({ ...prev, delimiter: 'semicolon' }));
-    } else if (type === 'noheaders') {
-      setConfig(prev => ({ ...prev, hasHeaders: false, customHeaders: 'name,age,city,active' }));
-    } else {
-      setConfig(prev => ({ ...prev, delimiter: 'comma', hasHeaders: true }));
+"Jane's Mouse","Wireless optical mouse, ""ergonomic"" design",39.99`
+  },
+];
+
+export function CsvToJson({ className = '' }: CsvToJsonProps) {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+  const [error, setError] = useState<string | undefined>();
+  const [isLoading, setIsLoading] = useState(false);
+  const [config, setConfig] = useState<CsvToJsonConfig>(DEFAULT_CONFIG);
+  const [metadata, setMetadata] = useState<Record<string, any> | undefined>();
+  const [copied, setCopied] = useState(false);
+  const [autoFormat, setAutoFormat] = useState(true);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
+
+  const { addToHistory, getConfig: getSavedConfig, updateConfig: updateSavedConfig } = useToolStore();
+
+  // Load saved config once on mount
+  useEffect(() => {
+    try {
+      const saved = (getSavedConfig?.('csv-to-json') as Partial<CsvToJsonConfig>) || {};
+      if (saved && Object.keys(saved).length > 0) {
+        setConfig((prev) => ({ ...prev, ...saved }));
+      }
+    } catch {}
+  }, [getSavedConfig]);
+
+  // Process CSV function
+  const processCsv = useCallback((inputText: string = input, cfg: CsvToJsonConfig = config) => {
+    if (!inputText.trim()) {
+      setOutput('');
+      setError(undefined);
+      setMetadata(undefined);
+      setIsLoading(false);
+      return;
     }
+
+    setIsLoading(true);
+    
+    const result = processCsvToJson(inputText, cfg);
+    
+    if (result.success) {
+      setOutput(result.output || '');
+      setError(undefined);
+      setMetadata(result.metadata);
+      
+      // Add to history for successful operations
+      addToHistory({
+        toolId: 'csv-to-json',
+        input: inputText,
+        output: result.output || '',
+        config: cfg,
+        timestamp: Date.now(),
+      });
+    } else {
+      setOutput('');
+      setError(result.error);
+      setMetadata(undefined);
+    }
+    
+    setIsLoading(false);
+  }, [input, config, addToHistory]);
+
+  // Debounced processing for auto-format
+  const debouncedProcess = useMemo(
+    () => debounce(processCsv, 500),
+    [processCsv]
+  );
+
+  // Process input when it changes (only if auto-format is enabled)
+  useEffect(() => {
+    if (autoFormat) {
+      debouncedProcess(input, config);
+    }
+  }, [input, config, debouncedProcess, autoFormat]);
+
+  // Quick action handlers
+  const handleConvert = useCallback(() => {
+    processCsv(input, config);
+  }, [input, config, processCsv]);
+
+  const handleValidate = useCallback(() => {
+    const validateConfig = { ...config, validateOnly: true };
+    processCsv(input, validateConfig);
+  }, [input, config, processCsv]);
+
+  const handlePreview = useCallback(() => {
+    const previewConfig = { ...config, hasHeaders: true };
+    setConfig(previewConfig);
+    processCsv(input, previewConfig);
+  }, [input, config, processCsv]);
+
+  // File upload handler
+  const handleFileUpload = useCallback(async (file: File) => {
+    try {
+      const content = await file.text();
+      setInput(content);
+      if (autoFormat) {
+        processCsv(content, config);
+      }
+    } catch (error) {
+      setError('Failed to read file. Please make sure it\'s a valid CSV file.');
+    }
+  }, [autoFormat, config, processCsv]);
+
+  // Drag and drop handlers
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(true);
+  }, []);
+
+  const handleDragLeave = useCallback(() => {
+    setDragActive(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(false);
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      handleFileUpload(files[0]);
+    }
+  }, [handleFileUpload]);
+
+  // Copy handler
+  const handleCopy = useCallback(async () => {
+    try {
+      await copyToClipboard(output);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy:', error);
+    }
+  }, [output]);
+
+  // Download handler
+  const handleDownload = useCallback(() => {
+    const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+    const filename = `converted-${timestamp}.json`;
+    downloadFile(output, filename, 'application/json');
+  }, [output]);
+
+  const handleInputChange = (value: string) => {
+    setInput(value);
   };
 
-  const handleFormatPreset = (format: 'records' | 'array' | 'object') => {
-    setConfig(prev => ({ ...prev, outputFormat: format }));
+  const handleConfigChange = (newConfig: CsvToJsonConfig) => {
+    setConfig(newConfig);
+    try { updateSavedConfig?.('csv-to-json', newConfig); } catch {}
+    
+    // If not auto-formatting, don't process automatically
+    if (!autoFormat) return;
+    processCsv(input, { ...config, ...newConfig });
   };
 
-  // Build conditional options
-  const allOptions = [
-    ...PARSING_OPTIONS,
-    ...(config.delimiter === 'custom' ? [{
-      key: 'customDelimiter',
-      label: 'Custom Delimiter',
-      type: 'text' as const,
-      default: '',
-      description: 'Enter custom delimiter character(s)',
-    }] : []),
-    ...((!config.hasHeaders || config.hasHeaders === false) ? [{
-      key: 'customHeaders',
-      label: 'Custom Headers',
-      type: 'text' as const,
-      default: '',
-      description: 'Comma-separated header names (optional)',
-    }] : []),
-    ...DATA_PROCESSING_OPTIONS,
-    ...OUTPUT_OPTIONS,
-    ...ADVANCED_OPTIONS,
-  ];
-
-  const showCustomDelimiter = config.delimiter === 'custom';
-  const showCustomHeaders = !config.hasHeaders;
+  // Essential config options handler
+  const handleEssentialConfigChange = (key: string, value: any) => {
+    const newConfig = { ...config, [key]: value };
+    handleConfigChange(newConfig);
+  };
 
   return (
-    <div className={`grid gap-6 lg:grid-cols-12 ${className}`}>
-      <div className="lg:col-span-4 space-y-6">
-        {/* Format Selection */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700">Output Format</h3>
-          <div className="grid grid-cols-3 gap-2">
+    <div className={`flex flex-col ${className}`}>
+      {/* Tool Header with Quick Actions */}
+      <div className="flex flex-col sm:flex-row gap-4 p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+        {/* Quick Actions */}
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={handleConvert}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+            title="Convert CSV to JSON"
+          >
+            🔄 Convert
+          </button>
+          <button
+            onClick={handleValidate}
+            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors"
+            title="Validate CSV format only"
+          >
+            ✓ Validate
+          </button>
+          <button
+            onClick={handlePreview}
+            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"
+            title="Preview with headers enabled"
+          >
+            👁️ Preview
+          </button>
+          {!autoFormat && (
             <button
-              onClick={() => handleFormatPreset('records')}
-              className={`px-2 py-2 text-xs rounded transition-colors ${
-                config.outputFormat === 'records'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-              }`}
+              onClick={() => processCsv()}
+              disabled={!input.trim() || isLoading}
+              className="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 text-white text-sm font-medium rounded-lg transition-colors"
             >
-              📋 Objects
+              {isLoading ? '⏳' : '⚡'} Process
             </button>
-            <button
-              onClick={() => handleFormatPreset('array')}
-              className={`px-2 py-2 text-xs rounded transition-colors ${
-                config.outputFormat === 'array'
-                  ? 'bg-green-600 text-white'
-                  : 'bg-green-100 text-green-800 hover:bg-green-200'
-              }`}
-            >
-              📊 Array
-            </button>
-            <button
-              onClick={() => handleFormatPreset('object')}
-              className={`px-2 py-2 text-xs rounded transition-colors ${
-                config.outputFormat === 'object'
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-purple-100 text-purple-800 hover:bg-purple-200'
-              }`}
-            >
-              🗂️ Columns
-            </button>
-          </div>
+          )}
         </div>
 
-        {/* Quick Examples */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700">Quick Examples</h3>
-          <div className="grid grid-cols-1 gap-2">
-            <button
-              onClick={() => handleQuickExample('simple')}
-              className="px-3 py-2 text-xs bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition-colors text-left"
-            >
-              📄 Simple CSV
-            </button>
-            <button
-              onClick={() => handleQuickExample('semicolon')}
-              className="px-3 py-2 text-xs bg-green-100 text-green-800 rounded hover:bg-green-200 transition-colors text-left"
-            >
-              📊 Semicolon Delimiter
-            </button>
-            <button
-              onClick={() => handleQuickExample('noheaders')}
-              className="px-3 py-2 text-xs bg-orange-100 text-orange-800 rounded hover:bg-orange-200 transition-colors text-left"
-            >
-              📝 No Headers
-            </button>
-            <button
-              onClick={() => handleQuickExample('quotes')}
-              className="px-3 py-2 text-xs bg-purple-100 text-purple-800 rounded hover:bg-purple-200 transition-colors text-left"
-            >
-              💬 Quoted Fields
-            </button>
-            <button
-              onClick={() => handleQuickExample('complex')}
-              className="px-3 py-2 text-xs bg-red-100 text-red-800 rounded hover:bg-red-200 transition-colors text-left"
-            >
-              🔧 Complex Data
-            </button>
-            <button
-              onClick={() => handleQuickExample('numbers')}
-              className="px-3 py-2 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors text-left"
-            >
-              🔢 Numbers & Scientific
-            </button>
-          </div>
+        {/* Auto-format toggle */}
+        <div className="flex items-center gap-2 ml-auto">
+          <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <input
+              type="checkbox"
+              checked={autoFormat}
+              onChange={(e) => setAutoFormat(e.target.checked)}
+              className="rounded"
+            />
+            Auto-convert
+          </label>
         </div>
+      </div>
 
-        <OptionsPanel
-          title="Conversion Options"
-          options={allOptions}
-          values={config}
-          onChange={handleConfigChange}
-        />
-
-        {/* Conversion Statistics */}
-        {metadata && (
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-700">Conversion Stats</h3>
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs">
-              <div className="grid gap-1">
-                <div>
-                  <span className="text-blue-600">Rows:</span>
-                  <span className="ml-1 font-medium text-blue-800">{metadata.rowCount.toLocaleString()}</span>
-                </div>
-                <div>
-                  <span className="text-blue-600">Columns:</span>
-                  <span className="ml-1 font-medium text-blue-800">{metadata.columnCount}</span>
-                </div>
-                <div>
-                  <span className="text-blue-600">Null Values:</span>
-                  <span className="ml-1 font-medium text-blue-800">{metadata.nullCount}</span>
-                </div>
-                <div>
-                  <span className="text-blue-600">Output Size:</span>
-                  <span className="ml-1 font-medium text-blue-800">
-                    {(metadata.outputSize / 1024).toFixed(1)} KB
-                  </span>
-                </div>
-                <div>
-                  <span className="text-blue-600">Processing:</span>
-                  <span className="ml-1 font-medium text-blue-800">{metadata.processingTime}ms</span>
-                </div>
-                {metadata.emptyRowsSkipped > 0 && (
-                  <div>
-                    <span className="text-blue-600">Empty Rows Skipped:</span>
-                    <span className="ml-1 font-medium text-blue-800">{metadata.emptyRowsSkipped}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Column Information */}
-        {metadata && metadata.detectedColumns && (
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-700">Column Details</h3>
-            <div className="space-y-1 max-h-32 overflow-y-auto">
-              {metadata.detectedColumns.slice(0, 10).map((column: string, index: number) => (
-                <div key={index} className="flex justify-between text-xs p-2 bg-gray-50 rounded">
-                  <span className="text-gray-600 font-mono truncate mr-2">{column}</span>
-                  <span className="text-gray-800 text-xs">
-                    {metadata.dataTypes[column] || 'string'}
-                  </span>
-                </div>
-              ))}
-              {metadata.detectedColumns.length > 10 && (
-                <div className="text-xs text-center text-gray-500 p-1">
-                  +{metadata.detectedColumns.length - 10} more columns
-                </div>
+      {/* Main Content */}
+      <div className="flex flex-col lg:flex-row flex-1 min-h-[600px]">
+        {/* Input Section */}
+        <div className="flex-1 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700">
+          {/* Input Header */}
+          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              CSV Input
+            </h3>
+            <div className="flex items-center gap-2">
+              <label className="cursor-pointer text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded border transition-colors">
+                📁 Upload
+                <input
+                  type="file"
+                  accept=".csv,.tsv,.txt"
+                  className="hidden"
+                  onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
+                />
+              </label>
+              {input && (
+                <button
+                  onClick={() => setInput('')}
+                  className="text-xs px-3 py-1 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                  title="Clear input"
+                >
+                  🗑️ Clear
+                </button>
               )}
             </div>
           </div>
-        )}
 
-        {/* Data Types Legend */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700">Data Type Detection</h3>
-          <div className="text-xs space-y-1">
-            <div className="p-2 bg-gray-50 rounded">
-              <div className="font-medium text-gray-800 mb-1">Auto-Detection</div>
-              <div className="text-gray-600 space-y-1">
-                <div>• Numbers: 123, -45.67, 1.23e10</div>
-                <div>• Booleans: true/false, yes/no, 1/0</div>
-                <div>• Dates: YYYY-MM-DD, MM/DD/YYYY</div>
-                <div>• Nulls: empty, null, N/A</div>
+          {/* Input Textarea */}
+          <div 
+            className={`flex-1 relative ${dragActive ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Paste your CSV data here, or drag & drop a file..."
+              className="w-full h-full p-4 resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-mono text-sm border-none focus:outline-none focus:ring-0"
+              spellCheck={false}
+            />
+            {dragActive && (
+              <div className="absolute inset-0 flex items-center justify-center bg-blue-50/80 dark:bg-blue-900/40 backdrop-blur-sm">
+                <div className="text-blue-600 dark:text-blue-400 text-lg font-medium">
+                  Drop CSV file here
+                </div>
               </div>
+            )}
+          </div>
+
+          {/* Example buttons */}
+          <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex flex-wrap gap-2">
+              <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">Examples:</span>
+              {EXAMPLES.map((example, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setInput(example.value)}
+                  className="text-xs px-2 py-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-colors"
+                  title={example.title}
+                >
+                  {example.title}
+                </button>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Parse Errors */}
-        {metadata && metadata.errors && metadata.errors.length > 0 && (
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-700">Parse Errors</h3>
-            <div className="space-y-2 max-h-32 overflow-y-auto">
-              {metadata.errors.map((error: any, index: number) => (
-                <div key={index} className="p-2 bg-red-50 border border-red-200 rounded text-xs">
-                  <div className="text-red-800">
-                    <div className="font-medium">Line {error.line}: {error.error}</div>
-                    {error.value && (
-                      <div className="text-red-600 mt-1 font-mono truncate">
-                        "{error.value}"
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Warnings */}
-        {warnings.length > 0 && (
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-700">Warnings</h3>
-            <div className="space-y-2">
-              {warnings.map((warning, index) => (
-                <div key={index} className="p-2 bg-yellow-50 border border-yellow-200 rounded text-xs">
-                  <div className="flex items-start gap-2">
-                    <span className="text-yellow-600">⚠️</span>
-                    <span className="text-yellow-800">{warning}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className="lg:col-span-8 space-y-6">
-        <InputPanel
-          title="CSV Data"
-          value={input}
-          onChange={setInput}
-          placeholder="Enter CSV data to convert to JSON..."
-          language="text"
-        />
-
-        <OutputPanel
-          title={`JSON Output (${config.outputFormat} format)`}
-          value={output}
-          error={error}
-          isProcessing={isProcessing}
-          language="json"
-          placeholder="Converted JSON data will appear here..."
-          processingMessage="Converting CSV to JSON..."
-          customActions={
-            output ? (
-              <div className="flex gap-2">
-                <button
-                  onClick={() => navigator.clipboard?.writeText(output)}
-                  className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                >
-                  📋 Copy JSON
-                </button>
-                <button
-                  onClick={() => {
-                    const blob = new Blob([output], { type: 'application/json' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'converted-data.json';
-                    a.click();
-                    URL.revokeObjectURL(url);
-                  }}
-                  className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
-                >
-                  💾 Download JSON
-                </button>
-                {metadata && (
+        {/* Output Section */}
+        <div className="flex-1 flex flex-col">
+          {/* Output Header */}
+          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              JSON Output
+              {isLoading && <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">Converting...</span>}
+              {!error && output && <span className="ml-2 text-xs text-green-600 dark:text-green-400">✓ Success</span>}
+              {error && <span className="ml-2 text-xs text-red-600 dark:text-red-400">✗ Error</span>}
+            </h3>
+            <div className="flex items-center gap-2">
+              {output && (
+                <>
                   <button
-                    onClick={() => {
-                      const report = `CSV to JSON Conversion Report
-Generated: ${new Date().toISOString()}
-
-Source Data:
-- Rows: ${metadata.rowCount.toLocaleString()}
-- Columns: ${metadata.columnCount}
-- Format: ${config.outputFormat}
-- Delimiter: ${config.delimiter}
-
-Processing:
-- Empty Rows Skipped: ${metadata.emptyRowsSkipped}
-- Null Values: ${metadata.nullCount}
-- Parse Errors: ${metadata.errors?.length || 0}
-- Processing Time: ${metadata.processingTime}ms
-
-Output:
-- Size: ${(metadata.outputSize / 1024).toFixed(1)} KB
-- Structure: ${config.outputFormat}
-
-Columns:
-${metadata.detectedColumns.map((col: string) => 
-  `- ${col}: ${metadata.dataTypes[col] || 'string'}`
-).join('\n')}
-
-${metadata.errors && metadata.errors.length > 0 ? `\nParse Errors:\n${metadata.errors.map((e: any) => 
-  `- Line ${e.line}: ${e.error}`
-).join('\n')}` : ''}
-
-${warnings.length > 0 ? `\nWarnings:\n${warnings.map(w => `- ${w}`).join('\n')}` : ''}`;
-                      
-                      navigator.clipboard?.writeText(report);
-                    }}
-                    className="px-3 py-1 text-xs bg-orange-600 text-white rounded hover:bg-orange-700 transition-colors"
+                    onClick={handleCopy}
+                    className={`text-xs px-3 py-1 rounded border transition-colors ${
+                      copied 
+                        ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border-green-300 dark:border-green-600'
+                        : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
+                    }`}
                   >
-                    📊 Copy Report
+                    {copied ? '✓ Copied' : '📋 Copy'}
                   </button>
+                  <button
+                    onClick={handleDownload}
+                    className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded border border-gray-300 dark:border-gray-600 transition-colors"
+                  >
+                    💾 Download
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Output Content */}
+          <div className="flex-1 bg-white dark:bg-gray-800">
+            {error ? (
+              <div className="p-4 h-full">
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                  <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">Conversion Error</h4>
+                  <pre className="text-xs text-red-700 dark:text-red-300 whitespace-pre-wrap font-mono">
+                    {error}
+                  </pre>
+                </div>
+              </div>
+            ) : (
+              <div className="h-full flex flex-col">
+                <textarea
+                  value={output}
+                  readOnly
+                  placeholder="JSON output will appear here..."
+                  className="flex-1 p-4 resize-none bg-transparent text-gray-900 dark:text-gray-100 font-mono text-sm border-none focus:outline-none"
+                  spellCheck={false}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Simplified metadata */}
+          {metadata && !error && output && (
+            <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex flex-wrap gap-4 text-xs text-gray-600 dark:text-gray-400">
+                {metadata.rowCount && (
+                  <span><strong>Rows:</strong> {metadata.rowCount.toLocaleString()}</span>
+                )}
+                {metadata.columnCount && (
+                  <span><strong>Columns:</strong> {metadata.columnCount}</span>
+                )}
+                {metadata.outputSize && (
+                  <span><strong>Size:</strong> {(metadata.outputSize / 1024).toFixed(1)} KB</span>
+                )}
+                {metadata.processingTime && (
+                  <span><strong>Time:</strong> {metadata.processingTime}ms</span>
                 )}
               </div>
-            ) : undefined
-          }
-        />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Essential Options Panel */}
+      <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">Options</h4>
+            <button
+              onClick={() => setShowAdvanced(!showAdvanced)}
+              className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+            >
+              {showAdvanced ? '△ Less' : '▽ More'}
+            </button>
+          </div>
+          
+          {/* Essential options */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {ESSENTIAL_OPTIONS.map((option) => (
+              <div key={option.key} className="space-y-1">
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                  {option.label}
+                </label>
+                {option.type === 'boolean' ? (
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={!!config[option.key as keyof CsvToJsonConfig]}
+                      onChange={(e) => handleEssentialConfigChange(option.key, e.target.checked)}
+                      className="rounded"
+                    />
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      {option.description}
+                    </span>
+                  </label>
+                ) : option.type === 'select' ? (
+                  <select
+                    value={String(config[option.key as keyof CsvToJsonConfig] ?? option.default)}
+                    onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
+                    className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  >
+                    {option.options?.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                ) : null}
+              </div>
+            ))}
+          </div>
+
+          {/* Advanced options */}
+          {showAdvanced && (
+            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <h5 className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">Advanced Options</h5>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {ADVANCED_OPTIONS.map((option) => (
+                  <div key={option.key} className="space-y-1">
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                      {option.label}
+                    </label>
+                    {option.type === 'boolean' ? (
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={!!config[option.key as keyof CsvToJsonConfig]}
+                          onChange={(e) => handleEssentialConfigChange(option.key, e.target.checked)}
+                          className="rounded"
+                        />
+                        <span className="text-xs text-gray-600 dark:text-gray-400">
+                          {option.description}
+                        </span>
+                      </label>
+                    ) : option.type === 'select' ? (
+                      <select
+                        value={String(config[option.key as keyof CsvToJsonConfig] ?? option.default)}
+                        onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
+                        className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      >
+                        {option.options?.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                    ) : option.type === 'text' ? (
+                      <input
+                        type="text"
+                        value={String(config[option.key as keyof CsvToJsonConfig] ?? option.default)}
+                        onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
+                        className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                        placeholder={option.description}
+                      />
+                    ) : option.type === 'number' ? (
+                      <input
+                        type="number"
+                        value={Number(config[option.key as keyof CsvToJsonConfig] ?? option.default)}
+                        onChange={(e) => handleEssentialConfigChange(option.key, parseInt(e.target.value) || 0)}
+                        min={option.min}
+                        max={option.max}
+                        className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      />
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
