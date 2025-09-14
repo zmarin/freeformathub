@@ -44,27 +44,36 @@ export default function ToolSearch({
   }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (!isOpen) return;
-
     switch (e.key) {
-      case 'ArrowDown':
+      case 'ArrowDown': {
+        if (!isOpen || results.length === 0) return;
         e.preventDefault();
-        setSelectedIndex(prev => (prev + 1) % results.length);
+        setSelectedIndex((prev) => (prev + 1) % results.length);
         break;
-      case 'ArrowUp':
+      }
+      case 'ArrowUp': {
+        if (!isOpen || results.length === 0) return;
         e.preventDefault();
-        setSelectedIndex(prev => (prev - 1 + results.length) % results.length);
+        setSelectedIndex((prev) => (prev - 1 + results.length) % results.length);
         break;
-      case 'Enter':
+      }
+      case 'Enter': {
+        // Prefer navigating to highlighted tool; otherwise perform a full search
         e.preventDefault();
-        if (results[selectedIndex]) {
-          window.location.href = `/${results[selectedIndex].category.id}/${results[selectedIndex].slug}`;
+        const selected = results[selectedIndex];
+        const q = query.trim();
+        if (isOpen && selected) {
+          window.location.href = `/${selected.category.id}/${selected.slug}`;
+        } else if (q) {
+          window.location.href = `/search?q=${encodeURIComponent(q)}`;
         }
         break;
-      case 'Escape':
+      }
+      case 'Escape': {
         setIsOpen(false);
         inputRef.current?.blur();
         break;
+      }
     }
   };
 
@@ -98,22 +107,37 @@ export default function ToolSearch({
           onKeyDown={handleKeyDown}
           className={inputClasses}
           autoComplete="off"
+          aria-expanded={isOpen}
+          aria-haspopup="listbox"
         />
-        <div className={`absolute inset-y-0 left-0 ${size === 'large' ? 'pl-4' : 'pl-3'} flex items-center`}>
+        <div
+          className={`absolute inset-y-0 left-0 ${size === 'large' ? 'pl-4' : 'pl-3'} flex items-center cursor-text`}
+          onMouseDown={(e) => {
+            // Prevent losing focus when clicking the icon area
+            e.preventDefault();
+            inputRef.current?.focus();
+            setIsOpen(true);
+          }}
+          onTouchStart={(e) => {
+            e.preventDefault();
+            inputRef.current?.focus();
+            setIsOpen(true);
+          }}
+        >
           <svg className={`${size === 'large' ? 'h-6 w-6' : 'h-5 w-5'} text-gray-400`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
       </div>
 
-      {isOpen && results.length > 0 && (
-        <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+      {isOpen && (
+        <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg max-h-64 overflow-y-auto" role="listbox">
           {!query.trim() && (
             <div className="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b border-gray-100 dark:border-gray-700">
               Popular Tools
             </div>
           )}
-          {results.map((tool, index) => (
+          {results.length > 0 && results.map((tool, index) => (
             <button
               key={tool.slug}
               className={`w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0 ${
@@ -141,10 +165,18 @@ export default function ToolSearch({
               </div>
             </button>
           ))}
-          {query.trim() && results.length === 0 && (
-            <div className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 text-center">
-              No tools found for "{query}"
-            </div>
+          {query.trim() && (
+            <button
+              className="w-full px-4 py-3 text-left bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 border-t border-gray-200 dark:border-gray-700"
+              onClick={() => {
+                const q = query.trim();
+                if (q) window.location.href = `/search?q=${encodeURIComponent(q)}`;
+              }}
+            >
+              <div className="text-sm">
+                Search for "{query}"
+              </div>
+            </button>
           )}
         </div>
       )}
