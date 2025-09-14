@@ -104,25 +104,29 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
 
-      // Set default consent state (GDPR compliant - deny all)
+      // Set default consent state (GDPR compliant - allow anonymous analytics)
       gtag('consent', 'default', {
         'ad_storage': 'denied',
         'ad_user_data': 'denied',
         'ad_personalization': 'denied',
-        'analytics_storage': 'denied'
+        'analytics_storage': 'granted' // Anonymous analytics allowed by default
       });
     </script>
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-34Z7YVSEZ2"></script>
     <script>
-      // Ensure gtag is available before calling
-      window.addEventListener('load', function() {
-        if (typeof gtag !== 'undefined') {
-          gtag('js', new Date());
-          gtag('config', 'G-34Z7YVSEZ2');
-        }
+      // Initialize GA4 immediately when gtag.js loads
+      gtag('js', new Date());
+      gtag('config', 'G-34Z7YVSEZ2', {
+        // Enable debug mode for troubleshooting
+        debug_mode: false,
+        // Send page views automatically
+        send_page_view: true
       });
+
+      // Debug logging
+      console.log('GA4 initialized with tracking ID: G-34Z7YVSEZ2');
     </script>
 
     <!-- Google AdSense Auto ads - Consent-aware loading -->
