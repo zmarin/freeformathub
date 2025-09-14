@@ -70,6 +70,7 @@ import { CSS_SELECTOR_GENERATOR_TOOL } from '../../tools/web/css-selector-genera
 import { CSS_GRID_GENERATOR_TOOL } from '../../tools/web/css-grid-generator';
 import { SVG_OPTIMIZER_TOOL } from '../../tools/web/svg-optimizer';
 import { SVG_EDITOR_TOOL } from '../../tools/web/svg-editor';
+import { HTML_VISUALIZER_TOOL } from '../../tools/web/html-visualizer';
 import { API_REQUEST_BUILDER_TOOL } from '../../tools/web/api-request-builder';
 import { API_RESPONSE_FORMATTER_TOOL } from '../../tools/web/api-response-formatter';
 import { API_DOCUMENTATION_GENERATOR_TOOL } from '../../tools/web/api-documentation-generator';
@@ -208,6 +209,7 @@ registerTool(CSS_SELECTOR_GENERATOR_TOOL);
 registerTool(CSS_GRID_GENERATOR_TOOL);
 registerTool(SVG_OPTIMIZER_TOOL);
 registerTool(SVG_EDITOR_TOOL);
+registerTool(HTML_VISUALIZER_TOOL);
 registerTool(API_REQUEST_BUILDER_TOOL);
 registerTool(API_RESPONSE_FORMATTER_TOOL);
 registerTool(API_DOCUMENTATION_GENERATOR_TOOL);

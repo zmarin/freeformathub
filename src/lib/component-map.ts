@@ -48,6 +48,7 @@ import { JsMinifier } from '../components/tools/web/JsMinifier';
 import { UrlParser } from '../components/tools/web/UrlParser';
 import { HttpStatusCodes } from '../components/tools/web/HttpStatusCodes';
 import { UserAgentParser } from '../components/tools/web/UserAgentParser';
+import { HtmlVisualizer } from '../components/tools/web/HtmlVisualizer';
 
 // Additional crypto components
 import { EncryptionTool } from '../components/tools/crypto/EncryptionTool';
@@ -120,6 +121,7 @@ export const TOOL_COMPONENTS: Record<string, ToolComponent> = {
   'url-parser': UrlParser,
   'http-status-codes': HttpStatusCodes,
   'user-agent-parser': UserAgentParser,
+  'html-visualizer': HtmlVisualizer,
 
   // Additional crypto
   'encryption-tool': EncryptionTool,

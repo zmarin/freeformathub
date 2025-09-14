@@ -28,11 +28,6 @@ export interface ClientSearchResult {
 
 // Generate client-side tool registry from server registry
 function generateClientTools(): ClientTool[] {
-  // Check if we're in browser environment
-  if (typeof window === 'undefined') {
-    return [];
-  }
-
   try {
     const allTools = getAllTools();
     return allTools.map(tool => ({
@@ -40,7 +35,7 @@ function generateClientTools(): ClientTool[] {
       name: tool.name,
       slug: tool.slug,
       description: tool.description,
-      keywords: tool.keywords,
+      keywords: tool.keywords || [],
       icon: tool.icon,
       category: {
         id: tool.category.id,

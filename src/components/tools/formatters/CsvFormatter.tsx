@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { processCsvFormatter, type CsvFormatterConfig } from '../../../tools/formatters/csv-formatter';
 import { useToolStore } from '../../../lib/store';
 import { debounce, copyToClipboard, downloadFile } from '../../../lib/utils';
+import { openFormatterInNewWindow } from '../../../lib/utils/window-manager';
 
 interface CsvFormatterProps {
   className?: string;
@@ -293,6 +294,16 @@ export function CsvFormatter({ className = '' }: CsvFormatterProps) {
     downloadFile(output, filename, contentType);
   }, [output, config.outputFormat]);
 
+  // Open in new window handler
+  const handleOpenInNewWindow = useCallback(() => {
+    const extension = config.outputFormat === 'json' ? 'json' :
+                     config.outputFormat === 'tsv' ? 'tsv' :
+                     config.outputFormat === 'table' ? 'txt' : 'csv';
+    const filename = `processed.${extension}`;
+    const language = config.outputFormat === 'json' ? 'json' : 'text';
+    openFormatterInNewWindow(output, language, 'CSV Formatter', filename);
+  }, [output, config.outputFormat]);
+
   // Paste handler
   const handlePaste = useCallback(async () => {
     try {
@@ -552,6 +563,12 @@ export function CsvFormatter({ className = '' }: CsvFormatterProps) {
                   </svg>
                   Download
                 </button>
+                <button onClick={handleOpenInNewWindow} className="btn btn-outline" style={{ padding: 'var(--space-xs) var(--space-sm)', fontSize: '0.75rem' }}>
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                  </svg>
+                  Open in New Window
+                </button>
               </div>
             )}
           </div>
@@ -782,8 +799,6 @@ export function CsvFormatter({ className = '' }: CsvFormatterProps) {
         </details>
       </div>
     </div>
-          )}
-        </div>
 
         {/* Auto-format toggle */}
         <div className="flex items-center gap-2 ml-auto">
@@ -911,7 +926,13 @@ Supports various delimiters:
                     onClick={handleDownload}
                     className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded border border-gray-300 dark:border-gray-600 transition-colors"
                   >
-                    Download
+                    📥 Download
+                  </button>
+                  <button
+                    onClick={handleOpenInNewWindow}
+                    className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded border border-gray-300 dark:border-gray-600 transition-colors"
+                  >
+                    🚀 Open in New Window
                   </button>
                 </>
               )}

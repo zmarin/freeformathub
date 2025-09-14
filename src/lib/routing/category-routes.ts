@@ -208,38 +208,6 @@ export function generateSitemapEntries(baseUrl: string = 'https://freeformathub.
   return entries;
 }
 
-/**
- * Search tools across all categories
- */
-export function searchToolsAdvanced(query: string, filters?: {
-  category?: string;
-  difficulty?: string;
-  featured?: boolean;
-}): Tool[] {
-  let tools = getAllTools();
-  
-  // Apply filters
-  if (filters?.category) {
-    tools = tools.filter(tool => tool.category.id === filters.category);
-  }
-  
-  if (filters?.featured) {
-    tools = getFeaturedTools(50); // Get more featured tools for search
-  }
-  
-  // Search by query
-  if (query.trim()) {
-    const lowerQuery = query.toLowerCase();
-    tools = tools.filter(tool => 
-      tool.name.toLowerCase().includes(lowerQuery) ||
-      tool.description.toLowerCase().includes(lowerQuery) ||
-      tool.keywords.some(keyword => keyword.toLowerCase().includes(lowerQuery)) ||
-      tool.category.name.toLowerCase().includes(lowerQuery)
-    );
-  }
-  
-  return tools;
-}
 
 /**
  * Get breadcrumb items for a given path

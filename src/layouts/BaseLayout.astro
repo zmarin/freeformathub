@@ -104,74 +104,157 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
 
-      // Set default consent state (GDPR compliant - allow anonymous analytics)
+      // Set default consent state (GDPR compliant - deny all by default)
       gtag('consent', 'default', {
         'ad_storage': 'denied',
         'ad_user_data': 'denied',
         'ad_personalization': 'denied',
-        'analytics_storage': 'granted' // Anonymous analytics allowed by default
+        'analytics_storage': 'denied' // Deny by default, grant after user consent
       });
+
+      console.log('📋 Google Consent Mode initialized - all consent denied by default');
     </script>
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-34Z7YVSEZ2"></script>
     <script>
-      // Initialize GA4 immediately when gtag.js loads
-      gtag('js', new Date());
-      gtag('config', 'G-34Z7YVSEZ2', {
-        // Enable debug mode for development (set to false for production)
-        debug_mode: location.hostname === 'localhost' || location.hostname === '127.0.0.1',
-        // Send page views automatically
-        send_page_view: true,
-        // Enhanced measurement for better tracking
-        enhanced_measurement: true,
-        // Custom parameters for better segmentation
-        custom_map: {
-          custom_parameter_1: 'match_type',
-          custom_parameter_2: 'match_score'
-        },
-        // Real-time reporting
-        allow_google_signals: true,
-        allow_ad_personalization_signals: true
-      });
+      // Initialize GA4 configuration (consent-aware)
+      function initializeGA4() {
+        console.log('🔧 Initializing GA4 configuration...');
 
-      // Send explicit page view event for better real-time tracking
-      gtag('event', 'page_view', {
-        page_title: document.title,
-        page_location: window.location.href,
-        page_path: window.location.pathname
-      });
+        gtag('js', new Date());
+        gtag('config', 'G-34Z7YVSEZ2', {
+          // Transport method for better reliability
+          transport_type: 'beacon',
+          // Enable debug mode for development
+          debug_mode: location.hostname === 'localhost' || location.hostname === '127.0.0.1',
+          // Send page views automatically
+          send_page_view: true,
+          // Enhanced measurement for better tracking
+          enhanced_measurement: true,
+          // Custom parameters for better segmentation
+          custom_map: {
+            custom_parameter_1: 'match_type',
+            custom_parameter_2: 'match_score'
+          },
+          // Real-time reporting
+          allow_google_signals: true,
+          allow_ad_personalization_signals: true,
+          // Add page referrer for better attribution
+          page_referrer: document.referrer || '(direct)'
+        });
+
+        console.log('✅ GA4 configuration completed');
+      }
+
+      // Function to send page view with enhanced data
+      function sendPageView() {
+        if (typeof gtag !== 'function') {
+          console.warn('⚠️ gtag not available for page view tracking');
+          return;
+        }
+
+        gtag('event', 'page_view', {
+          send_to: 'G-34Z7YVSEZ2',
+          page_title: document.title,
+          page_location: window.location.href,
+          page_path: window.location.pathname,
+          page_referrer: document.referrer || '(direct)',
+          engagement_time_msec: 1
+        });
+
+        console.log('📊 Page view sent to GA4');
+      }
+
+      // Function to check consent and initialize tracking
+      function checkConsentAndTrack() {
+        try {
+          const consentData = localStorage.getItem('freeformathub_consent');
+          let hasAnalyticsConsent = false;
+
+          if (consentData) {
+            const consent = JSON.parse(consentData);
+            hasAnalyticsConsent = consent.state && consent.state.analytics;
+          }
+
+          console.log('🍪 Analytics consent status:', hasAnalyticsConsent);
+
+          if (hasAnalyticsConsent) {
+            // Update consent mode to granted
+            gtag('consent', 'update', {
+              'analytics_storage': 'granted'
+            });
+
+            // Send page view after consent is granted
+            sendPageView();
+
+            // Start engagement tracking
+            startEngagementTracking();
+
+            console.log('✅ Analytics tracking enabled with user consent');
+          } else {
+            console.log('❌ Analytics tracking disabled - no user consent');
+          }
+        } catch (error) {
+          console.warn('⚠️ Error checking consent:', error);
+        }
+      }
 
       // Track page engagement
       let engagementTimer;
-      function trackEngagement() {
-        gtag('event', 'user_engagement', {
-          engagement_time_msec: 1000
+      function startEngagementTracking() {
+        function trackEngagement() {
+          if (typeof gtag === 'function') {
+            gtag('event', 'user_engagement', {
+              send_to: 'G-34Z7YVSEZ2',
+              engagement_time_msec: 15000
+            });
+          }
+          clearTimeout(engagementTimer);
+          engagementTimer = setTimeout(trackEngagement, 15000);
+        }
+
+        setTimeout(trackEngagement, 1000);
+
+        // Track scroll depth
+        let scrollDepth = 0;
+        window.addEventListener('scroll', () => {
+          const currentScroll = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+          if (currentScroll > scrollDepth && currentScroll % 25 === 0 && typeof gtag === 'function') {
+            scrollDepth = currentScroll;
+            gtag('event', 'scroll', {
+              send_to: 'G-34Z7YVSEZ2',
+              percent_scrolled: scrollDepth
+            });
+          }
         });
-        clearTimeout(engagementTimer);
-        engagementTimer = setTimeout(trackEngagement, 15000); // Track every 15 seconds
+
+        console.log('📈 Engagement tracking started');
       }
 
-      // Start engagement tracking after 1 second
-      setTimeout(() => {
-        trackEngagement();
-        console.log('GA4 engagement tracking started');
-      }, 1000);
+      // Initialize GA4 immediately
+      initializeGA4();
 
-      // Track scroll depth
-      let scrollDepth = 0;
-      window.addEventListener('scroll', () => {
-        const currentScroll = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
-        if (currentScroll > scrollDepth && currentScroll % 25 === 0) {
-          scrollDepth = currentScroll;
-          gtag('event', 'scroll', {
-            percent_scrolled: scrollDepth
-          });
+      // Check consent after DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', checkConsentAndTrack);
+      } else {
+        setTimeout(checkConsentAndTrack, 100);
+      }
+
+      // Listen for consent changes
+      window.addEventListener('storage', function(e) {
+        if (e.key === 'freeformathub_consent') {
+          checkConsentAndTrack();
         }
       });
 
-      // Debug logging
-      console.log('GA4 initialized with enhanced tracking for real-time reports');
+      // Listen for custom consent events
+      window.addEventListener('consentChanged', function(e) {
+        if (e.detail && e.detail.analytics) {
+          checkConsentAndTrack();
+        }
+      });
 
       // Initialize enhanced tracking after a brief delay
       setTimeout(() => {
@@ -179,11 +262,13 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
           window.initEnhancedTracking();
         }
       }, 2000);
+
+      console.log('🚀 GA4 system initialized with consent-aware tracking');
     </script>
 
     <!-- Enhanced Analytics Tracking -->
     <script type="module">
-      import { initEnhancedTracking } from '../lib/analytics/tracking.js';
+      import { initEnhancedTracking } from '../lib/analytics/tracking.ts';
 
       // Make tracking available globally
       window.initEnhancedTracking = initEnhancedTracking;

@@ -1,17 +1,21 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getAllTools, TOOL_CATEGORIES } from '../../lib/tools/registry';
-import { searchToolsAdvanced } from '../../lib/routing/category-routes';
+import { searchToolsAdvanced } from '../../lib/search/search-utils';
 
 // Get search parameters from URL
 const url = new URL(Astro.request.url);
 const query = url.searchParams.get('q') || '';
 const categoryFilter = url.searchParams.get('category') || '';
 
-// Perform search
-const searchResults = query ? searchToolsAdvanced(query, { 
-  category: categoryFilter || undefined 
-}) : [];
+// Import all tools to ensure registry is populated
+import '../../lib/tools/index';
+
+// Perform search using the advanced search algorithm
+const searchResults = query ? searchToolsAdvanced(getAllTools(), query, {
+  category: categoryFilter || undefined,
+  maxResults: 50
+}).map(result => result.tool) : [];
 
 const allTools = getAllTools();
 const totalTools = allTools.length;

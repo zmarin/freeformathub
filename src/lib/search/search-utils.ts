@@ -1,4 +1,5 @@
 import type { Tool } from '../../types';
+import { TOOL_CATEGORIES } from '../tools/registry';
 
 export interface SearchResult {
   tool: Tool;
@@ -14,8 +15,9 @@ export interface SearchOptions {
   fuzzyThreshold?: number;
 }
 
-// Common abbreviations and synonyms for tools
+// Common abbreviations, synonyms, and category expansions
 const ABBREVIATIONS: Record<string, string[]> = {
+  // Tool abbreviations
   'b64': ['base64', 'base-64'],
   'jwt': ['json web token', 'jwt'],
   'url': ['uri', 'link'],
@@ -58,7 +60,25 @@ const ABBREVIATIONS: Record<string, string[]> = {
   'hmac': ['hash-based message authentication'],
   'otp': ['one-time password'],
   'totp': ['time-based otp'],
-  'hotp': ['hmac-based otp']
+  'hotp': ['hmac-based otp'],
+
+  // Category expansions
+  'formatter': ['formatters', 'format', 'beautify', 'pretty'],
+  'formatters': ['formatter', 'format', 'beautify', 'pretty'],
+  'converter': ['converters', 'convert', 'transform'],
+  'converters': ['converter', 'convert', 'transform'],
+  'encoder': ['encoders', 'encode', 'decode'],
+  'encoders': ['encoder', 'encode', 'decode'],
+  'validator': ['validators', 'validate', 'validation'],
+  'validators': ['validator', 'validate', 'validation'],
+  'crypto': ['cryptography', 'security', 'encryption'],
+  'cryptography': ['crypto', 'security', 'encryption'],
+  'web': ['website', 'html', 'css', 'javascript'],
+  'developer': ['development', 'dev', 'programming'],
+  'development': ['developer', 'dev', 'programming'],
+  'network': ['networking', 'ip', 'dns', 'api'],
+  'generator': ['generators', 'generate', 'create'],
+  'generators': ['generator', 'generate', 'create']
 };
 
 // Levenshtein distance for fuzzy matching
@@ -118,6 +138,31 @@ function expandQuery(query: string): string[] {
   }
 
   return [...new Set(expanded)];
+}
+
+// Check if query is searching for a specific category
+function getCategoryMatch(query: string): string | null {
+  const lowerQuery = query.toLowerCase();
+
+  for (const category of TOOL_CATEGORIES) {
+    // Exact category ID match
+    if (lowerQuery === category.id) {
+      return category.id;
+    }
+
+    // Category name match (partial or full)
+    if (category.name.toLowerCase().includes(lowerQuery) || lowerQuery.includes(category.name.toLowerCase())) {
+      return category.id;
+    }
+
+    // Check singular/plural variants
+    const categoryIdSingular = category.id.replace(/s$/, '');
+    if (lowerQuery === categoryIdSingular || lowerQuery === category.id + 's') {
+      return category.id;
+    }
+  }
+
+  return null;
 }
 
 // Score a tool against a query
@@ -186,9 +231,20 @@ function scoreToolMatch(tool: Tool, queries: string[], fuzzyThreshold: number): 
       }
     }
 
-    // Category match
-    if (toolCategory.includes(lowerQuery)) {
-      const score = 20;
+    // Category match - enhanced category scoring
+    if (toolCategory.includes(lowerQuery) || tool.category.id.includes(lowerQuery)) {
+      const score = lowerQuery === tool.category.id ? 90 : 75; // Higher scores for category matches
+      if (score > bestScore) {
+        bestScore = score;
+        bestMatchType = 'category';
+        matchedTerms.push(query);
+      }
+    }
+
+    // Check if this is a category-wide search (user searching for all tools in a category)
+    const categoryId = tool.category.id;
+    if (lowerQuery === categoryId || lowerQuery === categoryId.replace(/s$/, '') || categoryId.replace(/s$/, '') === lowerQuery) {
+      const score = 85; // High score for category-wide searches
       if (score > bestScore) {
         bestScore = score;
         bestMatchType = 'category';
@@ -243,6 +299,9 @@ export function searchToolsAdvanced(
     searchPool = tools.filter(tool => tool.category.id === category);
   }
 
+  // Check if this is a category search
+  const categoryMatch = getCategoryMatch(query.trim());
+
   // Expand query with abbreviations and synonyms
   const expandedQueries = expandQuery(query.trim());
 
@@ -252,7 +311,32 @@ export function searchToolsAdvanced(
   for (const tool of searchPool) {
     const result = scoreToolMatch(tool, expandedQueries, fuzzyThreshold);
     if (result && result.score >= minScore) {
+      // Boost score for tools in matching category
+      if (categoryMatch && tool.category.id === categoryMatch) {
+        result.score = Math.max(result.score, 85); // Ensure category tools get high scores
+        result.matchType = 'category';
+      }
       results.push(result);
+    }
+  }
+
+  // If this is a category search and we have fewer results, include more tools from that category
+  if (categoryMatch && results.length < maxResults) {
+    for (const tool of searchPool) {
+      if (tool.category.id === categoryMatch) {
+        // Check if we already have this tool in results
+        const existingIndex = results.findIndex(r => r.tool.id === tool.id);
+        if (existingIndex === -1) {
+          // Add tool with category score
+          results.push({
+            tool,
+            score: 75,
+            matchType: 'category',
+            matchedTerms: [query]
+          });
+        }
+      }
+      if (results.length >= maxResults) break;
     }
   }
 

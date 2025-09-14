@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { processHtmlBeautifier, type HtmlBeautifierConfig, type ValidationError } from '../../../tools/formatters/html-beautifier';
 import { useToolStore } from '../../../lib/store';
 import { debounce, copyToClipboard, downloadFile } from '../../../lib/utils';
+import { openFormatterInNewWindow } from '../../../lib/utils/window-manager';
 
 interface HtmlBeautifierProps {
   className?: string;
@@ -303,6 +304,12 @@ export function HtmlBeautifier({ className = '' }: HtmlBeautifierProps) {
     downloadFile(output, filename, 'text/html');
   }, [output, config.mode]);
 
+  // Open in new window handler
+  const handleOpenInNewWindow = useCallback(() => {
+    const filename = config.mode === 'minify' ? 'formatted.min.html' : 'formatted.html';
+    openFormatterInNewWindow(output, 'html', 'HTML Beautifier', filename);
+  }, [output, config.mode]);
+
   // Paste handler
   const handlePaste = useCallback(async () => {
     try {
@@ -560,6 +567,12 @@ export function HtmlBeautifier({ className = '' }: HtmlBeautifierProps) {
                   </svg>
                   Download
                 </button>
+                <button onClick={handleOpenInNewWindow} className="btn btn-outline" style={{ padding: 'var(--space-xs) var(--space-sm)', fontSize: '0.75rem' }}>
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                  </svg>
+                  Open in New Window
+                </button>
               </div>
             )}
           </div>
@@ -639,7 +652,6 @@ export function HtmlBeautifier({ className = '' }: HtmlBeautifierProps) {
             </div>
           </div>
         )}
-        </div>
       </div>
 
       {/* Quick Examples & Options - Collapsible */}

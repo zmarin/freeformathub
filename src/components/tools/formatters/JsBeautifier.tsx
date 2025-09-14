@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { processJsBeautifier, type JsBeautifierConfig, type ValidationError } from '../../../tools/formatters/js-beautifier';
 import { useToolStore } from '../../../lib/store';
 import { debounce, copyToClipboard, downloadFile } from '../../../lib/utils';
+import { openFormatterInNewWindow } from '../../../lib/utils/window-manager';
 
 interface JsBeautifierProps {
   className?: string;
@@ -307,6 +308,12 @@ export function JsBeautifier({ className = '' }: JsBeautifierProps) {
     downloadFile(output, filename, 'application/javascript');
   }, [output, config.mode]);
 
+  // Open in new window handler
+  const handleOpenInNewWindow = useCallback(() => {
+    const filename = config.mode === 'minify' ? 'formatted.min.js' : 'formatted.js';
+    openFormatterInNewWindow(output, 'javascript', 'JavaScript Beautifier', filename);
+  }, [output, config.mode]);
+
   // Paste handler
   const handlePaste = useCallback(async () => {
     try {
@@ -549,6 +556,12 @@ export function JsBeautifier({ className = '' }: JsBeautifierProps) {
                     className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded border border-gray-300 dark:border-gray-600 transition-colors"
                   >
                     💾 Download
+                  </button>
+                  <button
+                    onClick={handleOpenInNewWindow}
+                    className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded border border-gray-300 dark:border-gray-600 transition-colors"
+                  >
+                    🔗 Open in New Window
                   </button>
                 </>
               )}

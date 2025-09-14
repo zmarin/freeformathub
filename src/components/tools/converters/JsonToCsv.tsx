@@ -365,7 +365,7 @@ export function JsonToCsv({ className = '' }: JsonToCsvProps) {
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Paste your JSON array or object here, or drag & drop a file...\n\n{\"name\":\"John\",\"age\":30,\"city\":\"New York\"}"
+              placeholder={'Paste your JSON array or object here, or drag & drop a file...\n\n{"name":"John","age":30,"city":"New York"}'}
               className="input-area"
               spellCheck={false}
             />
