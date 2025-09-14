@@ -1,0 +1,226 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Terms of Service",
+  "description": "FreeFormatHub terms of service explaining user responsibilities, service availability, and usage guidelines.",
+  "url": "https://freeformathub.com/terms",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "FreeFormatHub",
+    "url": "https://freeformathub.com"
+  }
+};
+---
+
+<BaseLayout
+  title="Terms of Service"
+  description="Terms of service for FreeFormatHub developer tools platform. Learn about usage guidelines, limitations, and user responsibilities."
+  keywords={['terms of service', 'user agreement', 'terms and conditions', 'legal']}
+  jsonLd={jsonLd}
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="prose prose-lg dark:prose-invert max-w-none">
+      <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-8">Terms of Service</h1>
+
+      <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
+        <strong>Effective Date:</strong> {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+      </p>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Agreement to Terms</h2>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          By accessing and using FreeFormatHub ("the Service"), you agree to be bound by these Terms of Service ("Terms"). If you disagree with any part of these terms, you may not access the Service.
+        </p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Description of Service</h2>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          FreeFormatHub is a collection of free online developer tools for formatting, converting, encoding, and validating data. All processing happens in your browser - we don't store or transmit your data.
+        </p>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          Our service includes:
+        </p>
+        <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 ml-4">
+          <li>Data formatting tools (JSON, XML, HTML, CSS, etc.)</li>
+          <li>Conversion utilities (Base64, URL encoding, etc.)</li>
+          <li>Validation tools (JSON, XML, email, etc.)</li>
+          <li>Text processing utilities</li>
+          <li>Cryptographic tools</li>
+          <li>Development utilities</li>
+        </ul>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Acceptable Use</h2>
+
+        <h3 class="text-xl font-medium text-gray-900 dark:text-gray-100 mb-3">Permitted Uses</h3>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">You may use our service for:</p>
+        <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 ml-4">
+          <li>Personal and commercial development projects</li>
+          <li>Educational purposes</li>
+          <li>Data formatting and validation</li>
+          <li>Learning and experimentation</li>
+        </ul>
+
+        <h3 class="text-xl font-medium text-gray-900 dark:text-gray-100 mb-3">Prohibited Uses</h3>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">You may NOT use our service for:</p>
+        <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 ml-4">
+          <li>Illegal activities or violating any laws</li>
+          <li>Processing confidential or sensitive data without proper security</li>
+          <li>Attempting to overload or damage our servers</li>
+          <li>Automated scraping or excessive requests</li>
+          <li>Distributing malware or malicious content</li>
+          <li>Violating intellectual property rights</li>
+          <li>Circumventing security measures</li>
+        </ul>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Data Security and Privacy</h2>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          <strong>Client-Side Processing:</strong> All data processing happens in your browser. We do not receive, store, or transmit your data to our servers.
+        </p>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          <strong>Your Responsibility:</strong> You are responsible for:
+        </p>
+        <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 ml-4">
+          <li>Not processing highly sensitive data (SSNs, passwords, medical records) without proper precautions</li>
+          <li>Understanding that browser history and caches may retain data locally</li>
+          <li>Using private/incognito browsing for sensitive operations</li>
+          <li>Ensuring your own data backup and security practices</li>
+        </ul>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Service Availability</h2>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          <strong>Best Effort:</strong> We strive to maintain high availability but do not guarantee uninterrupted service.
+        </p>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          <strong>Maintenance:</strong> We may perform scheduled maintenance with reasonable notice when possible.
+        </p>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          <strong>Rate Limiting:</strong> We may implement rate limiting to ensure fair usage and prevent abuse.
+        </p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Intellectual Property</h2>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          <strong>Our Content:</strong> The FreeFormatHub website, tools, design, and original content are protected by intellectual property laws.
+        </p>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          <strong>Your Data:</strong> You retain all rights to the data you process through our tools. We make no claims to your content.
+        </p>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          <strong>Open Source:</strong> Some tools may use open-source libraries. Their respective licenses apply.
+        </p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Disclaimers</h2>
+
+        <h3 class="text-xl font-medium text-gray-900 dark:text-gray-100 mb-3">Service Accuracy</h3>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          While we strive for accuracy, we cannot guarantee that our tools will always produce perfect results. Always verify critical outputs independently.
+        </p>
+
+        <h3 class="text-xl font-medium text-gray-900 dark:text-gray-100 mb-3">No Warranties</h3>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          The service is provided "as is" without warranties of any kind, either express or implied, including but not limited to:
+        </p>
+        <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 ml-4">
+          <li>Merchantability or fitness for a particular purpose</li>
+          <li>Accuracy, completeness, or reliability</li>
+          <li>Uninterrupted or error-free operation</li>
+          <li>Security or data protection</li>
+        </ul>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Limitation of Liability</h2>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          To the maximum extent permitted by law, FreeFormatHub shall not be liable for:
+        </p>
+        <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 ml-4">
+          <li>Any indirect, incidental, special, or consequential damages</li>
+          <li>Loss of data, profits, or business opportunities</li>
+          <li>Service interruptions or unavailability</li>
+          <li>Errors in tool outputs or calculations</li>
+          <li>Third-party content or services</li>
+        </ul>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          Our total liability shall not exceed the amount you paid to use our service (which is currently $0).
+        </p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Advertising</h2>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          Our service may display advertisements to support free access. By using our service, you acknowledge that:
+        </p>
+        <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 ml-4">
+          <li>Ads are provided by third-party services (Google AdSense)</li>
+          <li>We don't control ad content or targeting (subject to your consent)</li>
+          <li>You can manage ad preferences through your cookie settings</li>
+          <li>Ad revenue helps us maintain free access to our tools</li>
+        </ul>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Modifications</h2>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          We reserve the right to modify these terms at any time. Material changes will be posted on this page with an updated effective date. Continued use of the service constitutes acceptance of modified terms.
+        </p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Termination</h2>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          We may suspend or terminate access to our service without prior notice if you violate these terms or engage in harmful activities.
+        </p>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          You may stop using our service at any time. Upon termination, these terms remain in effect for any outstanding obligations.
+        </p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Governing Law</h2>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          These terms are governed by the laws of the jurisdiction where FreeFormatHub operates, without regard to conflict of law principles.
+        </p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Severability</h2>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          If any provision of these terms is found to be invalid or unenforceable, the remaining provisions will continue in full force and effect.
+        </p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Contact Information</h2>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          For questions about these terms, contact us at:
+        </p>
+        <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 ml-4">
+          <li><strong>Email:</strong> legal@freeformathub.com</li>
+          <li><strong>Website:</strong> <a href="https://freeformathub.com" class="text-blue-600 hover:text-blue-500 underline">freeformathub.com</a></li>
+        </ul>
+      </section>
+
+      <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6 mt-12">
+        <h3 class="text-lg font-medium text-green-900 dark:text-green-100 mb-2">
+          ✅ Fair Usage Summary
+        </h3>
+        <p class="text-green-800 dark:text-green-200 text-sm">
+          <strong>Simple terms:</strong> Use our tools responsibly for legitimate purposes. We provide them free with ads to support the service. Your data stays private in your browser. We can't guarantee perfection, so verify important results.
+        </p>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

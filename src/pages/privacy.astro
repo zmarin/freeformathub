@@ -1,0 +1,214 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Privacy Policy",
+  "description": "FreeFormatHub privacy policy explaining data collection, cookies, and user rights under GDPR and CCPA.",
+  "url": "https://freeformathub.com/privacy",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "FreeFormatHub",
+    "url": "https://freeformathub.com"
+  }
+};
+---
+
+<BaseLayout
+  title="Privacy Policy"
+  description="Learn how FreeFormatHub collects, uses, and protects your data. Understand your privacy rights under GDPR and CCPA."
+  keywords={['privacy policy', 'data protection', 'GDPR', 'CCPA', 'cookies']}
+  jsonLd={jsonLd}
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="prose prose-lg dark:prose-invert max-w-none">
+      <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-8">Privacy Policy</h1>
+
+      <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
+        <strong>Effective Date:</strong> {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+      </p>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Overview</h2>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          FreeFormatHub ("we," "our," or "us") is committed to protecting your privacy. This privacy policy explains how we collect, use, and protect your information when you visit our website at freeformathub.com (the "Service").
+        </p>
+        <p class="text-gray-700 dark:text-gray-300">
+          Our core principle is <strong>privacy by design</strong>. All data processing happens in your browser - we don't upload or store your data on our servers.
+        </p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Information We Collect</h2>
+
+        <h3 class="text-xl font-medium text-gray-900 dark:text-gray-100 mb-3">Data You Process</h3>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          <strong>We do NOT collect, store, or transmit any data you process through our tools.</strong> All formatting, conversion, and validation operations happen entirely in your browser using JavaScript. Your data never leaves your device.
+        </p>
+
+        <h3 class="text-xl font-medium text-gray-900 dark:text-gray-100 mb-3">Usage Analytics</h3>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          With your consent, we use Google Analytics to understand how visitors use our site. This includes:
+        </p>
+        <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 ml-4">
+          <li>Pages visited and time spent</li>
+          <li>Device type, browser, and screen size</li>
+          <li>General geographic location (country/city level)</li>
+          <li>Referral sources</li>
+        </ul>
+
+        <h3 class="text-xl font-medium text-gray-900 dark:text-gray-100 mb-3">Local Storage</h3>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          We store the following data locally in your browser:
+        </p>
+        <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 ml-4">
+          <li>Your cookie consent preferences</li>
+          <li>Theme preference (light/dark mode)</li>
+          <li>Recent tool history (optional, stays on your device)</li>
+        </ul>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Cookies and Tracking</h2>
+
+        <h3 class="text-xl font-medium text-gray-900 dark:text-gray-100 mb-3">Essential Cookies</h3>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          Required for basic site functionality. These cannot be disabled:
+        </p>
+        <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 ml-4">
+          <li>Consent preferences</li>
+          <li>Theme settings</li>
+          <li>Security and fraud prevention</li>
+        </ul>
+
+        <h3 class="text-xl font-medium text-gray-900 dark:text-gray-100 mb-3">Analytics Cookies (Optional)</h3>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          Google Analytics cookies help us understand site usage. You can disable these in our cookie banner.
+        </p>
+
+        <h3 class="text-xl font-medium text-gray-900 dark:text-gray-100 mb-3">Advertising Cookies (Optional)</h3>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          Google AdSense cookies enable personalized advertising. You can disable these in our cookie banner or manage them through Google's <a href="https://myadcenter.google.com/" class="text-blue-600 hover:text-blue-500 underline" target="_blank" rel="noopener noreferrer">Ad Center</a>.
+        </p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Third-Party Services</h2>
+
+        <h3 class="text-xl font-medium text-gray-900 dark:text-gray-100 mb-3">Google Services</h3>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          We use Google Analytics and Google AdSense with your consent. These services are governed by:
+        </p>
+        <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 ml-4">
+          <li><a href="https://policies.google.com/privacy" class="text-blue-600 hover:text-blue-500 underline" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a></li>
+          <li><a href="https://policies.google.com/technologies/ads" class="text-blue-600 hover:text-blue-500 underline" target="_blank" rel="noopener noreferrer">Google Ads Policy</a></li>
+        </ul>
+
+        <h3 class="text-xl font-medium text-gray-900 dark:text-gray-100 mb-3">Content Delivery</h3>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          Our website is hosted on infrastructure that may process basic server logs (IP addresses, request times) for security and performance purposes.
+        </p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Your Rights</h2>
+
+        <h3 class="text-xl font-medium text-gray-900 dark:text-gray-100 mb-3">GDPR Rights (EU/UK/EEA)</h3>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">If you're in the EU, UK, or EEA, you have the right to:</p>
+        <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 ml-4">
+          <li><strong>Access:</strong> Request what data we have about you</li>
+          <li><strong>Rectification:</strong> Correct inaccurate data</li>
+          <li><strong>Erasure:</strong> Request deletion of your data</li>
+          <li><strong>Portability:</strong> Receive your data in a standard format</li>
+          <li><strong>Object:</strong> Opt-out of processing for legitimate interests</li>
+          <li><strong>Withdraw consent:</strong> Change your cookie preferences anytime</li>
+        </ul>
+
+        <h3 class="text-xl font-medium text-gray-900 dark:text-gray-100 mb-3">CCPA Rights (California)</h3>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">If you're a California resident, you have the right to:</p>
+        <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 ml-4">
+          <li><strong>Know:</strong> What personal information we collect and how it's used</li>
+          <li><strong>Delete:</strong> Request deletion of personal information</li>
+          <li><strong>Opt-out:</strong> Opt-out of the sale of personal information (we don't sell data)</li>
+          <li><strong>Non-discrimination:</strong> Equal service regardless of privacy choices</li>
+        </ul>
+
+        <h3 class="text-xl font-medium text-gray-900 dark:text-gray-100 mb-3">How to Exercise Your Rights</h3>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          For most requests, you can:
+        </p>
+        <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 ml-4">
+          <li>Manage cookie settings using our consent banner</li>
+          <li>Clear your browser data to delete local storage</li>
+          <li>Use Google's privacy controls for analytics and ads data</li>
+          <li>Contact us at privacy@freeformathub.com for other requests</li>
+        </ul>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Data Retention</h2>
+        <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 ml-4">
+          <li><strong>Analytics data:</strong> Retained by Google Analytics for 26 months</li>
+          <li><strong>Advertising data:</strong> Managed by Google AdSense per their retention policies</li>
+          <li><strong>Local storage:</strong> Remains until you clear browser data or change settings</li>
+          <li><strong>Server logs:</strong> Automatically deleted after 30 days</li>
+        </ul>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Children's Privacy</h2>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          Our service is not directed to children under 13. We do not knowingly collect personal information from children under 13. If we become aware that we have collected data from a child under 13, we will delete it promptly.
+        </p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Security</h2>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          We implement appropriate security measures to protect your information:
+        </p>
+        <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 ml-4">
+          <li>HTTPS encryption for all data transmission</li>
+          <li>Content Security Policy (CSP) headers</li>
+          <li>Regular security updates and monitoring</li>
+          <li>No server-side storage of processed data</li>
+        </ul>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">International Transfers</h2>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          Data may be transferred to and processed in countries outside your residence, including the United States, through Google's services. These transfers are protected by appropriate safeguards including Google's compliance with privacy frameworks.
+        </p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Changes to This Policy</h2>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          We may update this privacy policy from time to time. We will notify you of any material changes by posting the new policy on this page and updating the effective date. Continued use of our service after changes constitutes acceptance of the updated policy.
+        </p>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Contact Us</h2>
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+          If you have questions about this privacy policy or want to exercise your rights, contact us:
+        </p>
+        <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 ml-4">
+          <li><strong>Email:</strong> privacy@freeformathub.com</li>
+          <li><strong>Response Time:</strong> We aim to respond within 30 days</li>
+        </ul>
+      </section>
+
+      <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 mt-12">
+        <h3 class="text-lg font-medium text-blue-900 dark:text-blue-100 mb-2">
+          🛡️ Privacy-First Approach
+        </h3>
+        <p class="text-blue-800 dark:text-blue-200 text-sm">
+          Remember: Your data processing happens entirely in your browser. We never see or store the content you format, convert, or validate. This privacy policy covers our website functionality, analytics, and advertising - not your private data.
+        </p>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

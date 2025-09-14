@@ -12,10 +12,10 @@ COPY package*.json ./
 # Install dependencies
 RUN npm ci --only=production
 
-# Copy source code
+# Copy source code (including .env via .dockerignore)
 COPY . .
 
-# Build the application
+# Build the application with environment variables
 RUN npm run build
 
 # Stage 2: Production stage

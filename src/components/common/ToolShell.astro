@@ -3,6 +3,7 @@ import type { Tool } from '../../types';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getTool } from '../../lib/tools/registry';
 import { getToolUrl } from '../../lib/routing/category-routes';
+import AdPlacement from '../ads/AdPlacement.astro';
 
 export interface Props {
   tool: Tool;
@@ -94,9 +95,52 @@ const jsonLd = {
       </nav>
     </header>
 
-    <!-- Tool Interface -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-      <slot />
+    <!-- Tool Interface with Sidebar Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <!-- Main Tool Interface -->
+      <div class="lg:col-span-3">
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+          <slot />
+        </div>
+      </div>
+
+      <!-- Sidebar with Ads -->
+      <div class="lg:col-span-1 space-y-6">
+        <!-- Sidebar Ad 1 -->
+        <AdPlacement type="sidebar" lazy={true} />
+
+        <!-- Privacy Notice -->
+        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+          <h3 class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
+            🛡️ Privacy First
+          </h3>
+          <p class="text-xs text-blue-800 dark:text-blue-200">
+            Your data is processed entirely in your browser. Nothing is sent to our servers.
+          </p>
+        </div>
+
+        <!-- Sidebar Ad 2 -->
+        <AdPlacement type="sidebar" lazy={true} />
+
+        <!-- Quick Links -->
+        <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+          <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
+            Related Tools
+          </h3>
+          <div class="space-y-2">
+            {tool.relatedTools?.slice(0, 3).map(relatedToolId => {
+              const t = getTool(relatedToolId);
+              const href = t ? getToolUrl(t) : '/search';
+              const name = t?.name || relatedToolId.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+              return (
+                <a href={href} class="block text-xs text-blue-600 hover:text-blue-500 hover:underline">
+                  {name}
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Tool Information Sections -->
@@ -190,6 +234,11 @@ const jsonLd = {
           </div>
         </section>
       )}
+    </div>
+
+    <!-- In-Content Ad Placement -->
+    <div class="my-12">
+      <AdPlacement type="content" lazy={true} />
     </div>
 
     <!-- FAQ Section -->

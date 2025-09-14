@@ -1,0 +1,65 @@
+---
+import { GoogleAd, HeaderBannerAd, SidebarAd, InContentAd, FooterAd } from './GoogleAd.tsx';
+
+export interface Props {
+  type: 'header' | 'sidebar' | 'content' | 'footer' | 'custom';
+  adSlot?: string;
+  className?: string;
+  lazy?: boolean;
+  testMode?: boolean;
+}
+
+const {
+  type,
+  adSlot,
+  className = '',
+  lazy = false,
+  testMode = false
+} = Astro.props;
+---
+
+{type === 'header' && (
+  <HeaderBannerAd
+    className={className}
+    lazy={lazy}
+    testMode={testMode}
+    client:load
+  />
+)}
+
+{type === 'sidebar' && (
+  <SidebarAd
+    className={className}
+    lazy={lazy}
+    testMode={testMode}
+    client:load
+  />
+)}
+
+{type === 'content' && (
+  <InContentAd
+    className={className}
+    lazy={lazy}
+    testMode={testMode}
+    client:load
+  />
+)}
+
+{type === 'footer' && (
+  <FooterAd
+    className={className}
+    lazy={lazy}
+    testMode={testMode}
+    client:load
+  />
+)}
+
+{type === 'custom' && adSlot && (
+  <GoogleAd
+    adSlot={adSlot}
+    className={className}
+    lazy={lazy}
+    testMode={testMode}
+    client:load
+  />
+)}

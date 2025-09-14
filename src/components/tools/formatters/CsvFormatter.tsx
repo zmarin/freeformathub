@@ -1,8 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
-import { InputPanel, OutputPanel, OptionsPanel } from '../../ui';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { processCsvFormatter, type CsvFormatterConfig } from '../../../tools/formatters/csv-formatter';
 import { useToolStore } from '../../../lib/store';
-import { debounce } from '../../../lib/utils';
+import { debounce, copyToClipboard, downloadFile } from '../../../lib/utils';
 
 interface CsvFormatterProps {
   className?: string;
@@ -27,7 +26,8 @@ const DEFAULT_CONFIG: CsvFormatterConfig = {
   detectTypes: true,
 };
 
-const OPTIONS = [
+// Essential options only - simplified UX
+const ESSENTIAL_OPTIONS = [
   {
     key: 'mode',
     label: 'Mode',
@@ -38,29 +38,27 @@ const OPTIONS = [
       { value: 'validate', label: 'Validate Only' },
       { value: 'convert', label: 'Convert Format' },
     ],
-    description: 'Processing mode: format, validate, or convert data',
+    description: 'Processing mode',
   },
   {
     key: 'delimiter',
-    label: 'Input Delimiter',
+    label: 'Delimiter',
     type: 'select' as const,
     default: ',',
     options: [
       { value: ',', label: 'Comma (,)' },
       { value: ';', label: 'Semicolon (;)' },
-      { value: '\t', label: 'Tab (\\t)' },
+      { value: '\t', label: 'Tab' },
       { value: '|', label: 'Pipe (|)' },
-      { value: 'custom', label: 'Custom' },
     ],
-    description: 'Field delimiter used in input CSV',
+    description: 'Field delimiter',
   },
   {
-    key: 'customDelimiter',
-    label: 'Custom Delimiter',
-    type: 'text' as const,
-    default: '|',
-    description: 'Custom delimiter character',
-    showWhen: (config: CsvFormatterConfig) => config.delimiter === 'custom',
+    key: 'hasHeader',
+    label: 'Has Headers',
+    type: 'boolean' as const,
+    default: true,
+    description: 'First row contains headers',
   },
   {
     key: 'outputFormat',
@@ -69,26 +67,37 @@ const OPTIONS = [
     default: 'csv',
     options: [
       { value: 'csv', label: 'CSV' },
-      { value: 'tsv', label: 'TSV (Tab-separated)' },
-      { value: 'json', label: 'JSON Array' },
-      { value: 'table', label: 'ASCII Table' },
+      { value: 'tsv', label: 'TSV' },
+      { value: 'json', label: 'JSON' },
+      { value: 'table', label: 'Table' },
     ],
-    description: 'Output format for processed data',
-    showWhen: (config: CsvFormatterConfig) => config.mode !== 'validate',
+    description: 'Output format',
+    showWhen: (cfg: any) => cfg.mode !== 'validate',
   },
+];
+
+// Advanced options for power users
+const ADVANCED_OPTIONS = [
   {
-    key: 'hasHeader',
-    label: 'Has Header Row',
+    key: 'strictValidation',
+    label: 'Strict Validation',
     type: 'boolean' as const,
-    default: true,
-    description: 'First row contains column headers',
+    default: false,
+    description: 'Enable strict validation rules',
   },
   {
     key: 'trimWhitespace',
     label: 'Trim Whitespace',
     type: 'boolean' as const,
     default: true,
-    description: 'Remove leading and trailing whitespace from fields',
+    description: 'Remove leading/trailing spaces',
+  },
+  {
+    key: 'detectTypes',
+    label: 'Detect Data Types',
+    type: 'boolean' as const,
+    default: true,
+    description: 'Automatically detect column types',
   },
   {
     key: 'handleEmptyRows',
@@ -100,108 +109,42 @@ const OPTIONS = [
       { value: 'remove', label: 'Remove' },
       { value: 'error', label: 'Report as Error' },
     ],
-    description: 'How to handle completely empty rows',
-  },
-  {
-    key: 'strictValidation',
-    label: 'Strict Validation',
-    type: 'boolean' as const,
-    default: false,
-    description: 'Enable strict validation rules (column consistency, data types)',
-  },
-  {
-    key: 'detectTypes',
-    label: 'Detect Data Types',
-    type: 'boolean' as const,
-    default: true,
-    description: 'Automatically detect column data types',
-  },
-  {
-    key: 'addRowNumbers',
-    label: 'Add Row Numbers',
-    type: 'boolean' as const,
-    default: false,
-    description: 'Add row number column to output',
-    showWhen: (config: CsvFormatterConfig) => config.mode !== 'validate',
+    description: 'How to handle empty rows',
   },
   {
     key: 'sortBy',
     label: 'Sort By Column',
     type: 'text' as const,
     default: '',
-    description: 'Column name to sort by (leave empty for no sorting)',
-    showWhen: (config: CsvFormatterConfig) => config.mode !== 'validate',
+    description: 'Column name to sort by',
+    showWhen: (cfg: any) => cfg.mode !== 'validate',
   },
   {
-    key: 'sortOrder',
-    label: 'Sort Order',
-    type: 'select' as const,
-    default: 'asc',
-    options: [
-      { value: 'asc', label: 'Ascending' },
-      { value: 'desc', label: 'Descending' },
-    ],
-    description: 'Sort order when sorting is enabled',
-    showWhen: (config: CsvFormatterConfig) => config.sortBy.length > 0 && config.mode !== 'validate',
-  },
-  {
-    key: 'filterColumn',
-    label: 'Filter Column',
-    type: 'text' as const,
-    default: '',
-    description: 'Column name to filter by (leave empty for no filtering)',
-    showWhen: (config: CsvFormatterConfig) => config.mode !== 'validate',
-  },
-  {
-    key: 'filterValue',
-    label: 'Filter Value',
-    type: 'text' as const,
-    default: '',
-    description: 'Value to filter by (substring match)',
-    showWhen: (config: CsvFormatterConfig) => config.filterColumn.length > 0 && config.mode !== 'validate',
+    key: 'addRowNumbers',
+    label: 'Add Row Numbers',
+    type: 'boolean' as const,
+    default: false,
+    description: 'Add row number column',
+    showWhen: (cfg: any) => cfg.mode !== 'validate',
   },
 ];
 
-const QUICK_EXAMPLES = [
+const EXAMPLES = [
   {
-    name: 'Basic CSV',
-    input: `name,age,city,country
-John Doe,25,New York,USA
-Jane Smith,30,London,UK
-Bob Johnson,35,Paris,France`,
-    config: { ...DEFAULT_CONFIG, mode: 'format' as const, hasHeader: true }
+    title: 'Basic CSV',
+    value: 'name,age,city,country\nJohn Doe,25,New York,USA\nJane Smith,30,London,UK\nBob Johnson,35,Paris,France',
   },
   {
-    name: 'Semicolon Delimited',
-    input: `product;price;category;stock
-"Laptop, Gaming";999.99;Electronics;5
-"Book, Programming";29.99;Education;12
-"Phone, Mobile";699.99;Electronics;8`,
-    config: { ...DEFAULT_CONFIG, delimiter: ';' as const, hasHeader: true }
+    title: 'Semicolon Delimited',
+    value: 'product;price;category;stock\n"Laptop, Gaming";999.99;Electronics;5\n"Book, Programming";29.99;Education;12',
   },
   {
-    name: 'Convert to JSON',
-    input: `id,name,email,active
-1,John Doe,john@example.com,true
-2,Jane Smith,jane@example.com,false
-3,Bob Johnson,bob@example.com,true`,
-    config: { ...DEFAULT_CONFIG, mode: 'convert' as const, outputFormat: 'json' as const, hasHeader: true }
+    title: 'Tab Separated',
+    value: 'Name\tDepartment\tSalary\tYears\nJohn Smith\tEngineering\t75000\t5\nJane Doe\tMarketing\t65000\t3',
   },
   {
-    name: 'Tab Separated',
-    input: `Name	Department	Salary	Years
-John Smith	Engineering	75000	5
-Jane Doe	Marketing	65000	3
-Mike Wilson	Sales	58000	2`,
-    config: { ...DEFAULT_CONFIG, delimiter: '\t' as const, outputFormat: 'table' as const, hasHeader: true }
-  },
-  {
-    name: 'Validation Example',
-    input: `email,age,phone,date
-john@example.com,25,555-1234,2023-01-01
-invalid-email,thirty,invalid-phone,not-a-date
-jane@test.com,35,555-5678,2023-12-31`,
-    config: { ...DEFAULT_CONFIG, mode: 'validate' as const, strictValidation: true, detectTypes: true }
+    title: 'Validation Data',
+    value: 'email,age,phone,date\njohn@example.com,25,555-1234,2023-01-01\ninvalid-email,thirty,invalid-phone,not-a-date',
   },
 ];
 
@@ -211,69 +154,145 @@ export function CsvFormatter({ className = '' }: CsvFormatterProps) {
   const [error, setError] = useState<string | undefined>();
   const [isLoading, setIsLoading] = useState(false);
   const [config, setConfig] = useState<CsvFormatterConfig>(DEFAULT_CONFIG);
-  const [stats, setStats] = useState<{
-    rowCount: number;
-    columnCount: number;
-    headerCount: number;
-    emptyRows: number;
-    totalCells: number;
-    validCells: number;
-    invalidCells: number;
-    dataTypes: { [column: string]: string };
-    duplicateRows: number;
-    originalSize: number;
-    processedSize: number;
-  } | null>(null);
+  const [metadata, setMetadata] = useState<Record<string, any> | undefined>();
+  const [copied, setCopied] = useState(false);
+  const [autoFormat, setAutoFormat] = useState(true);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
 
-  const { addToHistory } = useToolStore();
+  const { addToHistory, getConfig: getSavedConfig, updateConfig: updateSavedConfig } = useToolStore();
 
-  const debouncedProcess = useMemo(
-    () => debounce((text: string, cfg: CsvFormatterConfig) => {
-      if (!text.trim()) {
-        setOutput('');
-        setError(undefined);
-        setStats(null);
-        return;
+  // Load saved config once on mount
+  useEffect(() => {
+    try {
+      const saved = (getSavedConfig?.('csv-formatter') as Partial<CsvFormatterConfig>) || {};
+      if (saved && Object.keys(saved).length > 0) {
+        setConfig((prev) => ({ ...prev, ...saved }));
       }
+    } catch {}
+  }, [getSavedConfig]);
 
-      setIsLoading(true);
+  // Process CSV function
+  const processCsv = useCallback((inputText: string = input, cfg: CsvFormatterConfig = config) => {
+    if (!inputText.trim()) {
+      setOutput('');
+      setError(undefined);
+      setMetadata(undefined);
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    
+    // Process immediately for manual format button
+    const result = processCsvFormatter(inputText, cfg);
+    
+    if (result.success) {
+      setOutput(result.output || '');
+      setError(undefined);
+      setMetadata(result.stats);
       
-      setTimeout(() => {
-        try {
-          const result = processCsvFormatter(text, cfg);
-          
-          if (result.success) {
-            setOutput(result.output || '');
-            setError(undefined);
-            setStats(result.stats || null);
-            
-            addToHistory({
-              toolId: 'csv-formatter',
-              input: text,
-              output: result.output || '',
-              config: cfg,
-              timestamp: Date.now(),
-            });
-          } else {
-            setOutput('');
-            setError(result.error);
-            setStats(null);
-          }
-        } catch (err) {
-          setOutput('');
-          setError(err instanceof Error ? err.message : 'Failed to process CSV');
-          setStats(null);
-        }
-        
-        setIsLoading(false);
-      }, 300);
-    }, 400),
-    [addToHistory]
+      // Add to history for successful operations
+      addToHistory({
+        toolId: 'csv-formatter',
+        input: inputText,
+        output: result.output || '',
+        config: cfg,
+        timestamp: Date.now(),
+      });
+    } else {
+      setOutput('');
+      setError(result.error);
+      setMetadata(undefined);
+    }
+    
+    setIsLoading(false);
+  }, [input, config, addToHistory]);
+
+  // Debounced processing for auto-format
+  const debouncedProcess = useMemo(
+    () => debounce(processCsv, 500),
+    [processCsv]
   );
 
+  // Process input when it changes (only if auto-format is enabled)
   useEffect(() => {
-    debouncedProcess(input, config);
-  }, [input, config, debouncedProcess]);
+    if (autoFormat) {
+      debouncedProcess(input, config);
+    }
+  }, [input, config, debouncedProcess, autoFormat]);
+
+  // Quick action handlers
+  const handleFormat = useCallback(() => {
+    const formatConfig = { ...config, mode: 'format' as const };
+    setConfig(formatConfig);
+    processCsv(input, formatConfig);
+  }, [input, config, processCsv]);
+
+  const handleValidate = useCallback(() => {
+    const validateConfig = { ...config, mode: 'validate' as const };
+    setConfig(validateConfig);
+    processCsv(input, validateConfig);
+  }, [input, config, processCsv]);
+
+  const handleConvert = useCallback(() => {
+    const convertConfig = { ...config, mode: 'convert' as const, outputFormat: 'json' as const };
+    setConfig(convertConfig);
+    processCsv(input, convertConfig);
+  }, [input, config, processCsv]);
+
+  // File upload handler
+  const handleFileUpload = useCallback(async (file: File) => {
+    try {
+      const content = await file.text();
+      setInput(content);
+      if (autoFormat) {
+        processCsv(content, config);
+      }
+    } catch (error) {
+      setError('Failed to read file. Please make sure it\'s a valid CSV file.');
+    }
+  }, [autoFormat, config, processCsv]);
+
+  // Drag and drop handlers
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(true);
+  }, []);
+
+  const handleDragLeave = useCallback(() => {
+    setDragActive(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(false);
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      handleFileUpload(files[0]);
+    }
+  }, [handleFileUpload]);
+
+  // Copy handler
+  const handleCopy = useCallback(async () => {
+    try {
+      await copyToClipboard(output);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy:', error);
+    }
+  }, [output]);
+
+  // Download handler
+  const handleDownload = useCallback(() => {
+    const extension = config.outputFormat === 'json' ? 'json' : 
+                     config.outputFormat === 'tsv' ? 'tsv' : 
+                     config.outputFormat === 'table' ? 'txt' : 'csv';
+    const filename = `processed.${extension}`;
+    const contentType = config.outputFormat === 'json' ? 'application/json' : 'text/plain';
+    downloadFile(output, filename, contentType);
+  }, [output, config.outputFormat]);
 
   const handleInputChange = (value: string) => {
     setInput(value);
@@ -281,271 +300,346 @@ export function CsvFormatter({ className = '' }: CsvFormatterProps) {
 
   const handleConfigChange = (newConfig: CsvFormatterConfig) => {
     setConfig(newConfig);
+    try { updateSavedConfig?.('csv-formatter', newConfig); } catch {}
+    
+    // If not auto-formatting, don't process automatically
+    if (!autoFormat) return;
+    processCsv(input, newConfig);
   };
 
-  const insertExample = (example: typeof QUICK_EXAMPLES[0]) => {
-    setInput(example.input);
-    setConfig(example.config);
-  };
-
-  const generateSampleCsv = () => {
-    const sampleData = `id,name,email,department,salary,hire_date,active
-1,John Smith,john.smith@company.com,Engineering,75000,2022-01-15,true
-2,Jane Doe,jane.doe@company.com,Marketing,65000,2021-03-20,true
-3,Bob Johnson,bob.johnson@company.com,Sales,58000,2023-02-10,false
-4,Alice Brown,alice.brown@company.com,HR,62000,2020-11-05,true
-5,Charlie Wilson,charlie.wilson@company.com,Finance,68000,2022-07-18,true`;
-    
-    setInput(sampleData);
-  };
-
-  const detectDelimiterFromInput = () => {
-    if (!input.trim()) return;
-    
-    const sample = input.split('\n').slice(0, 5).join('\n');
-    const delimiters = [',', ';', '\t', '|'];
-    const counts: { [key: string]: number } = {};
-    
-    for (const delimiter of delimiters) {
-      const lines = sample.split('\n');
-      let consistentCount = 0;
-      let firstLineCount = 0;
-      
-      for (let i = 0; i < lines.length; i++) {
-        const count = lines[i].split(delimiter).length - 1;
-        if (i === 0) {
-          firstLineCount = count;
-        } else if (count === firstLineCount && count > 0) {
-          consistentCount++;
-        }
-      }
-      
-      counts[delimiter] = firstLineCount > 0 ? consistentCount : 0;
-    }
-    
-    // Get delimiter with highest consistency score
-    const bestDelimiter = Object.entries(counts).reduce((a, b) => counts[a[0]] > counts[b[0]] ? a : b)[0];
-    
-    if (bestDelimiter !== config.delimiter) {
-      setConfig({ ...config, delimiter: bestDelimiter as any });
-    }
-  };
-
-  const getDelimiterDisplay = (delimiter: string): string => {
-    switch (delimiter) {
-      case ',': return 'Comma (,)';
-      case ';': return 'Semicolon (;)';
-      case '\t': return 'Tab';
-      case '|': return 'Pipe (|)';
-      case 'custom': return `Custom (${config.customDelimiter})`;
-      default: return delimiter;
-    }
+  // Essential config options handler
+  const handleEssentialConfigChange = (key: string, value: any) => {
+    const newConfig = { ...config, [key]: value };
+    handleConfigChange(newConfig);
   };
 
   return (
-    <div className={`grid grid-cols-1 lg:grid-cols-2 gap-0 ${className}`}>
-      {/* Input Panel */}
-      <div className="border-r border-gray-200 dark:border-gray-700">
-        <InputPanel
-          value={input}
-          onChange={handleInputChange}
-          label="CSV Input"
-          placeholder={`Enter CSV data:
+    <div className={`flex flex-col ${className}`}>
+      {/* Tool Header with Quick Actions */}
+      <div className="flex flex-col sm:flex-row gap-4 p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+        {/* Quick Actions */}
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={handleFormat}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+            title="Format and clean CSV data"
+          >
+            Format
+          </button>
+          <button
+            onClick={handleValidate}
+            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors"
+            title="Validate CSV structure and data"
+          >
+            Validate
+          </button>
+          <button
+            onClick={handleConvert}
+            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"
+            title="Convert CSV to JSON format"
+          >
+            Convert
+          </button>
+          {!autoFormat && (
+            <button
+              onClick={() => processCsv()}
+              disabled={!input.trim() || isLoading}
+              className="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 text-white text-sm font-medium rounded-lg transition-colors"
+            >
+              {isLoading ? '⏳' : '⚡'} Process
+            </button>
+          )}
+        </div>
+
+        {/* Auto-format toggle */}
+        <div className="flex items-center gap-2 ml-auto">
+          <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <input
+              type="checkbox"
+              checked={autoFormat}
+              onChange={(e) => setAutoFormat(e.target.checked)}
+              className="rounded"
+            />
+            Auto-format
+          </label>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex flex-col lg:flex-row flex-1 min-h-[600px]">
+        {/* Input Section */}
+        <div className="flex-1 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700">
+          {/* Input Header */}
+          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              CSV Input
+            </h3>
+            <div className="flex items-center gap-2">
+              <label className="cursor-pointer text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded border transition-colors">
+                Upload
+                <input
+                  type="file"
+                  accept=".csv,.tsv,.txt"
+                  className="hidden"
+                  onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
+                />
+              </label>
+              {input && (
+                <button
+                  onClick={() => setInput('')}
+                  className="text-xs px-3 py-1 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                  title="Clear input"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Input Textarea */}
+          <div 
+            className={`flex-1 relative ${dragActive ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Paste your CSV data here or drag & drop a file...
 
 name,age,city,country
 John Doe,25,New York,USA
 Jane Smith,30,London,UK
-Bob Johnson,35,Paris,France
 
 Supports various delimiters:
 - Comma separated values (CSV)
 - Semicolon separated values
 - Tab separated values (TSV)
-- Custom delimiters
-
-Features:
-- Header row detection
-- Data type validation
-- Sorting and filtering
-- Format conversion`}
-          syntax="csv"
-          examples={[
-            {
-              title: 'Basic CSV',
-              value: 'name,age,city\nJohn,25,NYC\nJane,30,London',
-            },
-            {
-              title: 'With Quotes',
-              value: 'name,description,price\n"Product A","High quality, durable",99.99',
-            },
-            {
-              title: 'Tab Separated',
-              value: 'Name\tDept\tSalary\nJohn\tEng\t75000',
-            },
-          ]}
-        />
-
-        {/* Quick Actions */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex flex-wrap gap-2 mb-4">
-            <button
-              onClick={generateSampleCsv}
-              className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors"
-            >
-              Sample CSV
-            </button>
-            <button
-              onClick={detectDelimiterFromInput}
-              className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded transition-colors"
-            >
-              Auto-Detect Delimiter
-            </button>
-            <button
-              onClick={() => setConfig({ ...config, mode: config.mode === 'validate' ? 'format' : 'validate' })}
-              className="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded transition-colors"
-            >
-              {config.mode === 'validate' ? 'Switch to Format' : 'Validate'}
-            </button>
-          </div>
-
-          {/* Processing Info */}
-          <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Current Settings:
-            </div>
-            <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
-              <div>Mode: {config.mode.charAt(0).toUpperCase() + config.mode.slice(1)}</div>
-              <div>Delimiter: {getDelimiterDisplay(config.delimiter)}</div>
-              {config.mode !== 'validate' && (
-                <div>Output: {config.outputFormat.toUpperCase()}</div>
-              )}
-              <div>
-                Options: {[
-                  config.hasHeader && 'Headers',
-                  config.trimWhitespace && 'Trim',
-                  config.strictValidation && 'Strict',
-                  config.detectTypes && 'Type Detection'
-                ].filter(Boolean).join(', ') || 'Basic'}
+- Custom delimiters"
+              className="w-full h-full p-4 resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-mono text-sm border-none focus:outline-none focus:ring-0"
+              spellCheck={false}
+            />
+            {dragActive && (
+              <div className="absolute inset-0 flex items-center justify-center bg-blue-50/80 dark:bg-blue-900/40 backdrop-blur-sm">
+                <div className="text-blue-600 dark:text-blue-400 text-lg font-medium">
+                  Drop CSV file here
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
-          {/* Quick Examples */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Quick Examples:
-            </label>
-            <div className="grid grid-cols-1 gap-2">
-              {QUICK_EXAMPLES.map((example) => (
+          {/* Example buttons */}
+          <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex flex-wrap gap-2">
+              <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">Examples:</span>
+              {EXAMPLES.map((example, idx) => (
                 <button
-                  key={example.name}
-                  onClick={() => insertExample(example)}
-                  className="px-3 py-2 text-sm text-left bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 rounded border transition-colors"
+                  key={idx}
+                  onClick={() => setInput(example.value)}
+                  className="text-xs px-2 py-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-colors"
+                  title={example.title}
                 >
-                  <div className="font-medium">{example.name}</div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400">
-                    {example.input.split('\n')[0].length > 35 ? 
-                      example.input.split('\n')[0].substring(0, 35) + '...' : 
-                      example.input.split('\n')[0]
-                    }
-                  </div>
+                  {example.title}
                 </button>
               ))}
             </div>
           </div>
-
-          {/* Statistics */}
-          {stats && (
-            <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Data Analysis:
-              </div>
-              <div className="grid grid-cols-2 gap-4 text-xs">
-                <div className="space-y-1">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Rows:</span>
-                    <span className="font-mono">{stats.rowCount}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Columns:</span>
-                    <span className="font-mono">{stats.columnCount}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Total Cells:</span>
-                    <span className="font-mono">{stats.totalCells}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-green-600 dark:text-green-400">Valid:</span>
-                    <span className="font-mono">{stats.validCells}</span>
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <div className="flex justify-between">
-                    <span className="text-red-600 dark:text-red-400">Invalid:</span>
-                    <span className="font-mono">{stats.invalidCells}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Empty Rows:</span>
-                    <span className="font-mono">{stats.emptyRows}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Duplicates:</span>
-                    <span className="font-mono">{stats.duplicateRows}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Size:</span>
-                    <span className="font-mono">{stats.originalSize} → {stats.processedSize}</span>
-                  </div>
-                </div>
-              </div>
-              
-              {Object.keys(stats.dataTypes).length > 0 && (
-                <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600">
-                  <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">
-                    Column Types:
-                  </div>
-                  <div className="text-xs text-gray-700 dark:text-gray-300 space-y-1">
-                    {Object.entries(stats.dataTypes).slice(0, 4).map(([column, type]) => (
-                      <div key={column} className="flex justify-between">
-                        <span className="truncate max-w-20">{column}:</span>
-                        <span className="font-mono text-blue-600 dark:text-blue-400">{type}</span>
-                      </div>
-                    ))}
-                    {Object.keys(stats.dataTypes).length > 4 && (
-                      <div className="text-gray-500">+ {Object.keys(stats.dataTypes).length - 4} more</div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
         </div>
 
-        {/* Options */}
-        <OptionsPanel
-          options={OPTIONS}
-          config={config}
-          onChange={handleConfigChange}
-        />
-      </div>
-
-      {/* Output Panel */}
-      <OutputPanel
-        value={output}
-        error={error}
-        isLoading={isLoading}
-        label={config.mode === 'validate' ? 'Validation Results' : 
+        {/* Output Section */}
+        <div className="flex-1 flex flex-col">
+          {/* Output Header */}
+          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              {config.mode === 'validate' ? 'Validation Results' : 
                config.outputFormat === 'json' ? 'JSON Output' :
                config.outputFormat === 'table' ? 'Table Format' :
                `${config.outputFormat.toUpperCase()} Output`}
-        syntax={config.mode === 'validate' ? 'text' : 
-                config.outputFormat === 'json' ? 'json' :
-                config.outputFormat === 'table' ? 'text' : 'csv'}
-        downloadFilename={`processed.${config.outputFormat === 'json' ? 'json' : 
-                                    config.outputFormat === 'tsv' ? 'tsv' : 
-                                    config.outputFormat === 'table' ? 'txt' : 'csv'}`}
-        downloadContentType={config.outputFormat === 'json' ? 'application/json' : 'text/plain'}
-      />
+              {isLoading && <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">Processing...</span>}
+              {!error && output && <span className="ml-2 text-xs text-green-600 dark:text-green-400">✓ Processed</span>}
+              {error && <span className="ml-2 text-xs text-red-600 dark:text-red-400">✗ Error</span>}
+            </h3>
+            <div className="flex items-center gap-2">
+              {output && (
+                <>
+                  <button
+                    onClick={handleCopy}
+                    className={`text-xs px-3 py-1 rounded border transition-colors ${
+                      copied 
+                        ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border-green-300 dark:border-green-600'
+                        : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
+                    }`}
+                  >
+                    {copied ? '✓ Copied' : 'Copy'}
+                  </button>
+                  <button
+                    onClick={handleDownload}
+                    className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded border border-gray-300 dark:border-gray-600 transition-colors"
+                  >
+                    Download
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Output Content */}
+          <div className="flex-1 bg-white dark:bg-gray-800">
+            {error ? (
+              <div className="p-4 h-full">
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                  <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">CSV Error</h4>
+                  <pre className="text-xs text-red-700 dark:text-red-300 whitespace-pre-wrap font-mono">
+                    {error}
+                  </pre>
+                </div>
+              </div>
+            ) : (
+              <div className="h-full flex flex-col">
+                <textarea
+                  value={output}
+                  readOnly
+                  placeholder="Processed CSV will appear here..."
+                  className="flex-1 p-4 resize-none bg-transparent text-gray-900 dark:text-gray-100 font-mono text-sm border-none focus:outline-none"
+                  spellCheck={false}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Simplified metadata */}
+          {metadata && !error && output && (
+            <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex flex-wrap gap-4 text-xs text-gray-600 dark:text-gray-400">
+                {typeof metadata.rowCount === 'number' && (
+                  <span><strong>Rows:</strong> {metadata.rowCount}</span>
+                )}
+                {typeof metadata.columnCount === 'number' && (
+                  <span><strong>Columns:</strong> {metadata.columnCount}</span>
+                )}
+                {typeof metadata.totalCells === 'number' && (
+                  <span><strong>Cells:</strong> {metadata.totalCells}</span>
+                )}
+                {typeof metadata.invalidCells === 'number' && metadata.invalidCells > 0 && (
+                  <span className="text-red-600 dark:text-red-400">
+                    <strong>⚠️ Invalid:</strong> {metadata.invalidCells}
+                  </span>
+                )}
+                {typeof metadata.duplicateRows === 'number' && metadata.duplicateRows > 0 && (
+                  <span className="text-amber-600 dark:text-amber-400">
+                    <strong>Duplicates:</strong> {metadata.duplicateRows}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Essential Options Panel */}
+      <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">Options</h4>
+            <button
+              onClick={() => setShowAdvanced(!showAdvanced)}
+              className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+            >
+              {showAdvanced ? '△ Less' : '▽ More'}
+            </button>
+          </div>
+          
+          {/* Essential options */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {ESSENTIAL_OPTIONS.map((option) => {
+              if (option.showWhen && !option.showWhen(config)) return null;
+              
+              return (
+                <div key={option.key} className="space-y-1">
+                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                    {option.label}
+                  </label>
+                  {option.type === 'boolean' ? (
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={!!config[option.key as keyof CsvFormatterConfig]}
+                        onChange={(e) => handleEssentialConfigChange(option.key, e.target.checked)}
+                        className="rounded"
+                      />
+                      <span className="text-xs text-gray-600 dark:text-gray-400">
+                        {option.description}
+                      </span>
+                    </label>
+                  ) : option.type === 'select' ? (
+                    <select
+                      value={String(config[option.key as keyof CsvFormatterConfig] ?? option.default)}
+                      onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
+                      className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    >
+                      {option.options?.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Advanced options */}
+          {showAdvanced && (
+            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <h5 className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">Advanced Options</h5>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {ADVANCED_OPTIONS.filter(option => !option.showWhen || option.showWhen(config)).map((option) => (
+                  <div key={option.key} className="space-y-1">
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                      {option.label}
+                    </label>
+                    {option.type === 'boolean' ? (
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={!!config[option.key as keyof CsvFormatterConfig]}
+                          onChange={(e) => handleEssentialConfigChange(option.key, e.target.checked)}
+                          className="rounded"
+                        />
+                        <span className="text-xs text-gray-600 dark:text-gray-400">
+                          {option.description}
+                        </span>
+                      </label>
+                    ) : option.type === 'select' ? (
+                      <select
+                        value={String(config[option.key as keyof CsvFormatterConfig] ?? option.default)}
+                        onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
+                        className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      >
+                        {option.options?.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                    ) : option.type === 'text' ? (
+                      <input
+                        type="text"
+                        value={String(config[option.key as keyof CsvFormatterConfig] ?? option.default)}
+                        onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
+                        placeholder={option.description}
+                        className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      />
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

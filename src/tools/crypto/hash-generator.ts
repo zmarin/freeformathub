@@ -3,9 +3,11 @@ import { TOOL_CATEGORIES } from '../../lib/tools/registry';
 
 export interface HashGeneratorConfig extends ToolConfig {
   algorithms: string[]; // Array of selected algorithms
+  algorithm?: string; // Single algorithm for essential UI
   outputFormat: 'hex' | 'base64';
   includeLength: boolean;
   uppercaseHex: boolean;
+  salt?: string; // Optional salt to prepend to input
 }
 
 export const HASH_GENERATOR_TOOL: Tool = {

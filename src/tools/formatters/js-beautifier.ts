@@ -1,4 +1,4 @@
-import type { Tool, ToolResult, ToolExample } from '../types';
+import type { Tool, ToolResult, ToolExample } from '../../types';
 import { TOOL_CATEGORIES } from '../../lib/tools/registry';
 
 export interface JsBeautifierConfig {
@@ -21,10 +21,7 @@ export interface JsBeautifierConfig {
   validateSyntax: boolean;
 }
 
-export interface ToolResult {
-  success: boolean;
-  output?: string;
-  error?: string;
+export interface JsBeautifierResult extends ToolResult {
   stats?: {
     originalSize: number;
     processedSize: number;
@@ -701,7 +698,7 @@ function minifyJavaScript(tokens: Token[], config: JsBeautifierConfig): string {
   return result;
 }
 
-export function processJsBeautifier(input: string, config: JsBeautifierConfig): ToolResult {
+export function processJsBeautifier(input: string, config: JsBeautifierConfig): JsBeautifierResult {
   try {
     if (!input.trim()) {
       return {
@@ -764,12 +761,29 @@ export const JS_BEAUTIFIER_TOOL: Tool = {
   category: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!.subcategories!.find(sub => sub.id === 'code-formatting')!,
   description: 'Format, beautify, and minify JavaScript code with proper indentation, syntax validation, and optimization. Supports ES6+, JSX, and modern JavaScript features with comprehensive formatting options.',
-  tags: ['javascript', 'beautifier', 'minifier', 'formatter', 'web', 'code', 'syntax', 'validation'],
-  complexity: 'intermediate',
+  slug: 'js-beautifier',
+  icon: 'code',
+  keywords: ['javascript', 'beautifier', 'minifier', 'formatter', 'web', 'code', 'syntax', 'validation'],
   examples: [
     {
       title: 'Beautify Minified JavaScript',
       input: `function calculate(a,b){if(a>b){return a+b;}else{return a-b;}}const users=[{name:"John",age:30},{name:"Jane",age:25}];users.forEach(user=>{console.log(\`\${user.name} is \${user.age} years old\`);});`,
+      output: `function calculate(a, b) {
+  if (a > b) {
+    return a + b;
+  } else {
+    return a - b;
+  }
+}
+
+const users = [
+  { name: "John", age: 30 },
+  { name: "Jane", age: 25 }
+];
+
+users.forEach(user => {
+  console.log(\`\${user.name} is \${user.age} years old\`);
+});`,
       description: 'Format compact JavaScript with proper indentation and spacing'
     },
     {
@@ -794,16 +808,47 @@ const handleUserClick = async (userId) => {
     updateUI(userData);
   }
 };`,
+      output: `function fetchUserData(userId){return fetch(\`/api/users/\${userId}\`).then(response=>{if(!response.ok){throw new Error('Network response was not ok');}return response.json();}).catch(error=>{console.error('Error fetching user data:',error);return null;});}const handleUserClick=async userId=>{const userData=await fetchUserData(userId);if(userData){updateUI(userData);}};`,
       description: 'Compress JavaScript by removing whitespace and formatting'
     },
     {
       title: 'ES6+ Features',
       input: `const { useState, useEffect } = React;const MyComponent = () => {const [data, setData] = useState([]);const [loading, setLoading] = useState(true);useEffect(() => {fetchData().then(result => {setData(result);setLoading(false);});}, []);return loading ? <Spinner /> : <DataList items={data} />;};`,
+      output: `const { useState, useEffect } = React;
+
+const MyComponent = () => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    fetchData().then(result => {
+      setData(result);
+      setLoading(false);
+    });
+  }, []);
+  
+  return loading ? <Spinner /> : <DataList items={data} />;
+};`,
       description: 'Format modern JavaScript with arrow functions, destructuring, and JSX'
     }
   ],
   
-  faqs: [
+  useCases: [
+    'Format minified JavaScript files for debugging',
+    'Standardize code style across development team',
+    'Compress JavaScript for production deployment',
+    'Clean up legacy or third-party JavaScript code',
+    'Validate JavaScript syntax and find errors'
+  ],
+  
+  commonErrors: [
+    'Syntax errors preventing beautification',
+    'Unclosed brackets or parentheses',
+    'Invalid JavaScript syntax in input',
+    'Mixed quote styles causing parsing issues'
+  ],
+  
+  faq: [
     {
       question: 'What JavaScript features are supported?',
       answer: 'The tool supports ES6+ features including arrow functions, template literals, destructuring, async/await, classes, modules, and basic JSX syntax.'
@@ -825,5 +870,7 @@ const handleUserClick = async (userId) => {
       answer: 'The tool handles basic TypeScript syntax but is primarily designed for JavaScript. For full TypeScript support, use specialized TypeScript formatters.'
     }
   ],
-  relatedTools: ['html-beautifier', 'css-beautifier', 'json-formatter', 'xml-formatter', 'code-formatter']
+  relatedTools: ['html-beautifier', 'css-beautifier', 'json-formatter', 'xml-formatter', 'code-formatter'],
+  seoTitle: 'JavaScript Beautifier & Minifier - Format & Compress JS Code Online',
+  seoDescription: 'Free JavaScript beautifier and minifier tool. Format minified JS code with proper indentation or compress formatted JavaScript for production. Supports ES6+, JSX, and modern syntax with validation.'
 };
