@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
 import ToolSearch from '../components/ui/ToolSearch.tsx';
+import CookieConsent from '../components/CookieConsent.tsx';
+import AdPlacement from '../components/ads/AdPlacement.astro';
 
 export interface Props {
   title: string;
@@ -89,6 +91,85 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
     <meta name="format-detection" content="telephone=no" />
     <meta name="robots" content={robots} />
 
+    <!-- Google AdSense Site Verification -->
+    <meta name="google-adsense-account" content={import.meta.env.PUBLIC_ADSENSE_CLIENT_ID} />
+    {import.meta.env.PUBLIC_ADSENSE_VERIFICATION && (
+      <meta name="google-site-verification" content={import.meta.env.PUBLIC_ADSENSE_VERIFICATION} />
+    )}
+
+    <!-- Google Consent Mode v2 (must load before gtag) -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+
+      // Set default consent state (GDPR compliant - deny all)
+      gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'analytics_storage': 'denied'
+      });
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-34Z7YVSEZ2"></script>
+    <script>
+      gtag('js', new Date());
+      gtag('config', 'G-34Z7YVSEZ2');
+    </script>
+
+    <!-- Google AdSense Auto ads - Consent-aware loading -->
+    <script>
+      (function() {
+        // Function to load AdSense when consent is granted
+        function loadAdSense() {
+          if (document.getElementById('adsense-script')) return; // Already loaded
+
+          const script = document.createElement('script');
+          script.id = 'adsense-script';
+          script.async = true;
+          script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${import.meta.env.PUBLIC_ADSENSE_CLIENT_ID}`;
+          script.crossOrigin = 'anonymous';
+          document.head.appendChild(script);
+
+          // Initialize adsbygoogle array
+          window.adsbygoogle = window.adsbygoogle || [];
+        }
+
+        // Check consent on page load
+        function checkConsent() {
+          try {
+            const consentData = localStorage.getItem('freeformathub_consent');
+            if (consentData) {
+              const consent = JSON.parse(consentData);
+              if (consent.state && consent.state.marketing) {
+                loadAdSense();
+              }
+            }
+          } catch (error) {
+            console.warn('Error checking consent:', error);
+          }
+        }
+
+        // Check consent immediately
+        checkConsent();
+
+        // Listen for consent changes
+        window.addEventListener('storage', function(e) {
+          if (e.key === 'freeformathub_consent') {
+            checkConsent();
+          }
+        });
+
+        // Also listen for custom consent events
+        window.addEventListener('consentChanged', function(e) {
+          if (e.detail && e.detail.marketing) {
+            loadAdSense();
+          }
+        });
+      })();
+    </script>
+
     <!-- Early theme init to prevent FOUC -->
     <script>
       (function() {
@@ -169,6 +250,13 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
         </div>
       </header>
 
+      <!-- Header Ad Placement -->
+      <div class="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AdPlacement type="header" lazy={false} />
+        </div>
+      </div>
+
       <!-- Main content -->
       <main id="main-content" class="flex-1">
         <slot />
@@ -176,6 +264,11 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
 
       <!-- Footer -->
       <footer class="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+        <!-- Footer Ad Placement -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <AdPlacement type="footer" lazy={true} />
+        </div>
+
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div>
@@ -222,6 +315,9 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
         </div>
       </footer>
     </div>
+
+    <!-- Cookie Consent Banner -->
+    <CookieConsent client:load />
 
     <!-- Initialize app -->
     <script>
