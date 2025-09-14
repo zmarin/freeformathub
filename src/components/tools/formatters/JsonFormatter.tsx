@@ -3,6 +3,7 @@ import { formatJson, type JsonFormatterConfig } from '../../../tools/formatters/
 import { useToolStore } from '../../../lib/store';
 import { debounce, copyToClipboard, downloadFile } from '../../../lib/utils';
 import { openFormatterInNewWindow } from '../../../lib/utils/window-manager';
+import { JsonTreeView, JsonPathBreadcrumb, JsonSearchBar } from '../../ui';
 
 interface JsonFormatterProps {
   className?: string;
@@ -59,6 +60,10 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
   const [copied, setCopied] = useState(false);
   const [autoFormat, setAutoFormat] = useState(true);
   const [dragActive, setDragActive] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPath, setCurrentPath] = useState('$');
+  const [viewMode, setViewMode] = useState<'tree' | 'text'>('tree');
+  const [parsedData, setParsedData] = useState<any>(null);
 
   const { addToHistory, getConfig: getSavedConfig, updateConfig: updateSavedConfig } = useToolStore();
 
@@ -97,6 +102,14 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
       setError(undefined);
       setMetadata(result.metadata);
 
+      // Try to parse the input for tree view
+      try {
+        const parsed = JSON.parse(inputText);
+        setParsedData(parsed);
+      } catch (e) {
+        setParsedData(null);
+      }
+
       addToHistory({
         toolId: 'json-formatter',
         input: inputText,
@@ -108,6 +121,7 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
       setOutput('');
       setError(result.error);
       setMetadata(undefined);
+      setParsedData(null);
     }
 
     setIsLoading(false);
@@ -149,6 +163,31 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
     setOutput('');
     setError(undefined);
     setMetadata(undefined);
+    setParsedData(null);
+    setSearchTerm('');
+    setCurrentPath('$');
+  }, []);
+
+  // New handlers for enhanced features
+  const handleSearch = useCallback((term: string) => {
+    setSearchTerm(term);
+  }, []);
+
+  const handlePathClick = useCallback((path: string) => {
+    setCurrentPath(path);
+  }, []);
+
+  const handleValueCopy = useCallback((value: any, path: string) => {
+    // Already handled in JsonTreeView component
+  }, []);
+
+  const handleNavigateToMatch = useCallback((matchIndex: number) => {
+    // This would be used to highlight specific matches in the tree view
+    // Implementation depends on how we want to handle search navigation
+  }, []);
+
+  const handleToggleViewMode = useCallback(() => {
+    setViewMode(prev => prev === 'tree' ? 'text' : 'tree');
   }, []);
 
   // File upload handler
@@ -240,13 +279,27 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
             e.preventDefault();
             handleClear();
             break;
+          case 't':
+            e.preventDefault();
+            handleToggleViewMode();
+            break;
+          case 'f':
+            if (viewMode === 'tree') {
+              e.preventDefault();
+              // Focus search input when in tree mode
+              const searchInput = document.querySelector('input[type="search"]') as HTMLInputElement;
+              if (searchInput) {
+                searchInput.focus();
+              }
+            }
+            break;
         }
       }
     };
 
     document.addEventListener('keydown', handleKeyboard);
     return () => document.removeEventListener('keydown', handleKeyboard);
-  }, [handleFormat, handleMinify, handleClear]);
+  }, [handleFormat, handleMinify, handleClear, handleToggleViewMode, viewMode]);
 
   return (
     <div className={`${className}`}>
@@ -286,6 +339,17 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
               </svg>
               Clear
+            </button>
+
+            <button onClick={handleToggleViewMode} className="btn btn-secondary" title={`Switch to ${viewMode === 'tree' ? 'text' : 'tree'} view`}>
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {viewMode === 'tree' ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z M3 7l9 6 9-6"/>
+                )}
+              </svg>
+              {viewMode === 'tree' ? 'Text View' : 'Tree View'}
             </button>
           </div>
 
@@ -403,7 +467,7 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
         </div>
 
         {/* Output Panel */}
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
           {/* Output Header */}
           <div style={{
             backgroundColor: 'var(--color-surface-secondary)',
@@ -414,7 +478,7 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
             alignItems: 'center'
           }}>
             <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
-              Formatted Output
+              {viewMode === 'tree' ? 'JSON Tree View' : 'Formatted Output'}
             </span>
             {output && (
               <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
@@ -444,8 +508,27 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
             )}
           </div>
 
+          {/* Search Bar (Tree View Only) */}
+          {viewMode === 'tree' && parsedData && (
+            <JsonSearchBar
+              data={parsedData}
+              onSearch={handleSearch}
+              onNavigateToMatch={handleNavigateToMatch}
+              style={{ borderBottom: '1px solid var(--color-border)' }}
+            />
+          )}
+
+          {/* Path Breadcrumb (Tree View Only) */}
+          {viewMode === 'tree' && currentPath && currentPath !== '$' && (
+            <JsonPathBreadcrumb
+              path={currentPath}
+              onPathClick={handlePathClick}
+              style={{ borderBottom: '1px solid var(--color-border)' }}
+            />
+          )}
+
           {/* Output Content */}
-          <div style={{ height: '500px', position: 'relative' }}>
+          <div style={{ flex: 1, minHeight: '400px', position: 'relative' }}>
             {error ? (
               <div style={{
                 padding: 'var(--space-lg)',
@@ -460,6 +543,15 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
                 <strong>JSON Error:</strong><br />
                 {error}
               </div>
+            ) : viewMode === 'tree' && parsedData ? (
+              <JsonTreeView
+                data={parsedData}
+                searchTerm={searchTerm}
+                onPathClick={handlePathClick}
+                onValueCopy={handleValueCopy}
+                maxDepth={3}
+                style={{ height: '100%' }}
+              />
             ) : (
               <textarea
                 value={output}

@@ -266,3 +266,85 @@ Project-specific notes:
 - Ensure ads.txt accessibility for AdSense verification
 - Test consent flow and analytics integration locally
 - keep in mind @ADS-SETUP.md
+- Root Cause
+
+  The production nginx CSP headers were blocking Google Analytics domains, and
+   there were timing issues with gtag initialization.
+
+  Key Fixes Applied
+
+  1. Updated Production Nginx CSP Headers
+
+  File: deployment/nginx/freeformathub-production.conf:43
+
+  Changed from restrictive CSP to allow GA domains:
+  # Before: Only 'self' allowed
+  script-src 'self' 'unsafe-inline'
+
+  # After: Added GA domains
+  script-src 'self' 'unsafe-inline' 'unsafe-eval'
+  https://*.googlesyndication.com https://*.googletagmanager.com
+  https://*.google-analytics.com
+
+  2. Fixed Dockerfile to Use Production Config
+
+  File: deployment/docker/Dockerfile
+
+  # Changed from dev config to production
+  COPY deployment/nginx/freeformathub-production.conf
+  /etc/nginx/conf.d/default.conf
+
+  3. Fixed GA Variable Injection in Astro
+
+  File: src/layouts/BaseLayout.astro
+
+  // Before: Broken syntax
+  <script>const GA_ID = {JSON.stringify(GA_ID)};</script>
+
+  // After: Proper Astro syntax
+  <script define:vars={{GA_ID}}>
+    const GA_ID_VALUE = GA_ID;
+    window.GA_ID = GA_ID_VALUE;
+  </script>
+
+  4. Fixed gtag Timing Issue
+
+  File: src/layouts/BaseLayout.astro
+
+  Added immediate gtag initialization:
+  // Initialize dataLayer and gtag function immediately
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+
+  // Set default consent before gtag.js loads
+  gtag('consent', 'default', {
+    analytics_storage: 'denied',
+    ad_storage: 'denied'
+  });
+
+  5. Added Missing Static File Routes
+
+  File: deployment/nginx/freeformathub-production.conf
+
+  # Favicon
+  location = /favicon.svg {
+      try_files /favicon.svg =404;
+      expires 1y;
+      add_header Cache-Control "public, immutable";
+  }
+
+  # Web manifest  
+  location = /site.webmanifest {
+      try_files /site.webmanifest =404;
+      expires 1y;
+      add_header Cache-Control "public";
+  }
+
+  Result
+
+  ✅ Google Analytics now loads and tracks properly✅ gtag.js script loads
+  without errors✅ Cookie consent system works✅ All static files serve
+  correctly
+
+  The main issue was the restrictive CSP blocking external scripts, combined
+  with async timing problems where gtag was called before being defined.

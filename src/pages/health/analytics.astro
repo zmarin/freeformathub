@@ -46,9 +46,9 @@ const buildTimeGA = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || '(unset)';
     </div>
   </section>
 
-  <script is:inline>
+  <script is:inline define:vars={{buildTimeGA}}>
     (function () {
-      const buildGA = {JSON.stringify(buildTimeGA)};
+      const buildGA = JSON.stringify(buildTimeGA);
       const $ = (id) => document.getElementById(id);
 
       function readConsent() {
