@@ -1,5 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
-import { InputPanel, OutputPanel, OptionsPanel } from '../../ui';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { processHtmlMinifier, type HtmlMinifierConfig } from '../../../tools/web/html-minifier';
 import { useToolStore } from '../../../lib/store';
 import { debounce } from '../../../lib/utils';
@@ -403,257 +402,386 @@ export function HtmlMinifier({ className = '' }: HtmlMinifierProps) {
   const isHighCompression = compressionRatio > 20;
   const isLowCompression = compressionRatio < 5;
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyboard = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLInputElement) {
+        return;
+      }
+
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key) {
+          case 'Enter':
+            e.preventDefault();
+            if (input.trim()) processInput(input, config);
+            break;
+          case '1':
+            e.preventDefault();
+            handlePreset('conservative');
+            break;
+          case '2':
+            e.preventDefault();
+            handlePreset('standard');
+            break;
+          case '3':
+            e.preventDefault();
+            handlePreset('aggressive');
+            break;
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyboard);
+    return () => document.removeEventListener('keydown', handleKeyboard);
+  }, [input, config, processInput]);
+
   return (
-    <div className={`grid gap-6 lg:grid-cols-12 ${className}`}>
-      <div className="lg:col-span-4 space-y-6">
-        {/* Preset Configurations */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700">Quick Presets</h3>
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              onClick={() => handlePreset('conservative')}
-              className="px-3 py-2 text-xs bg-green-100 text-green-800 rounded hover:bg-green-200 transition-colors"
-            >
-              🛡️ Safe
+    <div className={`${className}`}>
+      {/* Sticky Controls Bar */}
+      <div className="sticky-top" style={{
+        backgroundColor: 'var(--color-surface-secondary)',
+        borderBottom: '1px solid var(--color-border)',
+        padding: 'var(--space-xl)',
+        zIndex: 10
+      }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-lg)', alignItems: 'center' }}>
+          {/* Primary Actions */}
+          <div style={{ display: 'flex', gap: 'var(--space-md)', flexWrap: 'wrap' }}>
+            <button onClick={() => handlePreset('conservative')} className="btn btn-secondary" title="Safe minification (Ctrl+1)">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+              </svg>
+              Safe
             </button>
-            <button
-              onClick={() => handlePreset('standard')}
-              className="px-3 py-2 text-xs bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition-colors"
-            >
-              ⚖️ Standard
+
+            <button onClick={() => handlePreset('standard')} className="btn btn-primary" title="Standard minification (Ctrl+2)">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+              </svg>
+              Standard
             </button>
-            <button
-              onClick={() => handlePreset('aggressive')}
-              className="px-3 py-2 text-xs bg-red-100 text-red-800 rounded hover:bg-red-200 transition-colors"
-            >
-              🚀 Max
+
+            <button onClick={() => handlePreset('aggressive')} className="btn btn-outline" title="Maximum minification (Ctrl+3)">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+              Maximum
+            </button>
+
+            <button onClick={() => handleQuickExample('basic')} className="btn btn-outline" title="Load basic example">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              Example
             </button>
           </div>
-        </div>
 
-        {/* Quick Examples */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700">Quick Examples</h3>
-          <div className="grid grid-cols-1 gap-2">
-            <button
-              onClick={() => handleQuickExample('basic')}
-              className="px-3 py-2 text-xs bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition-colors text-left"
-            >
-              📄 Basic HTML Page
-            </button>
-            <button
-              onClick={() => handleQuickExample('form')}
-              className="px-3 py-2 text-xs bg-green-100 text-green-800 rounded hover:bg-green-200 transition-colors text-left"
-            >
-              📝 HTML Form
-            </button>
-            <button
-              onClick={() => handleQuickExample('email')}
-              className="px-3 py-2 text-xs bg-purple-100 text-purple-800 rounded hover:bg-purple-200 transition-colors text-left"
-            >
-              📧 Email Template
-            </button>
-            <button
-              onClick={() => handleQuickExample('spa')}
-              className="px-3 py-2 text-xs bg-orange-100 text-orange-800 rounded hover:bg-orange-200 transition-colors text-left"
-            >
-              ⚛️ SPA Container
-            </button>
-            <button
-              onClick={() => handleQuickExample('aggressive')}
-              className="px-3 py-2 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors text-left"
-            >
-              🚀 Aggressive Example
-            </button>
-          </div>
-        </div>
-
-        <OptionsPanel
-          title="Minification Options"
-          options={allOptions}
-          values={config}
-          onChange={handleConfigChange}
-        />
-
-        {/* Minification Statistics */}
-        {metadata && (
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-700">Compression Stats</h3>
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs">
-              <div className="grid gap-1">
-                <div>
-                  <span className="text-blue-600">Original Size:</span>
-                  <span className="ml-1 font-medium text-blue-800">
-                    {metadata.originalSize.toLocaleString()} bytes
-                  </span>
-                </div>
-                <div>
-                  <span className="text-blue-600">Minified Size:</span>
-                  <span className="ml-1 font-medium text-blue-800">
-                    {metadata.minifiedSize.toLocaleString()} bytes
-                  </span>
-                </div>
-                <div>
-                  <span className="text-blue-600">Savings:</span>
-                  <span className={`ml-1 font-medium ${
-                    isHighCompression ? 'text-green-800' : 
-                    isLowCompression ? 'text-yellow-800' : 'text-blue-800'
-                  }`}>
-                    {metadata.savings.toLocaleString()} bytes ({metadata.compressionRatio.toFixed(1)}%)
-                  </span>
-                </div>
-                <div>
-                  <span className="text-blue-600">Elements:</span>
-                  <span className="ml-1 font-medium text-blue-800">{metadata.processedElements}</span>
-                </div>
-                <div>
-                  <span className="text-blue-600">Processing:</span>
-                  <span className="ml-1 font-medium text-blue-800">{metadata.processingTime}ms</span>
-                </div>
+          {/* Stats & Settings */}
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 'var(--space-xl)', alignItems: 'center' }}>
+            {metadata && (
+              <div style={{ display: 'flex', gap: 'var(--space-lg)', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
+                <span>Size: <strong>{metadata.originalSize.toLocaleString()}B</strong></span>
+                <span>Minified: <strong>{metadata.minifiedSize.toLocaleString()}B</strong></span>
+                <span>Saved: <strong>{metadata.compressionRatio.toFixed(1)}%</strong></span>
+                <span>Time: <strong>{metadata.processingTime}ms</strong></span>
+                {error ? (
+                  <span className="status-indicator status-invalid">✗ Error</span>
+                ) : output ? (
+                  <span className="status-indicator status-valid">✓ Minified</span>
+                ) : isProcessing ? (
+                  <span className="status-indicator status-loading">… Processing</span>
+                ) : null}
               </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Editor Layout */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        minHeight: '500px'
+      }} className="md:grid-cols-1">
+        {/* Input Panel */}
+        <div style={{ position: 'relative', borderRight: '1px solid var(--color-border)' }} className="md:border-r-0 md:border-b md:border-b-gray-200">
+          {/* Input Header */}
+          <div style={{
+            backgroundColor: 'var(--color-surface-secondary)',
+            borderBottom: '1px solid var(--color-border)',
+            padding: 'var(--space-lg)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
+              HTML Code
+            </span>
+            <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+              <button onClick={async () => {
+                try {
+                  const text = await navigator.clipboard.readText();
+                  setInput(text);
+                } catch (error) {
+                  console.warn('Failed to paste from clipboard');
+                }
+              }} className="btn btn-outline" style={{ padding: 'var(--space-xs) var(--space-sm)', fontSize: '0.75rem' }}>
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                Paste
+              </button>
+              {input && (
+                <button onClick={() => setInput('')} className="btn btn-outline" style={{ padding: 'var(--space-xs) var(--space-sm)', fontSize: '0.75rem' }}>
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                  Clear
+                </button>
+              )}
             </div>
           </div>
-        )}
 
-        {/* Optimization Details */}
-        {metadata && (
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-700">Optimizations Applied</h3>
-            <div className="space-y-2">
-              {metadata.removedComments > 0 && (
-                <div className="flex justify-between text-xs p-2 bg-gray-50 rounded">
-                  <span className="text-gray-600">Comments Removed:</span>
-                  <span className="text-gray-800 font-medium">{metadata.removedComments}</span>
-                </div>
-              )}
-              {metadata.removedWhitespace > 0 && (
-                <div className="flex justify-between text-xs p-2 bg-gray-50 rounded">
-                  <span className="text-gray-600">Whitespace Saved:</span>
-                  <span className="text-gray-800 font-medium">{metadata.removedWhitespace} chars</span>
-                </div>
-              )}
-              {metadata.removedEmptyElements > 0 && (
-                <div className="flex justify-between text-xs p-2 bg-gray-50 rounded">
-                  <span className="text-gray-600">Empty Elements:</span>
-                  <span className="text-gray-800 font-medium">{metadata.removedEmptyElements}</span>
-                </div>
-              )}
-              {metadata.removedAttributes > 0 && (
-                <div className="flex justify-between text-xs p-2 bg-gray-50 rounded">
-                  <span className="text-gray-600">Attributes Cleaned:</span>
-                  <span className="text-gray-800 font-medium">{metadata.removedAttributes}</span>
-                </div>
-              )}
-            </div>
+          {/* Input Textarea */}
+          <div style={{ position: 'relative', height: '500px' }}>
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Enter HTML code to minify..."
+              className="form-textarea"
+              style={{
+                width: '100%',
+                height: '100%',
+                border: 'none',
+                borderRadius: 0,
+                fontFamily: 'var(--font-family-mono)',
+                fontSize: '14px',
+                lineHeight: '1.5',
+                resize: 'none',
+                padding: 'var(--space-lg)'
+              }}
+              spellCheck={false}
+            />
           </div>
-        )}
+        </div>
 
-        {/* Warnings */}
-        {warnings.length > 0 && (
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-700">Warnings</h3>
-            <div className="space-y-2">
-              {warnings.map((warning, index) => (
-                <div key={index} className="p-2 bg-yellow-50 border border-yellow-200 rounded text-xs">
-                  <div className="flex items-start gap-2">
-                    <span className="text-yellow-600">⚠️</span>
-                    <span className="text-yellow-800">{warning}</span>
+        {/* Output Panel */}
+        <div style={{ position: 'relative' }}>
+          {/* Output Header */}
+          <div style={{
+            backgroundColor: 'var(--color-surface-secondary)',
+            borderBottom: '1px solid var(--color-border)',
+            padding: 'var(--space-lg)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
+              Minified HTML
+              {isProcessing && <span style={{ marginLeft: 'var(--space-sm)', fontSize: '0.75rem', color: 'var(--color-primary)' }}>Minifying...</span>}
+            </span>
+            {output && (
+              <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+                <button
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(output);
+                    } catch (error) {
+                      console.error('Failed to copy:', error);
+                    }
+                  }}
+                  className="btn btn-outline"
+                  style={{ padding: 'var(--space-xs) var(--space-sm)', fontSize: '0.75rem' }}
+                >
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                  </svg>
+                  Copy
+                </button>
+                <button onClick={() => {
+                  const blob = new Blob([output], { type: 'text/html' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = 'minified.html';
+                  a.click();
+                  URL.revokeObjectURL(url);
+                }} className="btn btn-outline" style={{ padding: 'var(--space-xs) var(--space-sm)', fontSize: '0.75rem' }}>
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                  </svg>
+                  Download
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Output Content */}
+          <div style={{ height: '500px', position: 'relative' }}>
+            {error ? (
+              <div style={{
+                padding: 'var(--space-lg)',
+                backgroundColor: 'var(--color-danger-light)',
+                color: 'var(--color-danger)',
+                borderRadius: 'var(--radius-lg)',
+                margin: 'var(--space-lg)',
+                fontFamily: 'var(--font-family-mono)',
+                fontSize: '0.875rem',
+                whiteSpace: 'pre-wrap'
+              }}>
+                <strong>Minification Error:</strong><br />
+                {error}
+              </div>
+            ) : (
+              <textarea
+                value={output}
+                readOnly
+                placeholder="Minified HTML will appear here..."
+                className="form-textarea"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  border: 'none',
+                  borderRadius: 0,
+                  fontFamily: 'var(--font-family-mono)',
+                  fontSize: '14px',
+                  lineHeight: '1.5',
+                  resize: 'none',
+                  padding: 'var(--space-lg)',
+                  backgroundColor: 'var(--color-surface)'
+                }}
+                spellCheck={false}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Examples & Configuration - Collapsible */}
+      <div style={{
+        borderTop: '1px solid var(--color-border)',
+        backgroundColor: 'var(--color-surface)'
+      }}>
+        <details className="group">
+          <summary style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            cursor: 'pointer',
+            padding: 'var(--space-xl)',
+            fontWeight: 600,
+            color: 'var(--color-text-primary)',
+            backgroundColor: 'var(--color-surface-secondary)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--color-primary)' }}>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+              </svg>
+              Examples & Configuration
+            </div>
+            <svg className="w-5 h-5 group-open:rotate-180 transition-transform" style={{ color: 'var(--color-text-secondary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+
+          <div style={{ padding: 'var(--space-xl)' }}>
+            {/* Quick Examples */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--space-lg)', marginBottom: 'var(--space-xl)' }}>
+              {[
+                { key: 'basic', title: 'Basic HTML Page', icon: '📄' },
+                { key: 'form', title: 'HTML Form', icon: '📝' },
+                { key: 'email', title: 'Email Template', icon: '📧' },
+                { key: 'spa', title: 'SPA Container', icon: '⚛️' },
+                { key: 'aggressive', title: 'Aggressive Example', icon: '🚀' }
+              ].map((example) => (
+                <div key={example.key} className="card" style={{ padding: 'var(--space-lg)' }}>
+                  <div style={{ fontWeight: 600, marginBottom: 'var(--space-md)', color: 'var(--color-text-primary)' }}>
+                    {example.icon} {example.title}
                   </div>
+                  <button
+                    onClick={() => handleQuickExample(example.key as any)}
+                    className="btn btn-primary"
+                    style={{ width: '100%', fontSize: '0.875rem' }}
+                  >
+                    Try This Example
+                  </button>
                 </div>
               ))}
             </div>
-          </div>
-        )}
 
-        {/* Performance Tips */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700">Performance Tips</h3>
-          <div className="text-xs space-y-1">
-            <div className="p-2 bg-gray-50 rounded">
-              <div className="font-medium text-gray-800 mb-1">Best Practices</div>
-              <div className="text-gray-600 space-y-1">
-                <div>• Always test minified HTML in target browsers</div>
-                <div>• Use gzip compression on your web server</div>
-                <div>• Consider separate CSS/JS files for large amounts</div>
-                <div>• Be cautious with removing optional tags</div>
+            {/* Configuration Panel */}
+            <div className="card" style={{ padding: 'var(--space-lg)', marginBottom: 'var(--space-lg)' }}>
+              <h4 style={{ fontWeight: 600, marginBottom: 'var(--space-md)', color: 'var(--color-text-primary)' }}>Minification Options</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 'var(--space-lg)' }}>
+                {allOptions.map((option) => (
+                  <div key={option.key} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-text-primary)' }}>
+                      <input
+                        type="checkbox"
+                        checked={!!config[option.key as keyof HtmlMinifierConfig]}
+                        onChange={(e) => handleConfigChange(option.key, e.target.checked)}
+                        style={{ accentColor: 'var(--color-primary)' }}
+                      />
+                      {option.label}
+                    </label>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>{option.description}</span>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-      <div className="lg:col-span-8 space-y-6">
-        <InputPanel
-          title="HTML Code"
-          value={input}
-          onChange={setInput}
-          placeholder="Enter HTML code to minify..."
-          language="html"
-        />
-
-        <OutputPanel
-          title="Minified HTML"
-          value={output}
-          error={error}
-          isProcessing={isProcessing}
-          language="html"
-          placeholder="Minified HTML will appear here..."
-          processingMessage="Minifying HTML..."
-          customActions={
-            output ? (
-              <div className="flex gap-2">
-                <button
-                  onClick={() => navigator.clipboard?.writeText(output)}
-                  className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                >
-                  📋 Copy Minified
-                </button>
-                <button
-                  onClick={() => {
-                    const blob = new Blob([output], { type: 'text/html' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'minified.html';
-                    a.click();
-                    URL.revokeObjectURL(url);
-                  }}
-                  className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
-                >
-                  💾 Download HTML
-                </button>
-                {metadata && (
-                  <button
-                    onClick={() => {
-                      const report = `HTML Minification Report
-Generated: ${new Date().toISOString()}
-
-Original Size: ${metadata.originalSize.toLocaleString()} bytes
-Minified Size: ${metadata.minifiedSize.toLocaleString()} bytes
-Savings: ${metadata.savings.toLocaleString()} bytes (${metadata.compressionRatio.toFixed(1)}%)
-Processing Time: ${metadata.processingTime}ms
-
-Optimizations Applied:
-- Comments Removed: ${metadata.removedComments}
-- Whitespace Saved: ${metadata.removedWhitespace} characters
-- Empty Elements Removed: ${metadata.removedEmptyElements}
-- Attributes Cleaned: ${metadata.removedAttributes}
-- Elements Processed: ${metadata.processedElements}
-
-${warnings.length > 0 ? `\nWarnings:\n${warnings.map(w => `- ${w}`).join('\n')}` : ''}`;
-                      
-                      navigator.clipboard?.writeText(report);
-                    }}
-                    className="px-3 py-1 text-xs bg-orange-600 text-white rounded hover:bg-orange-700 transition-colors"
-                  >
-                    📊 Copy Report
-                  </button>
-                )}
+            {/* Statistics */}
+            {metadata && (
+              <div className="card" style={{ padding: 'var(--space-lg)' }}>
+                <h4 style={{ fontWeight: 600, marginBottom: 'var(--space-md)', color: 'var(--color-text-primary)' }}>Minification Results</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--space-lg)' }}>
+                  <div>
+                    <div style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', marginBottom: 'var(--space-xs)' }}>File Size</div>
+                    <div style={{ fontFamily: 'var(--font-family-mono)', fontSize: '1rem', color: 'var(--color-text-primary)' }}>
+                      {metadata.originalSize.toLocaleString()} → {metadata.minifiedSize.toLocaleString()} bytes
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', marginBottom: 'var(--space-xs)' }}>Compression</div>
+                    <div style={{ fontFamily: 'var(--font-family-mono)', fontSize: '1rem', color: 'var(--color-success)' }}>
+                      {metadata.compressionRatio.toFixed(1)}% saved
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', marginBottom: 'var(--space-xs)' }}>Processing Time</div>
+                    <div style={{ fontFamily: 'var(--font-family-mono)', fontSize: '1rem', color: 'var(--color-text-primary)' }}>
+                      {metadata.processingTime}ms
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', marginBottom: 'var(--space-xs)' }}>Elements Processed</div>
+                    <div style={{ fontFamily: 'var(--font-family-mono)', fontSize: '1rem', color: 'var(--color-text-primary)' }}>
+                      {metadata.processedElements}
+                    </div>
+                  </div>
+                </div>
               </div>
-            ) : undefined
-          }
-        />
+            )}
+
+            {/* Warnings */}
+            {warnings.length > 0 && (
+              <div className="card" style={{ padding: 'var(--space-lg)', marginTop: 'var(--space-lg)', backgroundColor: 'var(--color-warning-light)' }}>
+                <h4 style={{ fontWeight: 600, marginBottom: 'var(--space-md)', color: 'var(--color-warning)' }}>Warnings</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
+                  {warnings.map((warning, index) => (
+                    <div key={index} style={{ fontSize: '0.875rem', color: 'var(--color-warning)' }}>
+                      ⚠️ {warning}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </details>
       </div>
+
+        {/* Minification Statistics Hidden */}
+
     </div>
   );
 }

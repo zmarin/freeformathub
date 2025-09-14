@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { InputPanel, OutputPanel, OptionsPanel } from '../../ui';
 import { processJsonToTypescript, type JsonToTypescriptConfig } from '../../../tools/converters/json-to-typescript';
 import { useToolStore } from '../../../lib/store';
@@ -99,12 +99,55 @@ const ADVANCED_OPTIONS = [
 ] as const;
 
 export function JsonToTypescript({ className = '' }: JsonToTypescriptProps) {
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(`{
+  "user": {
+    "id": 123,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "profile": {
+      "age": 30,
+      "location": "New York",
+      "preferences": {
+        "theme": "dark",
+        "notifications": true,
+        "features": ["email", "sms", "push"]
+      }
+    },
+    "posts": [
+      {
+        "id": 1,
+        "title": "Hello World",
+        "content": "My first post!",
+        "published": true,
+        "publishedAt": "2024-01-15T10:00:00Z",
+        "tags": ["introduction", "first-post"],
+        "stats": {
+          "views": 100,
+          "likes": 25,
+          "comments": 5
+        }
+      },
+      {
+        "id": 2,
+        "title": "Learning TypeScript",
+        "content": "TypeScript is awesome!",
+        "published": false,
+        "publishedAt": null,
+        "tags": ["typescript", "learning"],
+        "stats": {
+          "views": 0,
+          "likes": 0,
+          "comments": 0
+        }
+      }
+    ]
+  }
+}`);
   const [output, setOutput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [metadata, setMetadata] = useState<any>(null);
-  
+
   const { setCurrentTool, addToHistory } = useToolStore();
   const [config, setConfig] = useState<JsonToTypescriptConfig>(DEFAULT_CONFIG);
 
@@ -122,18 +165,18 @@ export function JsonToTypescript({ className = '' }: JsonToTypescriptProps) {
 
       try {
         const result = processJsonToTypescript(inputValue, currentConfig);
-        
+
         if (result.success && result.output) {
           setOutput(result.output);
           setMetadata({
             interfaceCount: result.interfaceCount,
             typeDefinitions: result.typeDefinitions,
           });
-          
+
           // Add to history
           addToHistory({
             toolId: 'json-to-typescript',
-            input: inputValue,
+            input: inputValue.substring(0, 50) + (inputValue.length > 50 ? '...' : ''),
             output: result.output,
             config: currentConfig,
             timestamp: Date.now(),
@@ -166,14 +209,19 @@ export function JsonToTypescript({ className = '' }: JsonToTypescriptProps) {
     setConfig(prev => ({ ...prev, [key]: value }));
   };
 
-  const handleExample = (exampleInput: string) => {
-    setInput(exampleInput);
+  const handleQuickExample = (example: any) => {
+    setInput(typeof example === 'string' ? example : JSON.stringify(example, null, 2));
+  };
+
+  const handleClearData = () => {
+    setInput('');
+    setOutput('');
   };
 
   // Example JSON data
   const examples = [
     {
-      label: 'Simple User',
+      label: '👤 Simple User',
       value: JSON.stringify({
         id: 123,
         name: "John Doe",
@@ -183,7 +231,7 @@ export function JsonToTypescript({ className = '' }: JsonToTypescriptProps) {
       }, null, 2),
     },
     {
-      label: 'API Response',
+      label: '📊 API Response',
       value: JSON.stringify({
         data: {
           users: [{
@@ -202,7 +250,7 @@ export function JsonToTypescript({ className = '' }: JsonToTypescriptProps) {
       }, null, 2),
     },
     {
-      label: 'E-commerce Product',
+      label: '🛒 E-commerce Product',
       value: JSON.stringify({
         product: {
           id: "prod_123",
@@ -223,7 +271,7 @@ export function JsonToTypescript({ className = '' }: JsonToTypescriptProps) {
       }, null, 2),
     },
     {
-      label: 'Configuration Object',
+      label: '⚙️ Configuration Object',
       value: JSON.stringify({
         app: {
           name: "My App",
@@ -245,7 +293,7 @@ export function JsonToTypescript({ className = '' }: JsonToTypescriptProps) {
       }, null, 2),
     },
     {
-      label: 'Array of Objects',
+      label: '📋 Array of Objects',
       value: JSON.stringify([
         { id: 1, name: "Item 1", active: true },
         { id: 2, name: "Item 2", active: false },
@@ -260,127 +308,273 @@ export function JsonToTypescript({ className = '' }: JsonToTypescriptProps) {
     ...ADVANCED_OPTIONS,
   ];
 
+  const handleKeyboardShortcut = useCallback((e: KeyboardEvent) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      processInput(input, config);
+    }
+  }, [input, config, processInput]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyboardShortcut);
+    return () => document.removeEventListener('keydown', handleKeyboardShortcut);
+  }, [handleKeyboardShortcut]);
+
   return (
-    <div className={`grid gap-6 lg:grid-cols-12 ${className}`}>
-      <div className="lg:col-span-4 space-y-6">
-        <InputPanel
-          title="JSON Data"
-          value={input}
-          onChange={setInput}
-          placeholder='Enter JSON data to convert...'
-          description="Paste your JSON data to generate TypeScript interfaces"
-          examples={examples}
-          onExampleClick={handleExample}
-          rows={12}
-          language="json"
-        />
-        
-        <OptionsPanel
-          title="Conversion Options"
-          options={allOptions}
-          values={config}
-          onChange={handleConfigChange}
-        />
+    <div className={`space-y-6 ${className}`}>
+      {/* Sticky Controls Bar */}
+      <div className="sticky top-0 z-10" style={{
+        backgroundColor: 'var(--color-surface-secondary)',
+        borderBottom: '1px solid var(--color-border)',
+        padding: 'var(--space-lg)'
+      }}>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={() => processInput(input, config)}
+            disabled={isProcessing || !input.trim()}
+            className="btn btn-primary"
+            style={{ fontSize: '0.875rem', padding: '0.5rem 1rem' }}
+          >
+            🔄 {isProcessing ? 'Generating...' : 'Generate Types'}
+          </button>
 
-        {/* Interface Name Preview */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700">Generated Interface</h3>
-          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs">
-            <div className="font-mono text-blue-800">
-              {config.generateExport ? 'export ' : ''}interface {config.interfaceName} {'{ ... }'}
-            </div>
-            <p className="text-blue-700 mt-1">
-              This will be the main interface name in your generated TypeScript code
-            </p>
-          </div>
-        </div>
+          <button
+            onClick={handleClearData}
+            className="btn btn-secondary"
+            style={{ fontSize: '0.875rem', padding: '0.5rem 1rem' }}
+          >
+            🗑️ Clear
+          </button>
 
-        {/* Metadata Display */}
-        {metadata && (
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-700">Generation Results</h3>
-            <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-xs">
-              <div className="grid grid-cols-1 gap-2">
-                <div>
-                  <span className="text-green-600">Interfaces Generated:</span>
-                  <div className="font-medium text-green-800">{metadata.interfaceCount}</div>
-                </div>
-                {metadata.typeDefinitions && metadata.typeDefinitions.length > 0 && (
-                  <div className="pt-2 border-t border-green-200">
-                    <span className="text-green-600">Type Definitions:</span>
-                    <div className="mt-1 space-y-1">
-                      {metadata.typeDefinitions.map((def: any, index: number) => (
-                        <div key={index} className="text-green-700">
-                          <span className="font-mono text-xs">{def.name}</span>
-                          <span className="ml-2 text-gray-600">({def.properties} props)</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+          {/* Real-time Stats */}
+          {metadata && (
+            <div className="flex items-center gap-4 ml-auto">
+              <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                <span className="font-medium">{metadata.interfaceCount}</span> interfaces
+              </div>
+              <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                <span className="font-medium">{output.split('\n').length}</span> lines
+              </div>
+              <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                <span className="font-medium">{(output.length / 1024).toFixed(1)}KB</span>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* TypeScript Tips */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700">TypeScript Tips</h3>
-          <div className="p-3 bg-gray-50 rounded-lg text-xs">
-            <div className="space-y-2">
-              <div>
-                <span className="font-medium">Optional Properties:</span>
-                <div className="text-gray-600">Use when data might be incomplete</div>
-              </div>
-              <div>
-                <span className="font-medium">Union Types:</span>
-                <div className="text-gray-600">Handle arrays with mixed types</div>
-              </div>
-              <div>
-                <span className="font-medium">CamelCase:</span>
-                <div className="text-gray-600">Convert API snake_case to JS convention</div>
-              </div>
-            </div>
+          <div className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+            Press <kbd className="kbd">Ctrl+Enter</kbd> to generate
           </div>
         </div>
       </div>
 
-      <div className="lg:col-span-8">
-        <OutputPanel
-          title="Generated TypeScript Interfaces"
-          value={output}
-          error={error}
-          isProcessing={isProcessing}
-          language="typescript"
-          placeholder="Enter JSON data to generate TypeScript interfaces..."
-          processingMessage="Converting JSON to TypeScript..."
-          customActions={
-            output ? (
-              <div className="flex gap-2">
-                <button
-                  onClick={() => navigator.clipboard?.writeText(output)}
-                  className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                >
-                  =� Copy Code
-                </button>
-                <button
-                  onClick={() => {
-                    const blob = new Blob([output], { type: 'text/plain' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `${config.interfaceName}.ts`;
-                    a.click();
-                    URL.revokeObjectURL(url);
-                  }}
-                  className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
-                >
-                  =� Download .ts File
-                </button>
+      {/* Main Content Grid */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: 'var(--space-xl)',
+        minHeight: '500px'
+      }} className="md:grid-cols-1">
+        <div className="space-y-6">
+          <InputPanel
+            title="JSON Data"
+            value={input}
+            onChange={setInput}
+            placeholder="Enter JSON data to convert..."
+            language="json"
+            supportsDragDrop
+            onFileContent={(content) => setInput(content)}
+            acceptedFileTypes=".json,.txt"
+          />
+
+          {/* Quick Examples */}
+          <div className="card" style={{ padding: 'var(--space-lg)' }}>
+            <details className="space-y-3">
+              <summary className="text-sm font-medium cursor-pointer" style={{ color: 'var(--color-text)' }}>
+                📋 Quick Examples
+              </summary>
+              <div className="grid grid-cols-1 gap-2 mt-3">
+                {examples.map((example, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleQuickExample(example.value)}
+                    className="btn btn-outline text-left"
+                    style={{ fontSize: '0.75rem', padding: '0.5rem 0.75rem' }}
+                  >
+                    {example.label}
+                  </button>
+                ))}
               </div>
-            ) : undefined
-          }
-        />
+            </details>
+          </div>
+
+          <OptionsPanel
+            title="Generation Options"
+            options={allOptions}
+            values={config}
+            onChange={handleConfigChange}
+          />
+
+          {/* Interface Name Preview */}
+          <div className="card" style={{ padding: 'var(--space-lg)' }}>
+            <h3 className="text-sm font-medium" style={{ color: 'var(--color-text)', marginBottom: 'var(--space-md)' }}>Generated Interface Preview</h3>
+            <div style={{ backgroundColor: 'var(--color-primary-subtle)', color: 'var(--color-primary)' }} className="p-3 rounded-lg text-xs font-mono">
+              {config.generateExport ? 'export ' : ''}interface {config.interfaceName} {'{ ... }'}
+            </div>
+            <p className="text-xs mt-2" style={{ color: 'var(--color-text-secondary)' }}>
+              This will be the main interface name in your generated TypeScript code
+            </p>
+          </div>
+
+          {/* Metadata Display */}
+          {metadata && (
+            <div className="card" style={{ padding: 'var(--space-lg)' }}>
+              <h3 className="text-sm font-medium" style={{ color: 'var(--color-text)', marginBottom: 'var(--space-md)' }}>Generation Results</h3>
+              <div className="space-y-3">
+                <div style={{ backgroundColor: 'var(--color-success-subtle)', color: 'var(--color-success)' }} className="p-3 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="text-xl">🎯</div>
+                    <div>
+                      <div className="font-medium text-sm">
+                        {metadata.interfaceCount} Interfaces Generated
+                      </div>
+                      <div className="text-xs opacity-75">
+                        {output.split('\n').length} lines of TypeScript code
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {metadata.typeDefinitions && metadata.typeDefinitions.length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="text-xs font-medium" style={{ color: 'var(--color-text-secondary)' }}>Type Definitions:</h4>
+                    {metadata.typeDefinitions.map((def: any, index: number) => (
+                      <div key={index} style={{ backgroundColor: 'var(--color-secondary-subtle)', color: 'var(--color-secondary)' }} className="p-2 rounded text-xs">
+                        <div className="flex justify-between items-center">
+                          <span className="font-mono font-medium">{def.name}</span>
+                          <span className="opacity-75">({def.properties} properties)</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* TypeScript Tips */}
+          <div className="card" style={{ padding: 'var(--space-lg)' }}>
+            <h3 className="text-sm font-medium" style={{ color: 'var(--color-text)', marginBottom: 'var(--space-md)' }}>TypeScript Tips</h3>
+            <div className="space-y-3 text-xs">
+              <div style={{ backgroundColor: 'var(--color-info-subtle)', color: 'var(--color-info)' }} className="p-3 rounded">
+                <div className="font-medium mb-1">💡 Best Practices</div>
+                <div className="space-y-1">
+                  <div>• <strong>Optional Properties:</strong> Use when data might be incomplete</div>
+                  <div>• <strong>Union Types:</strong> Handle arrays with mixed types</div>
+                  <div>• <strong>CamelCase:</strong> Convert API snake_case to JS convention</div>
+                  <div>• <strong>Export Interfaces:</strong> Enable imports in other modules</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <OutputPanel
+            title="Generated TypeScript Interfaces"
+            value={output}
+            error={error}
+            isProcessing={isProcessing}
+            language="typescript"
+            placeholder="Enter JSON data to generate TypeScript interfaces..."
+            processingMessage="Generating TypeScript interfaces..."
+            supportsCopy
+            supportsDownload
+            downloadFileName={`${config.interfaceName}.ts`}
+            customActions={
+              output ? (
+                <div className="flex gap-2 flex-wrap">
+                  <button
+                    onClick={() => navigator.clipboard?.writeText(output)}
+                    className="btn btn-sm btn-secondary"
+                  >
+                    📋 Copy Code
+                  </button>
+                  <button
+                    onClick={() => {
+                      const blob = new Blob([output], { type: 'text/plain' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `${config.interfaceName}.ts`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                    className="btn btn-sm btn-outline"
+                  >
+                    💾 Download .ts File
+                  </button>
+                  {metadata && (
+                    <div className="px-3 py-1 text-xs font-medium rounded bg-success-subtle text-success">
+                      {metadata.interfaceCount} Interfaces
+                    </div>
+                  )}
+                </div>
+              ) : undefined
+            }
+          />
+
+          {/* Code Analysis */}
+          {output && metadata && (
+            <div className="card" style={{ padding: 'var(--space-lg)' }}>
+              <h3 className="text-sm font-medium" style={{ color: 'var(--color-text)', marginBottom: 'var(--space-md)' }}>Code Analysis</h3>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div style={{ backgroundColor: 'var(--color-primary-subtle)', color: 'var(--color-primary)' }} className="flex justify-between p-2 rounded">
+                  <span>Lines of Code:</span>
+                  <span className="font-medium">{output.split('\n').length}</span>
+                </div>
+                <div style={{ backgroundColor: 'var(--color-success-subtle)', color: 'var(--color-success)' }} className="flex justify-between p-2 rounded">
+                  <span>Interfaces:</span>
+                  <span className="font-medium">{metadata.interfaceCount}</span>
+                </div>
+                <div style={{ backgroundColor: 'var(--color-secondary-subtle)', color: 'var(--color-secondary)' }} className="flex justify-between p-2 rounded">
+                  <span>File Size:</span>
+                  <span className="font-medium">{(output.length / 1024).toFixed(1)}KB</span>
+                </div>
+                <div style={{ backgroundColor: 'var(--color-info-subtle)', color: 'var(--color-info)' }} className="flex justify-between p-2 rounded">
+                  <span>Export Mode:</span>
+                  <span className="font-medium">{config.generateExport ? 'Enabled' : 'Disabled'}</span>
+                </div>
+                <div style={{ backgroundColor: 'var(--color-warning-subtle)', color: 'var(--color-warning)' }} className="flex justify-between p-2 rounded">
+                  <span>Optional Props:</span>
+                  <span className="font-medium">{config.useOptionalProperties ? 'Enabled' : 'Disabled'}</span>
+                </div>
+                <div style={{ backgroundColor: 'var(--color-surface-tertiary)', color: 'var(--color-text-secondary)' }} className="flex justify-between p-2 rounded">
+                  <span>Null Handling:</span>
+                  <span className="font-medium">{config.includeNullables ? 'Preserved' : 'Converted'}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Usage Examples */}
+          {output && (
+            <div className="card" style={{ padding: 'var(--space-lg)' }}>
+              <h3 className="text-sm font-medium" style={{ color: 'var(--color-text)', marginBottom: 'var(--space-md)' }}>Usage Examples</h3>
+              <div style={{ backgroundColor: 'var(--color-surface-secondary)' }} className="p-3 rounded text-xs font-mono">
+                <div className="space-y-2" style={{ color: 'var(--color-text-secondary)' }}>
+                  <div>// Import the generated types</div>
+                  <div style={{ color: 'var(--color-primary)' }}>import {`{ ${config.interfaceName} }`} from './{config.interfaceName}.ts';</div>
+                  <div></div>
+                  <div>// Use in your code</div>
+                  <div style={{ color: 'var(--color-success)' }}>const data: {config.interfaceName} = {`{ ... }`};</div>
+                  <div></div>
+                  <div>// Type-safe property access</div>
+                  <div style={{ color: 'var(--color-secondary)' }}>console.log(data.property);</div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

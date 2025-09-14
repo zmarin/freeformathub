@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { processCsvToJson, type CsvToJsonConfig } from '../../../tools/converters/csv-to-json';
 import { useToolStore } from '../../../lib/store';
 import { debounce, copyToClipboard, downloadFile } from '../../../lib/utils';
+import { FiPlay, FiCheck, FiEye, FiCopy, FiDownload, FiTrash2, FiUpload, FiSettings } from 'react-icons/fi';
 
 interface CsvToJsonProps {
   className?: string;
@@ -329,284 +330,241 @@ export function CsvToJson({ className = '' }: CsvToJsonProps) {
 
   return (
     <div className={`flex flex-col ${className}`}>
-      {/* Tool Header with Quick Actions */}
-      <div className="flex flex-col sm:flex-row gap-4 p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-        {/* Quick Actions */}
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={handleConvert}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
-            title="Convert CSV to JSON"
-          >
-            🔄 Convert
+      {/* Sticky Controls Bar */}
+      <div className="sticky-top" style={{
+        backgroundColor: 'var(--color-surface-secondary)',
+        borderBottom: '1px solid var(--color-border)',
+        padding: 'var(--space-xl)',
+        zIndex: 10
+      }}>
+        <div className="flex flex-wrap items-center gap-3">
+          <button className="btn btn-primary" onClick={handleConvert} title="Convert CSV to JSON (Ctrl+Enter)">
+            <FiPlay size={14} />
+            Convert
           </button>
-          <button
-            onClick={handleValidate}
-            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors"
-            title="Validate CSV format only"
-          >
-            ✓ Validate
+          <button className="btn btn-outline" onClick={handleValidate} title="Validate CSV format">
+            <FiCheck size={14} />
+            Validate
           </button>
-          <button
-            onClick={handlePreview}
-            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"
-            title="Preview with headers enabled"
-          >
-            👁️ Preview
+          <button className="btn btn-outline" onClick={handlePreview} title="Preview with headers">
+            <FiEye size={14} />
+            Preview
           </button>
-          {!autoFormat && (
-            <button
-              onClick={() => processCsv()}
-              disabled={!input.trim() || isLoading}
-              className="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 text-white text-sm font-medium rounded-lg transition-colors"
-            >
-              {isLoading ? '⏳' : '⚡'} Process
-            </button>
-          )}
-        </div>
+          <button className="btn btn-outline" onClick={() => setInput('')} title="Clear input">
+            <FiTrash2 size={14} />
+            Clear
+          </button>
 
-        {/* Auto-format toggle */}
-        <div className="flex items-center gap-2 ml-auto">
-          <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+          {/* Separator */}
+          <div style={{ height: '20px', width: '1px', backgroundColor: 'var(--color-border)' }}></div>
+
+          {/* File Upload */}
+          <label className="btn btn-outline cursor-pointer" title="Upload CSV file">
+            <FiUpload size={14} />
+            Upload
             <input
-              type="checkbox"
-              checked={autoFormat}
-              onChange={(e) => setAutoFormat(e.target.checked)}
-              className="rounded"
+              type="file"
+              accept=".csv,.tsv,.txt"
+              className="hidden"
+              onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
             />
-            Auto-convert
           </label>
+
+          {/* Stats */}
+          {metadata && (
+            <div className="flex items-center gap-4 text-sm">
+              <span style={{ color: 'var(--color-text-secondary)' }}>
+                {metadata.rowCount?.toLocaleString()} rows × {metadata.columnCount} cols
+              </span>
+            </div>
+          )}
+
+          {/* Auto-convert Toggle */}
+          <div className="ml-auto flex items-center gap-2">
+            <label className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+              <input
+                type="checkbox"
+                checked={autoFormat}
+                onChange={(e) => setAutoFormat(e.target.checked)}
+                className="rounded"
+              />
+              Auto-convert
+            </label>
+          </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex flex-col lg:flex-row flex-1 min-h-[600px]">
-        {/* Input Section */}
-        <div className="flex-1 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700">
-          {/* Input Header */}
-          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-              CSV Input
-            </h3>
+      {/* Main Content Area - Side by Side Grid */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        minHeight: '500px'
+      }} className="md:grid-cols-1">
+        {/* Input Panel */}
+        <div className="card flex flex-col" style={{ borderRadius: 0 }}>
+          <div className="card-header">
+            <h3>CSV Input</h3>
             <div className="flex items-center gap-2">
-              <label className="cursor-pointer text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded border transition-colors">
-                📁 Upload
-                <input
-                  type="file"
-                  accept=".csv,.tsv,.txt"
-                  className="hidden"
-                  onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
-                />
-              </label>
-              {input && (
-                <button
-                  onClick={() => setInput('')}
-                  className="text-xs px-3 py-1 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
-                  title="Clear input"
-                >
-                  🗑️ Clear
-                </button>
+              {isLoading && (
+                <div className="status-indicator status-loading">Converting...</div>
+              )}
+              {!error && output && (
+                <div className="status-indicator status-success">✓ Converted</div>
+              )}
+              {error && (
+                <div className="status-indicator status-error">✗ Error</div>
               )}
             </div>
           </div>
 
-          {/* Input Textarea */}
-          <div 
-            className={`flex-1 relative ${dragActive ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+          <div
+            className={`flex-1 relative ${dragActive ? 'drag-active' : ''}`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
+            onKeyDown={(e) => {
+              if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                handleConvert();
+              }
+            }}
           >
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Paste your CSV data here, or drag & drop a file..."
-              className="w-full h-full p-4 resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-mono text-sm border-none focus:outline-none focus:ring-0"
+              placeholder="Paste your CSV data here, or drag & drop a file...\n\nname,age,city\nJohn,30,New York\nJane,25,Boston"
+              className="input-area"
               spellCheck={false}
             />
             {dragActive && (
-              <div className="absolute inset-0 flex items-center justify-center bg-blue-50/80 dark:bg-blue-900/40 backdrop-blur-sm">
-                <div className="text-blue-600 dark:text-blue-400 text-lg font-medium">
-                  Drop CSV file here
-                </div>
+              <div className="drag-overlay">
+                <div>Drop CSV file here</div>
               </div>
             )}
           </div>
 
-          {/* Example buttons */}
-          <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex flex-wrap gap-2">
-              <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">Examples:</span>
+          {/* Examples */}
+          <details className="examples-section" open>
+            <summary>Quick Examples</summary>
+            <div className="examples-grid">
               {EXAMPLES.map((example, idx) => (
                 <button
                   key={idx}
                   onClick={() => setInput(example.value)}
-                  className="text-xs px-2 py-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-colors"
+                  className="example-button"
                   title={example.title}
                 >
                   {example.title}
                 </button>
               ))}
             </div>
-          </div>
+          </details>
         </div>
 
-        {/* Output Section */}
-        <div className="flex-1 flex flex-col">
-          {/* Output Header */}
-          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-              JSON Output
-              {isLoading && <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">Converting...</span>}
-              {!error && output && <span className="ml-2 text-xs text-green-600 dark:text-green-400">✓ Success</span>}
-              {error && <span className="ml-2 text-xs text-red-600 dark:text-red-400">✗ Error</span>}
-            </h3>
+        {/* Output Panel */}
+        <div className="card flex flex-col" style={{ borderRadius: 0, borderLeft: '1px solid var(--color-border)' }}>
+          <div className="card-header">
+            <h3>JSON Output</h3>
             <div className="flex items-center gap-2">
               {output && (
                 <>
-                  <button
-                    onClick={handleCopy}
-                    className={`text-xs px-3 py-1 rounded border transition-colors ${
-                      copied 
-                        ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border-green-300 dark:border-green-600'
-                        : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
-                    }`}
-                  >
-                    {copied ? '✓ Copied' : '📋 Copy'}
+                  <button className="btn btn-sm" onClick={handleCopy} title="Copy to clipboard">
+                    <FiCopy size={12} />
+                    {copied ? 'Copied!' : 'Copy'}
                   </button>
-                  <button
-                    onClick={handleDownload}
-                    className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded border border-gray-300 dark:border-gray-600 transition-colors"
-                  >
-                    💾 Download
+                  <button className="btn btn-sm" onClick={handleDownload} title="Download JSON file">
+                    <FiDownload size={12} />
+                    Download
                   </button>
                 </>
               )}
             </div>
           </div>
 
-          {/* Output Content */}
-          <div className="flex-1 bg-white dark:bg-gray-800">
+          <div className="flex-1">
             {error ? (
-              <div className="p-4 h-full">
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-                  <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">Conversion Error</h4>
-                  <pre className="text-xs text-red-700 dark:text-red-300 whitespace-pre-wrap font-mono">
-                    {error}
-                  </pre>
-                </div>
+              <div className="error-display">
+                <h4>Conversion Error</h4>
+                <pre>{error}</pre>
               </div>
             ) : (
-              <div className="h-full flex flex-col">
-                <textarea
-                  value={output}
-                  readOnly
-                  placeholder="JSON output will appear here..."
-                  className="flex-1 p-4 resize-none bg-transparent text-gray-900 dark:text-gray-100 font-mono text-sm border-none focus:outline-none"
-                  spellCheck={false}
-                />
-              </div>
+              <textarea
+                value={output}
+                readOnly
+                placeholder="JSON output will appear here..."
+                className="output-area"
+                spellCheck={false}
+              />
             )}
           </div>
-
-          {/* Simplified metadata */}
-          {metadata && !error && output && (
-            <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-              <div className="flex flex-wrap gap-4 text-xs text-gray-600 dark:text-gray-400">
-                {metadata.rowCount && (
-                  <span><strong>Rows:</strong> {metadata.rowCount.toLocaleString()}</span>
-                )}
-                {metadata.columnCount && (
-                  <span><strong>Columns:</strong> {metadata.columnCount}</span>
-                )}
-                {metadata.outputSize && (
-                  <span><strong>Size:</strong> {(metadata.outputSize / 1024).toFixed(1)} KB</span>
-                )}
-                {metadata.processingTime && (
-                  <span><strong>Time:</strong> {metadata.processingTime}ms</span>
-                )}
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
-      {/* Essential Options Panel */}
-      <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-        <div className="p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">Options</h4>
-            <button
-              onClick={() => setShowAdvanced(!showAdvanced)}
-              className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
-            >
-              {showAdvanced ? '△ Less' : '▽ More'}
-            </button>
-          </div>
-          
-          {/* Essential options */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Options Panel */}
+      <div className="card options-panel">
+        <details open>
+          <summary className="flex items-center gap-2">
+            <FiSettings size={16} />
+            <span>Conversion Options</span>
+          </summary>
+
+          <div className="options-grid">
             {ESSENTIAL_OPTIONS.map((option) => (
-              <div key={option.key} className="space-y-1">
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
-                  {option.label}
-                </label>
+              <div key={option.key} className="option-group">
+                <label className="option-label">{option.label}</label>
                 {option.type === 'boolean' ? (
-                  <label className="flex items-center space-x-2">
+                  <label className="checkbox-wrapper">
                     <input
                       type="checkbox"
                       checked={!!config[option.key as keyof CsvToJsonConfig]}
                       onChange={(e) => handleEssentialConfigChange(option.key, e.target.checked)}
-                      className="rounded"
+                      className="checkbox"
                     />
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
-                      {option.description}
-                    </span>
+                    <span className="option-description">{option.description}</span>
                   </label>
                 ) : option.type === 'select' ? (
-                  <select
-                    value={String(config[option.key as keyof CsvToJsonConfig] ?? option.default)}
-                    onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
-                    className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                  >
-                    {option.options?.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
+                  <>
+                    <select
+                      value={String(config[option.key as keyof CsvToJsonConfig] ?? option.default)}
+                      onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
+                      className="select-input"
+                    >
+                      {option.options?.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="option-description">{option.description}</div>
+                  </>
                 ) : null}
               </div>
             ))}
           </div>
 
-          {/* Advanced options */}
-          {showAdvanced && (
-            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <h5 className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">Advanced Options</h5>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {ADVANCED_OPTIONS.map((option) => (
-                  <div key={option.key} className="space-y-1">
-                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
-                      {option.label}
+          {/* Advanced Options */}
+          <details className="advanced-options">
+            <summary>Advanced Options</summary>
+            <div className="options-grid">
+              {ADVANCED_OPTIONS.map((option) => (
+                <div key={option.key} className="option-group">
+                  <label className="option-label">{option.label}</label>
+                  {option.type === 'boolean' ? (
+                    <label className="checkbox-wrapper">
+                      <input
+                        type="checkbox"
+                        checked={!!config[option.key as keyof CsvToJsonConfig]}
+                        onChange={(e) => handleEssentialConfigChange(option.key, e.target.checked)}
+                        className="checkbox"
+                      />
+                      <span className="option-description">{option.description}</span>
                     </label>
-                    {option.type === 'boolean' ? (
-                      <label className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          checked={!!config[option.key as keyof CsvToJsonConfig]}
-                          onChange={(e) => handleEssentialConfigChange(option.key, e.target.checked)}
-                          className="rounded"
-                        />
-                        <span className="text-xs text-gray-600 dark:text-gray-400">
-                          {option.description}
-                        </span>
-                      </label>
-                    ) : option.type === 'select' ? (
+                  ) : option.type === 'select' ? (
+                    <>
                       <select
                         value={String(config[option.key as keyof CsvToJsonConfig] ?? option.default)}
                         onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
-                        className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                        className="select-input"
                       >
                         {option.options?.map((opt) => (
                           <option key={opt.value} value={opt.value}>
@@ -614,30 +572,37 @@ export function CsvToJson({ className = '' }: CsvToJsonProps) {
                           </option>
                         ))}
                       </select>
-                    ) : option.type === 'text' ? (
+                      <div className="option-description">{option.description}</div>
+                    </>
+                  ) : option.type === 'text' ? (
+                    <>
                       <input
                         type="text"
                         value={String(config[option.key as keyof CsvToJsonConfig] ?? option.default)}
                         onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
-                        className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                        className="text-input"
                         placeholder={option.description}
                       />
-                    ) : option.type === 'number' ? (
+                      <div className="option-description">{option.description}</div>
+                    </>
+                  ) : option.type === 'number' ? (
+                    <>
                       <input
                         type="number"
                         value={Number(config[option.key as keyof CsvToJsonConfig] ?? option.default)}
                         onChange={(e) => handleEssentialConfigChange(option.key, parseInt(e.target.value) || 0)}
                         min={option.min}
                         max={option.max}
-                        className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                        className="text-input"
                       />
-                    ) : null}
-                  </div>
-                ))}
-              </div>
+                      <div className="option-description">{option.description}</div>
+                    </>
+                  ) : null}
+                </div>
+              ))}
             </div>
-          )}
-        </div>
+          </details>
+        </details>
       </div>
     </div>
   );

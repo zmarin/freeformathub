@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { InputPanel, OutputPanel, OptionsPanel } from '../../ui';
 import { processBase64, type Base64EncoderConfig } from '../../../tools/encoders/base64-encoder';
 import { useToolStore } from '../../../lib/store';
 import { debounce, copyToClipboard, downloadFile } from '../../../lib/utils';
@@ -267,314 +268,155 @@ export function Base64Encoder({ className = '' }: Base64EncoderProps) {
   };
 
   return (
-    <div className={`flex flex-col ${className}`}>
-      {/* Tool Header with Quick Actions */}
-      <div className="flex flex-col sm:flex-row gap-4 p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-        {/* Quick Actions */}
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={handleEncode}
-            className={`px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors ${
-              config.mode === 'encode' 
-                ? 'bg-blue-600 hover:bg-blue-700' 
-                : 'bg-gray-600 hover:bg-gray-700'
-            }`}
-            title="Encode text to Base64"
-          >
-            🔐 Encode
-          </button>
-          <button
-            onClick={handleDecode}
-            className={`px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors ${
-              config.mode === 'decode' 
-                ? 'bg-green-600 hover:bg-green-700' 
-                : 'bg-gray-600 hover:bg-gray-700'
-            }`}
-            title="Decode Base64 to text"
-          >
-            🔓 Decode
-          </button>
-          <button
-            onClick={handleValidate}
-            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"
-            title="Validate current input"
-          >
-            ✓ Validate
-          </button>
-          {!autoFormat && (
+    <div className={`base64-encoder-tool ${className}`}>
+      {/* Sticky Controls Bar */}
+      <div className="sticky-top" style={{
+        backgroundColor: 'var(--color-surface-secondary)',
+        borderBottom: '1px solid var(--color-border)',
+        padding: 'var(--space-xl)',
+        zIndex: 10
+      }}>
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          {/* Quick Actions */}
+          <div className="flex flex-wrap items-center gap-2">
             <button
-              onClick={() => processBase64Handler()}
-              disabled={!input.trim() || isLoading}
-              className="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 text-white text-sm font-medium rounded-lg transition-colors"
+              onClick={handleEncode}
+              className={`btn ${
+                config.mode === 'encode' ? 'btn-primary' : 'btn-outline'
+              }`}
+              title="Encode text to Base64"
             >
-              {isLoading ? '⏳' : '⚡'} Process
+              <span className="icon">🔐</span> Encode
             </button>
-          )}
-        </div>
-
-        {/* Auto-format toggle */}
-        <div className="flex items-center gap-2 ml-auto">
-          <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-            <input
-              type="checkbox"
-              checked={autoFormat}
-              onChange={(e) => setAutoFormat(e.target.checked)}
-              className="rounded"
-            />
-            Auto-process
-          </label>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex flex-col lg:flex-row flex-1 min-h-[600px]">
-        {/* Input Section */}
-        <div className="flex-1 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700">
-          {/* Input Header */}
-          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-              {config.mode === 'encode' ? 'Text Input' : 'Base64 Input'}
-            </h3>
-            <div className="flex items-center gap-2">
-              {config.mode === 'encode' && (
-                <label className="cursor-pointer text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded border transition-colors">
-                  📁 Upload
-                  <input
-                    type="file"
-                    accept=".txt,.json"
-                    className="hidden"
-                    onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
-                  />
-                </label>
-              )}
-              {input && (
-                <button
-                  onClick={() => setInput('')}
-                  className="text-xs px-3 py-1 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
-                  title="Clear input"
-                >
-                  🗑️ Clear
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Input Textarea */}
-          <div 
-            className={`flex-1 relative ${dragActive ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-          >
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={config.mode === 'encode' 
-                ? 'Enter text to encode as Base64...' 
-                : 'Enter Base64 string to decode...'}
-              className="w-full h-full p-4 resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-mono text-sm border-none focus:outline-none focus:ring-0"
-              spellCheck={false}
-            />
-            {dragActive && config.mode === 'encode' && (
-              <div className="absolute inset-0 flex items-center justify-center bg-blue-50/80 dark:bg-blue-900/40 backdrop-blur-sm">
-                <div className="text-blue-600 dark:text-blue-400 text-lg font-medium">
-                  Drop text file here
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Example buttons */}
-          <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex flex-wrap gap-2">
-              <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">Examples:</span>
-              {examples.map((example, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setInput(example.value)}
-                  className="text-xs px-2 py-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-colors"
-                  title={example.title}
-                >
-                  {example.title}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Output Section */}
-        <div className="flex-1 flex flex-col">
-          {/* Output Header */}
-          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-              {config.mode === 'encode' ? 'Base64 Output' : 'Decoded Text'}
-              {isLoading && <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">Processing...</span>}
-              {!error && output && <span className="ml-2 text-xs text-green-600 dark:text-green-400">✓ Valid</span>}
-              {error && <span className="ml-2 text-xs text-red-600 dark:text-red-400">✗ Invalid</span>}
-            </h3>
-            <div className="flex items-center gap-2">
-              {output && (
-                <>
-                  <button
-                    onClick={handleCopy}
-                    className={`text-xs px-3 py-1 rounded border transition-colors ${
-                      copied 
-                        ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border-green-300 dark:border-green-600'
-                        : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
-                    }`}
-                  >
-                    {copied ? '✓ Copied' : '📋 Copy'}
-                  </button>
-                  <button
-                    onClick={handleDownload}
-                    className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded border border-gray-300 dark:border-gray-600 transition-colors"
-                  >
-                    💾 Download
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Output Content */}
-          <div className="flex-1 bg-white dark:bg-gray-800">
-            {error ? (
-              <div className="p-4 h-full">
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-                  <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">Base64 Error</h4>
-                  <pre className="text-xs text-red-700 dark:text-red-300 whitespace-pre-wrap font-mono">
-                    {error}
-                  </pre>
-                </div>
-              </div>
-            ) : (
-              <div className="h-full flex flex-col">
-                <textarea
-                  value={output}
-                  readOnly
-                  placeholder={`${config.mode === 'encode' ? 'Base64 encoded' : 'Decoded'} text will appear here...`}
-                  className="flex-1 p-4 resize-none bg-transparent text-gray-900 dark:text-gray-100 font-mono text-sm border-none focus:outline-none"
-                  spellCheck={false}
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Metadata display */}
-          {metadata && !error && output && (
-            <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-              <div className="flex flex-wrap gap-4 text-xs text-gray-600 dark:text-gray-400">
-                {typeof metadata.inputSize === 'number' && (
-                  <span><strong>Input:</strong> {metadata.inputSize} chars</span>
-                )}
-                {typeof metadata.outputSize === 'number' && (
-                  <span><strong>Output:</strong> {metadata.outputSize} chars</span>
-                )}
-                {typeof metadata.encodingEfficiency === 'number' && (
-                  <span><strong>Efficiency:</strong> {metadata.encodingEfficiency.toFixed(1)}%</span>
-                )}
-                {typeof metadata.processingTimeMs === 'number' && (
-                  <span><strong>Time:</strong> {Math.round(metadata.processingTimeMs)}ms</span>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Essential Options Panel */}
-      <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-        <div className="p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">Options</h4>
-            {ADVANCED_OPTIONS.length > 0 && (
+            <button
+              onClick={handleDecode}
+              className={`btn ${
+                config.mode === 'decode' ? 'btn-primary' : 'btn-outline'
+              }`}
+              title="Decode Base64 to text"
+            >
+              <span className="icon">🔓</span> Decode
+            </button>
+            <button
+              onClick={handleValidate}
+              className="btn btn-secondary"
+              title="Validate current input"
+            >
+              <span className="icon">✓</span> Validate
+            </button>
+            {!autoFormat && (
               <button
-                onClick={() => setShowAdvanced(!showAdvanced)}
-                className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                onClick={() => processBase64Handler()}
+                disabled={!input.trim() || isLoading}
+                className="btn btn-outline"
               >
-                {showAdvanced ? '△ Less' : '▽ More'}
+                {isLoading ? (
+                  <span className="loading-spinner" />
+                ) : (
+                  <span className="icon">⚡</span>
+                )} Process
               </button>
             )}
           </div>
-          
-          {/* Essential options */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {ESSENTIAL_OPTIONS.map((option) => (
-              <div key={option.key} className="space-y-1">
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
-                  {option.label}
-                </label>
-                {option.type === 'boolean' ? (
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={!!config[option.key as keyof Base64EncoderConfig]}
-                      onChange={(e) => handleEssentialConfigChange(option.key, e.target.checked)}
-                      className="rounded"
-                    />
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
-                      {option.description}
-                    </span>
-                  </label>
-                ) : option.type === 'select' ? (
-                  <select
-                    value={String(config[option.key as keyof Base64EncoderConfig] ?? option.default)}
-                    onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
-                    className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                  >
-                    {option.options?.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                ) : null}
-              </div>
-            ))}
-          </div>
 
-          {/* Advanced options - ready for future expansion */}
-          {showAdvanced && ADVANCED_OPTIONS.length > 0 && (
-            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <h5 className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">Advanced Options</h5>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {ADVANCED_OPTIONS.map((option) => (
-                  <div key={option.key} className="space-y-1">
-                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
-                      {option.label}
-                    </label>
-                    {option.type === 'boolean' ? (
-                      <label className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          checked={!!config[option.key as keyof Base64EncoderConfig]}
-                          onChange={(e) => handleEssentialConfigChange(option.key, e.target.checked)}
-                          className="rounded"
-                        />
-                        <span className="text-xs text-gray-600 dark:text-gray-400">
-                          {option.description}
-                        </span>
-                      </label>
-                    ) : option.type === 'select' ? (
-                      <select
-                        value={String(config[option.key as keyof Base64EncoderConfig] ?? option.default)}
-                        onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
-                        className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                      >
-                        {option.options?.map((opt) => (
-                          <option key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select>
-                    ) : null}
-                  </div>
-                ))}
-              </div>
+          {/* Stats Display */}
+          {metadata && !error && output && (
+            <div className="flex flex-wrap gap-4 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+              {typeof metadata.inputSize === 'number' && (
+                <span><strong>Input:</strong> {metadata.inputSize} chars</span>
+              )}
+              {typeof metadata.outputSize === 'number' && (
+                <span><strong>Output:</strong> {metadata.outputSize} chars</span>
+              )}
+              {typeof metadata.processingTimeMs === 'number' && (
+                <span><strong>Time:</strong> {Math.round(metadata.processingTimeMs)}ms</span>
+              )}
             </div>
           )}
+
+          {/* Auto-format toggle */}
+          <div className="flex items-center gap-2 ml-auto">
+            <label className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+              <input
+                type="checkbox"
+                checked={autoFormat}
+                onChange={(e) => setAutoFormat(e.target.checked)}
+                className="form-checkbox"
+              />
+              Auto-process
+            </label>
+          </div>
         </div>
       </div>
+
+      {/* Main Content Grid */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        minHeight: '500px'
+      }} className="md:grid-cols-1">
+        {/* Input Panel */}
+        <div className="card border-r md:border-r-0 md:border-b">
+          <InputPanel
+            value={input}
+            onChange={handleInputChange}
+            placeholder={config.mode === 'encode'
+              ? 'Enter text to encode as Base64...'
+              : 'Enter Base64 string to decode...'}
+            label={config.mode === 'encode' ? 'Text Input' : 'Base64 Input'}
+            language="text"
+            examples={examples}
+            onSelectExample={setInput}
+            fileUpload={config.mode === 'encode' ? {
+              accept: '.txt,.json',
+              onUpload: handleFileUpload
+            } : undefined}
+            dragAndDrop={config.mode === 'encode' ? {
+              accept: ['text/plain', 'application/json'],
+              onDrop: handleFileUpload
+            } : undefined}
+            onKeyDown={(e) => {
+              if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                processBase64Handler();
+              }
+            }}
+            showLineNumbers={false}
+            className="h-full"
+          />
+        </div>
+
+        {/* Output Panel */}
+        <div className="card">
+          <OutputPanel
+            value={output}
+            error={error}
+            label={config.mode === 'encode' ? 'Base64 Output' : 'Decoded Text'}
+            language="text"
+            isLoading={isLoading}
+            onCopy={handleCopy}
+            onDownload={handleDownload}
+            downloadFilename={config.mode === 'encode' ? 'encoded.txt' : 'decoded.txt'}
+            status={{
+              type: error ? 'error' : output ? 'success' : 'idle',
+              message: error ? 'Invalid Base64' : output ? 'Valid' : undefined
+            }}
+            showLineNumbers={false}
+            className="h-full"
+          />
+        </div>
+      </div>
+
+      {/* Options Panel */}
+      <OptionsPanel
+        options={ESSENTIAL_OPTIONS}
+        advancedOptions={ADVANCED_OPTIONS}
+        config={config}
+        onChange={handleConfigChange}
+        onEssentialChange={handleEssentialConfigChange}
+        showAdvanced={showAdvanced}
+        onToggleAdvanced={setShowAdvanced}
+      />
     </div>
   );
 }

@@ -192,145 +192,201 @@ export function Base64ImageDecoder({ className = '' }: Base64ImageDecoderProps) 
   ];
 
   return (
-    <div className={`grid gap-6 lg:grid-cols-12 ${className}`}>
-      <div className="lg:col-span-4 space-y-6">
-        <InputPanel
-          title="Base64 Image Data"
-          value={input}
-          onChange={setInput}
-          placeholder="data:image/png;base64,... or raw base64 data, HTML img tag, CSS background-image"
-          description="Paste base64 data, data URL, HTML img tag, or CSS background-image"
-          examples={examples}
-          onExampleClick={handleExample}
-          rows={8}
-        />
-        
-        <OptionsPanel
-          title="Decoder Options"
-          options={allOptions}
-          values={config}
-          onChange={handleConfigChange}
-        />
+    <div className={`base64-image-decoder-tool ${className}`}>
+      {/* Sticky Controls Bar */}
+      <div className="sticky-top" style={{
+        backgroundColor: 'var(--color-surface-secondary)',
+        borderBottom: '1px solid var(--color-border)',
+        padding: 'var(--space-xl)',
+        zIndex: 10
+      }}>
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          <div className="flex items-center gap-2">
+            <span className="icon">🖼️</span>
+            <span className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>
+              Base64 to Image Decoder
+            </span>
+            <div className="flex items-center gap-1 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+              {config.validateImage && <span>✓ Validate</span>}
+              {config.autoDetectFormat && <span>🔍 Auto-detect</span>}
+            </div>
+          </div>
 
-        {/* Image Preview */}
-        {imageData && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-gray-700">Image Preview</h3>
-              <button
-                onClick={downloadImage}
-                className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
-              >
-                💾 Download
-              </button>
+          {/* Real-time Stats */}
+          {imageData && imageData.dimensions && (
+            <div className="flex flex-wrap gap-4 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+              <span><strong>Format:</strong> {imageData.format?.toUpperCase()}</span>
+              <span><strong>Size:</strong> {imageData.dimensions.width}×{imageData.dimensions.height}</span>
+              <span><strong>File:</strong> {(imageData.size / 1024).toFixed(1)} KB</span>
             </div>
-            <div className="p-4 bg-gray-50 rounded-lg flex justify-center">
-              <img
-                src={imageData.dataUrl}
-                alt="Decoded image preview"
-                className="max-w-full h-auto border border-gray-200 rounded shadow-sm"
-                style={{ 
-                  maxWidth: config.resizePreview ? `${config.maxPreviewSize}px` : 'none',
-                  maxHeight: config.resizePreview ? `${config.maxPreviewSize}px` : 'none'
-                }}
-              />
-            </div>
-            {imageData.dimensions && (
-              <div className="text-xs text-gray-600 text-center">
-                Original: {imageData.dimensions.width} × {imageData.dimensions.height}px
-                {imageData.format && ` | ${imageData.format.toUpperCase()}`}
-                {` | ${(imageData.size / 1024).toFixed(1)} KB`}
-              </div>
+          )}
+
+          {/* Quick Actions */}
+          <div className="flex items-center gap-2 ml-auto">
+            {imageData && (
+              <>
+                <button
+                  onClick={() => navigator.clipboard?.writeText(imageData.dataUrl)}
+                  className="btn btn-outline text-xs"
+                  title="Copy data URL to clipboard"
+                >
+                  📋 Copy URL
+                </button>
+                <button
+                  onClick={downloadImage}
+                  className="btn btn-primary text-xs"
+                  title="Download decoded image"
+                >
+                  💾 Download
+                </button>
+              </>
             )}
-          </div>
-        )}
-
-        {/* Metadata Display */}
-        {metadata && config.showMetadata && (
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-700">Decoding Details</h3>
-            <div className="p-3 bg-gray-50 rounded-lg text-xs">
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <span className="text-gray-600">Original Length:</span>
-                  <div className="font-medium">{metadata.originalLength.toLocaleString()}</div>
-                </div>
-                <div>
-                  <span className="text-gray-600">Decoded Size:</span>
-                  <div className="font-medium">{(metadata.decodedSize / 1024).toFixed(1)} KB</div>
-                </div>
-                <div>
-                  <span className="text-gray-600">Efficiency:</span>
-                  <div className="font-medium text-blue-600">{metadata.compressionRatio}%</div>
-                </div>
-                <div>
-                  <span className="text-gray-600">Processing:</span>
-                  <div className="font-medium">{metadata.processingTime}ms</div>
-                </div>
-              </div>
-              <div className="mt-2 pt-2 border-t border-gray-200">
-                <span className="text-gray-600">MIME Type:</span>
-                <div className="text-xs text-gray-500 mt-1">{metadata.mimeType}</div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Quick Actions */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700">Quick Actions</h3>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => {
-                if (imageData) {
-                  navigator.clipboard?.writeText(imageData.dataUrl);
-                }
-              }}
-              disabled={!imageData}
-              className="px-3 py-2 text-xs bg-blue-50 text-blue-700 rounded hover:bg-blue-100 transition-colors disabled:opacity-50"
-            >
-              📋 Copy Data URL
-            </button>
-            <button
-              onClick={downloadImage}
-              disabled={!imageData}
-              className="px-3 py-2 text-xs bg-green-50 text-green-700 rounded hover:bg-green-100 transition-colors disabled:opacity-50"
-            >
-              💾 Download Image
-            </button>
           </div>
         </div>
       </div>
 
-      <div className="lg:col-span-8">
-        <OutputPanel
-          title="Decoding Results"
-          value={output}
-          error={error}
-          isProcessing={isProcessing}
-          language="markdown"
-          placeholder="Paste base64 image data, data URL, or HTML/CSS code to decode..."
-          processingMessage="Decoding base64 image data..."
-          customActions={
-            imageData ? (
-              <div className="flex gap-2">
-                <button
-                  onClick={downloadImage}
-                  className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
-                >
-                  💾 Download Image
-                </button>
-                <button
-                  onClick={() => navigator.clipboard?.writeText(imageData.dataUrl)}
-                  className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                >
-                  📋 Copy Data URL
-                </button>
+      {/* Main Content Grid */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        minHeight: '500px'
+      }} className="md:grid-cols-1">
+        {/* Input Panel */}
+        <div className="card border-r md:border-r-0 md:border-b">
+          <InputPanel
+            value={input}
+            onChange={setInput}
+            placeholder="data:image/png;base64,... or raw base64 data, HTML img tag, CSS background-image"
+            label="Base64 Image Data"
+            language="text"
+            examples={examples}
+            onSelectExample={(example) => setInput(example.value)}
+            onKeyDown={(e) => {
+              if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                processInput(input, config);
+              }
+            }}
+            showLineNumbers={false}
+            className="h-full"
+          />
+        </div>
+
+        {/* Output Panel with Image Preview */}
+        <div className="card">
+          {imageData ? (
+            <div className="p-4 h-full flex flex-col">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>Image Preview</h3>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs" style={{ color: 'var(--color-success)' }}>
+                    ✓ Valid Image
+                  </span>
+                </div>
               </div>
-            ) : undefined
-          }
-        />
+
+              <div className="flex-1 flex justify-center items-center p-4 rounded"
+                   style={{ backgroundColor: 'var(--color-surface)' }}>
+                <img
+                  src={imageData.dataUrl}
+                  alt="Decoded image preview"
+                  className="max-w-full h-auto border rounded shadow-sm object-contain"
+                  style={{
+                    borderColor: 'var(--color-border)',
+                    maxWidth: config.resizePreview ? `${config.maxPreviewSize}px` : 'none',
+                    maxHeight: config.resizePreview ? `${config.maxPreviewSize}px` : '400px'
+                  }}
+                />
+              </div>
+
+              {/* Image Info */}
+              {imageData.dimensions && (
+                <div className="mt-4 p-3 rounded text-center"
+                     style={{ backgroundColor: 'var(--color-surface-secondary)' }}>
+                  <div className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+                    {imageData.dimensions.width} × {imageData.dimensions.height}px
+                    {imageData.format && ` | ${imageData.format.toUpperCase()}`}
+                    {` | ${(imageData.size / 1024).toFixed(1)} KB`}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : error ? (
+            <div className="p-4 h-full flex items-center justify-center">
+              <div className="text-center">
+                <span className="text-4xl mb-4 block">❌</span>
+                <p className="text-sm font-medium mb-2" style={{ color: 'var(--color-error)' }}>Decoding Failed</p>
+                <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>{error}</p>
+              </div>
+            </div>
+          ) : isProcessing ? (
+            <div className="p-4 h-full flex items-center justify-center">
+              <div className="text-center">
+                <div className="loading-spinner mx-auto mb-4" />
+                <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Processing image data...</p>
+              </div>
+            </div>
+          ) : (
+            <div className="p-4 h-full flex items-center justify-center">
+              <div className="text-center">
+                <span className="text-4xl mb-4 block">🖼️</span>
+                <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Paste base64 image data to decode</p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* Options Panel */}
+      <OptionsPanel
+        options={allOptions}
+        config={config}
+        onChange={setConfig}
+        className="card"
+      />
+
+      {/* Metadata Panel (when available) */}
+      {metadata && config.showMetadata && (
+        <div className="card mt-4">
+          <div className="p-4">
+            <h3 className="text-sm font-medium mb-3" style={{ color: 'var(--color-text-primary)' }}>
+              Decoding Details
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+              <div className="p-3 rounded" style={{ backgroundColor: 'var(--color-surface-secondary)' }}>
+                <div style={{ color: 'var(--color-text-secondary)' }} className="mb-1">Original Length</div>
+                <div className="font-medium" style={{ color: 'var(--color-text-primary)' }}>
+                  {metadata.originalLength.toLocaleString()}
+                </div>
+              </div>
+              <div className="p-3 rounded" style={{ backgroundColor: 'var(--color-surface-secondary)' }}>
+                <div style={{ color: 'var(--color-text-secondary)' }} className="mb-1">Decoded Size</div>
+                <div className="font-medium" style={{ color: 'var(--color-text-primary)' }}>
+                  {(metadata.decodedSize / 1024).toFixed(1)} KB
+                </div>
+              </div>
+              <div className="p-3 rounded" style={{ backgroundColor: 'var(--color-surface-secondary)' }}>
+                <div style={{ color: 'var(--color-text-secondary)' }} className="mb-1">Efficiency</div>
+                <div className="font-medium" style={{ color: 'var(--color-primary)' }}>
+                  {metadata.compressionRatio}%
+                </div>
+              </div>
+              <div className="p-3 rounded" style={{ backgroundColor: 'var(--color-surface-secondary)' }}>
+                <div style={{ color: 'var(--color-text-secondary)' }} className="mb-1">Processing</div>
+                <div className="font-medium" style={{ color: 'var(--color-text-primary)' }}>
+                  {metadata.processingTime}ms
+                </div>
+              </div>
+            </div>
+            <div className="mt-3 pt-3" style={{ borderTop: '1px solid var(--color-border)' }}>
+              <div style={{ color: 'var(--color-text-secondary)' }} className="text-xs">MIME Type:</div>
+              <div className="text-xs mt-1" style={{ color: 'var(--color-text-primary)' }}>{metadata.mimeType}</div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
+export default Base64ImageDecoder;

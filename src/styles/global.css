@@ -101,7 +101,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: var(--space-sm);
-  padding: var(--space-md) var(--space-xl);
+  padding: 0.6rem var(--space-xl);  /* 20% smaller height: 0.75rem -> 0.6rem */
   border: none;
   border-radius: var(--radius-lg);
   font-weight: 600;

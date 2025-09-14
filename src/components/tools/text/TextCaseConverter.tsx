@@ -290,90 +290,181 @@ export function TextCaseConverter({ className = '' }: TextCaseConverterProps) {
   const inputStats = getTextStats(input);
   const outputStats = getTextStats(output);
 
-  return (
-    <div className={`flex flex-col ${className}`}>
-      {/* Tool Header with Quick Actions */}
-      <div className="flex flex-col sm:flex-row gap-4 p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-        {/* Quick Actions */}
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={handleUpperCase}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
-            title="Convert to UPPERCASE"
-          >
-            UPPER
-          </button>
-          <button
-            onClick={handleLowerCase}
-            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors"
-            title="Convert to lowercase"
-          >
-            lower
-          </button>
-          <button
-            onClick={handleTitleCase}
-            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"
-            title="Convert to Title Case"
-          >
-            Title
-          </button>
-          <button
-            onClick={handleCamelCase}
-            className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium rounded-lg transition-colors"
-            title="Convert to camelCase"
-          >
-            camelCase
-          </button>
-          {!autoFormat && (
-            <button
-              onClick={() => processText()}
-              disabled={!input.trim() || isLoading}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white text-sm font-medium rounded-lg transition-colors"
-            >
-              {isLoading ? 'Converting...' : 'Convert'}
-            </button>
-          )}
-        </div>
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyboard = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLInputElement) {
+        return;
+      }
 
-        {/* Auto-format toggle */}
-        <div className="flex items-center gap-2 ml-auto">
-          <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-            <input
-              type="checkbox"
-              checked={autoFormat}
-              onChange={(e) => setAutoFormat(e.target.checked)}
-              className="rounded"
-            />
-            Auto-convert
-          </label>
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key) {
+          case 'Enter':
+            e.preventDefault();
+            handleUpperCase();
+            break;
+          case 'l':
+            e.preventDefault();
+            handleLowerCase();
+            break;
+          case 't':
+            e.preventDefault();
+            handleTitleCase();
+            break;
+          case 'c':
+            e.preventDefault();
+            handleCamelCase();
+            break;
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyboard);
+    return () => document.removeEventListener('keydown', handleKeyboard);
+  }, [handleUpperCase, handleLowerCase, handleTitleCase, handleCamelCase]);
+
+  return (
+    <div className={`${className}`}>
+      {/* Sticky Controls Bar */}
+      <div className="sticky-top" style={{
+        backgroundColor: 'var(--color-surface-secondary)',
+        borderBottom: '1px solid var(--color-border)',
+        padding: 'var(--space-xl)',
+        zIndex: 10
+      }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-lg)', alignItems: 'center' }}>
+          {/* Primary Actions */}
+          <div style={{ display: 'flex', gap: 'var(--space-md)', flexWrap: 'wrap' }}>
+            <button onClick={handleUpperCase} className="btn btn-primary" title="Convert to UPPERCASE (Ctrl+Enter)">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+              </svg>
+              UPPER
+            </button>
+
+            <button onClick={handleLowerCase} className="btn btn-secondary" title="Convert to lowercase (Ctrl+L)">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+              </svg>
+              lower
+            </button>
+
+            <button onClick={handleTitleCase} className="btn btn-outline" title="Convert to Title Case (Ctrl+T)">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+              </svg>
+              Title
+            </button>
+
+            <button onClick={handleCamelCase} className="btn btn-outline" title="Convert to camelCase (Ctrl+C)">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+              </svg>
+              camelCase
+            </button>
+
+            {!autoFormat && (
+              <button
+                onClick={() => processText()}
+                disabled={!input.trim() || isLoading}
+                className="btn btn-primary"
+                title="Convert text"
+              >
+                {isLoading ? (
+                  <svg className="animate-spin" width="16" height="16" fill="none" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" opacity="0.25"/>
+                    <path fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" opacity="0.75"/>
+                  </svg>
+                ) : (
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                  </svg>
+                )}
+                {isLoading ? 'Converting...' : 'Convert'}
+              </button>
+            )}
+          </div>
+
+          {/* Stats & Settings */}
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 'var(--space-xl)', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: 'var(--space-lg)', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
+              <span>Chars: <strong>{inputStats.chars}</strong></span>
+              <span>Words: <strong>{inputStats.words}</strong></span>
+              <span>Lines: <strong>{inputStats.lines}</strong></span>
+              {metadata?.targetCase && (
+                <span>Case: <strong>{metadata.targetCase}</strong></span>
+              )}
+              {error ? (
+                <span className="status-indicator status-invalid">✗ Error</span>
+              ) : output ? (
+                <span className="status-indicator status-valid">✓ Converted</span>
+              ) : null}
+            </div>
+
+            <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', fontSize: '0.875rem' }}>
+              <input
+                type="checkbox"
+                checked={autoFormat}
+                onChange={(e) => setAutoFormat(e.target.checked)}
+                style={{ accentColor: 'var(--color-primary)' }}
+              />
+              Auto-convert
+            </label>
+          </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex flex-col lg:flex-row flex-1 min-h-[600px]">
-        {/* Input Section */}
-        <div className="flex-1 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700">
+      {/* Editor Layout */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        minHeight: '500px'
+      }} className="md:grid-cols-1">
+        {/* Input Panel */}
+        <div style={{ position: 'relative', borderRight: '1px solid var(--color-border)' }} className="md:border-r-0 md:border-b md:border-b-gray-200">
           {/* Input Header */}
-          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-              Text Input
-            </h3>
-            <div className="flex items-center gap-2">
-              <label className="cursor-pointer text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded border transition-colors">
+          <div style={{
+            backgroundColor: 'var(--color-surface-secondary)',
+            borderBottom: '1px solid var(--color-border)',
+            padding: 'var(--space-lg)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
+              Input Text
+            </span>
+            <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+              <button onClick={async () => {
+                try {
+                  const text = await navigator.clipboard.readText();
+                  setInput(text);
+                } catch (error) {
+                  console.warn('Failed to paste from clipboard');
+                }
+              }} className="btn btn-outline" style={{ padding: 'var(--space-xs) var(--space-sm)', fontSize: '0.75rem' }}>
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                Paste
+              </button>
+              <label className="btn btn-outline" style={{ padding: 'var(--space-xs) var(--space-sm)', fontSize: '0.75rem', cursor: 'pointer' }}>
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                </svg>
                 Upload
                 <input
                   type="file"
                   accept=".txt,.md,.csv"
-                  className="hidden"
+                  style={{ display: 'none' }}
                   onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
                 />
               </label>
               {input && (
-                <button
-                  onClick={() => setInput('')}
-                  className="text-xs px-3 py-1 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
-                  title="Clear input"
-                >
+                <button onClick={() => setInput('')} className="btn btn-outline" style={{ padding: 'var(--space-xs) var(--space-sm)', fontSize: '0.75rem' }}>
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
                   Clear
                 </button>
               )}
@@ -381,8 +472,8 @@ export function TextCaseConverter({ className = '' }: TextCaseConverterProps) {
           </div>
 
           {/* Input Textarea */}
-          <div 
-            className={`flex-1 relative ${dragActive ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+          <div
+            style={{ position: 'relative', height: '500px' }}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
@@ -391,196 +482,233 @@ export function TextCaseConverter({ className = '' }: TextCaseConverterProps) {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Enter text to convert case or drag & drop a file..."
-              className="w-full h-full p-4 resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-mono text-sm border-none focus:outline-none focus:ring-0"
+              className="form-textarea"
+              style={{
+                width: '100%',
+                height: '100%',
+                border: 'none',
+                borderRadius: 0,
+                fontFamily: 'var(--font-family-mono)',
+                fontSize: '14px',
+                lineHeight: '1.5',
+                resize: 'none',
+                padding: 'var(--space-lg)'
+              }}
               spellCheck={false}
             />
             {dragActive && (
-              <div className="absolute inset-0 flex items-center justify-center bg-blue-50/80 dark:bg-blue-900/40 backdrop-blur-sm">
-                <div className="text-blue-600 dark:text-blue-400 text-lg font-medium">
-                  Drop text file here
-                </div>
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                backgroundColor: 'var(--color-primary-light)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.125rem',
+                fontWeight: 600,
+                color: 'var(--color-primary)'
+              }}>
+                Drop text file here
               </div>
             )}
           </div>
-
-          {/* Input Stats */}
-          <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex flex-wrap gap-4 text-xs text-gray-600 dark:text-gray-400">
-              <span><strong>Characters:</strong> {inputStats.chars}</span>
-              <span><strong>Words:</strong> {inputStats.words}</span>
-              <span><strong>Lines:</strong> {inputStats.lines}</span>
-            </div>
-          </div>
-
-          {/* Example buttons */}
-          <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex flex-wrap gap-2">
-              <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">Examples:</span>
-              {EXAMPLES.slice(0, 4).map((example, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setInput(example.value)}
-                  className="text-xs px-2 py-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-colors"
-                  title={example.title}
-                >
-                  {example.title}
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
 
-        {/* Output Section */}
-        <div className="flex-1 flex flex-col">
+        {/* Output Panel */}
+        <div style={{ position: 'relative' }}>
           {/* Output Header */}
-          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-              Converted Text
-              {isLoading && <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">Converting...</span>}
-              {!error && output && <span className="ml-2 text-xs text-green-600 dark:text-green-400">✓ Converted</span>}
-              {error && <span className="ml-2 text-xs text-red-600 dark:text-red-400">✗ Error</span>}
-            </h3>
-            <div className="flex items-center gap-2">
-              {output && (
-                <>
-                  <button
-                    onClick={handleCopy}
-                    className={`text-xs px-3 py-1 rounded border transition-colors ${
-                      copied 
-                        ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border-green-300 dark:border-green-600'
-                        : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
-                    }`}
-                  >
-                    {copied ? '✓ Copied' : 'Copy'}
-                  </button>
-                  <button
-                    onClick={handleDownload}
-                    className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded border border-gray-300 dark:border-gray-600 transition-colors"
-                  >
-                    Download
-                  </button>
-                </>
-              )}
-            </div>
+          <div style={{
+            backgroundColor: 'var(--color-surface-secondary)',
+            borderBottom: '1px solid var(--color-border)',
+            padding: 'var(--space-lg)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
+              Converted Output
+            </span>
+            {output && (
+              <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+                <button
+                  onClick={handleCopy}
+                  className={copied ? 'btn btn-secondary' : 'btn btn-outline'}
+                  style={{ padding: 'var(--space-xs) var(--space-sm)', fontSize: '0.75rem' }}
+                >
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={copied ? "M9 12l2 2 4-4" : "M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"}/>
+                  </svg>
+                  {copied ? 'Copied!' : 'Copy'}
+                </button>
+                <button onClick={handleDownload} className="btn btn-outline" style={{ padding: 'var(--space-xs) var(--space-sm)', fontSize: '0.75rem' }}>
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                  </svg>
+                  Download
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Output Content */}
-          <div className="flex-1 bg-white dark:bg-gray-800">
+          <div style={{ height: '500px', position: 'relative' }}>
             {error ? (
-              <div className="p-4 h-full">
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-                  <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">Conversion Error</h4>
-                  <pre className="text-xs text-red-700 dark:text-red-300 whitespace-pre-wrap font-mono">
-                    {error}
-                  </pre>
-                </div>
+              <div style={{
+                padding: 'var(--space-lg)',
+                backgroundColor: 'var(--color-danger-light)',
+                color: 'var(--color-danger)',
+                borderRadius: 'var(--radius-lg)',
+                margin: 'var(--space-lg)',
+                fontFamily: 'var(--font-family-mono)',
+                fontSize: '0.875rem',
+                whiteSpace: 'pre-wrap'
+              }}>
+                <strong>Conversion Error:</strong><br />
+                {error}
               </div>
             ) : (
-              <div className="h-full flex flex-col">
-                <textarea
-                  value={output}
-                  readOnly
-                  placeholder="Converted text will appear here..."
-                  className="flex-1 p-4 resize-none bg-transparent text-gray-900 dark:text-gray-100 font-mono text-sm border-none focus:outline-none"
-                  spellCheck={false}
-                />
-              </div>
+              <textarea
+                value={output}
+                readOnly
+                placeholder="Converted text will appear here..."
+                className="form-textarea"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  border: 'none',
+                  borderRadius: 0,
+                  fontFamily: 'var(--font-family-mono)',
+                  fontSize: '14px',
+                  lineHeight: '1.5',
+                  resize: 'none',
+                  padding: 'var(--space-lg)',
+                  backgroundColor: 'var(--color-surface)'
+                }}
+                spellCheck={false}
+              />
             )}
           </div>
-
-          {/* Output metadata */}
-          {metadata && !error && output && (
-            <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-              <div className="flex flex-wrap gap-4 text-xs text-gray-600 dark:text-gray-400">
-                <span><strong>Characters:</strong> {outputStats.chars}</span>
-                <span><strong>Words:</strong> {outputStats.words}</span>
-                <span><strong>Lines:</strong> {outputStats.lines}</span>
-                {metadata.targetCase && (
-                  <span><strong>Case:</strong> {metadata.targetCase}</span>
-                )}
-                {metadata.preservedAcronyms && (
-                  <span className="text-blue-600 dark:text-blue-400">
-                    <strong>Acronyms preserved</strong>
-                  </span>
-                )}
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
-      {/* Essential Options Panel */}
-      <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-        <div className="p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">Options</h4>
-            <button
-              onClick={() => setShowAdvanced(!showAdvanced)}
-              className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
-            >
-              {showAdvanced ? '△ Less' : '▽ More'}
-            </button>
-          </div>
-          
-          {/* Essential options */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {ESSENTIAL_OPTIONS.map((option) => (
-              <div key={option.key} className="space-y-1">
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
-                  {option.label}
-                </label>
-                {option.type === 'boolean' ? (
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={!!config[option.key as keyof TextCaseConfig]}
-                      onChange={(e) => handleEssentialConfigChange(option.key, e.target.checked)}
-                      className="rounded"
-                    />
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
-                      {option.description}
-                    </span>
-                  </label>
-                ) : option.type === 'select' ? (
-                  <select
-                    value={String(config[option.key as keyof TextCaseConfig] ?? option.default)}
-                    onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
-                    className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                  >
-                    {option.options?.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                ) : null}
-              </div>
-            ))}
-          </div>
+      {/* Quick Examples - Collapsible */}
+      <div style={{
+        borderTop: '1px solid var(--color-border)',
+        backgroundColor: 'var(--color-surface)'
+      }}>
+        <details className="group">
+          <summary style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            cursor: 'pointer',
+            padding: 'var(--space-xl)',
+            fontWeight: 600,
+            color: 'var(--color-text-primary)',
+            backgroundColor: 'var(--color-surface-secondary)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--color-primary)' }}>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+              </svg>
+              Quick Examples & Options
+            </div>
+            <svg className="w-5 h-5 group-open:rotate-180 transition-transform" style={{ color: 'var(--color-text-secondary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
 
-          {/* Advanced options */}
-          {showAdvanced && (
-            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <h5 className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">Special Cases</h5>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {ADVANCED_OPTIONS.map((option) => (
-                  <button
-                    key={option.key}
-                    onClick={() => handleEssentialConfigChange('targetCase', option.caseValue)}
-                    className={`px-3 py-2 text-xs font-mono rounded border transition-colors ${
-                      config.targetCase === option.caseValue
-                        ? 'bg-blue-100 border-blue-300 text-blue-700 dark:bg-blue-900 dark:border-blue-700 dark:text-blue-300'
-                        : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700'
-                    }`}
-                    title={option.description}
-                  >
-                    {option.label}
-                  </button>
+          <div style={{ padding: 'var(--space-xl)' }}>
+            {/* Configuration Options */}
+            <div className="card" style={{ padding: 'var(--space-lg)', marginBottom: 'var(--space-lg)' }}>
+              <h4 style={{ fontWeight: 600, marginBottom: 'var(--space-md)', color: 'var(--color-text-primary)' }}>Configuration</h4>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 'var(--space-lg)' }}>
+                {ESSENTIAL_OPTIONS.map((option) => (
+                  <div key={option.key} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
+                    <label style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-text-primary)' }}>
+                      {option.label}
+                    </label>
+                    {option.type === 'boolean' ? (
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
+                        <input
+                          type="checkbox"
+                          checked={!!config[option.key as keyof TextCaseConfig]}
+                          onChange={(e) => handleEssentialConfigChange(option.key, e.target.checked)}
+                          style={{ accentColor: 'var(--color-primary)' }}
+                        />
+                        {option.description}
+                      </label>
+                    ) : option.type === 'select' ? (
+                      <select
+                        value={String(config[option.key as keyof TextCaseConfig] ?? option.default)}
+                        onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
+                        className="form-select"
+                        style={{ fontSize: '0.875rem' }}
+                      >
+                        {option.options?.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                    ) : null}
+                  </div>
                 ))}
               </div>
+
+              {/* Special Cases */}
+              <div style={{ marginTop: 'var(--space-xl)', paddingTop: 'var(--space-lg)', borderTop: '1px solid var(--color-border)' }}>
+                <h5 style={{ fontSize: '0.875rem', fontWeight: 500, marginBottom: 'var(--space-md)', color: 'var(--color-text-primary)' }}>Special Cases</h5>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 'var(--space-sm)' }}>
+                  {ADVANCED_OPTIONS.map((option) => (
+                    <button
+                      key={option.key}
+                      onClick={() => handleEssentialConfigChange('targetCase', option.caseValue)}
+                      className={config.targetCase === option.caseValue ? 'btn btn-primary' : 'btn btn-outline'}
+                      style={{ fontSize: '0.75rem', fontFamily: 'var(--font-family-mono)' }}
+                      title={option.description}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
-          )}
-        </div>
+
+            {/* Examples Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'var(--space-lg)' }}>
+              {EXAMPLES.map((example, idx) => (
+                <div key={idx} className="card" style={{ padding: 'var(--space-lg)' }}>
+                  <div style={{ fontWeight: 600, marginBottom: 'var(--space-md)', color: 'var(--color-text-primary)' }}>
+                    {example.title}
+                  </div>
+                  <div style={{
+                    backgroundColor: 'var(--color-surface-secondary)',
+                    padding: 'var(--space-md)',
+                    borderRadius: 'var(--radius-md)',
+                    fontFamily: 'var(--font-family-mono)',
+                    fontSize: '0.75rem',
+                    marginBottom: 'var(--space-md)',
+                    color: 'var(--color-text-secondary)',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}>
+                    {example.value}
+                  </div>
+                  <button
+                    onClick={() => setInput(example.value)}
+                    className="btn btn-primary"
+                    style={{ width: '100%', fontSize: '0.875rem' }}
+                  >
+                    Try This Example
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </details>
       </div>
     </div>
   );

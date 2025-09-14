@@ -49,15 +49,7 @@ const HtmlEntityEncoder: React.FC = () => {
 
   const handleDownload = useCallback(() => {
     if (result?.success && result.encoded) {
-      const blob = new Blob([result.encoded], { type: 'text/html' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'encoded-html.txt';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      downloadFile(result.encoded, 'encoded-html.txt', 'text/html');
     }
   }, [result]);
 

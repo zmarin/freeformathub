@@ -307,6 +307,55 @@ export function JsBeautifier({ className = '' }: JsBeautifierProps) {
     downloadFile(output, filename, 'application/javascript');
   }, [output, config.mode]);
 
+  // Paste handler
+  const handlePaste = useCallback(async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      setInput(text);
+      if (autoFormat) {
+        processJs(text, processedConfig);
+      }
+    } catch (error) {
+      console.warn('Failed to paste from clipboard');
+    }
+  }, [autoFormat, processedConfig, processJs]);
+
+  const handleClear = useCallback(() => {
+    setInput('');
+    setOutput('');
+    setError(undefined);
+    setMetadata(undefined);
+  }, []);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyboard = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLInputElement) {
+        return;
+      }
+
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key) {
+          case 'Enter':
+            e.preventDefault();
+            handleBeautify();
+            break;
+          case 'm':
+            e.preventDefault();
+            handleMinify();
+            break;
+          case 'l':
+            e.preventDefault();
+            handleClear();
+            break;
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyboard);
+    return () => document.removeEventListener('keydown', handleKeyboard);
+  }, [handleBeautify, handleMinify, handleClear]);
+
   const handleInputChange = (value: string) => {
     setInput(value);
   };
@@ -327,54 +376,76 @@ export function JsBeautifier({ className = '' }: JsBeautifierProps) {
   };
 
   return (
-    <div className={`flex flex-col ${className}`}>
-      {/* Tool Header with Quick Actions */}
-      <div className="flex flex-col sm:flex-row gap-4 p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-        {/* Quick Actions */}
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={handleBeautify}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
-            title="Format JavaScript with proper indentation"
-          >
-            ✨ Beautify
-          </button>
-          <button
-            onClick={handleMinify}
-            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors"
-            title="Compress JavaScript to single line"
-          >
-            🗜️ Minify
-          </button>
-          <button
-            onClick={handleValidate}
-            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"
-            title="Validate JavaScript syntax"
-          >
-            🔍 Validate
-          </button>
-          {!autoFormat && (
-            <button
-              onClick={() => processJs()}
-              disabled={!input.trim() || isLoading}
-              className="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 text-white text-sm font-medium rounded-lg transition-colors"
-            >
-              {isLoading ? '⏳' : '⚡'} Format
+    <div className={`${className}`}>
+      {/* Sticky Controls Bar */}
+      <div className="sticky-top" style={{
+        backgroundColor: 'var(--color-surface-secondary)',
+        borderBottom: '1px solid var(--color-border)',
+        padding: 'var(--space-xl)',
+        zIndex: 10
+      }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-lg)', alignItems: 'center' }}>
+          {/* Primary Actions */}
+          <div style={{ display: 'flex', gap: 'var(--space-md)', flexWrap: 'wrap' }}>
+            <button onClick={handleBeautify} className="btn btn-primary" title="Beautify JavaScript (Ctrl+Enter)">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 713.138-3.138z"/>
+              </svg>
+              Beautify JS
             </button>
-          )}
-        </div>
 
-        {/* Auto-format toggle */}
-        <div className="flex items-center gap-2 ml-auto">
-          <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-            <input
-              type="checkbox"
-              checked={autoFormat}
-              onChange={(e) => setAutoFormat(e.target.checked)}
-              className="rounded"
-            />
-            Auto-format
-          </label>
+            <button onClick={handleValidate} className="btn btn-secondary" title="Validate JavaScript">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4"/>
+              </svg>
+              Validate
+            </button>
+
+            <button onClick={handleMinify} className="btn btn-outline" title="Minify JavaScript (Ctrl+M)">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 712-2h2a2 2 0 012 2"/>
+              </svg>
+              Minify
+            </button>
+
+            <button onClick={handleClear} className="btn btn-outline" title="Clear all (Ctrl+L)">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+              Clear
+            </button>
+          </div>
+
+          {/* Stats & Settings */}
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 'var(--space-xl)', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: 'var(--space-lg)', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
+              <span>Size: <strong>{new Blob([input]).size.toLocaleString()} B</strong></span>
+              <span>Lines: <strong>{input.split('\n').length}</strong></span>
+              {metadata && (
+                <>
+                  <span>Functions: <strong>{metadata.functionCount || 0}</strong></span>
+                  {metadata.compressionRatio && (
+                    <span>Ratio: <strong>{(metadata.compressionRatio * 100).toFixed(1)}%</strong></span>
+                  )}
+                </>
+              )}
+              {error ? (
+                <span className="status-indicator status-invalid">✗ Invalid</span>
+              ) : output ? (
+                <span className="status-indicator status-valid">✓ Valid</span>
+              ) : null}
+            </div>
+
+            <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', fontSize: '0.875rem' }}>
+              <input
+                type="checkbox"
+                checked={autoFormat}
+                onChange={(e) => setAutoFormat(e.target.checked)}
+                style={{ accentColor: 'var(--color-primary)' }}
+              />
+              Auto-format
+            </label>
+          </div>
         </div>
       </div>
 

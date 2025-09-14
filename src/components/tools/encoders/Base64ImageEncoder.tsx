@@ -388,3 +388,5 @@ export function Base64ImageEncoder({ className = '' }: Base64ImageEncoderProps) 
     </div>
   );
 }
+
+export default Base64ImageEncoder;

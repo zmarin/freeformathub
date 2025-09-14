@@ -3,6 +3,7 @@ import { Lock, ArrowRightLeft, CheckCircle, AlertTriangle, Info, Copy, Download,
 import { InputPanel, OutputPanel, OptionsPanel } from '../../ui';
 import { processBase32Encoder } from '../../../tools/encoders/base32-encoder';
 import type { Base32EncoderOptions, Base32EncoderResult } from '../../../tools/encoders/base32-encoder';
+import { copyToClipboard, downloadFile } from '../../../lib/utils';
 
 const Base32Encoder: React.FC = () => {
   const [input, setInput] = useState('');
@@ -47,7 +48,7 @@ const Base32Encoder: React.FC = () => {
   const handleCopyToClipboard = useCallback(async () => {
     if (result?.success && result.result) {
       try {
-        await navigator.clipboard.writeText(result.result);
+        await copyToClipboard(result.result);
       } catch (err) {
         console.error('Failed to copy to clipboard:', err);
       }
@@ -56,15 +57,8 @@ const Base32Encoder: React.FC = () => {
 
   const handleDownload = useCallback(() => {
     if (result?.success && result.result) {
-      const blob = new Blob([result.result], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `base32-${options.operation}d.txt`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      const filename = `base32-${options.operation}d.txt`;
+      downloadFile(result.result, filename, 'text/plain');
     }
   }, [result, options.operation]);
 
@@ -106,102 +100,111 @@ const Base32Encoder: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-8">
-      <div className="text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full mb-4">
-          <Lock className="w-8 h-8 text-purple-600" />
+    <div className="base32-encoder-tool">
+      {/* Sticky Controls Bar */}
+      <div className="sticky-top" style={{
+        backgroundColor: 'var(--color-surface-secondary)',
+        borderBottom: '1px solid var(--color-border)',
+        padding: 'var(--space-xl)',
+        zIndex: 10
+      }}>
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          {/* Quick Actions */}
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => setOptions(prev => ({ ...prev, operation: 'encode' }))}
+              className={`btn ${
+                options.operation === 'encode' ? 'btn-primary' : 'btn-outline'
+              }`}
+              title="Encode text to Base32"
+            >
+              <Lock className="w-4 h-4" /> Encode
+            </button>
+            <button
+              onClick={() => setOptions(prev => ({ ...prev, operation: 'decode' }))}
+              className={`btn ${
+                options.operation === 'decode' ? 'btn-primary' : 'btn-outline'
+              }`}
+              title="Decode Base32 to text"
+            >
+              <ArrowRightLeft className="w-4 h-4" /> Decode
+            </button>
+            <div className="flex items-center gap-1 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+              {getVariantIcon()}
+              <span>{options.variant}</span>
+            </div>
+          </div>
+
+          {/* Real-time Stats */}
+          {result?.success && result.result && (
+            <div className="flex flex-wrap gap-4 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+              <span><strong>Input:</strong> {input.length} chars</span>
+              <span><strong>Output:</strong> {result.result.length} chars</span>
+              {result.metadata?.processingTime && (
+                <span><strong>Time:</strong> {Math.round(result.metadata.processingTime)}ms</span>
+              )}
+            </div>
+          )}
+
+          {/* Variant Selector */}
+          <select
+            value={options.variant}
+            onChange={(e) => handleOptionsChange({ variant: e.target.value as any })}
+            className="btn btn-outline text-xs"
+            style={{ minWidth: '120px' }}
+            title={getVariantDescription()}
+          >
+            <option value="standard">Standard</option>
+            <option value="extended-hex">Extended Hex</option>
+            <option value="z-base32">Z-Base32</option>
+            <option value="crockford">Crockford</option>
+          </select>
         </div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Base32 Encoder/Decoder</h1>
-        <p className="text-lg text-gray-600">
-          Encode and decode text using Base32 with multiple variant support
-        </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* Main Content Grid */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        minHeight: '500px'
+      }} className="md:grid-cols-1">
         {/* Input Panel */}
-        <div className="lg:col-span-1">
+        <div className="card border-r md:border-r-0 md:border-b">
           <InputPanel
-            title={options.operation === 'encode' ? 'Text to Encode' : 'Base32 to Decode'}
-            subtitle={options.operation === 'encode' ? 'Enter plain text' : 'Enter Base32 encoded string'}
-          >
-            <div className="space-y-4">
-              {/* Operation Toggle */}
-              <div className="flex items-center justify-center">
-                <button
-                  onClick={handleOperationToggle}
-                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-                >
-                  <ArrowRightLeft className="w-4 h-4" />
-                  Switch to {options.operation === 'encode' ? 'Decode' : 'Encode'}
-                </button>
-              </div>
-
-              <textarea
-                value={input}
-                onChange={(e) => handleInputChange(e.target.value)}
-                placeholder={
-                  options.operation === 'encode' 
-                    ? 'Hello World!' 
-                    : getExampleForVariant()
-                }
-                className="w-full h-48 p-3 border border-gray-300 rounded-md font-mono text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none"
-              />
-
-              {/* Input Statistics */}
-              {inputStats && (
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Info className="w-4 h-4 text-gray-600" />
-                    <span className="font-medium text-gray-900">Input Statistics</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3 text-sm text-gray-600">
-                    <div>
-                      <div className="font-medium text-gray-900">{inputStats.characters}</div>
-                      <div>Characters</div>
-                    </div>
-                    <div>
-                      <div className="font-medium text-gray-900">{inputStats.bytes}</div>
-                      <div>Bytes</div>
-                    </div>
-                    <div>
-                      <div className="font-medium text-gray-900">{inputStats.words}</div>
-                      <div>Words</div>
-                    </div>
-                    <div>
-                      <div className="font-medium text-gray-900">{inputStats.lines}</div>
-                      <div>Lines</div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Quick Examples */}
-              <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-2">Quick Examples</h3>
-                <div className="space-y-2">
-                  {options.operation === 'encode' ? [
-                    'Hello World!',
-                    'Base32 Encoding Test',
-                    'Special chars: @#$%^&*()',
-                    '1234567890'
-                  ] : [
-                    getExampleForVariant(),
-                    'MFRGG43FMJQW2===',
-                    'NBSWY3DPFQQHO33SNRQXE===',
-                    'GEZDGNBVGY3TQOJQ'
-                  ].map((example, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setInput(example)}
-                      className="w-full text-left p-2 text-sm bg-gray-50 hover:bg-gray-100 rounded border transition-colors"
-                    >
-                      <code className="text-purple-600">{example}</code>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </InputPanel>
+            value={input}
+            onChange={handleInputChange}
+            placeholder={options.operation === 'encode'
+              ? 'Hello World!'
+              : getExampleForVariant()}
+            label={options.operation === 'encode' ? 'Text to Encode' : 'Base32 to Decode'}
+            language="text"
+            examples={options.operation === 'encode' ? [
+              { title: 'Simple Text', value: 'Hello World!' },
+              { title: 'Long Text', value: 'Base32 Encoding Test' },
+              { title: 'Special Characters', value: 'Special chars: @#$%^&*()' },
+              { title: 'Numbers', value: '1234567890' }
+            ] : [
+              { title: 'Standard Example', value: getExampleForVariant() },
+              { title: 'Short String', value: 'MFRGG43FMJQW2===' },
+              { title: 'Medium String', value: 'NBSWY3DPFQQHO33SNRQXE===' },
+              { title: 'Long String', value: 'GEZDGNBVGY3TQOJQ' }
+            ]}
+            onSelectExample={setInput}
+            onKeyDown={(e) => {
+              if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                handleOperationToggle();
+              }
+            }}
+            showLineNumbers={false}
+            className="h-full"
+            stats={inputStats ? [
+              { label: 'Characters', value: inputStats.characters },
+              { label: 'Bytes', value: inputStats.bytes },
+              { label: 'Words', value: inputStats.words },
+              { label: 'Lines', value: inputStats.lines }
+            ] : undefined}
+          />
         </div>
 
         {/* Options Panel */}

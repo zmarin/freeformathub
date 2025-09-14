@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { InputPanel, OutputPanel, OptionsPanel } from '../../ui';
 import { processXmlToJsonConverter, type XmlToJsonConfig } from '../../../tools/converters/xml-to-json-converter';
 import { useToolStore } from '../../../lib/store';
@@ -199,7 +199,7 @@ export function XmlToJsonConverter({ className = '' }: XmlToJsonConverterProps) 
   const [error, setError] = useState<string | null>(null);
   const [conversion, setConversion] = useState<any>(null);
   const [warnings, setWarnings] = useState<string[]>([]);
-  
+
   const { setCurrentTool, addToHistory } = useToolStore();
   const [config, setConfig] = useState<XmlToJsonConfig>(DEFAULT_CONFIG);
 
@@ -211,12 +211,12 @@ export function XmlToJsonConverter({ className = '' }: XmlToJsonConverterProps) 
 
       try {
         const result = processXmlToJsonConverter(currentInput, currentConfig);
-        
+
         if (result.success && result.output !== undefined) {
           setOutput(result.output);
           setConversion(result.conversion);
           setWarnings(result.warnings || []);
-          
+
           // Add to history
           addToHistory({
             toolId: 'xml-to-json-converter',
@@ -338,7 +338,7 @@ export function XmlToJsonConverter({ className = '' }: XmlToJsonConverterProps) 
   </departments>
 </company>`,
       namespaces: `<?xml version="1.0"?>
-<catalog xmlns:book="http://example.com/book" 
+<catalog xmlns:book="http://example.com/book"
          xmlns:author="http://example.com/author">
   <book:item book:id="123">
     <book:title>XML Processing</book:title>
@@ -359,17 +359,17 @@ export function XmlToJsonConverter({ className = '' }: XmlToJsonConverterProps) 
     <!-- Credentials are encrypted -->
     <username>admin</username>
   </database>
-  
+
   <!-- Cache configuration -->
   <cache enabled="true">
     <ttl>3600</ttl> <!-- 1 hour -->
     <size>1000</size>
   </cache>
-  
+
   <?php echo "This is a processing instruction"; ?>
 </config>`
     };
-    
+
     setInput(examples[type]);
   };
 
@@ -380,219 +380,273 @@ export function XmlToJsonConverter({ className = '' }: XmlToJsonConverterProps) 
 
   // Build conditional options
   const allOptions = [
-    ...STRUCTURE_OPTIONS.filter(opt => 
+    ...STRUCTURE_OPTIONS.filter(opt =>
       opt.key !== 'namespaceSeparator' || config.namespacesEnabled
     ),
-    ...PARSING_OPTIONS.filter(opt => 
+    ...PARSING_OPTIONS.filter(opt =>
       opt.key !== 'preserveWhitespace' || !config.trimTextValues
     ),
     ...ADVANCED_OPTIONS,
   ];
 
   const getComplexityColor = (elements: number) => {
-    if (elements > 50) return 'text-red-800 bg-red-100';
-    if (elements > 20) return 'text-yellow-800 bg-yellow-100';
-    return 'text-green-800 bg-green-100';
+    if (elements > 50) return 'text-danger bg-danger-subtle';
+    if (elements > 20) return 'text-warning bg-warning-subtle';
+    return 'text-success bg-success-subtle';
   };
 
   const getDepthColor = (depth: number) => {
-    if (depth > 8) return 'text-red-800 bg-red-100';
-    if (depth > 4) return 'text-yellow-800 bg-yellow-100';
-    return 'text-green-800 bg-green-100';
+    if (depth > 8) return 'text-danger bg-danger-subtle';
+    if (depth > 4) return 'text-warning bg-warning-subtle';
+    return 'text-success bg-success-subtle';
   };
 
+  const handleKeyboardShortcut = useCallback((e: KeyboardEvent) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      processInput(input, config);
+    }
+  }, [input, config, processInput]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyboardShortcut);
+    return () => document.removeEventListener('keydown', handleKeyboardShortcut);
+  }, [handleKeyboardShortcut]);
+
   return (
-    <div className={`grid gap-6 lg:grid-cols-12 ${className}`}>
-      <div className="lg:col-span-4 space-y-6">
-        {/* Conversion Statistics */}
-        {conversion && (
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-700">Conversion Statistics</h3>
-            <div className="space-y-2">
-              <div className={`p-3 rounded border-2 ${getComplexityColor(conversion.conversionStats.totalElements)}`}>
-                <div className="flex items-center gap-3">
-                  <div className="text-xl">📊</div>
-                  <div>
-                    <div className="font-medium text-sm">
-                      {conversion.conversionStats.totalElements} Elements
-                    </div>
-                    <div className="text-xs opacity-80">
-                      {conversion.conversionStats.outputSize} characters
-                    </div>
-                  </div>
-                </div>
+    <div className={`space-y-6 ${className}`}>
+      {/* Sticky Controls Bar */}
+      <div className="sticky top-0 z-10" style={{
+        backgroundColor: 'var(--color-surface-secondary)',
+        borderBottom: '1px solid var(--color-border)',
+        padding: 'var(--space-lg)'
+      }}>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={() => processInput(input, config)}
+            disabled={isProcessing || !input.trim()}
+            className="btn btn-primary"
+            style={{ fontSize: '0.875rem', padding: '0.5rem 1rem' }}
+          >
+            🔄 {isProcessing ? 'Converting...' : 'Convert XML'}
+          </button>
+
+          <button
+            onClick={handleClearData}
+            className="btn btn-secondary"
+            style={{ fontSize: '0.875rem', padding: '0.5rem 1rem' }}
+          >
+            🗑️ Clear
+          </button>
+
+          {/* Real-time Stats */}
+          {conversion && (
+            <div className="flex items-center gap-4 ml-auto">
+              <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                <span className="font-medium">{conversion.conversionStats.totalElements}</span> elements
               </div>
-              
-              <div className={`p-2 rounded text-xs ${getDepthColor(conversion.structureInfo.maxDepth)}`}>
-                <div className="flex justify-between">
-                  <span>Max Depth:</span>
-                  <span className="font-medium">{conversion.structureInfo.maxDepth}</span>
-                </div>
+              <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                <span className="font-medium">{conversion.conversionStats.conversionTime}ms</span>
               </div>
-              
-              <div className="p-2 bg-blue-50 rounded text-xs">
-                <div className="flex justify-between">
-                  <span className="text-blue-600">Processing:</span>
-                  <span className="text-blue-800 font-medium">{conversion.conversionStats.conversionTime}ms</span>
-                </div>
+              <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                <span className="font-medium">{(conversion.conversionStats.outputSize / 1024).toFixed(1)}KB</span>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Quick Examples */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700">Quick Examples</h3>
-          <div className="grid grid-cols-1 gap-2">
-            <button
-              onClick={() => handleQuickExample('simple')}
-              className="px-3 py-2 text-xs bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition-colors text-left"
-            >
-              📄 Simple Elements
-            </button>
-            <button
-              onClick={() => handleQuickExample('attributes')}
-              className="px-3 py-2 text-xs bg-green-100 text-green-800 rounded hover:bg-green-200 transition-colors text-left"
-            >
-              🏷️ XML Attributes
-            </button>
-            <button
-              onClick={() => handleQuickExample('arrays')}
-              className="px-3 py-2 text-xs bg-purple-100 text-purple-800 rounded hover:bg-purple-200 transition-colors text-left"
-            >
-              📋 Repeated Elements
-            </button>
-            <button
-              onClick={() => handleQuickExample('mixed')}
-              className="px-3 py-2 text-xs bg-indigo-100 text-indigo-800 rounded hover:bg-indigo-200 transition-colors text-left"
-            >
-              🎯 Mixed Content
-            </button>
-            <button
-              onClick={() => handleQuickExample('complex')}
-              className="px-3 py-2 text-xs bg-orange-100 text-orange-800 rounded hover:bg-orange-200 transition-colors text-left"
-            >
-              🏗️ Complex Structure
-            </button>
-            <button
-              onClick={() => handleQuickExample('namespaces')}
-              className="px-3 py-2 text-xs bg-cyan-100 text-cyan-800 rounded hover:bg-cyan-200 transition-colors text-left"
-            >
-              🌐 XML Namespaces
-            </button>
-            <button
-              onClick={() => handleQuickExample('comments')}
-              className="px-3 py-2 text-xs bg-pink-100 text-pink-800 rounded hover:bg-pink-200 transition-colors text-left"
-            >
-              💬 Comments & Instructions
-            </button>
+          <div className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+            Press <kbd className="kbd">Ctrl+Enter</kbd> to convert
           </div>
         </div>
+      </div>
 
-        <OptionsPanel
-          title="Conversion Options"
-          options={allOptions}
-          values={config}
-          onChange={handleConfigChange}
-        />
+      {/* Main Content Grid */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: 'var(--space-xl)',
+        minHeight: '500px'
+      }} className="md:grid-cols-1">
+        <div className="space-y-6">
+          <InputPanel
+            title="XML Input"
+            value={input}
+            onChange={setInput}
+            placeholder="Enter XML data to convert to JSON..."
+            language="xml"
+            supportsDragDrop
+            onFileContent={(content) => setInput(content)}
+            acceptedFileTypes=".xml,.txt"
+          />
 
-        {/* Structure Analysis */}
-        {conversion && conversion.structureInfo && (
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-700">Structure Analysis</h3>
-            <div className="space-y-2">
-              <div className="p-2 bg-blue-50 rounded text-xs">
-                <div className="flex justify-between">
-                  <span className="text-blue-600">Root Element:</span>
-                  <span className="text-blue-800 font-medium font-mono">&lt;{conversion.structureInfo.rootElement}&gt;</span>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className={`p-2 rounded ${conversion.structureInfo.hasAttributes ? 'bg-green-50 text-green-800' : 'bg-gray-50 text-gray-600'}`}>
-                  <div className="flex items-center gap-1">
-                    <span>{conversion.structureInfo.hasAttributes ? '✅' : '❌'}</span>
-                    <span>Attributes</span>
+          {/* Conversion Statistics */}
+          {conversion && (
+            <div className="card" style={{ padding: 'var(--space-lg)' }}>
+              <h3 className="text-sm font-medium" style={{ color: 'var(--color-text)', marginBottom: 'var(--space-md)' }}>Conversion Statistics</h3>
+              <div className="space-y-3">
+                <div className={`p-3 rounded border-2 ${getComplexityColor(conversion.conversionStats.totalElements)}`}>
+                  <div className="flex items-center gap-3">
+                    <div className="text-xl">📊</div>
+                    <div>
+                      <div className="font-medium text-sm">
+                        {conversion.conversionStats.totalElements} Elements
+                      </div>
+                      <div className="text-xs opacity-75">
+                        {(conversion.conversionStats.outputSize / 1024).toFixed(1)}KB output
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className={`p-2 rounded ${conversion.structureInfo.hasTextContent ? 'bg-green-50 text-green-800' : 'bg-gray-50 text-gray-600'}`}>
-                  <div className="flex items-center gap-1">
-                    <span>{conversion.structureInfo.hasTextContent ? '✅' : '❌'}</span>
-                    <span>Text</span>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div className={`p-2 rounded text-xs ${getDepthColor(conversion.structureInfo.maxDepth)}`}>
+                    <div className="flex justify-between">
+                      <span>Max Depth:</span>
+                      <span className="font-medium">{conversion.structureInfo.maxDepth}</span>
+                    </div>
                   </div>
-                </div>
-                <div className={`p-2 rounded ${conversion.structureInfo.hasNamespaces ? 'bg-green-50 text-green-800' : 'bg-gray-50 text-gray-600'}`}>
-                  <div className="flex items-center gap-1">
-                    <span>{conversion.structureInfo.hasNamespaces ? '✅' : '❌'}</span>
-                    <span>Namespaces</span>
-                  </div>
-                </div>
-                <div className={`p-2 rounded ${conversion.structureInfo.hasMixedContent ? 'bg-yellow-50 text-yellow-800' : 'bg-gray-50 text-gray-600'}`}>
-                  <div className="flex items-center gap-1">
-                    <span>{conversion.structureInfo.hasMixedContent ? '⚠️' : '✅'}</span>
-                    <span>Mixed</span>
+
+                  <div style={{ backgroundColor: 'var(--color-primary-subtle)', color: 'var(--color-primary)' }} className="p-2 rounded text-xs">
+                    <div className="flex justify-between">
+                      <span>Time:</span>
+                      <span className="font-medium">{conversion.conversionStats.conversionTime}ms</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Element Breakdown */}
-        {conversion && conversion.conversionStats && (
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-700">Element Breakdown</h3>
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs p-2 bg-blue-50 rounded">
-                <span className="text-blue-600">Total Elements:</span>
-                <span className="text-blue-800 font-medium">{conversion.conversionStats.totalElements}</span>
+          {/* Quick Examples */}
+          <div className="card" style={{ padding: 'var(--space-lg)' }}>
+            <details className="space-y-3">
+              <summary className="text-sm font-medium cursor-pointer" style={{ color: 'var(--color-text)' }}>
+                📋 Quick Examples
+              </summary>
+              <div className="grid grid-cols-1 gap-2 mt-3">
+                <button
+                  onClick={() => handleQuickExample('simple')}
+                  className="btn btn-outline text-left"
+                  style={{ fontSize: '0.75rem', padding: '0.5rem 0.75rem' }}
+                >
+                  📄 Simple Elements
+                </button>
+                <button
+                  onClick={() => handleQuickExample('attributes')}
+                  className="btn btn-outline text-left"
+                  style={{ fontSize: '0.75rem', padding: '0.5rem 0.75rem' }}
+                >
+                  🏷️ XML Attributes
+                </button>
+                <button
+                  onClick={() => handleQuickExample('arrays')}
+                  className="btn btn-outline text-left"
+                  style={{ fontSize: '0.75rem', padding: '0.5rem 0.75rem' }}
+                >
+                  📋 Repeated Elements
+                </button>
+                <button
+                  onClick={() => handleQuickExample('mixed')}
+                  className="btn btn-outline text-left"
+                  style={{ fontSize: '0.75rem', padding: '0.5rem 0.75rem' }}
+                >
+                  🎯 Mixed Content
+                </button>
+                <button
+                  onClick={() => handleQuickExample('complex')}
+                  className="btn btn-outline text-left"
+                  style={{ fontSize: '0.75rem', padding: '0.5rem 0.75rem' }}
+                >
+                  🏗️ Complex Structure
+                </button>
+                <button
+                  onClick={() => handleQuickExample('namespaces')}
+                  className="btn btn-outline text-left"
+                  style={{ fontSize: '0.75rem', padding: '0.5rem 0.75rem' }}
+                >
+                  🌐 XML Namespaces
+                </button>
+                <button
+                  onClick={() => handleQuickExample('comments')}
+                  className="btn btn-outline text-left"
+                  style={{ fontSize: '0.75rem', padding: '0.5rem 0.75rem' }}
+                >
+                  💬 Comments & Instructions
+                </button>
               </div>
-              <div className="flex justify-between text-xs p-2 bg-green-50 rounded">
-                <span className="text-green-600">Attributes:</span>
-                <span className="text-green-800 font-medium">{conversion.conversionStats.attributes}</span>
-              </div>
-              <div className="flex justify-between text-xs p-2 bg-purple-50 rounded">
-                <span className="text-purple-600">Text Nodes:</span>
-                <span className="text-purple-800 font-medium">{conversion.conversionStats.textNodes}</span>
-              </div>
-              {conversion.conversionStats.comments > 0 && (
-                <div className="flex justify-between text-xs p-2 bg-yellow-50 rounded">
-                  <span className="text-yellow-600">Comments:</span>
-                  <span className="text-yellow-800 font-medium">{conversion.conversionStats.comments}</span>
-                </div>
-              )}
-              {conversion.conversionStats.namespaces > 0 && (
-                <div className="flex justify-between text-xs p-2 bg-indigo-50 rounded">
-                  <span className="text-indigo-600">Namespaces:</span>
-                  <span className="text-indigo-800 font-medium">{conversion.conversionStats.namespaces}</span>
-                </div>
-              )}
-            </div>
+            </details>
           </div>
-        )}
 
-        {/* Warnings */}
-        {warnings.length > 0 && (
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-700">Warnings</h3>
-            <div className="space-y-2">
-              {warnings.map((warning, index) => (
-                <div key={index} className="p-2 bg-yellow-50 border border-yellow-200 rounded text-xs">
-                  <div className="flex items-start gap-2">
-                    <span className="text-yellow-600">⚠️</span>
-                    <span className="text-yellow-800">{warning}</span>
+          <OptionsPanel
+            title="Conversion Options"
+            options={allOptions}
+            values={config}
+            onChange={handleConfigChange}
+          />
+
+          {/* Structure Analysis */}
+          {conversion && conversion.structureInfo && (
+            <div className="card" style={{ padding: 'var(--space-lg)' }}>
+              <h3 className="text-sm font-medium" style={{ color: 'var(--color-text)', marginBottom: 'var(--space-md)' }}>Structure Analysis</h3>
+              <div className="space-y-3">
+                <div style={{ backgroundColor: 'var(--color-primary-subtle)', color: 'var(--color-primary)' }} className="p-2 rounded text-xs">
+                  <div className="flex justify-between">
+                    <span>Root Element:</span>
+                    <span className="font-medium font-mono">&lt;{conversion.structureInfo.rootElement}&gt;</span>
                   </div>
                 </div>
-              ))}
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className={`p-2 rounded ${conversion.structureInfo.hasAttributes ? 'bg-success-subtle text-success' : 'text-muted'}`} style={{ backgroundColor: conversion.structureInfo.hasAttributes ? 'var(--color-success-subtle)' : 'var(--color-surface-secondary)' }}>
+                    <div className="flex items-center gap-1">
+                      <span>{conversion.structureInfo.hasAttributes ? '✅' : '❌'}</span>
+                      <span>Attributes</span>
+                    </div>
+                  </div>
+                  <div className={`p-2 rounded ${conversion.structureInfo.hasTextContent ? 'bg-success-subtle text-success' : 'text-muted'}`} style={{ backgroundColor: conversion.structureInfo.hasTextContent ? 'var(--color-success-subtle)' : 'var(--color-surface-secondary)' }}>
+                    <div className="flex items-center gap-1">
+                      <span>{conversion.structureInfo.hasTextContent ? '✅' : '❌'}</span>
+                      <span>Text</span>
+                    </div>
+                  </div>
+                  <div className={`p-2 rounded ${conversion.structureInfo.hasNamespaces ? 'bg-success-subtle text-success' : 'text-muted'}`} style={{ backgroundColor: conversion.structureInfo.hasNamespaces ? 'var(--color-success-subtle)' : 'var(--color-surface-secondary)' }}>
+                    <div className="flex items-center gap-1">
+                      <span>{conversion.structureInfo.hasNamespaces ? '✅' : '❌'}</span>
+                      <span>Namespaces</span>
+                    </div>
+                  </div>
+                  <div className={`p-2 rounded ${conversion.structureInfo.hasMixedContent ? 'bg-warning-subtle text-warning' : 'bg-success-subtle text-success'}`} style={{ backgroundColor: conversion.structureInfo.hasMixedContent ? 'var(--color-warning-subtle)' : 'var(--color-success-subtle)' }}>
+                    <div className="flex items-center gap-1">
+                      <span>{conversion.structureInfo.hasMixedContent ? '⚠️' : '✅'}</span>
+                      <span>Mixed</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* XML/JSON Information */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700">Conversion Info</h3>
-          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs">
-            <div className="text-blue-800">
-              <div className="font-medium mb-1">🔃 XML to JSON Mapping</div>
+          {/* Warnings */}
+          {warnings.length > 0 && (
+            <div className="card" style={{ padding: 'var(--space-lg)', borderColor: 'var(--color-warning)', borderWidth: '1px' }}>
+              <h3 className="text-sm font-medium" style={{ color: 'var(--color-text)', marginBottom: 'var(--space-md)' }}>⚠️ Warnings</h3>
+              <div className="space-y-2">
+                {warnings.map((warning, index) => (
+                  <div key={index} style={{ backgroundColor: 'var(--color-warning-subtle)', color: 'var(--color-warning)' }} className="p-2 rounded text-xs">
+                    <div className="flex items-start gap-2">
+                      <span>⚠️</span>
+                      <span>{warning}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* XML/JSON Information */}
+          <div className="card" style={{ padding: 'var(--space-lg)' }}>
+            <h3 className="text-sm font-medium" style={{ color: 'var(--color-text)', marginBottom: 'var(--space-md)' }}>Conversion Info</h3>
+            <div style={{ backgroundColor: 'var(--color-primary-subtle)', color: 'var(--color-primary)' }} className="p-3 rounded-lg text-xs">
+              <div className="font-medium mb-2">🔃 XML to JSON Mapping</div>
               <div className="space-y-1">
                 <div>• XML elements → JSON objects</div>
                 <div>• XML attributes → @property</div>
@@ -601,88 +655,86 @@ export function XmlToJsonConverter({ className = '' }: XmlToJsonConverterProps) 
               </div>
             </div>
           </div>
-          <button
-            onClick={handleClearData}
-            className="w-full px-3 py-2 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
-          >
-            🗑️ Clear Data
-          </button>
         </div>
-      </div>
 
-      <div className="lg:col-span-8 space-y-6">
-        <InputPanel
-          title="XML Input"
-          value={input}
-          onChange={setInput}
-          placeholder="Enter XML data to convert to JSON..."
-          language="xml"
-        />
+        <div className="space-y-6">
+          <OutputPanel
+            title="JSON Output"
+            value={output}
+            error={error}
+            isProcessing={isProcessing}
+            language="json"
+            placeholder="Converted JSON will appear here..."
+            processingMessage="Converting XML to JSON..."
+            supportsCopy
+            supportsDownload
+            downloadFileName="converted.json"
+            customActions={
+              output && conversion ? (
+                <div className="flex gap-2 flex-wrap">
+                  <button
+                    onClick={() => {
+                      const jsonString = JSON.stringify(conversion.jsonData, null, 2);
+                      navigator.clipboard?.writeText(jsonString);
+                    }}
+                    className="btn btn-sm btn-secondary"
+                  >
+                    📋 Copy JSON
+                  </button>
+                  <button
+                    onClick={() => {
+                      const compactJson = JSON.stringify(conversion.jsonData);
+                      navigator.clipboard?.writeText(compactJson);
+                    }}
+                    className="btn btn-sm btn-outline"
+                  >
+                    📦 Copy Compact
+                  </button>
+                  <div className={`px-3 py-1 text-xs font-medium rounded ${getComplexityColor(conversion.conversionStats.totalElements)}`}>
+                    {conversion.conversionStats.totalElements} Elements
+                  </div>
+                </div>
+              ) : undefined
+            }
+          />
 
-        <OutputPanel
-          title="JSON Output"
-          value={output}
-          error={error}
-          isProcessing={isProcessing}
-          language="json"
-          placeholder="Converted JSON will appear here..."
-          processingMessage="Converting XML to JSON..."
-          customActions={
-            output && conversion ? (
-              <div className="flex gap-2 flex-wrap">
-                <button
-                  onClick={() => {
-                    const jsonString = JSON.stringify(conversion.jsonData, null, 2);
-                    navigator.clipboard?.writeText(jsonString);
-                  }}
-                  className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                >
-                  📋 Copy JSON
-                </button>
-                <button
-                  onClick={() => {
-                    const jsonString = JSON.stringify(conversion.jsonData, null, 2);
-                    const blob = new Blob([jsonString], { type: 'application/json' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `converted-${Date.now()}.json`;
-                    a.click();
-                    URL.revokeObjectURL(url);
-                  }}
-                  className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
-                >
-                  💾 Download JSON
-                </button>
-                <button
-                  onClick={() => {
-                    const compactJson = JSON.stringify(conversion.jsonData);
-                    navigator.clipboard?.writeText(compactJson);
-                  }}
-                  className="px-3 py-1 text-xs bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
-                >
-                  📦 Copy Compact
-                </button>
-                <button
-                  onClick={() => {
-                    const report = `XML to JSON Conversion Report\nGenerated: ${new Date().toISOString()}\n\nConversion Summary:\n- Total Elements: ${conversion.conversionStats.totalElements}\n- Attributes: ${conversion.conversionStats.attributes}\n- Text Nodes: ${conversion.conversionStats.textNodes}\n- Comments: ${conversion.conversionStats.comments}\n- Processing Instructions: ${conversion.conversionStats.processingInstructions}\n- Namespaces: ${conversion.conversionStats.namespaces}\n- Processing Time: ${conversion.conversionStats.conversionTime}ms\n- Output Size: ${conversion.conversionStats.outputSize} characters\n\nStructure Information:\n- Root Element: ${conversion.structureInfo.rootElement}\n- Max Depth: ${conversion.structureInfo.maxDepth}\n- Has Attributes: ${conversion.structureInfo.hasAttributes}\n- Has Text Content: ${conversion.structureInfo.hasTextContent}\n- Has Namespaces: ${conversion.structureInfo.hasNamespaces}\n- Mixed Content: ${conversion.structureInfo.hasMixedContent}\n\n${warnings.length > 0 ? `Warnings:\n${warnings.map(w => `- ${w}`).join('\n')}\n\n` : ''}JSON Output:\n${JSON.stringify(conversion.jsonData, null, 2)}`;
-                    
-                    navigator.clipboard?.writeText(report);
-                  }}
-                  className="px-3 py-1 text-xs bg-orange-600 text-white rounded hover:bg-orange-700 transition-colors"
-                >
-                  📊 Copy Report
-                </button>
-                <div className={`px-3 py-1 text-xs font-medium rounded ${getComplexityColor(conversion.conversionStats.totalElements)}`}>
-                  {conversion.conversionStats.totalElements} Elements
+          {/* Element Breakdown - Moved to Output Side */}
+          {conversion && conversion.conversionStats && (
+            <div className="card" style={{ padding: 'var(--space-lg)' }}>
+              <h3 className="text-sm font-medium" style={{ color: 'var(--color-text)', marginBottom: 'var(--space-md)' }}>Element Breakdown</h3>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div style={{ backgroundColor: 'var(--color-primary-subtle)', color: 'var(--color-primary)' }} className="flex justify-between p-2 rounded">
+                  <span>Total Elements:</span>
+                  <span className="font-medium">{conversion.conversionStats.totalElements}</span>
                 </div>
-                <div className="px-3 py-1 text-xs font-medium rounded bg-blue-100 text-blue-800">
-                  Depth: {conversion.structureInfo.maxDepth}
+                <div style={{ backgroundColor: 'var(--color-success-subtle)', color: 'var(--color-success)' }} className="flex justify-between p-2 rounded">
+                  <span>Attributes:</span>
+                  <span className="font-medium">{conversion.conversionStats.attributes}</span>
                 </div>
+                <div style={{ backgroundColor: 'var(--color-secondary-subtle)', color: 'var(--color-secondary)' }} className="flex justify-between p-2 rounded">
+                  <span>Text Nodes:</span>
+                  <span className="font-medium">{conversion.conversionStats.textNodes}</span>
+                </div>
+                <div style={{ backgroundColor: 'var(--color-info-subtle)', color: 'var(--color-info)' }} className="flex justify-between p-2 rounded">
+                  <span>Processing Time:</span>
+                  <span className="font-medium">{conversion.conversionStats.conversionTime}ms</span>
+                </div>
+                {conversion.conversionStats.comments > 0 && (
+                  <div style={{ backgroundColor: 'var(--color-warning-subtle)', color: 'var(--color-warning)' }} className="flex justify-between p-2 rounded">
+                    <span>Comments:</span>
+                    <span className="font-medium">{conversion.conversionStats.comments}</span>
+                  </div>
+                )}
+                {conversion.conversionStats.namespaces > 0 && (
+                  <div style={{ backgroundColor: 'var(--color-info-subtle)', color: 'var(--color-info)' }} className="flex justify-between p-2 rounded">
+                    <span>Namespaces:</span>
+                    <span className="font-medium">{conversion.conversionStats.namespaces}</span>
+                  </div>
+                )}
               </div>
-            ) : undefined
-          }
-        />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
