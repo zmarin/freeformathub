@@ -11,6 +11,9 @@ import { HashGenerator } from '../components/tools/crypto/HashGenerator';
 // Network components
 import { IpSubnetCalculator } from '../components/tools/network/IpSubnetCalculator';
 
+// Encoder components
+import { UrlEncoder } from '../components/tools/encoders/UrlEncoder';
+
 // Add more components as needed - this is the extensible pattern
 // import { XmlFormatter } from '../components/tools/formatters/XmlFormatter';
 // import { YamlFormatter } from '../components/tools/formatters/YamlFormatter';
@@ -29,6 +32,9 @@ export const TOOL_COMPONENTS: Record<string, ToolComponent> = {
 
   // Network
   'ip-subnet-calculator': IpSubnetCalculator,
+
+  // Encoders
+  'url-encoder': UrlEncoder,
 
   // Add more components as they're needed:
   // 'xml-formatter': XmlFormatter,
