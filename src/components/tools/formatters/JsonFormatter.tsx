@@ -12,7 +12,6 @@ const DEFAULT_CONFIG: JsonFormatterConfig = {
   sortKeys: false,
   removeComments: true,
   validateOnly: false,
-  // Keep advanced options with sensible defaults
   useTabs: false,
   sortKeysCaseInsensitive: false,
   allowSingleQuotes: true,
@@ -25,93 +24,10 @@ const DEFAULT_CONFIG: JsonFormatterConfig = {
   detectDuplicateKeys: true,
 };
 
-// Essential options only - simplified UX
-const ESSENTIAL_OPTIONS = [
-  {
-    key: 'indent',
-    label: 'Indent',
-    type: 'select' as const,
-    default: 2,
-    options: [
-      { value: '2', label: '2 spaces' },
-      { value: '4', label: '4 spaces' },
-      { value: '0', label: 'Minified' },
-    ],
-    description: 'Indentation style',
-  },
-  {
-    key: 'sortKeys',
-    label: 'Sort Keys',
-    type: 'boolean' as const,
-    default: false,
-    description: 'Sort object keys alphabetically',
-  },
-  {
-    key: 'removeComments',
-    label: 'Remove Comments',
-    type: 'boolean' as const,
-    default: true,
-    description: 'Strip comments from JSONC input',
-  },
-  {
-    key: 'validateOnly',
-    label: 'Validate Only',
-    type: 'boolean' as const,
-    default: false,
-    description: 'Only validate without formatting',
-  },
-];
-
-// Advanced options for power users
-const ADVANCED_OPTIONS = [
-  {
-    key: 'useTabs',
-    label: 'Use Tabs',
-    type: 'boolean' as const,
-    default: false,
-    description: 'Use tabs instead of spaces',
-    showWhen: (cfg: any) => Number(cfg.indent ?? 2) > 0,
-  },
-  {
-    key: 'sortKeysCaseInsensitive',
-    label: 'Case-Insensitive Sort',
-    type: 'boolean' as const,
-    default: false,
-    description: 'Ignore case when sorting keys',
-    showWhen: (cfg: any) => !!cfg.sortKeys,
-  },
-  {
-    key: 'allowSingleQuotes',
-    label: 'Allow Single Quotes',
-    type: 'boolean' as const,
-    default: true,
-    description: 'Convert single quotes to double quotes',
-  },
-  {
-    key: 'replaceSpecialNumbers',
-    label: 'Special Numbers',
-    type: 'select' as const,
-    default: 'none',
-    options: [
-      { value: 'none', label: 'Keep as-is' },
-      { value: 'null', label: 'Convert to null' },
-      { value: 'string', label: 'Convert to string' },
-    ],
-    description: 'How to handle NaN/Infinity',
-  },
-  {
-    key: 'escapeUnicode',
-    label: 'Escape Unicode',
-    type: 'boolean' as const,
-    default: false,
-    description: 'Escape non-ASCII characters',
-  },
-];
-
 const EXAMPLES = [
   {
-    title: 'Basic Object',
-    value: '{"name":"John","age":30,"city":"New York"}',
+    title: 'Simple Object',
+    value: '{"name": "John", "age": 30, "city": "New York"}',
   },
   {
     title: 'Nested Structure',
@@ -122,7 +38,7 @@ const EXAMPLES = [
     value: '[{"id":1,"name":"Item 1","active":true},{"id":2,"name":"Item 2","active":false}]',
   },
   {
-    title: 'With Comments (Invalid JSON)',
+    title: 'With Comments (JSONC)',
     value: `{
   // User information
   "name": "John",
@@ -141,9 +57,7 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
   const [metadata, setMetadata] = useState<Record<string, any> | undefined>();
   const [copied, setCopied] = useState(false);
   const [autoFormat, setAutoFormat] = useState(true);
-  const [showAdvanced, setShowAdvanced] = useState(false);
   const [dragActive, setDragActive] = useState(false);
-  const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
 
   const { addToHistory, getConfig: getSavedConfig, updateConfig: updateSavedConfig } = useToolStore();
 
@@ -174,16 +88,14 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
     }
 
     setIsLoading(true);
-    
-    // Process immediately for manual format button
+
     const result = formatJson(inputText, cfg);
-    
+
     if (result.success) {
       setOutput(result.output || '');
       setError(undefined);
       setMetadata(result.metadata);
-      
-      // Add to history for successful operations
+
       addToHistory({
         toolId: 'json-formatter',
         input: inputText,
@@ -196,13 +108,13 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
       setError(result.error);
       setMetadata(undefined);
     }
-    
+
     setIsLoading(false);
   }, [input, processedConfig, addToHistory]);
 
   // Debounced processing for auto-format
   const debouncedProcess = useMemo(
-    () => debounce(processJson, 500),
+    () => debounce(processJson, 300),
     [processJson]
   );
 
@@ -214,10 +126,10 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
   }, [input, processedConfig, debouncedProcess, autoFormat]);
 
   // Quick action handlers
-  const handleBeautify = useCallback(() => {
-    const beautifyConfig = { ...processedConfig, indent: 2, sortKeys: false };
-    setConfig(beautifyConfig);
-    processJson(input, beautifyConfig);
+  const handleFormat = useCallback(() => {
+    const formatConfig = { ...processedConfig, indent: 2, sortKeys: false };
+    setConfig(formatConfig);
+    processJson(input, formatConfig);
   }, [input, processedConfig, processJson]);
 
   const handleMinify = useCallback(() => {
@@ -226,11 +138,17 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
     processJson(input, minifyConfig);
   }, [input, processedConfig, processJson]);
 
-  const handleSortKeys = useCallback(() => {
-    const sortConfig = { ...processedConfig, sortKeys: true };
-    setConfig(sortConfig);
-    processJson(input, sortConfig);
+  const handleValidate = useCallback(() => {
+    const validateConfig = { ...processedConfig, validateOnly: true };
+    processJson(input, validateConfig);
   }, [input, processedConfig, processJson]);
+
+  const handleClear = useCallback(() => {
+    setInput('');
+    setOutput('');
+    setError(undefined);
+    setMetadata(undefined);
+  }, []);
 
   // File upload handler
   const handleFileUpload = useCallback(async (file: File) => {
@@ -281,29 +199,22 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
     downloadFile(output, filename, 'application/json');
   }, [output, config.indent]);
 
-  const handleInputChange = (value: string) => {
-    setInput(value);
-  };
-
-  const handleConfigChange = (newConfig: JsonFormatterConfig) => {
-    setConfig(newConfig);
-    try { updateSavedConfig?.('json-formatter', newConfig); } catch {}
-    
-    // If not auto-formatting, don't process automatically
-    if (!autoFormat) return;
-    processJson(input, { ...processedConfig, ...newConfig });
-  };
-
-  // Essential config options handler
-  const handleEssentialConfigChange = (key: string, value: any) => {
-    const newConfig = { ...config, [key]: value };
-    handleConfigChange(newConfig);
-  };
+  // Paste handler
+  const handlePaste = useCallback(async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      setInput(text);
+      if (autoFormat) {
+        processJson(text, processedConfig);
+      }
+    } catch (error) {
+      console.warn('Failed to paste from clipboard');
+    }
+  }, [autoFormat, processedConfig, processJson]);
 
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyboard = (e: KeyboardEvent) => {
-      // Don't trigger shortcuts when typing in input fields
       if (e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLInputElement) {
         return;
       }
@@ -312,21 +223,15 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
         switch (e.key) {
           case 'Enter':
             e.preventDefault();
-            processJson();
+            handleFormat();
             break;
           case 'm':
             e.preventDefault();
             handleMinify();
             break;
-          case 's':
-            if (e.shiftKey) {
-              e.preventDefault();
-              handleSortKeys();
-            }
-            break;
-          case 'k':
+          case 'l':
             e.preventDefault();
-            setShowKeyboardHelp(!showKeyboardHelp);
+            handleClear();
             break;
         }
       }
@@ -334,150 +239,122 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
 
     document.addEventListener('keydown', handleKeyboard);
     return () => document.removeEventListener('keydown', handleKeyboard);
-  }, [processJson, handleMinify, handleSortKeys, showKeyboardHelp]);
+  }, [handleFormat, handleMinify, handleClear]);
 
   return (
-    <div className={`flex flex-col ${className}`}>
-      {/* Sticky Tool Header with Quick Actions */}
-      <div className="sticky top-0 z-10 flex flex-col sm:flex-row gap-4 p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm">
-        {/* Quick Actions with Mobile-First Design */}
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={handleBeautify}
-            className="px-4 py-3 sm:py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-medium rounded-lg transition-colors touch-manipulation min-h-[44px] sm:min-h-auto"
-            title="Format JSON with 2-space indentation"
-          >
-            <span className="flex items-center gap-1">
-              ✨ <span className="hidden sm:inline">Beautify</span><span className="sm:hidden">Format</span>
-            </span>
-          </button>
-          <button
-            onClick={handleMinify}
-            className="px-4 py-3 sm:py-2 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white text-sm font-medium rounded-lg transition-colors touch-manipulation min-h-[44px] sm:min-h-auto"
-            title="Minimize JSON to single line (Ctrl+M)"
-          >
-            <span className="flex items-center gap-1">
-              🗜️ <span className="hidden sm:inline">Minify</span><span className="sm:hidden">Min</span>
-            </span>
-          </button>
-          <button
-            onClick={handleSortKeys}
-            className="px-4 py-3 sm:py-2 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white text-sm font-medium rounded-lg transition-colors touch-manipulation min-h-[44px] sm:min-h-auto"
-            title="Sort object keys alphabetically (Ctrl+Shift+S)"
-          >
-            <span className="flex items-center gap-1">
-              🔤 <span className="hidden sm:inline">Sort</span>
-            </span>
-          </button>
-          {!autoFormat && (
-            <button
-              onClick={() => processJson()}
-              disabled={!input.trim() || isLoading}
-              className="px-4 py-3 sm:py-2 bg-orange-600 hover:bg-orange-700 active:bg-orange-800 disabled:bg-gray-400 text-white text-sm font-medium rounded-lg transition-colors touch-manipulation min-h-[44px] sm:min-h-auto"
-              title="Process JSON (Ctrl+Enter)"
-            >
-              {isLoading ? '⏳' : '⚡'} <span className="hidden sm:inline">Format</span>
+    <div className={`${className}`}>
+      {/* Sticky Controls Bar */}
+      <div className="sticky-top" style={{
+        backgroundColor: 'var(--color-surface-secondary)',
+        borderBottom: '1px solid var(--color-border)',
+        padding: 'var(--space-xl)',
+        zIndex: 10
+      }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-lg)', alignItems: 'center' }}>
+          {/* Primary Actions */}
+          <div style={{ display: 'flex', gap: 'var(--space-md)', flexWrap: 'wrap' }}>
+            <button onClick={handleFormat} className="btn btn-primary" title="Format JSON (Ctrl+Enter)">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+              </svg>
+              Format JSON
             </button>
-          )}
-          <button
-            onClick={() => setShowKeyboardHelp(!showKeyboardHelp)}
-            className="hidden sm:flex px-3 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm rounded-lg transition-colors items-center"
-            title="Keyboard shortcuts (Ctrl+K)"
-          >
-            ⌨️
-          </button>
-        </div>
 
-        {/* Settings and Auto-format */}
-        <div className="flex items-center gap-4 ml-auto">
-          <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-            <input
-              type="checkbox"
-              checked={autoFormat}
-              onChange={(e) => setAutoFormat(e.target.checked)}
-              className="rounded"
-            />
-            Auto-format
-          </label>
+            <button onClick={handleValidate} className="btn btn-secondary" title="Validate JSON">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4"/>
+              </svg>
+              Validate
+            </button>
+
+            <button onClick={handleMinify} className="btn btn-outline" title="Minify JSON (Ctrl+M)">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+              </svg>
+              Minify
+            </button>
+
+            <button onClick={handleClear} className="btn btn-outline" title="Clear all (Ctrl+L)">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+              Clear
+            </button>
+          </div>
+
+          {/* Stats & Settings */}
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 'var(--space-xl)', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: 'var(--space-lg)', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
+              <span>Size: <strong>{new Blob([input]).size.toLocaleString()} B</strong></span>
+              <span>Lines: <strong>{input.split('\n').length}</strong></span>
+              {metadata?.processingTimeMs && (
+                <span>Time: <strong>{Math.round(metadata.processingTimeMs)}ms</strong></span>
+              )}
+              {error ? (
+                <span className="status-indicator status-invalid">✗ Invalid</span>
+              ) : output ? (
+                <span className="status-indicator status-valid">✓ Valid</span>
+              ) : null}
+            </div>
+
+            <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', fontSize: '0.875rem' }}>
+              <input
+                type="checkbox"
+                checked={autoFormat}
+                onChange={(e) => setAutoFormat(e.target.checked)}
+                style={{ accentColor: 'var(--color-primary)' }}
+              />
+              Auto-format
+            </label>
+          </div>
         </div>
       </div>
 
-      {/* Keyboard Help Modal */}
-      {showKeyboardHelp && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowKeyboardHelp(false)}>
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4" onClick={e => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Keyboard Shortcuts</h3>
-              <button
-                onClick={() => setShowKeyboardHelp(false)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-              >
-                ✕
-              </button>
-            </div>
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Format JSON</span>
-                <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">Ctrl+Enter</kbd>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Minify</span>
-                <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">Ctrl+M</kbd>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Sort Keys</span>
-                <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">Ctrl+Shift+S</kbd>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Show/Hide Help</span>
-                <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">Ctrl+K</kbd>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Main Content - Mobile-Optimized Interface */}
-      <div className="flex flex-col md:flex-row flex-1 min-h-[600px] md:min-h-[700px]">
-        {/* Input Section */}
-        <div className="flex-1 flex flex-col border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-700">
+      {/* Editor Layout */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        minHeight: '500px'
+      }} className="md:grid-cols-1">
+        {/* Input Panel */}
+        <div style={{ position: 'relative', borderRight: '1px solid var(--color-border)' }} className="md:border-r-0 md:border-b md:border-b-gray-200">
           {/* Input Header */}
-          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex items-center gap-3">
-              <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                JSON Input
-              </h3>
-              {input && (
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  {input.length.toLocaleString()} characters
-                </span>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="cursor-pointer text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded border transition-colors">
-                📁 Upload
+          <div style={{
+            backgroundColor: 'var(--color-surface-secondary)',
+            borderBottom: '1px solid var(--color-border)',
+            padding: 'var(--space-lg)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
+              Input JSON
+            </span>
+            <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+              <button onClick={handlePaste} className="btn btn-outline" style={{ padding: 'var(--space-xs) var(--space-sm)', fontSize: '0.75rem' }}>
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                Paste
+              </button>
+              <label className="btn btn-outline" style={{ padding: 'var(--space-xs) var(--space-sm)', fontSize: '0.75rem', cursor: 'pointer' }}>
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                </svg>
+                Upload
                 <input
                   type="file"
                   accept=".json,.txt"
-                  className="hidden"
+                  style={{ display: 'none' }}
                   onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
                 />
               </label>
-              {input && (
-                <button
-                  onClick={() => setInput('')}
-                  className="text-xs px-3 py-1 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
-                  title="Clear input"
-                >
-                  🗑️ Clear
-                </button>
-              )}
             </div>
           </div>
 
           {/* Input Textarea */}
-          <div 
-            className={`flex-1 relative ${dragActive ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+          <div
+            style={{ position: 'relative', height: '500px' }}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
@@ -486,258 +363,175 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Paste your JSON here or drag & drop a file..."
-              className="w-full h-full min-h-[300px] md:min-h-[400px] p-4 resize-y bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-mono text-sm md:text-base border-none focus:outline-none focus:ring-0 touch-manipulation"
-              spellCheck={false}
+              className="form-textarea"
               style={{
+                width: '100%',
+                height: '100%',
+                border: 'none',
+                borderRadius: 0,
+                fontFamily: 'var(--font-family-mono)',
+                fontSize: '14px',
                 lineHeight: '1.5',
-                WebkitTouchCallout: 'none',
-                WebkitUserSelect: 'text'
+                resize: 'none',
+                padding: 'var(--space-lg)'
               }}
+              spellCheck={false}
             />
             {dragActive && (
-              <div className="absolute inset-0 flex items-center justify-center bg-blue-50/80 dark:bg-blue-900/40 backdrop-blur-sm">
-                <div className="text-blue-600 dark:text-blue-400 text-lg font-medium">
-                  Drop JSON file here
-                </div>
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                backgroundColor: 'var(--color-primary-light)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.125rem',
+                fontWeight: 600,
+                color: 'var(--color-primary)'
+              }}>
+                Drop JSON file here
               </div>
             )}
           </div>
-
-          {/* Collapsible Examples */}
-          <details className="group bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-            <summary className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-              <span className="text-xs font-medium text-gray-700 dark:text-gray-300">Quick Examples</span>
-              <svg className="w-4 h-4 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </summary>
-            <div className="px-3 pb-3">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {EXAMPLES.map((example, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setInput(example.value)}
-                    className="text-left p-3 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg transition-colors"
-                    title={`Click to try: ${example.title}`}
-                  >
-                    <div className="text-xs font-medium text-gray-900 dark:text-gray-100 mb-1">
-                      {example.title}
-                    </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 font-mono truncate">
-                      {example.value.substring(0, 50)}...
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </details>
         </div>
 
-        {/* Output Section */}
-        <div className="flex-1 flex flex-col">
+        {/* Output Panel */}
+        <div style={{ position: 'relative' }}>
           {/* Output Header */}
-          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex items-center gap-3">
-              <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                Formatted JSON
-              </h3>
-              {isLoading && <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">Processing...</span>}
-              {!error && output && (
-                <>
-                  <span className="text-xs text-green-600 dark:text-green-400">✓ Valid</span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {output.length.toLocaleString()} characters
-                  </span>
-                </>
-              )}
-              {error && <span className="text-xs text-red-600 dark:text-red-400">✗ Invalid</span>}
-            </div>
-            <div className="flex items-center gap-2">
-              {output && (
-                <>
-                  <button
-                    onClick={handleCopy}
-                    className={`text-xs px-3 py-1 rounded border transition-colors ${
-                      copied 
-                        ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border-green-300 dark:border-green-600'
-                        : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
-                    }`}
-                  >
-                    {copied ? '✓ Copied' : '📋 Copy'}
-                  </button>
-                  <button
-                    onClick={handleDownload}
-                    className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded border border-gray-300 dark:border-gray-600 transition-colors"
-                  >
-                    💾 Download
-                  </button>
-                </>
-              )}
-            </div>
+          <div style={{
+            backgroundColor: 'var(--color-surface-secondary)',
+            borderBottom: '1px solid var(--color-border)',
+            padding: 'var(--space-lg)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
+              Formatted Output
+            </span>
+            {output && (
+              <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+                <button
+                  onClick={handleCopy}
+                  className={copied ? 'btn btn-secondary' : 'btn btn-outline'}
+                  style={{ padding: 'var(--space-xs) var(--space-sm)', fontSize: '0.75rem' }}
+                >
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={copied ? "M9 12l2 2 4-4" : "M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"}/>
+                  </svg>
+                  {copied ? 'Copied!' : 'Copy'}
+                </button>
+                <button onClick={handleDownload} className="btn btn-outline" style={{ padding: 'var(--space-xs) var(--space-sm)', fontSize: '0.75rem' }}>
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                  </svg>
+                  Download
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Output Content */}
-          <div className="flex-1 bg-white dark:bg-gray-800">
+          <div style={{ height: '500px', position: 'relative' }}>
             {error ? (
-              <div className="p-4 h-full">
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-                  <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">JSON Error</h4>
-                  <pre className="text-xs text-red-700 dark:text-red-300 whitespace-pre-wrap font-mono">
-                    {error}
-                  </pre>
-                </div>
+              <div style={{
+                padding: 'var(--space-lg)',
+                backgroundColor: 'var(--color-danger-light)',
+                color: 'var(--color-danger)',
+                borderRadius: 'var(--radius-lg)',
+                margin: 'var(--space-lg)',
+                fontFamily: 'var(--font-family-mono)',
+                fontSize: '0.875rem',
+                whiteSpace: 'pre-wrap'
+              }}>
+                <strong>JSON Error:</strong><br />
+                {error}
               </div>
             ) : (
-              <div className="h-full flex flex-col">
-                <textarea
-                  value={output}
-                  readOnly
-                  placeholder="Formatted JSON will appear here..."
-                  className="flex-1 min-h-[300px] md:min-h-[400px] p-4 resize-y bg-transparent text-gray-900 dark:text-gray-100 font-mono text-sm md:text-base border-none focus:outline-none touch-manipulation"
-                  spellCheck={false}
-                  style={{
-                    lineHeight: '1.5',
-                    WebkitTouchCallout: 'none',
-                    WebkitUserSelect: 'text'
-                  }}
-                />
-              </div>
+              <textarea
+                value={output}
+                readOnly
+                placeholder="Formatted JSON will appear here..."
+                className="form-textarea"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  border: 'none',
+                  borderRadius: 0,
+                  fontFamily: 'var(--font-family-mono)',
+                  fontSize: '14px',
+                  lineHeight: '1.5',
+                  resize: 'none',
+                  padding: 'var(--space-lg)',
+                  backgroundColor: 'var(--color-surface)'
+                }}
+                spellCheck={false}
+              />
             )}
           </div>
-
-          {/* Enhanced metadata */}
-          {metadata && !error && output && (
-            <div className="p-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-                {metadata.type && (
-                  <div className="text-center">
-                    <div className="font-medium text-gray-900 dark:text-gray-100">Type</div>
-                    <div className="text-gray-600 dark:text-gray-400 capitalize">{metadata.type}</div>
-                  </div>
-                )}
-                {typeof metadata.formattedSize === 'number' && (
-                  <div className="text-center">
-                    <div className="font-medium text-gray-900 dark:text-gray-100">Size</div>
-                    <div className="text-gray-600 dark:text-gray-400">{metadata.formattedSize.toLocaleString()} chars</div>
-                  </div>
-                )}
-                {typeof metadata.processingTimeMs === 'number' && (
-                  <div className="text-center">
-                    <div className="font-medium text-gray-900 dark:text-gray-100">Processing</div>
-                    <div className="text-gray-600 dark:text-gray-400">{Math.round(metadata.processingTimeMs)}ms</div>
-                  </div>
-                )}
-                {typeof metadata.duplicateCount === 'number' && metadata.duplicateCount > 0 && (
-                  <div className="text-center">
-                    <div className="font-medium text-amber-600 dark:text-amber-400">⚠️ Duplicates</div>
-                    <div className="text-amber-600 dark:text-amber-400">{metadata.duplicateCount} keys</div>
-                  </div>
-                )}
-                {/* Memory usage indicator for large files */}
-                {input.length > 100000 && (
-                  <div className="text-center">
-                    <div className="font-medium text-orange-600 dark:text-orange-400">Memory</div>
-                    <div className="text-orange-600 dark:text-orange-400">
-                      {input.length > 1000000 ? 'High' : 'Moderate'}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
-      {/* Essential Options Panel */}
-      <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-        <div className="p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">Options</h4>
-            <button
-              onClick={() => setShowAdvanced(!showAdvanced)}
-              className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
-            >
-              {showAdvanced ? '△ Less' : '▽ More'}
-            </button>
-          </div>
-          
-          {/* Essential options */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {ESSENTIAL_OPTIONS.map((option) => (
-              <div key={option.key} className="space-y-1">
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
-                  {option.label}
-                </label>
-                {option.type === 'boolean' ? (
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={!!config[option.key as keyof JsonFormatterConfig]}
-                      onChange={(e) => handleEssentialConfigChange(option.key, e.target.checked)}
-                      className="rounded"
-                    />
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
-                      {option.description}
-                    </span>
-                  </label>
-                ) : option.type === 'select' ? (
-                  <select
-                    value={String(config[option.key as keyof JsonFormatterConfig] ?? option.default)}
-                    onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
-                    className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                  >
-                    {option.options?.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                ) : null}
-              </div>
-            ))}
-          </div>
-
-          {/* Advanced options */}
-          {showAdvanced && (
-            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <h5 className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">Advanced Options</h5>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {ADVANCED_OPTIONS.filter(option => !option.showWhen || option.showWhen(config)).map((option) => (
-                  <div key={option.key} className="space-y-1">
-                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
-                      {option.label}
-                    </label>
-                    {option.type === 'boolean' ? (
-                      <label className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          checked={!!config[option.key as keyof JsonFormatterConfig]}
-                          onChange={(e) => handleEssentialConfigChange(option.key, e.target.checked)}
-                          className="rounded"
-                        />
-                        <span className="text-xs text-gray-600 dark:text-gray-400">
-                          {option.description}
-                        </span>
-                      </label>
-                    ) : option.type === 'select' ? (
-                      <select
-                        value={String(config[option.key as keyof JsonFormatterConfig] ?? option.default)}
-                        onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
-                        className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                      >
-                        {option.options?.map((opt) => (
-                          <option key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select>
-                    ) : null}
-                  </div>
-                ))}
-              </div>
+      {/* Quick Examples - Collapsible */}
+      <div style={{
+        borderTop: '1px solid var(--color-border)',
+        backgroundColor: 'var(--color-surface)'
+      }}>
+        <details className="group">
+          <summary style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            cursor: 'pointer',
+            padding: 'var(--space-xl)',
+            fontWeight: 600,
+            color: 'var(--color-text-primary)',
+            backgroundColor: 'var(--color-surface-secondary)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--color-primary)' }}>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+              </svg>
+              Quick Examples
             </div>
-          )}
-        </div>
+            <svg className="w-5 h-5 group-open:rotate-180 transition-transform" style={{ color: 'var(--color-text-secondary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+
+          <div style={{ padding: 'var(--space-xl)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'var(--space-lg)' }}>
+              {EXAMPLES.map((example, idx) => (
+                <div key={idx} className="card" style={{ padding: 'var(--space-lg)' }}>
+                  <div style={{ fontWeight: 600, marginBottom: 'var(--space-md)', color: 'var(--color-text-primary)' }}>
+                    {example.title}
+                  </div>
+                  <div style={{
+                    backgroundColor: 'var(--color-surface-secondary)',
+                    padding: 'var(--space-md)',
+                    borderRadius: 'var(--radius-md)',
+                    fontFamily: 'var(--font-family-mono)',
+                    fontSize: '0.75rem',
+                    marginBottom: 'var(--space-md)',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    color: 'var(--color-text-secondary)'
+                  }}>
+                    {example.value.substring(0, 50)}...
+                  </div>
+                  <button
+                    onClick={() => setInput(example.value)}
+                    className="btn btn-primary"
+                    style={{ width: '100%', fontSize: '0.875rem' }}
+                  >
+                    Try This Example
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </details>
       </div>
     </div>
   );
