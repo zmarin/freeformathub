@@ -4,6 +4,8 @@ import React from 'react';
 import { JsonFormatter } from '../components/tools/formatters/JsonFormatter';
 import { CssBeautifier } from '../components/tools/formatters/CssBeautifier';
 import { JsBeautifier } from '../components/tools/formatters/JsBeautifier';
+import { YamlFormatter } from '../components/tools/formatters/YamlFormatter';
+import { XmlFormatter } from '../components/tools/formatters/XmlFormatter';
 
 // Crypto components
 import { HashGenerator } from '../components/tools/crypto/HashGenerator';
@@ -27,6 +29,8 @@ export const TOOL_COMPONENTS: Record<string, ToolComponent> = {
   'json-formatter': JsonFormatter,
   'css-beautifier': CssBeautifier,
   'js-beautifier': JsBeautifier,
+  'yaml-formatter': YamlFormatter,
+  'xml-formatter': XmlFormatter,
 
   // Crypto
   'hash-generator': HashGenerator,
