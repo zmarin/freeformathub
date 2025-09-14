@@ -7,7 +7,7 @@ import { YamlFormatter } from '../components/tools/formatters/YamlFormatter';
 import { CssBeautifier } from '../components/tools/formatters/CssBeautifier';
 import { JsBeautifier } from '../components/tools/formatters/JsBeautifier';
 import { SqlFormatter } from '../components/tools/formatters/SqlFormatter';
-// import { CsvFormatter } from '../components/tools/formatters/CsvFormatter'; // Temporarily disabled due to syntax error
+import { CsvFormatter } from '../components/tools/formatters/CsvFormatter';
 // import { HtmlBeautifier } from '../components/tools/formatters/HtmlBeautifier'; // Temporarily disabled due to syntax error
 
 // Encoder components
@@ -80,7 +80,7 @@ export const TOOL_COMPONENTS: Record<string, ToolComponent> = {
   'css-beautifier': CssBeautifier,
   'js-beautifier': JsBeautifier,
   'sql-formatter': SqlFormatter,
-  // 'csv-formatter': CsvFormatter, // Temporarily disabled due to syntax error
+  'csv-formatter': CsvFormatter,
   // 'html-beautifier': HtmlBeautifier, // Temporarily disabled due to syntax error
 
   // Encoders

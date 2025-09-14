@@ -9,13 +9,19 @@ export function CookieConsent({ className = '' }: CookieConsentProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [consentState, setConsentState] = useState<ConsentState>(consentManager.getConsent());
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
     // Prevent hydration mismatch by checking if we're in browser
     if (typeof window === 'undefined') return;
 
+    // Mark as hydrated
+    setIsHydrated(true);
+
     // Show banner if consent hasn't been given
-    setIsVisible(!isConsentGiven());
+    const shouldShow = !isConsentGiven();
+    console.log('🍪 Cookie consent check - should show banner:', shouldShow);
+    setIsVisible(shouldShow);
 
     // Listen for consent changes
     const handleConsentChange = (state: ConsentState) => {
@@ -67,7 +73,8 @@ export function CookieConsent({ className = '' }: CookieConsentProps) {
     }));
   }, []);
 
-  if (!isVisible) {
+  // Don't render anything on server or until hydrated to prevent hydration mismatch
+  if (!isHydrated || !isVisible) {
     return null;
   }
 

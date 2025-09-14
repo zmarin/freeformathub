@@ -74,8 +74,15 @@ export class ConsentManager {
       return false;
     }
 
-    const stored = localStorage.getItem(CONSENT_STORAGE_KEY);
-    return stored !== null;
+    try {
+      const stored = localStorage.getItem(CONSENT_STORAGE_KEY);
+      const hasConsent = stored !== null;
+      console.log('🍪 Consent check - stored data exists:', hasConsent);
+      return hasConsent;
+    } catch (error) {
+      console.warn('Error checking consent:', error);
+      return false;
+    }
   }
 
   public addListener(callback: (state: ConsentState) => void): void {

@@ -484,6 +484,89 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
     <!-- Cookie Consent Banner -->
     <CookieConsent client:load />
 
+    <!-- Fallback Cookie Consent Script (in case React component fails to load) -->
+    <script>
+      // Fallback consent banner if React component doesn't load
+      setTimeout(() => {
+        if (typeof window !== 'undefined' && !localStorage.getItem('freeformathub_consent')) {
+          // Check if React component is visible
+          const existingBanner = document.querySelector('[data-testid="cookie-consent"]') ||
+                                 document.querySelector('.fixed.inset-x-0.bottom-0');
+
+          if (!existingBanner) {
+            console.log('🍪 React cookie banner not detected, showing fallback');
+            showFallbackCookieBanner();
+          }
+        }
+      }, 3000); // Wait 3 seconds for React to hydrate
+
+      function showFallbackCookieBanner() {
+        const banner = document.createElement('div');
+        banner.className = 'fixed inset-x-0 bottom-0 z-50 bg-white dark:bg-gray-900 border-t border-gray-200 shadow-lg p-4';
+        banner.innerHTML = `
+          <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+            <div class="flex-1">
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                🍪 We use cookies to improve your experience and analytics.
+                <a href="/privacy" class="text-blue-600 underline">Learn more</a>
+              </p>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="handleFallbackConsent(false)"
+                      class="px-4 py-2 text-sm bg-gray-200 hover:bg-gray-300 rounded">
+                Necessary only
+              </button>
+              <button onclick="handleFallbackConsent(true)"
+                      class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded">
+                Accept all
+              </button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(banner);
+      }
+
+      window.handleFallbackConsent = function(acceptAll) {
+        const consent = {
+          version: '1.0',
+          state: {
+            necessary: true,
+            analytics: acceptAll,
+            marketing: acceptAll,
+            timestamp: Date.now()
+          }
+        };
+
+        localStorage.setItem('freeformathub_consent', JSON.stringify(consent));
+
+        // Update Google consent mode
+        if (window.gtag) {
+          window.gtag('consent', 'update', {
+            'analytics_storage': acceptAll ? 'granted' : 'denied',
+            'ad_storage': acceptAll ? 'granted' : 'denied',
+            'ad_user_data': acceptAll ? 'granted' : 'denied',
+            'ad_personalization': acceptAll ? 'granted' : 'denied'
+          });
+
+          if (acceptAll) {
+            window.gtag('event', 'page_view', {
+              send_to: 'G-34Z7YVSEZ2',
+              page_title: document.title,
+              page_location: window.location.href
+            });
+          }
+        }
+
+        // Remove banner
+        const banner = document.querySelector('.fixed.inset-x-0.bottom-0');
+        if (banner && banner.innerHTML.includes('We use cookies')) {
+          banner.remove();
+        }
+
+        console.log('✅ Fallback consent saved:', acceptAll ? 'All accepted' : 'Necessary only');
+      };
+    </script>
+
     <!-- Initialize app -->
     <script>
       import('../lib/init').then(({ initializeApp }) => {
