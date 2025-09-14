@@ -3,6 +3,7 @@ import '../styles/global.css';
 import ToolSearch from '../components/ui/ToolSearch.tsx';
 import CookieConsent from '../components/CookieConsent.tsx';
 import AdPlacement from '../components/ads/AdPlacement.astro';
+import { LogoLink } from '../components/ui/Logo.tsx';
 
 export interface Props {
   title: string;
@@ -55,6 +56,10 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -218,9 +223,7 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
           <div class="flex justify-between items-center h-16">
             <!-- Logo -->
             <div class="flex items-center">
-              <a href="/" class="text-xl font-bold text-blue-600 dark:text-blue-400">
-                FreeFormatHub
-              </a>
+              <LogoLink href="/" size="small" client:load />
             </div>
             
             <!-- Search -->
