@@ -119,17 +119,17 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-34Z7YVSEZ2';
 
     <!-- Google tag (gtag.js) -->
     <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}></script>
-    <script>
+    <script define:vars={{GA_ID}}>
       // GA ID injected at build time
-      const GA_ID = {JSON.stringify(GA_ID)};
+      const GA_ID_VALUE = GA_ID;
       // Expose for module scripts
-      window.GA_ID = GA_ID;
+      window.GA_ID = GA_ID_VALUE;
       // Initialize GA4 configuration (consent-aware)
       function initializeGA4() {
         console.log('🔧 Initializing GA4 configuration...');
 
         gtag('js', new Date());
-        gtag('config', GA_ID, {
+        gtag('config', GA_ID_VALUE, {
           // Transport method for better reliability
           transport_type: 'beacon',
           // Enable debug mode for development
@@ -161,7 +161,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-34Z7YVSEZ2';
         }
 
         gtag('event', 'page_view', {
-          send_to: GA_ID,
+          send_to: GA_ID_VALUE,
           page_title: document.title,
           page_location: window.location.href,
           page_path: window.location.pathname,
@@ -212,7 +212,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-34Z7YVSEZ2';
         function trackEngagement() {
           if (typeof gtag === 'function') {
             gtag('event', 'user_engagement', {
-              send_to: GA_ID,
+              send_to: GA_ID_VALUE,
               engagement_time_msec: 15000
             });
           }
@@ -229,7 +229,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-34Z7YVSEZ2';
           if (currentScroll > scrollDepth && currentScroll % 25 === 0 && typeof gtag === 'function') {
             scrollDepth = currentScroll;
             gtag('event', 'scroll', {
-              send_to: GA_ID,
+              send_to: GA_ID_VALUE,
               percent_scrolled: scrollDepth
             });
           }
@@ -289,7 +289,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-34Z7YVSEZ2';
           if (navigation) {
             setTimeout(() => {
               window.gtag('event', 'performance', {
-                send_to: GA_ID,
+                send_to: GA_ID_VALUE,
                 metric_name: 'page_load_time',
                 metric_value: navigation.loadEventEnd - navigation.fetchStart,
                 custom_parameter_1: (navigator?.connection?.effectiveType || 'unknown')
@@ -300,7 +300,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-34Z7YVSEZ2';
 
         // Track device and viewport info
         window.gtag('event', 'device_info', {
-          send_to: GA_ID,
+          send_to: GA_ID_VALUE,
           screen_resolution: `${screen.width}x${screen.height}`,
           viewport_size: `${window.innerWidth}x${window.innerHeight}`,
           color_depth: screen.colorDepth,
@@ -592,7 +592,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-34Z7YVSEZ2';
 
           if (acceptAll) {
             window.gtag('event', 'page_view', {
-              send_to: GA_ID,
+              send_to: GA_ID_VALUE,
               page_title: document.title,
               page_location: window.location.href
             });
