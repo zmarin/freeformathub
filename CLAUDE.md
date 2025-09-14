@@ -23,13 +23,21 @@ npm run dev          # Start dev server at localhost:4321
 npm run build        # Build static site to ./dist/
 npm run preview      # Preview production build
 
-# Testing
-npm run test         # Run unit tests with Vitest
-npm run test:ui      # Run tests with UI
-npm run test:run     # Run tests once (CI mode)
+# Type-checking and Linting
+npx astro check      # TypeScript type-checking for Astro files
+npx tsc --noEmit     # TypeScript compilation check only
+npx eslint .         # Run ESLint linting
+npx prettier --write . # Format code with Prettier
 
-# Production Deployment
-sudo ./scripts/production-deploy.sh yourdomain.com email@domain.com
+# Testing
+npm run test         # Run unit tests with Vitest (watch mode)
+npm run test:ui      # Run tests with Vitest UI
+npm run test:run     # Run tests once (CI mode)
+npx vitest run --reporter=verbose src/test/specific-test.test.ts # Single test file
+
+# Deployment (Coolify Auto-Deploy)
+git push origin master  # Auto-triggers Coolify deployment
+# Manual deployment scripts (legacy):
 sudo ./scripts/deploy.sh                    # Local deployment on port 4600
 sudo ./scripts/force-deploy.sh             # Replace existing deployment
 ```
@@ -57,7 +65,8 @@ Every tool follows a consistent 4-file pattern:
 **ToolShell.astro**: Universal wrapper providing:
 - SEO optimization (meta tags, structured data, OpenGraph)
 - Consistent page layout and navigation
-- Analytics and performance tracking
+- Google Analytics (GA4) and AdSense integration
+- Cookie consent management
 
 **UI Components** (`src/components/ui/`):
 - `InputPanel.tsx`: Syntax highlighting, line numbers, validation
@@ -102,14 +111,30 @@ The tool registry automatically handles:
 
 ## Deployment Architecture
 
-**Production**: Nginx + SSL with Let's Encrypt
-- Files served from `/var/www/freeformathub/`
-- SSL certificates managed by Certbot
-- HTTP→HTTPS redirects automatically configured
+**Production (Coolify)**:
+- Auto-deploy from GitHub pushes to master branch
+- Serves static files from Astro build (`./dist/`)
+- Environment variables managed via Coolify UI
+- SSL certificates automatically managed
+- Domain: `https://freeformathub.com`
 
-**Development**: Local Nginx on port 4600
-- Bypasses domain requirements for local testing
-- Production-like environment for deployment testing
+**Environment Variables (Required in Coolify)**:
+```
+NODE_ENV=production
+PUBLIC_GA_MEASUREMENT_ID=G-34Z7YVSEZ2
+PUBLIC_ADSENSE_CLIENT_ID=ca-pub-5745115058807126
+PUBLIC_HEADER_AD_SLOT=1234567890
+PUBLIC_SIDEBAR_AD_SLOT=2345678901
+PUBLIC_CONTENT_AD_SLOT=3456789012
+PUBLIC_FOOTER_AD_SLOT=4567890123
+PUBLIC_ADS_TEST_MODE=false
+PUBLIC_ADSENSE_VERIFICATION=your-verification-code-here
+```
+
+**Development**: Astro dev server
+- `npm run dev` starts server at `localhost:4321`
+- Uses `.env` file for local environment variables
+- Hot reload and TypeScript checking enabled
 
 ## Testing Strategy
 
@@ -119,14 +144,44 @@ The tool registry automatically handles:
 - **Test environment**: jsdom with Vitest globals and UI mode available
 - **Test commands**: `npm run test` (watch), `npm run test:ui` (UI), `npm run test:run` (CI)
 
+## SEO & Analytics Architecture
+
+**Google Analytics (GA4)**:
+- Consent-based tracking via Google Consent Mode v2
+- Cookie consent managed by `CookieConsent.tsx` component
+- Analytics only loads after user consent
+- Measurement ID: `G-34Z7YVSEZ2`
+
+**Google AdSense Integration**:
+- Publisher ID: `ca-pub-5745115058807126`
+- Site verification via `google-site-verification` meta tag
+- `ads.txt` file at domain root for publisher verification
+- Consent-aware ad loading (loads only after user consent)
+- Ad placements: Header, Sidebar, Content, Footer
+
+**SEO Optimization**:
+- Structured data (JSON-LD) for each tool page
+- OpenGraph and Twitter Card meta tags
+- Canonical URLs with normalized paths
+- Tool-specific meta descriptions and keywords
+- Sitemap generation through Astro
+- robots.txt configuration
+
+**Cookie Consent Flow**:
+1. Default state: All tracking denied (GDPR compliant)
+2. User sees consent banner (`CookieConsent.tsx`)
+3. Upon consent: GA4 and AdSense scripts load dynamically
+4. Consent preferences stored in localStorage
+
 ## Storage & Privacy
 
-- **No server storage**: All data processing client-side only
-- **localStorage**: User preferences, recent tools, basic history
+- **Client-side processing**: All tool operations happen in browser
+- **localStorage**: User preferences, consent choices, tool history
 - **IndexedDB**: Large tool results and extended history
-- **Privacy-first**: No analytics tracking, no data collection
+- **Conditional tracking**: Analytics only with explicit user consent
+- **No server storage**: No user data sent to servers
 
-The architecture prioritizes tool discoverability through SEO while maintaining fast, privacy-focused client-side processing.
+The architecture balances tool discoverability through SEO with privacy-conscious, consent-based analytics.
 
 ## Current Tool Count & Distribution
 
@@ -185,4 +240,29 @@ Project-specific notes:
 - Always use production builds (per global CLAUDE.md instructions)
 ```
 
-- follow instructions in Claude folder files design.md, requierements.md and follow asks and update them in tasks.md
+## Additional Architecture Components
+
+**Dynamic Component Loading**:
+- Component map (`src/lib/component-map.ts`) handles production imports
+- Fallback loading strategies for dynamic components
+- Tree-shaking optimized component registration
+
+**AdSense Setup**:
+- Follow `ADS-SETUP.md` for complete AdSense configuration
+- ads.txt file must be accessible at domain root
+- Environment variables required for ad placement IDs
+
+**Quality Assurance**:
+- Pre-commit hooks with Husky for code quality
+- ESLint for code linting with TypeScript support
+- Prettier for consistent code formatting
+- Type-checking required before deployment
+
+## Development Guidelines
+
+- Always be aware of Google tags and SEO optimization
+- Follow instructions in Claude folder files (design.md, requirements.md)
+- Update tasks.md with any development progress
+- Ensure ads.txt accessibility for AdSense verification
+- Test consent flow and analytics integration locally
+- keep in mind @ADS-SETUP.md

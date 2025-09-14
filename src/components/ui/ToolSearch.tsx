@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { searchTools, getAllTools } from '../../lib/tools/registry';
-import type { Tool } from '../../types';
+import { searchClientTools, getAllClientTools, type ClientTool } from '../../lib/tools/client-registry';
 
 interface ToolSearchProps {
   placeholder?: string;
@@ -15,17 +14,17 @@ export default function ToolSearch({
 }: ToolSearchProps) {
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
-  const [results, setResults] = useState<Tool[]>([]);
+  const [results, setResults] = useState<ClientTool[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Get popular tools to show when no search query
-  const popularTools = getAllTools().slice(0, 6);
+  const popularTools = getAllClientTools().slice(0, 6);
 
   useEffect(() => {
     if (query.trim()) {
-      const searchResults = searchTools(query);
+      const searchResults = searchClientTools(query);
       setResults(searchResults.slice(0, 8)); // Show max 8 results
     } else {
       setResults(popularTools);
@@ -59,7 +58,7 @@ export default function ToolSearch({
       case 'Enter':
         e.preventDefault();
         if (results[selectedIndex]) {
-          window.location.href = `/tools/${results[selectedIndex].slug}`;
+          window.location.href = `/${results[selectedIndex].category.id}/${results[selectedIndex].slug}`;
         }
         break;
       case 'Escape':
@@ -78,8 +77,8 @@ export default function ToolSearch({
     setIsOpen(true);
   };
 
-  const handleToolClick = (tool: Tool) => {
-    window.location.href = `/tools/${tool.slug}`;
+  const handleToolClick = (tool: ClientTool) => {
+    window.location.href = `/${tool.category.id}/${tool.slug}`;
   };
 
   const inputClasses = size === 'large' 

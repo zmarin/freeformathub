@@ -8,6 +8,9 @@ import { JsBeautifier } from '../components/tools/formatters/JsBeautifier';
 // Crypto components
 import { HashGenerator } from '../components/tools/crypto/HashGenerator';
 
+// Network components
+import { IpSubnetCalculator } from '../components/tools/network/IpSubnetCalculator';
+
 // Add more components as needed - this is the extensible pattern
 // import { XmlFormatter } from '../components/tools/formatters/XmlFormatter';
 // import { YamlFormatter } from '../components/tools/formatters/YamlFormatter';
@@ -20,10 +23,13 @@ export const TOOL_COMPONENTS: Record<string, ToolComponent> = {
   'json-formatter': JsonFormatter,
   'css-beautifier': CssBeautifier,
   'js-beautifier': JsBeautifier,
-  
+
   // Crypto
   'hash-generator': HashGenerator,
-  
+
+  // Network
+  'ip-subnet-calculator': IpSubnetCalculator,
+
   // Add more components as they're needed:
   // 'xml-formatter': XmlFormatter,
   // 'yaml-formatter': YamlFormatter,
