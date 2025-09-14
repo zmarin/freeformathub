@@ -143,6 +143,7 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
   const [autoFormat, setAutoFormat] = useState(true);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [dragActive, setDragActive] = useState(false);
+  const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
 
   const { addToHistory, getConfig: getSavedConfig, updateConfig: updateSavedConfig } = useToolStore();
 
@@ -299,46 +300,96 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
     handleConfigChange(newConfig);
   };
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyboard = (e: KeyboardEvent) => {
+      // Don't trigger shortcuts when typing in input fields
+      if (e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLInputElement) {
+        return;
+      }
+
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key) {
+          case 'Enter':
+            e.preventDefault();
+            processJson();
+            break;
+          case 'm':
+            e.preventDefault();
+            handleMinify();
+            break;
+          case 's':
+            if (e.shiftKey) {
+              e.preventDefault();
+              handleSortKeys();
+            }
+            break;
+          case 'k':
+            e.preventDefault();
+            setShowKeyboardHelp(!showKeyboardHelp);
+            break;
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyboard);
+    return () => document.removeEventListener('keydown', handleKeyboard);
+  }, [processJson, handleMinify, handleSortKeys, showKeyboardHelp]);
+
   return (
     <div className={`flex flex-col ${className}`}>
-      {/* Tool Header with Quick Actions */}
-      <div className="flex flex-col sm:flex-row gap-4 p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-        {/* Quick Actions */}
+      {/* Sticky Tool Header with Quick Actions */}
+      <div className="sticky top-0 z-10 flex flex-col sm:flex-row gap-4 p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+        {/* Quick Actions with Mobile-First Design */}
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={handleBeautify}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+            className="px-4 py-3 sm:py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-medium rounded-lg transition-colors touch-manipulation min-h-[44px] sm:min-h-auto"
             title="Format JSON with 2-space indentation"
           >
-            ✨ Beautify
+            <span className="flex items-center gap-1">
+              ✨ <span className="hidden sm:inline">Beautify</span><span className="sm:hidden">Format</span>
+            </span>
           </button>
           <button
             onClick={handleMinify}
-            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors"
-            title="Minimize JSON to single line"
+            className="px-4 py-3 sm:py-2 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white text-sm font-medium rounded-lg transition-colors touch-manipulation min-h-[44px] sm:min-h-auto"
+            title="Minimize JSON to single line (Ctrl+M)"
           >
-            🗜️ Minify
+            <span className="flex items-center gap-1">
+              🗜️ <span className="hidden sm:inline">Minify</span><span className="sm:hidden">Min</span>
+            </span>
           </button>
           <button
             onClick={handleSortKeys}
-            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"
-            title="Sort object keys alphabetically"
+            className="px-4 py-3 sm:py-2 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white text-sm font-medium rounded-lg transition-colors touch-manipulation min-h-[44px] sm:min-h-auto"
+            title="Sort object keys alphabetically (Ctrl+Shift+S)"
           >
-            🔤 Sort Keys
+            <span className="flex items-center gap-1">
+              🔤 <span className="hidden sm:inline">Sort</span>
+            </span>
           </button>
           {!autoFormat && (
             <button
               onClick={() => processJson()}
               disabled={!input.trim() || isLoading}
-              className="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 text-white text-sm font-medium rounded-lg transition-colors"
+              className="px-4 py-3 sm:py-2 bg-orange-600 hover:bg-orange-700 active:bg-orange-800 disabled:bg-gray-400 text-white text-sm font-medium rounded-lg transition-colors touch-manipulation min-h-[44px] sm:min-h-auto"
+              title="Process JSON (Ctrl+Enter)"
             >
-              {isLoading ? '⏳' : '⚡'} Format
+              {isLoading ? '⏳' : '⚡'} <span className="hidden sm:inline">Format</span>
             </button>
           )}
+          <button
+            onClick={() => setShowKeyboardHelp(!showKeyboardHelp)}
+            className="hidden sm:flex px-3 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm rounded-lg transition-colors items-center"
+            title="Keyboard shortcuts (Ctrl+K)"
+          >
+            ⌨️
+          </button>
         </div>
 
-        {/* Auto-format toggle */}
-        <div className="flex items-center gap-2 ml-auto">
+        {/* Settings and Auto-format */}
+        <div className="flex items-center gap-4 ml-auto">
           <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
             <input
               type="checkbox"
@@ -351,15 +402,57 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex flex-col lg:flex-row flex-1 min-h-[600px]">
+      {/* Keyboard Help Modal */}
+      {showKeyboardHelp && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowKeyboardHelp(false)}>
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Keyboard Shortcuts</h3>
+              <button
+                onClick={() => setShowKeyboardHelp(false)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Format JSON</span>
+                <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">Ctrl+Enter</kbd>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Minify</span>
+                <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">Ctrl+M</kbd>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Sort Keys</span>
+                <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">Ctrl+Shift+S</kbd>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Show/Hide Help</span>
+                <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">Ctrl+K</kbd>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Content - Mobile-Optimized Interface */}
+      <div className="flex flex-col md:flex-row flex-1 min-h-[600px] md:min-h-[700px]">
         {/* Input Section */}
-        <div className="flex-1 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700">
+        <div className="flex-1 flex flex-col border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-700">
           {/* Input Header */}
           <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-              JSON Input
-            </h3>
+            <div className="flex items-center gap-3">
+              <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                JSON Input
+              </h3>
+              {input && (
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  {input.length.toLocaleString()} characters
+                </span>
+              )}
+            </div>
             <div className="flex items-center gap-2">
               <label className="cursor-pointer text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded border transition-colors">
                 📁 Upload
@@ -393,8 +486,13 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Paste your JSON here or drag & drop a file..."
-              className="w-full h-full p-4 resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-mono text-sm border-none focus:outline-none focus:ring-0"
+              className="w-full h-full min-h-[300px] md:min-h-[400px] p-4 resize-y bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-mono text-sm md:text-base border-none focus:outline-none focus:ring-0 touch-manipulation"
               spellCheck={false}
+              style={{
+                lineHeight: '1.5',
+                WebkitTouchCallout: 'none',
+                WebkitUserSelect: 'text'
+              }}
             />
             {dragActive && (
               <div className="absolute inset-0 flex items-center justify-center bg-blue-50/80 dark:bg-blue-900/40 backdrop-blur-sm">
@@ -405,34 +503,55 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
             )}
           </div>
 
-          {/* Example buttons */}
-          <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex flex-wrap gap-2">
-              <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">Examples:</span>
-              {EXAMPLES.map((example, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setInput(example.value)}
-                  className="text-xs px-2 py-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-colors"
-                  title={example.title}
-                >
-                  {example.title}
-                </button>
-              ))}
+          {/* Collapsible Examples */}
+          <details className="group bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+            <summary className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+              <span className="text-xs font-medium text-gray-700 dark:text-gray-300">Quick Examples</span>
+              <svg className="w-4 h-4 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <div className="px-3 pb-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {EXAMPLES.map((example, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setInput(example.value)}
+                    className="text-left p-3 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg transition-colors"
+                    title={`Click to try: ${example.title}`}
+                  >
+                    <div className="text-xs font-medium text-gray-900 dark:text-gray-100 mb-1">
+                      {example.title}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 font-mono truncate">
+                      {example.value.substring(0, 50)}...
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          </details>
         </div>
 
         {/* Output Section */}
         <div className="flex-1 flex flex-col">
           {/* Output Header */}
           <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-              Formatted JSON
+            <div className="flex items-center gap-3">
+              <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                Formatted JSON
+              </h3>
               {isLoading && <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">Processing...</span>}
-              {!error && output && <span className="ml-2 text-xs text-green-600 dark:text-green-400">✓ Valid</span>}
-              {error && <span className="ml-2 text-xs text-red-600 dark:text-red-400">✗ Invalid</span>}
-            </h3>
+              {!error && output && (
+                <>
+                  <span className="text-xs text-green-600 dark:text-green-400">✓ Valid</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {output.length.toLocaleString()} characters
+                  </span>
+                </>
+              )}
+              {error && <span className="text-xs text-red-600 dark:text-red-400">✗ Invalid</span>}
+            </div>
             <div className="flex items-center gap-2">
               {output && (
                 <>
@@ -474,30 +593,54 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
                   value={output}
                   readOnly
                   placeholder="Formatted JSON will appear here..."
-                  className="flex-1 p-4 resize-none bg-transparent text-gray-900 dark:text-gray-100 font-mono text-sm border-none focus:outline-none"
+                  className="flex-1 min-h-[300px] md:min-h-[400px] p-4 resize-y bg-transparent text-gray-900 dark:text-gray-100 font-mono text-sm md:text-base border-none focus:outline-none touch-manipulation"
                   spellCheck={false}
+                  style={{
+                    lineHeight: '1.5',
+                    WebkitTouchCallout: 'none',
+                    WebkitUserSelect: 'text'
+                  }}
                 />
               </div>
             )}
           </div>
 
-          {/* Simplified metadata */}
+          {/* Enhanced metadata */}
           {metadata && !error && output && (
-            <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-              <div className="flex flex-wrap gap-4 text-xs text-gray-600 dark:text-gray-400">
+            <div className="p-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
                 {metadata.type && (
-                  <span><strong>Type:</strong> {metadata.type}</span>
+                  <div className="text-center">
+                    <div className="font-medium text-gray-900 dark:text-gray-100">Type</div>
+                    <div className="text-gray-600 dark:text-gray-400 capitalize">{metadata.type}</div>
+                  </div>
                 )}
                 {typeof metadata.formattedSize === 'number' && (
-                  <span><strong>Size:</strong> {metadata.formattedSize} chars</span>
-                )}
-                {typeof metadata.duplicateCount === 'number' && metadata.duplicateCount > 0 && (
-                  <span className="text-amber-600 dark:text-amber-400">
-                    <strong>⚠️ Duplicate keys:</strong> {metadata.duplicateCount}
-                  </span>
+                  <div className="text-center">
+                    <div className="font-medium text-gray-900 dark:text-gray-100">Size</div>
+                    <div className="text-gray-600 dark:text-gray-400">{metadata.formattedSize.toLocaleString()} chars</div>
+                  </div>
                 )}
                 {typeof metadata.processingTimeMs === 'number' && (
-                  <span><strong>Time:</strong> {Math.round(metadata.processingTimeMs)}ms</span>
+                  <div className="text-center">
+                    <div className="font-medium text-gray-900 dark:text-gray-100">Processing</div>
+                    <div className="text-gray-600 dark:text-gray-400">{Math.round(metadata.processingTimeMs)}ms</div>
+                  </div>
+                )}
+                {typeof metadata.duplicateCount === 'number' && metadata.duplicateCount > 0 && (
+                  <div className="text-center">
+                    <div className="font-medium text-amber-600 dark:text-amber-400">⚠️ Duplicates</div>
+                    <div className="text-amber-600 dark:text-amber-400">{metadata.duplicateCount} keys</div>
+                  </div>
+                )}
+                {/* Memory usage indicator for large files */}
+                {input.length > 100000 && (
+                  <div className="text-center">
+                    <div className="font-medium text-orange-600 dark:text-orange-400">Memory</div>
+                    <div className="text-orange-600 dark:text-orange-400">
+                      {input.length > 1000000 ? 'High' : 'Moderate'}
+                    </div>
+                  </div>
                 )}
               </div>
             </div>

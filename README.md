@@ -1,10 +1,10 @@
 # FreeFormatHub
 
-> Privacy-first developer tools that work entirely in your browser
+> Privacy-first business and developer tools that work entirely in your browser
 
 ## 🚀 Overview
 
-FreeFormatHub is a comprehensive collection of free online developer tools designed for formatting, converting, encoding, and validating data. Built with privacy in mind, all processing happens client-side with no data ever leaving your browser.
+FreeFormatHub is a comprehensive collection of free online business and developer tools designed for formatting, converting, encoding, and validating data. Built with privacy in mind, all processing happens client-side with no data ever leaving your browser.
 
 ## ✨ Features
 

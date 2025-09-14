@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-FreeFormatHub is a privacy-first developer tools platform built with Astro + React Islands. It currently provides **101 comprehensive developer tools** for formatting, converting, encoding, and validating data. All processing happens client-side with no data leaving the browser, ensuring complete privacy and offline functionality.
+FreeFormatHub is a privacy-first business and developer tools platform built with Astro + React Islands. It currently provides **101 comprehensive business and developer tools** for formatting, converting, encoding, and validating data. All processing happens client-side with no data leaving the browser, ensuring complete privacy and offline functionality.
 
 **Tech Stack:**
 - **Framework**: Astro (SSG) with React Islands for interactive components

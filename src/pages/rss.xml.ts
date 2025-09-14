@@ -33,7 +33,7 @@ export const GET: APIRoute = ({ site }) => {
   <channel>
     <title>FreeFormatHub Updates</title>
     <link>${base}</link>
-    <description>New and updated developer tools on FreeFormatHub</description>
+    <description>New and updated business and developer tools on FreeFormatHub</description>
     <language>en-us</language>
 ${items}
   </channel>

@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
-import { searchToolsAdvanced } from '../../lib/routing/category-routes';
+import { getAllTools } from '../../lib/tools/registry';
+import { searchToolsAdvanced } from '../../lib/search/search-utils';
 
 export const GET: APIRoute = ({ url }) => {
   const searchParams = url.searchParams;
@@ -24,32 +25,48 @@ export const GET: APIRoute = ({ url }) => {
   }
 
   try {
-    const results = searchToolsAdvanced(query, { category });
-    const limitedResults = results.slice(0, limit);
+    // Import all tools to ensure registry is populated
+    const allTools = getAllTools();
 
-    // Transform results for API response
-    const apiResults = limitedResults.map(tool => ({
-      id: tool.id,
-      name: tool.name,
-      description: tool.description,
-      slug: tool.slug,
+    // Use new advanced search with scoring
+    const searchResults = searchToolsAdvanced(allTools, query, {
+      maxResults: limit,
+      category
+    });
+
+    // Transform results for API response with enhanced data
+    const apiResults = searchResults.map(result => ({
+      id: result.tool.id,
+      name: result.tool.name,
+      description: result.tool.description,
+      slug: result.tool.slug,
       category: {
-        id: tool.category.id,
-        name: tool.category.name,
-        color: tool.category.color
+        id: result.tool.category.id,
+        name: result.tool.category.name,
+        color: result.tool.category.color
       },
-      icon: tool.icon,
-      keywords: tool.keywords,
-      url: `/${tool.category.id}/${tool.slug}`
+      icon: result.tool.icon,
+      keywords: result.tool.keywords,
+      url: `/${result.tool.category.id}/${result.tool.slug}`,
+      // Enhanced search metadata
+      score: result.score,
+      matchType: result.matchType,
+      matchedTerms: result.matchedTerms
     }));
 
     return new Response(JSON.stringify({
       success: true,
       query,
       category,
-      total: results.length,
+      total: searchResults.length,
       returned: apiResults.length,
-      results: apiResults
+      results: apiResults,
+      // Additional metadata
+      searchMetadata: {
+        hasResults: apiResults.length > 0,
+        bestMatch: apiResults[0] || null,
+        avgScore: apiResults.length > 0 ? apiResults.reduce((sum, r) => sum + r.score, 0) / apiResults.length : 0
+      }
     }), {
       status: 200,
       headers: {

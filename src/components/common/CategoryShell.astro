@@ -22,7 +22,7 @@ const jsonLd = {
   "mainEntity": {
     "@type": "ItemList",
     "name": `${category.name} Tools`,
-    "description": `Free online ${category.name.toLowerCase()} tools for developers`,
+    "description": `Free online ${category.name.toLowerCase()} tools for business and developers`,
     "numberOfItems": safeTools.length,
     "itemListElement": safeTools.map((tool, index) => ({
       "@type": "SoftwareApplication",
@@ -30,7 +30,7 @@ const jsonLd = {
       "name": tool.name,
       "description": tool.description,
       "url": getToolUrl(tool),
-      "applicationCategory": "DeveloperApplication",
+      "applicationCategory": "BusinessApplication",
       "isAccessibleForFree": true
     }))
   },

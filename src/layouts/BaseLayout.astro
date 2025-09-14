@@ -119,14 +119,81 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
       // Initialize GA4 immediately when gtag.js loads
       gtag('js', new Date());
       gtag('config', 'G-34Z7YVSEZ2', {
-        // Enable debug mode for troubleshooting
-        debug_mode: false,
+        // Enable debug mode for development (set to false for production)
+        debug_mode: location.hostname === 'localhost' || location.hostname === '127.0.0.1',
         // Send page views automatically
-        send_page_view: true
+        send_page_view: true,
+        // Enhanced measurement for better tracking
+        enhanced_measurement: true,
+        // Custom parameters for better segmentation
+        custom_map: {
+          custom_parameter_1: 'match_type',
+          custom_parameter_2: 'match_score'
+        },
+        // Real-time reporting
+        allow_google_signals: true,
+        allow_ad_personalization_signals: true
+      });
+
+      // Send explicit page view event for better real-time tracking
+      gtag('event', 'page_view', {
+        page_title: document.title,
+        page_location: window.location.href,
+        page_path: window.location.pathname
+      });
+
+      // Track page engagement
+      let engagementTimer;
+      function trackEngagement() {
+        gtag('event', 'user_engagement', {
+          engagement_time_msec: 1000
+        });
+        clearTimeout(engagementTimer);
+        engagementTimer = setTimeout(trackEngagement, 15000); // Track every 15 seconds
+      }
+
+      // Start engagement tracking after 1 second
+      setTimeout(() => {
+        trackEngagement();
+        console.log('GA4 engagement tracking started');
+      }, 1000);
+
+      // Track scroll depth
+      let scrollDepth = 0;
+      window.addEventListener('scroll', () => {
+        const currentScroll = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+        if (currentScroll > scrollDepth && currentScroll % 25 === 0) {
+          scrollDepth = currentScroll;
+          gtag('event', 'scroll', {
+            percent_scrolled: scrollDepth
+          });
+        }
       });
 
       // Debug logging
-      console.log('GA4 initialized with tracking ID: G-34Z7YVSEZ2');
+      console.log('GA4 initialized with enhanced tracking for real-time reports');
+
+      // Initialize enhanced tracking after a brief delay
+      setTimeout(() => {
+        if (typeof window !== 'undefined' && window.initEnhancedTracking) {
+          window.initEnhancedTracking();
+        }
+      }, 2000);
+    </script>
+
+    <!-- Enhanced Analytics Tracking -->
+    <script type="module">
+      import { initEnhancedTracking } from '../lib/analytics/tracking.js';
+
+      // Make tracking available globally
+      window.initEnhancedTracking = initEnhancedTracking;
+
+      // Initialize when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initEnhancedTracking);
+      } else {
+        initEnhancedTracking();
+      }
     </script>
 
     <!-- Google AdSense Auto ads - Consent-aware loading -->
@@ -319,7 +386,7 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
           </div>
           <div class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
             <p class="text-sm text-gray-600 dark:text-gray-400 text-center">
-              © 2024 FreeFormatHub. All rights reserved. Privacy-first developer tools.
+              © 2024 FreeFormatHub. All rights reserved. | Z MARIN, obrt za usluge, Kijevska 5, Split, Croatia, EU, MBS 98472739
             </p>
           </div>
         </div>

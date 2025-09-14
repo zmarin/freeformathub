@@ -18,7 +18,7 @@ const jsonLd = {
   "@type": "SoftwareApplication",
   "name": tool.name,
   "description": tool.description,
-  "applicationCategory": "DeveloperApplication",
+  "applicationCategory": "BusinessApplication",
   "operatingSystem": "Any",
   "permissions": "no-storage",
   "isAccessibleForFree": true,
@@ -95,42 +95,15 @@ const jsonLd = {
       </nav>
     </header>
 
-    <!-- Tool Interface with Sidebar Layout -->
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-      <!-- Main Tool Interface -->
-      <div class="lg:col-span-3">
-        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-          <slot />
-        </div>
-      </div>
+    <!-- Header Banner Ad -->
+    <div class="mb-8">
+      <AdPlacement type="header" lazy={false} />
+    </div>
 
-      <!-- Sidebar with Ads -->
-      <div class="lg:col-span-1 space-y-6">
-        <!-- Sidebar Ad 1 -->
-        <AdPlacement type="sidebar" lazy={true} />
-
-
-        <!-- Sidebar Ad 2 -->
-        <AdPlacement type="sidebar" lazy={true} />
-
-        <!-- Quick Links -->
-        <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-          <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
-            Related Tools
-          </h3>
-          <div class="space-y-2">
-            {tool.relatedTools?.slice(0, 3).map(relatedToolId => {
-              const t = getTool(relatedToolId);
-              const href = t ? getToolUrl(t) : '/search';
-              const name = t?.name || relatedToolId.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
-              return (
-                <a href={href} class="block text-xs text-blue-600 hover:text-blue-500 hover:underline">
-                  {name}
-                </a>
-              );
-            })}
-          </div>
-        </div>
+    <!-- Full Width Tool Interface -->
+    <div class="w-full">
+      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+        <slot />
       </div>
     </div>
 
@@ -232,46 +205,60 @@ const jsonLd = {
       <AdPlacement type="content" lazy={true} />
     </div>
 
-    <!-- FAQ Section -->
+    <!-- FAQ Section - Collapsible -->
     {(tool.faq?.length ?? 0) > 0 && (
       <section class="mt-12">
-        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6">
-          Frequently Asked Questions
-        </h2>
-        <div class="space-y-6">
-          {tool.faq?.map((faqItem, index) => (
-            <details class="group">
-              <summary class="flex justify-between items-center cursor-pointer p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                <span class="font-medium text-gray-900 dark:text-gray-100">
-                  {faqItem.question}
-                </span>
-                <svg class="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              </summary>
-              <div class="p-4 text-gray-600 dark:text-gray-400">
-                {faqItem.answer}
-              </div>
-            </details>
-          ))}
-        </div>
+        <details class="group">
+          <summary class="flex items-center justify-between cursor-pointer mb-6">
+            <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+              Frequently Asked Questions
+            </h2>
+            <svg class="w-6 h-6 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div class="space-y-4">
+            {tool.faq?.map((faqItem, index) => (
+              <details class="group">
+                <summary class="flex justify-between items-center cursor-pointer p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                  <span class="font-medium text-gray-900 dark:text-gray-100">
+                    {faqItem.question}
+                  </span>
+                  <svg class="w-4 h-4 text-gray-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div class="p-4 text-gray-600 dark:text-gray-400">
+                  {faqItem.answer}
+                </div>
+              </details>
+            ))}
+          </div>
+        </details>
       </section>
     )}
 
-    <!-- Related Tools -->
+    <!-- Related Tools - Horizontal Carousel -->
     {(tool.relatedTools?.length ?? 0) > 0 && (
       <section class="mt-12">
         <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6">
           Related Tools
         </h2>
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
           {tool.relatedTools?.map(relatedToolId => {
             const t = getTool(relatedToolId);
             const href = t ? getToolUrl(t) : '/search';
             const name = t?.name || relatedToolId.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+            const description = t?.description || 'Related tool';
             return (
-              <a href={href} class="block p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-sm transition-all">
-                <div class="font-medium text-gray-900 dark:text-gray-100">{name}</div>
+              <a href={href} class="flex-none w-64 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-sm transition-all">
+                <div class="flex items-center mb-2">
+                  <div class={`w-8 h-8 rounded-md bg-${t?.category?.color || 'gray'}-100 dark:bg-${t?.category?.color || 'gray'}-900 flex items-center justify-center mr-3`}>
+                    <span class="text-sm">{t?.icon || '🔧'}</span>
+                  </div>
+                  <div class="font-medium text-gray-900 dark:text-gray-100 text-sm truncate">{name}</div>
+                </div>
+                <p class="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">{description}</p>
               </a>
             );
           })}

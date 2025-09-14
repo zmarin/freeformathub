@@ -20,7 +20,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "SearchResultsPage",
   "name": `Search Results for "${query}" | FreeFormatHub`,
-  "description": `Search results for "${query}" across ${totalTools} developer tools`,
+  "description": `Search results for "${query}" across ${totalTools} business and developer tools`,
   "potentialAction": {
     "@type": "SearchAction",
     "target": {
@@ -33,9 +33,9 @@ const jsonLd = {
 ---
 
 <BaseLayout 
-  title={query ? `Search Results for "${query}" | FreeFormatHub` : 'Search Developer Tools | FreeFormatHub'}
-  description={query ? `Found ${searchResults.length} tools matching "${query}". Search across ${totalTools} free developer tools.` : `Search across ${totalTools} free developer tools for formatting, converting, encoding, and validating data.`}
-  keywords={['search tools', 'find developer tools', 'tool finder', query]}
+  title={query ? `Search Results for "${query}" | FreeFormatHub` : 'Search Business & Developer Tools | FreeFormatHub'}
+  description={query ? `Found ${searchResults.length} tools matching "${query}". Search across ${totalTools} free business and developer tools.` : `Search across ${totalTools} free business and developer tools for formatting, converting, encoding, and validating data.`}
+  keywords={['search tools', 'find business tools', 'find developer tools', 'tool finder', 'productivity tools', query]}
   jsonLd={jsonLd}
   robotsContent="noindex, follow"
 >
@@ -43,7 +43,7 @@ const jsonLd = {
     <!-- Search Header -->
     <header class="mb-8">
       <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-        {query ? `Search Results for "${query}"` : 'Search Developer Tools'}
+        {query ? `Search Results for "${query}"` : 'Search Business & Developer Tools'}
       </h1>
       
       <!-- Search Form -->

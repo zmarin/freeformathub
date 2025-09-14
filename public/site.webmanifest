@@ -1,7 +1,7 @@
 {
   "name": "FreeFormatHub",
   "short_name": "FreeFormatHub",
-  "description": "Free online developer tools for formatting, converting, encoding, and validating data",
+  "description": "Free online business and developer tools for formatting, converting, encoding, and validating data",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#667eea",
@@ -28,7 +28,7 @@
       "sizes": "180x180"
     }
   ],
-  "categories": ["developer", "utilities", "productivity"],
+  "categories": ["business", "developer", "utilities", "productivity"],
   "lang": "en",
   "scope": "/"
 }

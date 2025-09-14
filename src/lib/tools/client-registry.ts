@@ -1,6 +1,7 @@
 import { getAllTools } from './registry';
 // Ensure all tools are registered by importing the index
 import './index';
+import { searchToolsAdvanced, type SearchResult } from '../search/search-utils';
 
 // Simplified tool data for client-side use
 export interface ClientTool {
@@ -15,6 +16,14 @@ export interface ClientTool {
     name: string;
     color: string;
   };
+}
+
+// Enhanced search result with scoring
+export interface ClientSearchResult {
+  tool: ClientTool;
+  score: number;
+  matchType: 'exact' | 'name' | 'keywords' | 'description' | 'category' | 'abbreviation';
+  matchedTerms: string[];
 }
 
 // Generate client-side tool registry from server registry
@@ -88,17 +97,47 @@ const FALLBACK_TOOLS: ClientTool[] = [
   }
 ];
 
-export function searchClientTools(query: string): ClientTool[] {
-  const lowerQuery = query.toLowerCase();
+export function searchClientTools(query: string, maxResults: number = 20): ClientSearchResult[] {
   const tools = CLIENT_TOOLS.length > 0 ? CLIENT_TOOLS : FALLBACK_TOOLS;
-  return tools.filter(tool =>
-    tool.name.toLowerCase().includes(lowerQuery) ||
-    tool.description.toLowerCase().includes(lowerQuery) ||
-    tool.keywords.some(keyword => keyword.toLowerCase().includes(lowerQuery)) ||
-    tool.category.name.toLowerCase().includes(lowerQuery) ||
-    tool.slug.toLowerCase().includes(lowerQuery) ||
-    tool.id.toLowerCase().includes(lowerQuery)
-  );
+
+  // Convert ClientTool to Tool format for search
+  const searchableTools = tools.map(clientTool => ({
+    id: clientTool.id,
+    name: clientTool.name,
+    slug: clientTool.slug,
+    description: clientTool.description,
+    keywords: clientTool.keywords,
+    icon: clientTool.icon,
+    category: clientTool.category,
+    // Add required Tool properties with defaults
+    examples: [],
+    useCases: [],
+    relatedTools: [],
+    faqs: []
+  }));
+
+  const searchResults = searchToolsAdvanced(searchableTools, query, { maxResults });
+
+  // Convert back to ClientSearchResult
+  return searchResults.map(result => ({
+    tool: {
+      id: result.tool.id,
+      name: result.tool.name,
+      slug: result.tool.slug,
+      description: result.tool.description,
+      keywords: result.tool.keywords,
+      icon: result.tool.icon,
+      category: result.tool.category
+    },
+    score: result.score,
+    matchType: result.matchType,
+    matchedTerms: result.matchedTerms
+  }));
+}
+
+// Legacy function for backward compatibility - returns just tools
+export function searchClientToolsLegacy(query: string): ClientTool[] {
+  return searchClientTools(query).map(result => result.tool);
 }
 
 export function getAllClientTools(): ClientTool[] {
