@@ -273,7 +273,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-34Z7YVSEZ2';
     </script>
 
     <!-- Enhanced Analytics Tracking -->
-    <script type="module">
+    <script is:inline>
       // Read GA ID from global (set by classic script)
       const GA_ID = window.GA_ID || 'G-34Z7YVSEZ2';
       // Enhanced tracking initialization - inline to avoid import issues
