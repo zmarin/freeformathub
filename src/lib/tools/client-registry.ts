@@ -89,7 +89,10 @@ export function searchClientTools(query: string): ClientTool[] {
   return tools.filter(tool =>
     tool.name.toLowerCase().includes(lowerQuery) ||
     tool.description.toLowerCase().includes(lowerQuery) ||
-    tool.keywords.some(keyword => keyword.toLowerCase().includes(lowerQuery))
+    tool.keywords.some(keyword => keyword.toLowerCase().includes(lowerQuery)) ||
+    tool.category.name.toLowerCase().includes(lowerQuery) ||
+    tool.slug.toLowerCase().includes(lowerQuery) ||
+    tool.id.toLowerCase().includes(lowerQuery)
   );
 }
 
