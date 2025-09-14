@@ -56,9 +56,6 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     
     <!-- Open Graph / Facebook -->
@@ -119,8 +116,13 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-34Z7YVSEZ2"></script>
     <script>
-      gtag('js', new Date());
-      gtag('config', 'G-34Z7YVSEZ2');
+      // Ensure gtag is available before calling
+      window.addEventListener('load', function() {
+        if (typeof gtag !== 'undefined') {
+          gtag('js', new Date());
+          gtag('config', 'G-34Z7YVSEZ2');
+        }
+      });
     </script>
 
     <!-- Google AdSense Auto ads - Consent-aware loading -->
@@ -130,10 +132,16 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
         function loadAdSense() {
           if (document.getElementById('adsense-script')) return; // Already loaded
 
+          const clientId = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID;
+          if (!clientId || clientId === 'ca-pub-placeholder') {
+            console.warn('AdSense client ID not properly configured');
+            return;
+          }
+
           const script = document.createElement('script');
           script.id = 'adsense-script';
           script.async = true;
-          script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${import.meta.env.PUBLIC_ADSENSE_CLIENT_ID}`;
+          script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${clientId}`;
           script.crossOrigin = 'anonymous';
           document.head.appendChild(script);
 

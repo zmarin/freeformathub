@@ -19,6 +19,11 @@ export interface ClientTool {
 
 // Generate client-side tool registry from server registry
 function generateClientTools(): ClientTool[] {
+  // Check if we're in browser environment
+  if (typeof window === 'undefined') {
+    return [];
+  }
+
   try {
     const allTools = getAllTools();
     return allTools.map(tool => ({

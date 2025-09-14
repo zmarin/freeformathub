@@ -15,21 +15,83 @@ export default function ToolSearch({
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [results, setResults] = useState<ClientTool[]>([]);
+  const [loading, setLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const fetchAbortRef = useRef<AbortController | null>(null);
+  const debounceRef = useRef<number | null>(null);
 
   // Get popular tools to show when no search query
   const popularTools = getAllClientTools().slice(0, 6);
 
   useEffect(() => {
-    if (query.trim()) {
-      const searchResults = searchClientTools(query);
-      setResults(searchResults.slice(0, 8)); // Show max 8 results
-    } else {
-      setResults(popularTools);
+    const q = query.trim();
+
+    // Clear any pending debounce
+    if (debounceRef.current) {
+      window.clearTimeout(debounceRef.current);
     }
-    setSelectedIndex(0);
+
+    if (!q) {
+      // Empty query shows popular tools
+      if (fetchAbortRef.current) fetchAbortRef.current.abort();
+      setLoading(false);
+      setResults(popularTools);
+      setSelectedIndex(0);
+      return;
+    }
+
+    // Debounce API search for better UX
+    setLoading(true);
+    debounceRef.current = window.setTimeout(async () => {
+      try {
+        // Abort any in-flight request
+        if (fetchAbortRef.current) fetchAbortRef.current.abort();
+        const controller = new AbortController();
+        fetchAbortRef.current = controller;
+
+        const res = await fetch(`/api/search.json?q=${encodeURIComponent(q)}&limit=8`, {
+          signal: controller.signal,
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (!res.ok) {
+          // Fallback to client-side search on error
+          const searchResults = searchClientTools(q);
+          setResults(searchResults.slice(0, 8));
+        } else {
+          const data = await res.json();
+          if (data && data.success && Array.isArray(data.results)) {
+            // Map API results to ClientTool shape (ignore extra fields)
+            const mapped: ClientTool[] = data.results.map((t: any) => ({
+              id: t.id,
+              name: t.name,
+              slug: t.slug,
+              description: t.description,
+              keywords: t.keywords || [],
+              icon: t.icon,
+              category: { id: t.category.id, name: t.category.name, color: t.category.color }
+            }));
+            setResults(mapped);
+          } else {
+            const searchResults = searchClientTools(q);
+            setResults(searchResults.slice(0, 8));
+          }
+        }
+      } catch (err) {
+        // Likely aborted or network error; fall back to local search
+        const fallback = searchClientTools(q);
+        setResults(fallback.slice(0, 8));
+      } finally {
+        setLoading(false);
+        setSelectedIndex(0);
+      }
+    }, 200);
+
+    return () => {
+      if (debounceRef.current) window.clearTimeout(debounceRef.current);
+    };
   }, [query]);
 
   useEffect(() => {
@@ -137,6 +199,11 @@ export default function ToolSearch({
               Popular Tools
             </div>
           )}
+          {loading && (
+            <div className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+              Searching...
+            </div>
+          )}
           {results.length > 0 && results.map((tool, index) => (
             <button
               key={tool.slug}
@@ -165,7 +232,7 @@ export default function ToolSearch({
               </div>
             </button>
           ))}
-          {query.trim() && (
+          {query.trim() && !loading && (
             <button
               className="w-full px-4 py-3 text-left bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 border-t border-gray-200 dark:border-gray-700"
               onClick={() => {

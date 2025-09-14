@@ -160,14 +160,8 @@ export class ConsentManager {
 
   private loadAdSense(): void {
     if (typeof window !== 'undefined' && !window.adsbygoogle) {
-      const script = document.createElement('script');
-      script.async = true;
-      script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-PLACEHOLDER';
-      script.crossOrigin = 'anonymous';
-      document.head.appendChild(script);
-
-      // Initialize adsbygoogle array
-      window.adsbygoogle = window.adsbygoogle || [];
+      // This is a fallback - primary AdSense loading happens in BaseLayout.astro
+      console.log('AdSense loading handled by BaseLayout');
     }
   }
 

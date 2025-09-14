@@ -11,6 +11,9 @@ export function CookieConsent({ className = '' }: CookieConsentProps) {
   const [consentState, setConsentState] = useState<ConsentState>(consentManager.getConsent());
 
   useEffect(() => {
+    // Prevent hydration mismatch by checking if we're in browser
+    if (typeof window === 'undefined') return;
+
     // Show banner if consent hasn't been given
     setIsVisible(!isConsentGiven());
 
