@@ -121,7 +121,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-34Z7YVSEZ2';
     <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}></script>
     <script>
       // GA ID injected at build time
-      const GA_ID = '{GA_ID}';
+      const GA_ID = {JSON.stringify(GA_ID)};
       // Expose for module scripts
       window.GA_ID = GA_ID;
       // Initialize GA4 configuration (consent-aware)
