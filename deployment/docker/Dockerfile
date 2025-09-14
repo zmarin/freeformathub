@@ -25,7 +25,7 @@ FROM nginx:alpine
 RUN apk add --no-cache nodejs npm
 
 # Copy custom nginx configuration
-COPY deployment/nginx/freeformathub.conf /etc/nginx/conf.d/default.conf
+COPY deployment/nginx/freeformathub-production.conf /etc/nginx/conf.d/default.conf
 
 # Copy built application
 COPY --from=builder /app/dist /usr/share/nginx/html
@@ -42,15 +42,14 @@ RUN mkdir -p /var/log/nginx && \
     touch /var/log/nginx/freeformathub_error.log && \
     chown -R freeformathub:freeformathub /var/log/nginx
 
-# Update nginx.conf to use custom config
-RUN sed -i 's/listen       80;/listen       4600;/g' /etc/nginx/conf.d/default.conf
+# Production config already has correct SSL ports (443/80), no port changes needed
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:4600/health || exit 1
+    CMD curl -f http://localhost/health || exit 1
 
-# Expose port
-EXPOSE 4600
+# Expose ports (HTTP and HTTPS)
+EXPOSE 80 443
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
