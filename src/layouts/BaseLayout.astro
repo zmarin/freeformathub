@@ -268,7 +268,41 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
 
     <!-- Enhanced Analytics Tracking -->
     <script type="module">
-      import { initEnhancedTracking } from '../lib/analytics/tracking.ts';
+      // Enhanced tracking initialization - inline to avoid import issues
+      function initEnhancedTracking() {
+        if (typeof window === 'undefined' || typeof window.gtag !== 'function') {
+          console.log('Enhanced tracking: gtag not available');
+          return;
+        }
+
+        // Track initial page performance
+        if (window.performance) {
+          const navigation = window.performance.getEntriesByType('navigation')[0];
+          if (navigation) {
+            setTimeout(() => {
+              window.gtag('event', 'performance', {
+                send_to: 'G-34Z7YVSEZ2',
+                metric_name: 'page_load_time',
+                metric_value: navigation.loadEventEnd - navigation.fetchStart,
+                custom_parameter_1: (navigator?.connection?.effectiveType || 'unknown')
+              });
+            }, 1000);
+          }
+        }
+
+        // Track device and viewport info
+        window.gtag('event', 'device_info', {
+          send_to: 'G-34Z7YVSEZ2',
+          screen_resolution: `${screen.width}x${screen.height}`,
+          viewport_size: `${window.innerWidth}x${window.innerHeight}`,
+          color_depth: screen.colorDepth,
+          pixel_ratio: window.devicePixelRatio,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          language: navigator.language
+        });
+
+        console.log('✅ Enhanced analytics tracking initialized');
+      }
 
       // Make tracking available globally
       window.initEnhancedTracking = initEnhancedTracking;

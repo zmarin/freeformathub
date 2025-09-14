@@ -1,7 +1,40 @@
 import { useState, useEffect, useRef } from 'react';
 import { searchClientTools, searchClientToolsLegacy, getAllClientTools, type ClientTool, type ClientSearchResult } from '../../lib/tools/client-registry';
 import { highlightMatches } from '../../lib/search/search-utils';
-import { trackSearch, trackSearchSelect, trackNavigation } from '../../lib/analytics/tracking';
+// Analytics tracking - inline functions to avoid import issues
+const trackSearch = (analytics: { searchTerm: string; results?: number }) => {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'search', {
+      send_to: 'G-34Z7YVSEZ2',
+      search_term: analytics.searchTerm,
+      results_count: analytics.results
+    });
+  }
+};
+
+const trackSearchSelect = (analytics: { searchTerm: string; selectedTool?: any }) => {
+  if (typeof window !== 'undefined' && window.gtag && analytics.selectedTool) {
+    window.gtag('event', 'search_select', {
+      send_to: 'G-34Z7YVSEZ2',
+      search_term: analytics.searchTerm,
+      content_type: 'tool',
+      item_id: analytics.selectedTool.id,
+      item_name: analytics.selectedTool.name,
+      item_category: analytics.selectedTool.category
+    });
+  }
+};
+
+const trackNavigation = (from: string, to: string, method?: string) => {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'navigation', {
+      send_to: 'G-34Z7YVSEZ2',
+      from_page: from,
+      to_page: to,
+      method: method || 'click'
+    });
+  }
+};
 
 interface ToolSearchProps {
   placeholder?: string;
