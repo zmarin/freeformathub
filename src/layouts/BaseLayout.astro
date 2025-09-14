@@ -38,6 +38,8 @@ const imageUrl = ogImage || new URL('/og-image.png', siteUrl).href;
 const ogLocale = 'en_US';
 const twitterSite = '@freeformathub';
 const robots = robotsContent || 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
+// Google Analytics ID (from env with fallback)
+const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-34Z7YVSEZ2';
 ---
 
 <!DOCTYPE html>
@@ -116,14 +118,18 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
     </script>
 
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-34Z7YVSEZ2"></script>
+    <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}></script>
     <script>
+      // GA ID injected at build time
+      const GA_ID = '{GA_ID}';
+      // Expose for module scripts
+      window.GA_ID = GA_ID;
       // Initialize GA4 configuration (consent-aware)
       function initializeGA4() {
         console.log('🔧 Initializing GA4 configuration...');
 
         gtag('js', new Date());
-        gtag('config', 'G-34Z7YVSEZ2', {
+        gtag('config', GA_ID, {
           // Transport method for better reliability
           transport_type: 'beacon',
           // Enable debug mode for development
@@ -155,7 +161,7 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
         }
 
         gtag('event', 'page_view', {
-          send_to: 'G-34Z7YVSEZ2',
+          send_to: GA_ID,
           page_title: document.title,
           page_location: window.location.href,
           page_path: window.location.pathname,
@@ -206,7 +212,7 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
         function trackEngagement() {
           if (typeof gtag === 'function') {
             gtag('event', 'user_engagement', {
-              send_to: 'G-34Z7YVSEZ2',
+              send_to: GA_ID,
               engagement_time_msec: 15000
             });
           }
@@ -223,7 +229,7 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
           if (currentScroll > scrollDepth && currentScroll % 25 === 0 && typeof gtag === 'function') {
             scrollDepth = currentScroll;
             gtag('event', 'scroll', {
-              send_to: 'G-34Z7YVSEZ2',
+              send_to: GA_ID,
               percent_scrolled: scrollDepth
             });
           }
@@ -268,6 +274,8 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
 
     <!-- Enhanced Analytics Tracking -->
     <script type="module">
+      // Read GA ID from global (set by classic script)
+      const GA_ID = window.GA_ID || 'G-34Z7YVSEZ2';
       // Enhanced tracking initialization - inline to avoid import issues
       function initEnhancedTracking() {
         if (typeof window === 'undefined' || typeof window.gtag !== 'function') {
@@ -281,7 +289,7 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
           if (navigation) {
             setTimeout(() => {
               window.gtag('event', 'performance', {
-                send_to: 'G-34Z7YVSEZ2',
+                send_to: GA_ID,
                 metric_name: 'page_load_time',
                 metric_value: navigation.loadEventEnd - navigation.fetchStart,
                 custom_parameter_1: (navigator?.connection?.effectiveType || 'unknown')
@@ -292,7 +300,7 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
 
         // Track device and viewport info
         window.gtag('event', 'device_info', {
-          send_to: 'G-34Z7YVSEZ2',
+          send_to: GA_ID,
           screen_resolution: `${screen.width}x${screen.height}`,
           viewport_size: `${window.innerWidth}x${window.innerHeight}`,
           color_depth: screen.colorDepth,
@@ -584,7 +592,7 @@ const robots = robotsContent || 'index, follow, max-image-preview:large, max-sni
 
           if (acceptAll) {
             window.gtag('event', 'page_view', {
-              send_to: 'G-34Z7YVSEZ2',
+              send_to: GA_ID,
               page_title: document.title,
               page_location: window.location.href
             });

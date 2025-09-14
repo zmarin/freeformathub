@@ -1,4 +1,5 @@
 // Google Analytics 4 Event Tracking Utilities
+const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-34Z7YVSEZ2';
 
 declare global {
   interface Window {
@@ -49,7 +50,7 @@ export function trackEvent(eventName: string, parameters: Record<string, any> = 
 
   try {
     window.gtag('event', eventName, {
-      send_to: 'G-34Z7YVSEZ2',
+      send_to: GA_ID,
       ...parameters
     });
 
