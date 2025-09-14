@@ -124,6 +124,11 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-34Z7YVSEZ2';
       const GA_ID_VALUE = GA_ID;
       // Expose for module scripts
       window.GA_ID = GA_ID_VALUE;
+
+      // Initialize dataLayer and gtag function immediately
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+
       // Initialize GA4 configuration (consent-aware)
       function initializeGA4() {
         console.log('🔧 Initializing GA4 configuration...');
