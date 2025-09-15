@@ -6,7 +6,7 @@ NODE_VERSION = "20.17.0"
 nixPkgs = ["nodejs_20"]
 
 [phases.install]
-cmd = "npm ci"
+cmd = "npm install"
 
 [phases.build]
 cmd = "npm run build"
