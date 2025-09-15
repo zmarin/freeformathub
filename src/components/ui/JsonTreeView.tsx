@@ -90,7 +90,6 @@ const TreeNode: React.FC<TreeNodeProps> = ({
   const dataType = getDataType(data);
   const isExpandable = dataType === 'object' || dataType === 'array';
   const isExpanded = expandedNodes.has(path);
-  const shouldAutoCollapse = maxDepth > 0 && depth >= maxDepth;
 
   const [copied, setCopied] = useState<string | null>(null);
 
@@ -111,8 +110,10 @@ const TreeNode: React.FC<TreeNodeProps> = ({
 
   const renderValue = () => {
     if (isExpandable) {
-      const itemCount = Array.isArray(data) ? data.length : Object.keys(data).length;
-      const preview = Array.isArray(data) ? `[${itemCount} items]` : `{${itemCount} properties}`;
+      const count = Array.isArray(data) ? data.length : Object.keys(data).length;
+      const open = Array.isArray(data) ? '[' : '{';
+      const close = Array.isArray(data) ? ']' : '}';
+      const summary = `${open}${isExpanded ? '' : '…'}${close} ${count}`;
 
       return (
         <span style={{
@@ -120,7 +121,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({
           fontStyle: 'italic',
           fontSize: '0.85em'
         }}>
-          {preview}
+          {summary}
         </span>
       );
     }
@@ -133,7 +134,8 @@ const TreeNode: React.FC<TreeNodeProps> = ({
   };
 
   const renderChildren = () => {
-    if (!isExpandable || (!isExpanded && shouldAutoCollapse)) return null;
+    // Only render children when node is expanded
+    if (!isExpandable || !isExpanded) return null;
 
     const entries = Array.isArray(data)
       ? data.map((item, index) => [index, item])
@@ -350,7 +352,8 @@ export const JsonTreeView: React.FC<JsonTreeViewProps> = ({
   }, [data]);
 
   const handleCollapseAll = useCallback(() => {
-    setExpandedNodes(new Set(['$']));
+    // Collapse all nodes (including root) so nothing is expanded
+    setExpandedNodes(new Set());
     setAllExpanded(false);
   }, []);
 
