@@ -1,0 +1,47 @@
+# Dokploy Configuration for FreeFormatHub
+# This file provides hints to Dokploy for optimal deployment
+
+[app]
+name = "freeformathub"
+description = "Privacy-first business and developer tools platform with 101 comprehensive tools"
+
+[build]
+# Use Dockerfile for deployment
+dockerfile = "deployment/docker/Dockerfile"
+
+# Build arguments for environment variables
+[build.args]
+NODE_ENV = "production"
+
+[app.health_check]
+# Health check configuration
+path = "/health"
+interval = "30s"
+timeout = "10s"
+retries = 3
+
+[app.resources]
+# Resource limits
+memory = "512Mi"
+cpu = "0.5"
+
+[app.environment]
+# Required environment variables (set these in Dokploy UI)
+# PUBLIC_GA_MEASUREMENT_ID = "G-34Z7YVSEZ2"
+# PUBLIC_ADSENSE_CLIENT_ID = "ca-pub-5745115058807126"
+# PUBLIC_HEADER_AD_SLOT = "actual-slot-id"
+# PUBLIC_SIDEBAR_AD_SLOT = "actual-slot-id"
+# PUBLIC_CONTENT_AD_SLOT = "actual-slot-id"
+# PUBLIC_FOOTER_AD_SLOT = "actual-slot-id"
+# PUBLIC_ADS_TEST_MODE = "false"
+# PUBLIC_ADSENSE_VERIFICATION = "your-verification-code"
+# NODE_ENV = "production"
+
+[app.ports]
+# Application runs on port 3000 inside container (matches nginx config)
+container_port = 3000
+# Dokploy will assign external port automatically
+
+[app.volumes]
+# Logs volume for debugging (optional)
+# "/var/log/nginx" = "nginx-logs"
