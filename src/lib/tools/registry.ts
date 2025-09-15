@@ -394,6 +394,15 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
         keywords: ['cron', 'schedule', 'generate', 'validate', 'expression'],
         seoTitle: 'Cron Expression Tools | Generator, Validator',
         seoDescription: 'Generate and validate cron expressions for scheduling tasks'
+      },
+      {
+        id: 'time-conversion',
+        name: 'Time Conversion',
+        description: 'Convert between time formats and decimal hours',
+        icon: '⏰',
+        keywords: ['time', 'convert', 'decimal', 'hours', 'payroll', 'timesheet', 'billing'],
+        seoTitle: 'Time Conversion Tools | Decimal Hours, Timesheet Calculator',
+        seoDescription: 'Convert time formats to decimal hours for payroll, billing, and timesheet calculations'
       }
     ]
   },

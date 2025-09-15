@@ -87,6 +87,7 @@ import { COLOR_BLINDNESS_SIMULATOR_TOOL } from '../../tools/color/color-blindnes
 import { TIMESTAMP_CONVERTER_TOOL } from '../../tools/datetime/timestamp-converter';
 import { TIMESTAMP_FORMATTER_TOOL } from '../../tools/datetime/timestamp-formatter';
 import { CRON_GENERATOR_TOOL } from '../../tools/datetime/cron-generator';
+import { TIME_DECIMAL_CONVERTER_TOOL } from '../../tools/datetime/time-decimal-converter';
 
 // Math tools
 import { MATH_EXPRESSION_EVALUATOR_TOOL } from '../../tools/math/math-expression-evaluator';
@@ -228,6 +229,7 @@ registerTool(COLOR_BLINDNESS_SIMULATOR_TOOL);
 registerTool(TIMESTAMP_CONVERTER_TOOL);
 registerTool(TIMESTAMP_FORMATTER_TOOL);
 registerTool(CRON_GENERATOR_TOOL);
+registerTool(TIME_DECIMAL_CONVERTER_TOOL);
 
 // Math
 registerTool(MATH_EXPRESSION_EVALUATOR_TOOL);

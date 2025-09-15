@@ -69,6 +69,7 @@ import { WhoisLookup } from '../components/tools/network/WhoisLookup';
 // Date/Time tools
 import { TimestampConverter } from '../components/tools/datetime/TimestampConverter';
 import { CronGenerator } from '../components/tools/datetime/CronGenerator';
+import { TimeDecimalConverter } from '../components/tools/datetime/TimeDecimalConverter';
 
 export type ToolComponent = React.ComponentType<any>;
 
@@ -142,6 +143,7 @@ export const TOOL_COMPONENTS: Record<string, ToolComponent> = {
   // Date/Time tools
   'timestamp-converter': TimestampConverter,
   'cron-generator': CronGenerator,
+  'time-decimal-converter': TimeDecimalConverter,
 };
 
 export function getToolComponent(slug: string): ToolComponent | null {
