@@ -10,6 +10,7 @@ export interface JsonFormatterConfig extends ToolConfig {
   useTabs?: boolean;
   sortKeysCaseInsensitive?: boolean;
   allowSingleQuotes?: boolean;
+  quoteUnquotedKeys?: boolean;
   replaceSpecialNumbers?: 'none' | 'null' | 'string';
   inlineShortArrays?: boolean;
   inlineArrayMaxLength?: number; // default 5
@@ -126,6 +127,7 @@ export function formatJson(input: string, config: JsonFormatterConfig): ToolResu
     const cleaned = cleanJsonInput(input, {
       removeComments: !!config.removeComments,
       allowSingleQuotes: config.allowSingleQuotes !== false, // default true
+      quoteUnquotedKeys: config.quoteUnquotedKeys !== false, // default true
       replaceSpecialNumbers: config.replaceSpecialNumbers ?? 'none',
     });
 
@@ -163,7 +165,7 @@ export function formatJson(input: string, config: JsonFormatterConfig): ToolResu
     // Format with specified indentation
     let formatted: string;
     const indentSize = Math.max(0, Number(config.indent ?? 2));
-    const indentUnit = config.useTabs ? '\t' : ' ';
+    // const indentUnit = config.useTabs ? '\t' : ' '; // unused
     const indentStr = indentSize > 0 && !config.useTabs ? ' '.repeat(indentSize) : (config.useTabs ? '\t' : '');
 
     if (indentSize === 0) {
@@ -300,6 +302,7 @@ function calculateDepth(obj: any, currentDepth: number = 0): number {
 type CleanOptions = {
   removeComments: boolean;
   allowSingleQuotes: boolean;
+  quoteUnquotedKeys: boolean;
   replaceSpecialNumbers: 'none' | 'null' | 'string';
 };
 
@@ -330,6 +333,13 @@ function cleanJsonInput(text: string, opts: CleanOptions): { text: string; trans
     const conv = convertSingleQuotedStrings(src);
     if (conv.modified) transforms.convertedSingleQuotes = true;
     src = conv.text;
+  }
+
+  // Quote unquoted object keys (JSONC style) safely when in key position
+  if (opts.quoteUnquotedKeys) {
+    const quoted = quoteUnquotedKeys(src);
+    if (quoted.modified) transforms.quotedUnquotedKeys = true;
+    src = quoted.text;
   }
 
   // Replace special numbers outside strings/comments
@@ -566,7 +576,7 @@ function getLineText(text: string, line: number): string {
 }
 
 function detectDuplicateKeys(src: string): { duplicates: Array<{ path: string; key: string; line: number; column: number }>; count: number } {
-  type Frame = { type: 'object' | 'array'; keys?: Record<string, true>; path: string[] };
+  type Frame = { type: 'object' | 'array'; keys?: Record<string, true>; path: (string | number)[]; index?: number };
   const stack: Frame[] = [];
   const dups: Array<{ path: string; key: string; line: number; column: number }> = [];
 
@@ -575,9 +585,40 @@ function detectDuplicateKeys(src: string): { duplicates: Array<{ path: string; k
   let col = 1;
   let inString: false | 'single' | 'double' = false;
   let escaped = false;
+  let pendingChildKey: string | undefined;
+  let keyStartLine = 1;
+  let keyStartCol = 1;
 
-  const pushObj = () => stack.push({ type: 'object', keys: {}, path: [...(stack.at(-1)?.path ?? [])] });
-  const pushArr = () => stack.push({ type: 'array', path: [...(stack.at(-1)?.path ?? [])] });
+  const formatPath = (parts: (string | number)[]) => {
+    const out: string[] = ['$'];
+    for (const p of parts) out.push(typeof p === 'number' ? `[${p}]` : `.${p}`);
+    return out.join('');
+  };
+
+  const pushObj = () => {
+    const parent = stack.at(-1);
+    const path = parent ? [...parent.path] : [];
+    if (parent?.type === 'object' && pendingChildKey !== undefined) {
+      path.push(pendingChildKey);
+      pendingChildKey = undefined;
+    } else if (parent?.type === 'array') {
+      const idx = parent.index ?? 0;
+      path.push(idx);
+    }
+    stack.push({ type: 'object', keys: {}, path });
+  };
+  const pushArr = () => {
+    const parent = stack.at(-1);
+    const path = parent ? [...parent.path] : [];
+    if (parent?.type === 'object' && pendingChildKey !== undefined) {
+      path.push(pendingChildKey);
+      pendingChildKey = undefined;
+    } else if (parent?.type === 'array') {
+      const idx = parent.index ?? 0;
+      path.push(idx);
+    }
+    stack.push({ type: 'array', path, index: 0 });
+  };
 
   while (i < src.length) {
     const ch = src[i];
@@ -613,10 +654,21 @@ function detectDuplicateKeys(src: string): { duplicates: Array<{ path: string; k
     if (ch === '[') { pushArr(); advance(); continue; }
     if (ch === '}' || ch === ']') { stack.pop(); advance(); continue; }
 
+    // Track array element index increments on commas at array level
+    if (ch === ',' && stack.at(-1)?.type === 'array') {
+      const arr = stack.at(-1)!;
+      arr.index = (arr.index ?? 0) + 1;
+      advance();
+      continue;
+    }
+
     // Detect keys in objects: "key" :
     if (ch === '"' && stack.at(-1)?.type === 'object') {
       // read string key
       let key = '';
+      // capture key start for error location
+      keyStartLine = line;
+      keyStartCol = col;
       advance();
       let esc = false;
       while (i < src.length) {
@@ -638,11 +690,13 @@ function detectDuplicateKeys(src: string): { duplicates: Array<{ path: string; k
         const frame = stack.at(-1);
         if (frame && frame.type === 'object' && frame.keys) {
           if (Object.prototype.hasOwnProperty.call(frame.keys, key)) {
-            dups.push({ path: frame.path.join('.'), key, line, column: col });
+            dups.push({ path: formatPath(frame.path), key, line: keyStartLine, column: keyStartCol });
           } else {
             frame.keys[key] = true;
           }
         }
+        // Remember this key for child path if next token opens an object/array
+        pendingChildKey = key;
       }
       continue;
     }
@@ -726,4 +780,88 @@ function prettyStringify(value: any, opts: PrettyOptions, level = 0): string {
     return `${nextIndent}${stringifyString(k)}: ${prettyStringify(v, opts, level + 1)}`;
   });
   return `{\n${lines.join(',\n')}\n${indent}}`;
+}
+
+// Quote unquoted object keys in JSONC-like input safely.
+function quoteUnquotedKeys(src: string): { text: string; modified: boolean } {
+  let out = '';
+  let i = 0;
+  let modified = false;
+  type Frame = { type: 'object' | 'array'; expectKey?: boolean; depth: number };
+  const stack: Frame[] = [];
+  let inString: false | 'single' | 'double' = false;
+  let escaped = false;
+
+  const isIdentStart = (c: string) => /[A-Za-z_$]/.test(c);
+  const isIdent = (c: string) => /[A-Za-z0-9_\-$]/.test(c);
+
+  while (i < src.length) {
+    const ch = src[i];
+    const next = src[i + 1];
+
+    // Inside string: just copy
+    if (inString) {
+      out += ch;
+      if (!escaped && ((inString === 'double' && ch === '"') || (inString === 'single' && ch === "'"))) {
+        inString = false;
+      }
+      escaped = !escaped && ch === '\\';
+      i++;
+      continue;
+    }
+
+    if (ch === '"') { inString = 'double'; out += ch; i++; escaped = false; continue; }
+    if (ch === "'") { inString = 'single'; out += ch; i++; escaped = false; continue; }
+
+    // Maintain stack
+    if (ch === '{') { stack.push({ type: 'object', expectKey: true, depth: stack.length + 1 }); out += ch; i++; continue; }
+    if (ch === '[') { stack.push({ type: 'array', depth: stack.length + 1 }); out += ch; i++; continue; }
+    if (ch === '}') { stack.pop(); out += ch; i++; continue; }
+    if (ch === ']') { stack.pop(); out += ch; i++; continue; }
+
+    // Track object key/value separators
+    if (ch === ':' && stack.at(-1)?.type === 'object') {
+      // after colon, we expect value, not key
+      stack.at(-1)!.expectKey = false;
+      out += ch; i++;
+      continue;
+    }
+    if (ch === ',' && stack.at(-1)?.type === 'object') {
+      // after comma in object, expect next key
+      stack.at(-1)!.expectKey = true;
+      out += ch; i++;
+      continue;
+    }
+
+    // When inside object expecting a key, allow bare identifiers and numbers before ':'
+    if (stack.at(-1)?.type === 'object' && stack.at(-1)?.expectKey) {
+      // Skip whitespace
+      if (ch === ' ' || ch === '\t' || ch === '\r' || ch === '\n') { out += ch; i++; continue; }
+
+      // If we have an unquoted identifier or number
+      if (isIdentStart(ch) || /[0-9]/.test(ch)) {
+        let j = i;
+        let key = '';
+        while (j < src.length && isIdent(src[j])) {
+          key += src[j++];
+        }
+        // skip whitespace
+        let k = j;
+        while (k < src.length && /[ \t\r\n]/.test(src[k])) k++;
+        if (src[k] === ':') {
+          // It's a key; quote it
+          out += '"' + key.replace(/"/g, '\\"') + '"';
+          i = j;
+          modified = true;
+          stack.at(-1)!.expectKey = false; // the ':' handler will run next
+          continue;
+        }
+      }
+    }
+
+    out += ch;
+    i++;
+  }
+
+  return { text: out, modified };
 }

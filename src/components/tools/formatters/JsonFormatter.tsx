@@ -17,6 +17,7 @@ const DEFAULT_CONFIG: JsonFormatterConfig = {
   useTabs: false,
   sortKeysCaseInsensitive: false,
   allowSingleQuotes: true,
+  quoteUnquotedKeys: true,
   replaceSpecialNumbers: 'none',
   inlineShortArrays: true,
   inlineArrayMaxLength: 5,
@@ -102,9 +103,9 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
       setError(undefined);
       setMetadata(result.metadata);
 
-      // Try to parse the input for tree view
+      // Try to parse the formatted output for tree view (handles JSONC inputs)
       try {
-        const parsed = JSON.parse(inputText);
+        const parsed = JSON.parse(result.output || '');
         setParsedData(parsed);
       } catch (e) {
         setParsedData(null);

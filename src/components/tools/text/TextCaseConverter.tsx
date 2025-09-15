@@ -591,125 +591,62 @@ export function TextCaseConverter({ className = '' }: TextCaseConverterProps) {
         </div>
       </div>
 
-      {/* Quick Examples - Collapsible */}
+      {/* Quick Examples */}
       <div style={{
         borderTop: '1px solid var(--color-border)',
-        backgroundColor: 'var(--color-surface)'
+        backgroundColor: 'var(--color-surface)',
+        padding: 'var(--space-lg)'
       }}>
-        <details className="group">
-          <summary style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            cursor: 'pointer',
-            padding: 'var(--space-xl)',
-            fontWeight: 600,
-            color: 'var(--color-text-primary)',
-            backgroundColor: 'var(--color-surface-secondary)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
-              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--color-primary)' }}>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-              </svg>
-              Quick Examples & Options
-            </div>
-            <svg className="w-5 h-5 group-open:rotate-180 transition-transform" style={{ color: 'var(--color-text-secondary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          </summary>
+        <h3 style={{ margin: '0 0 var(--space-lg) 0', fontWeight: 600, color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--color-primary)' }}>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+          </svg>
+          Quick Examples
+        </h3>
 
-          <div style={{ padding: 'var(--space-xl)' }}>
-            {/* Configuration Options */}
-            <div className="card" style={{ padding: 'var(--space-lg)', marginBottom: 'var(--space-lg)' }}>
-              <h4 style={{ fontWeight: 600, marginBottom: 'var(--space-md)', color: 'var(--color-text-primary)' }}>Configuration</h4>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 'var(--space-lg)' }}>
-                {ESSENTIAL_OPTIONS.map((option) => (
-                  <div key={option.key} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
-                    <label style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-text-primary)' }}>
-                      {option.label}
-                    </label>
-                    {option.type === 'boolean' ? (
-                      <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
-                        <input
-                          type="checkbox"
-                          checked={!!config[option.key as keyof TextCaseConfig]}
-                          onChange={(e) => handleEssentialConfigChange(option.key, e.target.checked)}
-                          style={{ accentColor: 'var(--color-primary)' }}
-                        />
-                        {option.description}
-                      </label>
-                    ) : option.type === 'select' ? (
-                      <select
-                        value={String(config[option.key as keyof TextCaseConfig] ?? option.default)}
-                        onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
-                        className="form-select"
-                        style={{ fontSize: '0.875rem' }}
-                      >
-                        {option.options?.map((opt) => (
-                          <option key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select>
-                    ) : null}
-                  </div>
-                ))}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 'var(--space-lg)' }}>
+          {EXAMPLES.map((example, idx) => (
+            <div key={idx} className="card" style={{ padding: 'var(--space-md)' }}>
+              <div style={{ fontWeight: 600, marginBottom: 'var(--space-sm)', color: 'var(--color-text-primary)', fontSize: '0.875rem' }}>
+                {example.title}
               </div>
-
-              {/* Special Cases */}
-              <div style={{ marginTop: 'var(--space-xl)', paddingTop: 'var(--space-lg)', borderTop: '1px solid var(--color-border)' }}>
-                <h5 style={{ fontSize: '0.875rem', fontWeight: 500, marginBottom: 'var(--space-md)', color: 'var(--color-text-primary)' }}>Special Cases</h5>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 'var(--space-sm)' }}>
-                  {ADVANCED_OPTIONS.map((option) => (
-                    <button
-                      key={option.key}
-                      onClick={() => handleEssentialConfigChange('targetCase', option.caseValue)}
-                      className={config.targetCase === option.caseValue ? 'btn btn-primary' : 'btn btn-outline'}
-                      style={{ fontSize: '0.75rem', fontFamily: 'var(--font-family-mono)' }}
-                      title={option.description}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
+              <div style={{
+                backgroundColor: 'var(--color-surface-secondary)',
+                padding: 'var(--space-sm)',
+                borderRadius: 'var(--radius-sm)',
+                fontFamily: 'var(--font-family-mono)',
+                fontSize: '0.75rem',
+                marginBottom: 'var(--space-sm)',
+                color: 'var(--color-text-secondary)',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}>
+                {example.value}
               </div>
+              <button
+                onClick={() => setInput(example.value)}
+                className="btn btn-outline"
+                style={{ width: '100%', fontSize: '0.75rem' }}
+              >
+                Try Example
+              </button>
             </div>
-
-            {/* Examples Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'var(--space-lg)' }}>
-              {EXAMPLES.map((example, idx) => (
-                <div key={idx} className="card" style={{ padding: 'var(--space-lg)' }}>
-                  <div style={{ fontWeight: 600, marginBottom: 'var(--space-md)', color: 'var(--color-text-primary)' }}>
-                    {example.title}
-                  </div>
-                  <div style={{
-                    backgroundColor: 'var(--color-surface-secondary)',
-                    padding: 'var(--space-md)',
-                    borderRadius: 'var(--radius-md)',
-                    fontFamily: 'var(--font-family-mono)',
-                    fontSize: '0.75rem',
-                    marginBottom: 'var(--space-md)',
-                    color: 'var(--color-text-secondary)',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis'
-                  }}>
-                    {example.value}
-                  </div>
-                  <button
-                    onClick={() => setInput(example.value)}
-                    className="btn btn-primary"
-                    style={{ width: '100%', fontSize: '0.875rem' }}
-                  >
-                    Try This Example
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </details>
+          ))}
+        </div>
       </div>
+
+      {error && (
+        <div style={{
+          backgroundColor: 'var(--color-danger-light)',
+          color: 'var(--color-danger)',
+          padding: 'var(--space-lg)',
+          margin: 'var(--space-lg)',
+          borderRadius: 'var(--radius-md)',
+          fontSize: '0.875rem'
+        }}>
+          <strong>Error:</strong> {error}
+        </div>
+      )}
     </div>
   );
 }

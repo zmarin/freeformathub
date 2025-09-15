@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatJson, type JsonFormatterConfig } from '../tools/json-formatter';
+import { formatJson, type JsonFormatterConfig } from '../tools/formatters/json-formatter';
 
 describe('JSON Formatter', () => {
   const defaultConfig: JsonFormatterConfig = {
@@ -59,5 +59,48 @@ describe('JSON Formatter', () => {
     
     expect(result.success).toBe(false);
     expect(result.error).toContain('Input is empty');
+  });
+
+  it('should support JSONC-like input: comments, trailing commas, single quotes and unquoted keys', () => {
+    const input = `{
+  // comment line
+  'name': 'John',
+  age: 30,
+  skills: ['js','ts',],
+  rating: NaN,
+}`;
+    const cfg: JsonFormatterConfig = {
+      indent: 2,
+      sortKeys: false,
+      removeComments: true,
+      validateOnly: false,
+      allowSingleQuotes: true,
+      quoteUnquotedKeys: true,
+      replaceSpecialNumbers: 'null',
+    } as any;
+    const result = formatJson(input, cfg);
+    expect(result.success).toBe(true);
+    expect(result.output).toContain('"name": "John"');
+    expect(result.output).toContain('"age": 30');
+    expect(result.output).toContain('"skills": ["js", "ts"]');
+    expect(result.output).toContain('"rating": null');
+  });
+
+  it('should detect duplicate keys with path', () => {
+    const input = '{"a":1,"a":2,"b":{"c":3,"c":4},"arr":[{"d":1},{"d":2}] }';
+    const cfg: JsonFormatterConfig = {
+      indent: 2,
+      sortKeys: false,
+      removeComments: false,
+      validateOnly: true,
+      detectDuplicateKeys: true,
+    } as any;
+    const result = formatJson(input, cfg);
+    expect(result.success).toBe(true);
+    expect(result.metadata?.duplicateCount).toBeGreaterThan(0);
+    const dupPaths = (result.metadata?.duplicates || []).map((d: any) => d.path);
+    // Root-level dup on $ (no segment), nested dup on $.b, and array path $.arr[1] ignored for key d check (dup per object only)
+    expect(dupPaths).toContain('$');
+    expect(dupPaths).toContain('$.b');
   });
 });
