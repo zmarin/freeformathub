@@ -9,10 +9,10 @@ WORKDIR /app
 RUN apk add --no-cache nginx curl
 
 # Copy package files first for better caching
-COPY package*.json ./
+COPY package.json package-lock.json ./
 
 # Install all dependencies (including devDependencies for build)
-RUN npm ci
+RUN npm install
 
 # Copy source code
 COPY . .
