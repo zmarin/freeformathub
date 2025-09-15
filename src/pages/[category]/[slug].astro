@@ -1,7 +1,13 @@
 ---
 import { getToolStaticPaths } from '../../lib/routing/category-routes';
-import ToolShell from '../../components/common/ToolShell.astro';
 import { ToolRenderer } from '../../components/common/ToolRenderer';
+
+// Import all layout components
+import ToolShell from '../../components/common/ToolShell.astro';
+import FullscreenLayout from '../../components/layouts/FullscreenLayout.astro';
+import SidebarLayout from '../../components/layouts/SidebarLayout.astro';
+import MinimalLayout from '../../components/layouts/MinimalLayout.astro';
+import PlaygroundLayout from '../../components/layouts/PlaygroundLayout.astro';
 
 export async function getStaticPaths() {
   return getToolStaticPaths();
@@ -13,8 +19,29 @@ const { tool } = Astro.props;
 if (!tool) {
   return Astro.redirect('/404');
 }
+
+// Layout selection logic
+const layoutType = tool.layout || 'default';
+
+// Choose the appropriate layout component
+const layoutMap = {
+  'default': ToolShell,
+  'fullscreen': FullscreenLayout,
+  'sidebar': SidebarLayout,
+  'minimal': MinimalLayout,
+  'playground': PlaygroundLayout
+};
+
+const Layout = layoutMap[layoutType] || ToolShell;
 ---
 
-<ToolShell tool={tool}>
-  <ToolRenderer slug={slug} client:load />
-</ToolShell>
+<Layout tool={tool}>
+  {layoutType === 'playground' && tool.layoutOptions?.enableSplitView ? (
+    <>
+      <ToolRenderer slot="input" slug={slug} client:load mode="input" />
+      <ToolRenderer slot="output" slug={slug} client:load mode="output" />
+    </>
+  ) : (
+    <ToolRenderer slug={slug} client:load />
+  )}
+</Layout>

@@ -1,0 +1,134 @@
+{
+  "category": "formatters",
+  "name": "Data Formatters & Validators",
+  "description": "Format, validate, and beautify data in various formats",
+  "tools": [
+    {
+      "id": "json-formatter",
+      "name": "JSON Formatter & Validator",
+      "description": "Format, validate, and beautify JSON/JSONC with key sorting, inline arrays, duplicate key detection, and rich error details—all locally.",
+      "slug": "json-formatter",
+      "icon": "{}",
+      "keywords": ["json", "format", "beautify", "validate", "pretty print", "minify", "parser"],
+      "layout": "playground",
+      "layoutOptions": {
+        "showBreadcrumbs": true,
+        "showRelatedTools": true,
+        "showFAQ": true,
+        "showFeatures": true,
+        "sidebarPosition": "right",
+        "containerWidth": "full",
+        "enableSplitView": true,
+        "customSections": ["examples", "docs", "settings"]
+      },
+      "examples": [
+        {
+          "title": "Basic JSON Formatting",
+          "input": "{\"name\":\"John\",\"age\":30,\"city\":\"New York\"}",
+          "output": "{\n  \"name\": \"John\",\n  \"age\": 30,\n  \"city\": \"New York\"\n}",
+          "description": "Format compact JSON into readable structure"
+        },
+        {
+          "title": "Nested Object Formatting",
+          "input": "{\"user\":{\"profile\":{\"name\":\"Jane\",\"settings\":{\"theme\":\"dark\",\"notifications\":true}}}}",
+          "output": "{\n  \"user\": {\n    \"profile\": {\n      \"name\": \"Jane\",\n      \"settings\": {\n        \"theme\": \"dark\",\n        \"notifications\": true\n      }\n    }\n  }\n}",
+          "description": "Handle complex nested structures"
+        },
+        {
+          "title": "Array Formatting",
+          "input": "[{\"id\":1,\"name\":\"Item 1\"},{\"id\":2,\"name\":\"Item 2\"}]",
+          "output": "[\n  {\n    \"id\": 1,\n    \"name\": \"Item 1\"\n  },\n  {\n    \"id\": 2,\n    \"name\": \"Item 2\"\n  }\n]",
+          "description": "Format arrays with proper indentation"
+        }
+      ],
+      "useCases": [
+        "Format API responses for better readability",
+        "Validate JSON syntax before using in applications",
+        "Debug JSON structure and find syntax errors",
+        "Beautify minified JSON configuration files",
+        "Compare JSON objects by normalizing format",
+        "Prepare JSON for documentation or presentations"
+      ],
+      "commonErrors": [
+        "Missing quotes around property names - use double quotes",
+        "Trailing commas are not allowed in standard JSON",
+        "Single quotes not supported - use double quotes only",
+        "Undefined, functions, and comments are not valid JSON"
+      ],
+      "faq": [
+        {
+          "question": "What is the difference between JSON formatting and validation?",
+          "answer": "JSON formatting makes the structure readable with proper indentation, while validation checks if the syntax follows JSON standards. This tool does both simultaneously."
+        },
+        {
+          "question": "Is my JSON data secure when using this tool?",
+          "answer": "Yes, all processing happens locally in your browser. No data is sent to any server or stored anywhere."
+        },
+        {
+          "question": "Can I format large JSON files?",
+          "answer": "Yes, but very large files (>10MB) might slow down your browser. Consider breaking them into smaller chunks if needed."
+        }
+      ],
+      "relatedTools": ["xml-formatter", "yaml-formatter", "csv-formatter"],
+      "seoTitle": "Free JSON/JSONC Formatter & Validator | Sort Keys, Inline Arrays",
+      "seoDescription": "Powerful JSON/JSONC formatter with safe comment stripping, key sorting, inline arrays, duplicate key detection. 100% local processing.",
+      "featured": true,
+      "difficulty": "beginner",
+      "tags": ["json", "format", "validate", "developer-tools"]
+    },
+    {
+      "id": "css-beautifier",
+      "name": "CSS Beautifier & Formatter",
+      "description": "Format, beautify, and optimize CSS stylesheets with proper indentation and organization.",
+      "slug": "css-beautifier",
+      "icon": "🎨",
+      "keywords": ["css", "format", "beautify", "minify", "stylesheet", "optimize"],
+      "layout": "fullscreen",
+      "layoutOptions": {
+        "showBreadcrumbs": true,
+        "showRelatedTools": false,
+        "showFAQ": false,
+        "showFeatures": false,
+        "containerWidth": "full"
+      },
+      "examples": [
+        {
+          "title": "Basic CSS Formatting",
+          "input": "body{margin:0;padding:0;font-family:Arial,sans-serif;}",
+          "output": "body {\n  margin: 0;\n  padding: 0;\n  font-family: Arial, sans-serif;\n}",
+          "description": "Format minified CSS for readability"
+        },
+        {
+          "title": "Complex CSS Rules",
+          "input": ".container{display:flex;justify-content:center;align-items:center;}.button{background:#007bff;color:white;border:none;padding:10px 20px;}",
+          "output": ".container {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n\n.button {\n  background: #007bff;\n  color: white;\n  border: none;\n  padding: 10px 20px;\n}",
+          "description": "Format complex CSS with multiple selectors"
+        }
+      ],
+      "useCases": [
+        "Format minified CSS files for editing",
+        "Organize CSS code for better maintainability",
+        "Prepare CSS for code reviews",
+        "Debug CSS layout issues"
+      ],
+      "commonErrors": [
+        "Missing semicolons at end of declarations",
+        "Unclosed brackets or braces",
+        "Invalid property values",
+        "Typos in property names"
+      ],
+      "faq": [
+        {
+          "question": "Does this tool optimize CSS performance?",
+          "answer": "This tool focuses on formatting and readability. For optimization, consider using CSS minification tools."
+        }
+      ],
+      "relatedTools": ["html-beautifier", "js-beautifier", "json-formatter"],
+      "seoTitle": "Free CSS Beautifier & Formatter Online",
+      "seoDescription": "Format and beautify CSS stylesheets with proper indentation. Free online CSS formatter for developers.",
+      "featured": false,
+      "difficulty": "beginner",
+      "tags": ["css", "format", "beautify", "web-development"]
+    }
+  ]
+}

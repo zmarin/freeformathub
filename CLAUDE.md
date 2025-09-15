@@ -55,7 +55,7 @@ Every tool follows a consistent 4-file pattern:
    - Interactive UI using shared components (InputPanel, OutputPanel, OptionsPanel)
    - Zustand store for state management
 
-3. **Routing**: No per-tool Astro page. The dynamic route `src/pages/[category]/[slug].astro` renders tools using ToolShell + React component based on the registry.
+3. **Routing**: Dynamic route `src/pages/[category]/[slug].astro` renders tools using ToolShell + ToolRenderer component based on the registry.
 
 4. **Registration** (`src/lib/tools/index.ts`):
    - Import and register tool in TOOL_REGISTRY
@@ -92,7 +92,7 @@ Every tool follows a consistent 4-file pattern:
 
 1. **Create tool definition** following the existing pattern in `src/tools/`
 2. **Implement React component** using shared UI components
-3. **No per-tool Astro page**; verify component name matches the route mapping
+3. **No individual Astro pages needed**; tools are rendered via dynamic routing through ToolRenderer
 4. **Register in tool registry** for discoverability
 5. **Add tests** in `src/test/` following existing patterns
 
@@ -199,10 +199,10 @@ The platform currently has **101 tools** across 10 categories:
 
 ## Tool Implementation Status
 
-All 101 tools follow the complete 4-file architecture and are fully functional with:
+All 101 tools follow the complete architecture and are fully functional with:
 - ✅ Tool logic implementation (`src/tools/*.ts`)
-- ✅ React component UI (`src/components/tools/*.tsx`) 
-- ✅ Astro page routing (`src/pages/tools/*.astro`)
+- ✅ React component UI (`src/components/tools/*.tsx`)
+- ✅ Dynamic routing through `src/pages/[category]/[slug].astro`
 - ✅ Registry integration (`src/lib/tools/index.ts`)
 
 ## Port Configuration

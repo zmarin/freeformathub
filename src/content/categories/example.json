@@ -1,0 +1,36 @@
+{
+  "id": "formatters",
+  "name": "Data Formatters & Validators",
+  "description": "Format, validate, and beautify data in various formats",
+  "icon": "📝",
+  "color": "blue",
+  "featured": true,
+  "order": 1,
+  "seoTitle": "Data Formatters & Validators - Free Online Tools",
+  "seoDescription": "Professional data formatting and validation tools for JSON, XML, CSS, HTML, and more. 100% free and privacy-focused.",
+  "introText": "Transform and validate your data with our comprehensive formatting tools.",
+  "benefits": [
+    {
+      "title": "Instant Formatting",
+      "description": "Format and beautify code instantly with proper indentation",
+      "icon": "⚡"
+    },
+    {
+      "title": "Validation Built-in",
+      "description": "Detect syntax errors and validation issues automatically",
+      "icon": "✅"
+    },
+    {
+      "title": "Privacy First",
+      "description": "All processing happens locally in your browser",
+      "icon": "🔒"
+    }
+  ],
+  "commonUseCases": [
+    "Format API responses for debugging",
+    "Validate configuration files",
+    "Beautify minified code",
+    "Prepare code for documentation"
+  ],
+  "relatedCategories": ["converters", "validators", "web"]
+}

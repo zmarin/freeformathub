@@ -1,0 +1,143 @@
+{
+  "category": "generators",
+  "name": "Code Generators",
+  "description": "Generate UUIDs, QR codes, mock data, and other development utilities",
+  "tools": [
+    {
+      "id": "qr-code-generator",
+      "name": "QR Code Generator",
+      "description": "Generate QR codes for URLs, text, WiFi, contact info, and more with customizable size and error correction.",
+      "slug": "qr-code-generator",
+      "icon": "📱",
+      "keywords": ["qr", "code", "generator", "url", "wifi", "contact", "barcode"],
+      "layout": "sidebar",
+      "layoutOptions": {
+        "showBreadcrumbs": true,
+        "showRelatedTools": true,
+        "showFAQ": true,
+        "showFeatures": true,
+        "sidebarPosition": "left",
+        "containerWidth": "wide"
+      },
+      "examples": [
+        {
+          "title": "Website URL",
+          "input": "https://freeformathub.com",
+          "output": "[QR Code Image]",
+          "description": "Generate QR code for website links"
+        },
+        {
+          "title": "WiFi Network",
+          "input": "WIFI:T:WPA;S:MyNetwork;P:password123;;",
+          "output": "[QR Code Image]",
+          "description": "Generate QR code for WiFi connection"
+        },
+        {
+          "title": "Contact Card",
+          "input": "MECARD:N:John Doe;EMAIL:john@example.com;TEL:+1234567890;;",
+          "output": "[QR Code Image]",
+          "description": "Generate QR code for contact information"
+        }
+      ],
+      "useCases": [
+        "Share website URLs quickly",
+        "Create WiFi connection QR codes",
+        "Generate contact information codes",
+        "Link to app download pages",
+        "Share payment information",
+        "Create event check-in codes"
+      ],
+      "commonErrors": [
+        "Text too long for selected error correction level",
+        "Invalid WiFi configuration format",
+        "Special characters not properly encoded",
+        "URL format incorrect"
+      ],
+      "faq": [
+        {
+          "question": "What's the maximum text length for QR codes?",
+          "answer": "It depends on the data type and error correction level. URLs can typically be up to 2,000 characters, while plain text can be longer."
+        },
+        {
+          "question": "What error correction level should I use?",
+          "answer": "Use L (7%) for clean environments, M (15%) for general use, Q (25%) for outdoor use, and H (30%) for damaged or dirty surfaces."
+        },
+        {
+          "question": "Can I customize the QR code appearance?",
+          "answer": "Yes, you can adjust size, add colors, and include logos while maintaining scannability."
+        }
+      ],
+      "relatedTools": ["barcode-generator", "url-shortener", "uuid-generator"],
+      "seoTitle": "Free QR Code Generator - Create QR Codes for URLs, WiFi, Contacts",
+      "seoDescription": "Generate custom QR codes for websites, WiFi, contacts, and more. Free online QR code generator with customizable options.",
+      "featured": true,
+      "difficulty": "beginner",
+      "tags": ["qr", "generator", "code", "mobile", "sharing"]
+    },
+    {
+      "id": "uuid-generator",
+      "name": "UUID Generator",
+      "description": "Generate UUID/GUID in various formats (v1, v4, v5) for databases, APIs, and unique identifiers.",
+      "slug": "uuid-generator",
+      "icon": "🆔",
+      "keywords": ["uuid", "guid", "generate", "unique", "identifier", "database", "api"],
+      "layout": "minimal",
+      "layoutOptions": {
+        "showBreadcrumbs": false,
+        "showRelatedTools": true,
+        "showFAQ": true,
+        "showFeatures": true,
+        "containerWidth": "narrow"
+      },
+      "examples": [
+        {
+          "title": "UUID v4 (Random)",
+          "input": "Generate UUID v4",
+          "output": "550e8400-e29b-41d4-a716-446655440000",
+          "description": "Most common UUID type with random values"
+        },
+        {
+          "title": "UUID v1 (Timestamp)",
+          "input": "Generate UUID v1",
+          "output": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+          "description": "UUID based on timestamp and MAC address"
+        },
+        {
+          "title": "Bulk Generation",
+          "input": "Generate 10 UUIDs",
+          "output": "550e8400-e29b-41d4-a716-446655440000\n6ba7b810-9dad-11d1-80b4-00c04fd430c8\n...",
+          "description": "Generate multiple UUIDs at once"
+        }
+      ],
+      "useCases": [
+        "Generate database primary keys",
+        "Create unique API request IDs",
+        "Generate session identifiers",
+        "Create unique file names",
+        "Generate test data identifiers"
+      ],
+      "commonErrors": [
+        "Using predictable patterns instead of UUIDs",
+        "Assuming UUIDs are sequential",
+        "Not storing UUIDs in proper database format",
+        "Confusing UUID versions and their use cases"
+      ],
+      "faq": [
+        {
+          "question": "What's the difference between UUID versions?",
+          "answer": "v1 uses timestamp+MAC, v4 is random, v5 uses SHA-1 hash. v4 is most common for general use."
+        },
+        {
+          "question": "Are UUIDs guaranteed to be unique?",
+          "answer": "While extremely unlikely to collide, UUIDs are not 100% guaranteed unique. The probability is negligibly small for practical purposes."
+        }
+      ],
+      "relatedTools": ["random-data-generator", "hash-generator", "password-generator"],
+      "seoTitle": "Free UUID/GUID Generator - Generate Unique Identifiers Online",
+      "seoDescription": "Generate UUID/GUID in v1, v4, v5 formats. Free online UUID generator for databases, APIs, and applications.",
+      "featured": false,
+      "difficulty": "intermediate",
+      "tags": ["uuid", "guid", "generator", "unique", "identifier"]
+    }
+  ]
+}

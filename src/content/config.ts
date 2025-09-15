@@ -31,7 +31,19 @@ const toolsCollection = defineCollection({
       seoDescription: z.string(),
       featured: z.boolean().optional().default(false),
       difficulty: z.enum(['beginner', 'intermediate', 'advanced']).optional().default('beginner'),
-      tags: z.array(z.string()).optional().default([])
+      tags: z.array(z.string()).optional().default([]),
+      // Layout configuration
+      layout: z.enum(['default', 'fullscreen', 'sidebar', 'minimal', 'playground']).optional().default('default'),
+      layoutOptions: z.object({
+        showBreadcrumbs: z.boolean().optional().default(true),
+        showRelatedTools: z.boolean().optional().default(true),
+        showFAQ: z.boolean().optional().default(true),
+        showFeatures: z.boolean().optional().default(true),
+        sidebarPosition: z.enum(['left', 'right']).optional().default('right'),
+        containerWidth: z.enum(['narrow', 'wide', 'full']).optional().default('wide'),
+        enableSplitView: z.boolean().optional().default(false),
+        customSections: z.array(z.string()).optional().default([])
+      }).optional().default({})
     }))
   })
 });

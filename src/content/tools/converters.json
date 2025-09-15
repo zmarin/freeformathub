@@ -1,0 +1,137 @@
+{
+  "category": "converters",
+  "name": "Data Converters",
+  "description": "Convert data between different formats and encodings",
+  "tools": [
+    {
+      "id": "base64-encoder",
+      "name": "Base64 Encoder/Decoder",
+      "description": "Encode and decode Base64 strings with support for files and custom character sets.",
+      "slug": "base64-encoder",
+      "icon": "🔤",
+      "keywords": ["base64", "encode", "decode", "binary", "text", "file"],
+      "layout": "minimal",
+      "layoutOptions": {
+        "showBreadcrumbs": true,
+        "showRelatedTools": true,
+        "showFAQ": true,
+        "showFeatures": true,
+        "containerWidth": "narrow"
+      },
+      "examples": [
+        {
+          "title": "Encode Text",
+          "input": "Hello World!",
+          "output": "SGVsbG8gV29ybGQh",
+          "description": "Convert plain text to Base64"
+        },
+        {
+          "title": "Decode Base64",
+          "input": "SGVsbG8gV29ybGQh",
+          "output": "Hello World!",
+          "description": "Convert Base64 back to plain text"
+        },
+        {
+          "title": "Encode JSON",
+          "input": "{\"name\":\"John\",\"age\":30}",
+          "output": "eyJuYW1lIjoiSm9obiIsImFnZSI6MzB9",
+          "description": "Encode JSON data as Base64"
+        }
+      ],
+      "useCases": [
+        "Encode binary data for transmission over text protocols",
+        "Decode Base64 encoded API responses",
+        "Convert files to Base64 for embedding in HTML/CSS",
+        "Safely transmit binary data in JSON payloads"
+      ],
+      "commonErrors": [
+        "Invalid Base64 characters in input",
+        "Missing padding characters (=)",
+        "Incorrect character encoding",
+        "Truncated Base64 strings"
+      ],
+      "faq": [
+        {
+          "question": "What is Base64 encoding used for?",
+          "answer": "Base64 encoding converts binary data to text format, making it safe for transmission over text-based protocols like email and HTTP."
+        },
+        {
+          "question": "Is Base64 encoding secure?",
+          "answer": "No, Base64 is not encryption. It's just encoding - anyone can decode it. Don't use it for sensitive data protection."
+        }
+      ],
+      "relatedTools": ["url-encoder", "html-entity-encoder", "hex-converter"],
+      "seoTitle": "Free Base64 Encoder/Decoder Online - Convert Text & Files",
+      "seoDescription": "Encode and decode Base64 strings online. Convert text, JSON, and files to/from Base64 encoding. Free and secure.",
+      "featured": true,
+      "difficulty": "beginner",
+      "tags": ["base64", "encode", "decode", "converter"]
+    },
+    {
+      "id": "color-converter",
+      "name": "Color Code Converter",
+      "description": "Convert colors between HEX, RGB, HSL, HSV, CMYK and other color formats with live preview.",
+      "slug": "color-converter",
+      "icon": "🌈",
+      "keywords": ["color", "hex", "rgb", "hsl", "hsv", "cmyk", "convert", "palette"],
+      "layout": "sidebar",
+      "layoutOptions": {
+        "showBreadcrumbs": true,
+        "showRelatedTools": true,
+        "showFAQ": true,
+        "showFeatures": true,
+        "sidebarPosition": "right",
+        "containerWidth": "wide"
+      },
+      "examples": [
+        {
+          "title": "HEX to RGB",
+          "input": "#FF5733",
+          "output": "rgb(255, 87, 51)",
+          "description": "Convert hexadecimal to RGB values"
+        },
+        {
+          "title": "RGB to HSL",
+          "input": "rgb(255, 87, 51)",
+          "output": "hsl(13, 100%, 60%)",
+          "description": "Convert RGB to HSL format"
+        },
+        {
+          "title": "Named Color to HEX",
+          "input": "crimson",
+          "output": "#DC143C",
+          "description": "Convert named colors to hex codes"
+        }
+      ],
+      "useCases": [
+        "Convert colors for web development",
+        "Match colors across different design tools",
+        "Generate color palettes and schemes",
+        "Convert print colors (CMYK) to digital (RGB)",
+        "Extract hex codes from design mockups"
+      ],
+      "commonErrors": [
+        "Invalid hex color format (missing # or wrong length)",
+        "RGB values outside 0-255 range",
+        "Incorrect HSL percentage values",
+        "Unsupported named color references"
+      ],
+      "faq": [
+        {
+          "question": "What's the difference between RGB and HSL?",
+          "answer": "RGB uses red, green, blue values (0-255), while HSL uses hue (0-360°), saturation (0-100%), and lightness (0-100%). HSL is more intuitive for color adjustments."
+        },
+        {
+          "question": "When should I use CMYK colors?",
+          "answer": "CMYK is used for print design. Convert CMYK to RGB/HEX for digital/web use, and RGB/HEX to CMYK for printing."
+        }
+      ],
+      "relatedTools": ["color-palette-generator", "contrast-checker", "gradient-generator"],
+      "seoTitle": "Color Converter - HEX, RGB, HSL, HSV, CMYK Color Code Converter",
+      "seoDescription": "Convert colors between HEX, RGB, HSL, HSV, CMYK formats. Free online color converter with live preview and palette tools.",
+      "featured": true,
+      "difficulty": "beginner",
+      "tags": ["color", "converter", "hex", "rgb", "hsl", "design"]
+    }
+  ]
+}

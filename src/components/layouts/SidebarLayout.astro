@@ -1,0 +1,286 @@
+---
+import type { Tool } from '../../types';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getTool } from '../../lib/tools/registry';
+import { getToolUrl } from '../../lib/routing/category-routes';
+import AdPlacement from '../ads/AdPlacement.astro';
+
+export interface Props {
+  tool: Tool;
+  children?: any;
+}
+
+const { tool } = Astro.props;
+
+// Generate structured data for the tool
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": tool.name,
+  "description": tool.description,
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Any",
+  "permissions": "no-storage",
+  "isAccessibleForFree": true,
+  "creator": {
+    "@type": "Organization",
+    "name": "FreeFormatHub"
+  }
+};
+
+const sidebarPosition = tool.layoutOptions?.sidebarPosition || 'right';
+---
+
+<BaseLayout
+  title={tool.seoTitle}
+  description={tool.seoDescription}
+  keywords={tool.keywords}
+  jsonLd={jsonLd}
+>
+  <!-- Compact Header -->
+  <section style="background-color: var(--color-surface); border-bottom: 1px solid var(--color-border);">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Breadcrumbs -->
+      {tool.layoutOptions?.showBreadcrumbs !== false && (
+        <nav class="mb-6" aria-label="Breadcrumb">
+          <ol class="flex items-center space-x-2 text-sm">
+            <li>
+              <a href="/" style="color: var(--color-text-secondary);" class="hover:text-blue-600 transition-colors">Home</a>
+            </li>
+            <li>
+              <svg class="w-4 h-4 mx-2" style="color: var(--color-text-muted);" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+              </svg>
+            </li>
+            <li>
+              <a href={`/${tool.category?.id || 'unknown'}`} style="color: var(--color-text-secondary);" class="hover:text-blue-600 transition-colors">
+                {tool.category?.name || 'Unknown'}
+              </a>
+            </li>
+            <li>
+              <svg class="w-4 h-4 mx-2" style="color: var(--color-text-muted);" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+              </svg>
+            </li>
+            <li style="color: var(--color-text-primary); font-weight: 600;">
+              {tool.name}
+            </li>
+          </ol>
+        </nav>
+      )}
+
+      <!-- Tool Header -->
+      <div class="flex items-center gap-4 mb-4">
+        <div style="
+          width: 56px;
+          height: 56px;
+          background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+          border-radius: var(--radius-lg);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.5rem;
+          color: white;
+        ">
+          {tool.icon}
+        </div>
+        <div>
+          <h1 style="
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-text-primary);
+            margin: 0 0 var(--space-sm) 0;
+          ">
+            {tool.name}
+          </h1>
+          <p style="
+            color: var(--color-text-secondary);
+            margin: 0;
+          ">
+            {tool.description}
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content with Sidebar -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div style={`display: grid; grid-template-columns: ${sidebarPosition === 'left' ? '300px 1fr' : '1fr 300px'}; gap: var(--space-2xl);`}>
+
+      <!-- Main Tool Area -->
+      <div style={`order: ${sidebarPosition === 'left' ? '2' : '1'};`}>
+        <div class="card" style="margin-bottom: var(--space-2xl);">
+          <slot />
+        </div>
+
+        <!-- Content Ad -->
+        <div class="card" style="background-color: var(--color-surface-secondary); border: 2px dashed var(--color-border); text-align: center; padding: var(--space-xl); margin-bottom: var(--space-2xl);">
+          <AdPlacement type="content" lazy={true} />
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside style={`order: ${sidebarPosition === 'left' ? '1' : '2'};`}>
+        <!-- Sidebar Ad -->
+        <div class="card" style="background-color: var(--color-surface-secondary); border: 2px dashed var(--color-border); text-align: center; padding: var(--space-xl); margin-bottom: var(--space-xl);">
+          <AdPlacement type="sidebar" lazy={true} />
+        </div>
+
+        <!-- Quick Info -->
+        <div class="card" style="margin-bottom: var(--space-xl);">
+          <div class="card-body">
+            <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-lg); color: var(--color-text-primary);">
+              Quick Info
+            </h3>
+            <div style="space-y: var(--space-md);">
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-sm) 0; border-bottom: 1px solid var(--color-border);">
+                <span style="color: var(--color-text-secondary); font-size: 0.875rem;">Difficulty</span>
+                <span style="color: var(--color-text-primary); font-weight: 500; font-size: 0.875rem; text-transform: capitalize;">
+                  {tool.difficulty || 'Beginner'}
+                </span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-sm) 0; border-bottom: 1px solid var(--color-border);">
+                <span style="color: var(--color-text-secondary); font-size: 0.875rem;">Privacy</span>
+                <span style="color: var(--color-success); font-weight: 500; font-size: 0.875rem;">
+                  100% Client-side
+                </span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-sm) 0;">
+                <span style="color: var(--color-text-secondary); font-size: 0.875rem;">Category</span>
+                <span style="color: var(--color-text-primary); font-weight: 500; font-size: 0.875rem;">
+                  {tool.category?.name || 'Tools'}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Use Cases -->
+        {tool.useCases && tool.useCases.length > 0 && (
+          <div class="card" style="margin-bottom: var(--space-xl);">
+            <div class="card-body">
+              <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-lg); color: var(--color-text-primary);">
+                Common Use Cases
+              </h3>
+              <ul style="space-y: var(--space-md);">
+                {tool.useCases.slice(0, 5).map((useCase: string) => (
+                  <li style="display: flex; align-items: flex-start; gap: var(--space-sm); color: var(--color-text-secondary); font-size: 0.875rem; line-height: 1.5;">
+                    <div style="width: 4px; height: 4px; background-color: var(--color-primary); border-radius: 50%; margin-top: 8px; flex-shrink: 0;"></div>
+                    {useCase}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
+        <!-- Related Tools -->
+        {tool.relatedTools && tool.relatedTools.length > 0 && tool.layoutOptions?.showRelatedTools !== false && (
+          <div class="card">
+            <div class="card-body">
+              <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-lg); color: var(--color-text-primary);">
+                Related Tools
+              </h3>
+              <div style="space-y: var(--space-md);">
+                {tool.relatedTools.slice(0, 4).map((relatedToolId: string) => {
+                  const t = getTool(relatedToolId);
+                  const href = t ? getToolUrl(t) : '/search';
+                  const name = t?.name || relatedToolId.replace('-', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase());
+                  return (
+                    <a href={href} style="
+                      display: flex;
+                      align-items: center;
+                      gap: var(--space-md);
+                      padding: var(--space-md);
+                      background-color: var(--color-surface-secondary);
+                      border-radius: var(--radius-md);
+                      text-decoration: none;
+                      transition: all var(--transition-fast);
+                    " class="hover:shadow-sm">
+                      <div style="
+                        width: 32px;
+                        height: 32px;
+                        background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+                        border-radius: var(--radius-md);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: white;
+                        font-size: 0.875rem;
+                        flex-shrink: 0;
+                      ">
+                        {t?.icon || '🔧'}
+                      </div>
+                      <span style="color: var(--color-text-primary); font-weight: 500; font-size: 0.875rem;">
+                        {name}
+                      </span>
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+      </aside>
+    </div>
+
+    <!-- FAQ Section (if enabled) -->
+    {(tool.faq?.length ?? 0) > 0 && tool.layoutOptions?.showFAQ !== false && (
+      <div class="card" style="margin-top: var(--space-2xl);">
+        <details class="group">
+          <summary style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: var(--space-2xl);
+            border-bottom: 1px solid var(--color-border);
+            background-color: var(--color-surface-secondary);
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+          ">
+            <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--color-text-primary);">
+              Frequently Asked Questions
+            </h2>
+            <svg class="w-6 h-6 group-open:rotate-180 transition-transform" style="color: var(--color-text-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div style="padding: var(--space-2xl);">
+            <div style="display: grid; gap: var(--space-lg);">
+              {tool.faq?.map((faqItem: any) => (
+                <details class="group">
+                  <summary style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    cursor: pointer;
+                    padding: var(--space-lg);
+                    background-color: var(--color-surface-secondary);
+                    border-radius: var(--radius-lg);
+                    transition: background-color var(--transition-fast);
+                  " class="hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <span style="font-weight: 600; color: var(--color-text-primary);">
+                      {faqItem.question}
+                    </span>
+                    <svg class="w-4 h-4 group-open:rotate-180 transition-transform" style="color: var(--color-text-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </summary>
+                  <div style="padding: var(--space-lg); color: var(--color-text-secondary); line-height: 1.6;">
+                    {faqItem.answer}
+                  </div>
+                </details>
+              ))}
+            </div>
+          </div>
+        </details>
+      </div>
+    )}
+
+    <!-- Footer Ad -->
+    <div class="card" style="background-color: var(--color-surface-secondary); border: 2px dashed var(--color-border); text-align: center; padding: var(--space-2xl); margin-top: var(--space-2xl);">
+      <AdPlacement type="footer" lazy={true} />
+    </div>
+  </div>
+</BaseLayout>
