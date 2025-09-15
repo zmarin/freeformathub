@@ -23,8 +23,8 @@ RUN npm run build
 # Create nginx directories and setup
 RUN mkdir -p /run/nginx /var/log/nginx
 
-# Copy nginx configuration
-COPY deployment/nginx/dokploy.conf /etc/nginx/conf.d/default.conf
+# Copy nginx configuration (already included in COPY . .)
+RUN cp deployment/nginx/dokploy.conf /etc/nginx/conf.d/default.conf
 
 # Copy built application to nginx directory
 RUN cp -r /app/dist/* /usr/share/nginx/html/
