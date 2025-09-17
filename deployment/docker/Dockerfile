@@ -29,6 +29,10 @@ RUN cp deployment/nginx/dokploy.conf /etc/nginx/conf.d/default.conf
 # Copy built application to nginx directory
 RUN cp -r /app/dist/* /usr/share/nginx/html/
 
+# Explicitly copy critical static files to ensure they're accessible
+RUN cp /app/public/ads.txt /usr/share/nginx/html/ || cp /app/dist/ads.txt /usr/share/nginx/html/
+RUN cp /app/public/robots.txt /usr/share/nginx/html/ || cp /app/dist/robots.txt /usr/share/nginx/html/
+
 # Create health check endpoint
 RUN echo '{"status":"ok","service":"freeformathub"}' > /usr/share/nginx/html/health
 
