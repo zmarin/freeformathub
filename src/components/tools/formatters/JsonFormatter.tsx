@@ -425,9 +425,9 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
         minHeight: '500px'
-      }} className="md:grid-cols-1">
+      }}>
         {/* Input Panel */}
-        <div style={{ position: 'relative', borderRight: '1px solid var(--color-border)' }} className="md:border-r-0 md:border-b md:border-b-gray-200">
+        <div style={{ position: 'relative', borderRight: '1px solid var(--color-border)' }}>
           {/* Input Header */}
           <div style={{
             backgroundColor: 'var(--color-surface-secondary)',

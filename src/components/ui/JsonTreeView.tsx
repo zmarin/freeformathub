@@ -584,25 +584,64 @@ export const JsonTreeView: React.FC<JsonTreeViewProps> = ({
       let primitives = 0;
       let maxDepth = 0;
 
-      const traverse = (value: any, depth: number) => {
-        maxDepth = Math.max(maxDepth, depth);
+      // Track visited objects to prevent circular reference issues
+      const visited = new WeakSet();
+      const MAX_DEPTH = 100; // Prevent stack overflow
 
-        if (Array.isArray(value)) {
-          arrays++;
-          value.forEach(item => traverse(item, depth + 1));
-        } else if (typeof value === 'object' && value !== null) {
-          objects++;
-          Object.values(value).forEach(val => traverse(val, depth + 1));
-        } else {
-          primitives++;
+      const traverse = (value: any, depth: number) => {
+        try {
+          // Prevent infinite depth traversal
+          if (depth > MAX_DEPTH) {
+            return;
+          }
+
+          maxDepth = Math.max(maxDepth, depth);
+
+          if (Array.isArray(value)) {
+            // Check for circular reference
+            if (visited.has(value)) {
+              return;
+            }
+            visited.add(value);
+
+            arrays++;
+            value.forEach(item => traverse(item, depth + 1));
+          } else if (typeof value === 'object' && value !== null) {
+            // Check for circular reference
+            if (visited.has(value)) {
+              return;
+            }
+            visited.add(value);
+
+            objects++;
+            Object.values(value).forEach(val => traverse(val, depth + 1));
+          } else {
+            primitives++;
+          }
+        } catch (error) {
+          // Silently handle any traversal errors
+          console.warn('Error during JSON stats calculation:', error);
         }
       };
 
-      traverse(obj, 0);
+      try {
+        traverse(obj, 0);
+      } catch (error) {
+        console.warn('Error calculating JSON stats:', error);
+        // Return safe defaults if calculation fails
+        return { objects: 0, arrays: 0, primitives: 0, maxDepth: 0 };
+      }
+
       return { objects, arrays, primitives, maxDepth };
     };
 
-    return calculateStats(data);
+    try {
+      return calculateStats(data);
+    } catch (error) {
+      console.warn('Error in stats calculation:', error);
+      // Return safe defaults if anything fails
+      return { objects: 0, arrays: 0, primitives: 0, maxDepth: 0 };
+    }
   }, [data]);
 
   if (!data) {
