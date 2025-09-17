@@ -109,6 +109,32 @@ export const JSON_FORMATTER_TOOL: Tool = {
     'json-to-yaml',
     'json-validator',
     'json-minifier'
+  ],
+  howItWorks: [
+    {
+      title: "Paste or Upload JSON Data",
+      icon: "📋",
+      description: "Input your JSON, JSONC, or JSON5 data directly into our online JSON formatter. Support for large JSON files up to 10MB. Drag and drop JSON files or paste from clipboard. Our JSON validator instantly detects syntax errors, missing quotes, and trailing commas for accurate JSON formatting.",
+      keywords: ["paste JSON", "upload JSON file", "JSON input", "JSONC", "JSON5", "JSON validator"]
+    },
+    {
+      title: "Configure JSON Formatting Options",
+      icon: "⚙️",
+      description: "Customize indentation (2, 4 spaces or tabs), enable alphabetical key sorting, remove comments from JSONC, handle special numbers (NaN, Infinity), and detect duplicate keys. Our JSON beautifier offers real-time preview with syntax highlighting and comprehensive formatting control.",
+      keywords: ["JSON indentation", "sort JSON keys", "JSON beautifier options", "JSONC comments", "JSON formatting"]
+    },
+    {
+      title: "Validate and Format JSON Instantly",
+      icon: "✨",
+      description: "Click 'Format JSON' to beautify, validate, and fix your JSON data. Our JSON formatter processes data locally in your browser - no server uploads required. Get instant error messages with line numbers and suggestions for fixing invalid JSON syntax and structure.",
+      keywords: ["format JSON online", "validate JSON", "beautify JSON", "JSON syntax checker", "JSON parser"]
+    },
+    {
+      title: "Export Formatted JSON Results",
+      icon: "💾",
+      description: "Download formatted JSON files, copy to clipboard with one click, or view in interactive tree mode. Export minified JSON for production, or pretty-printed JSON for debugging. Share formatted JSON via direct link or open in new window for enhanced workflow.",
+      keywords: ["download JSON", "copy JSON", "export JSON", "minify JSON", "JSON tree view", "JSON download"]
+    }
   ]
 };
 

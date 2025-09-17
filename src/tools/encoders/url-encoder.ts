@@ -1,4 +1,4 @@
-import type { Tool, ToolResult, ToolConfig } from '../types';
+import type { Tool, ToolResult, ToolConfig } from '../../types';
 import { TOOL_CATEGORIES } from '../../lib/tools/registry';
 
 export interface UrlEncoderConfig extends ToolConfig {
@@ -79,6 +79,32 @@ export const URL_ENCODER_TOOL: Tool = {
     'jwt-decoder',
     'query-string-parser',
     'form-data-encoder'
+  ],
+  howItWorks: [
+    {
+      title: "Input URL or Text Data",
+      icon: "🔗",
+      description: "Paste URLs, query parameters, file paths, or any text containing special characters into our online URL encoder. Support for complete URLs, URI components, form data, file names, and international characters. Our URL tool handles both encoding and decoding operations.",
+      keywords: ["paste URL", "URL input", "query parameters", "URI components", "file paths", "special characters"]
+    },
+    {
+      title: "Configure URL Encoding Options",
+      icon: "⚙️",
+      description: "Choose between encode or decode mode, select space encoding (+ or %20), enable component-level encoding with encodeURIComponent, handle reserved characters (: / ? # [ ] @), and customize encoding behavior for different URL parts and web standards.",
+      keywords: ["URL encoding options", "encodeURIComponent", "percent encoding", "space encoding", "reserved characters"]
+    },
+    {
+      title: "Encode or Decode URLs Instantly",
+      icon: "⚡",
+      description: "Click 'Encode' to convert text to URL-safe format or 'Decode' to convert encoded URLs back to readable text. Our URL encoder processes data locally with no server uploads. Get instant results with proper percent encoding and RFC 3986 compliance.",
+      keywords: ["encode URL", "decode URL", "URL encoder online", "percent encoding", "RFC 3986", "URL-safe"]
+    },
+    {
+      title: "Copy or Use Encoded URLs",
+      icon: "📋",
+      description: "Copy encoded URLs to clipboard, download as text files, or use directly in web applications, forms, and APIs. Perfect for query string parameters, GET requests, REST API endpoints, file uploads, and creating safe links with special characters.",
+      keywords: ["copy URL", "download URL", "query string", "GET requests", "REST API", "URL parameters"]
+    }
   ]
 };
 

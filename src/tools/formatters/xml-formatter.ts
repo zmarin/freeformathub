@@ -1,4 +1,4 @@
-import type { Tool, ToolResult, ToolConfig } from '../types';
+import type { Tool, ToolResult, ToolConfig } from '../../types';
 import { TOOL_CATEGORIES } from '../../lib/tools/registry';
 
 export interface XmlFormatterConfig extends ToolConfig {
@@ -85,6 +85,32 @@ export const XML_FORMATTER_TOOL: Tool = {
     'html-formatter',
     'xpath-tester',
     'base64-encoder'
+  ],
+  howItWorks: [
+    {
+      title: "Input XML Data",
+      icon: "📄",
+      description: "Paste XML content, upload XML files, or drag and drop your XML data into our online XML formatter. Support for large XML files, SOAP envelopes, RSS feeds, configuration files, and all XML-based formats. Our XML parser instantly validates syntax and detects common XML errors.",
+      keywords: ["paste XML", "upload XML file", "XML input", "SOAP formatter", "RSS formatter", "XML validator"]
+    },
+    {
+      title: "Configure XML Formatting Options",
+      icon: "⚙️",
+      description: "Customize XML indentation (2, 4 spaces or tabs), sort attributes alphabetically, remove comments and empty nodes, handle self-closing tags, and choose between formatting, validation, or minification modes. Advanced XML beautifier options for professional XML processing.",
+      keywords: ["XML indentation", "sort XML attributes", "XML beautifier", "XML minifier", "XML formatting options"]
+    },
+    {
+      title: "Format and Validate XML",
+      icon: "✨",
+      description: "Click 'Format XML' to beautify and validate your XML data. Our XML formatter processes data locally in your browser with no server uploads. Get detailed error messages for invalid XML syntax, unclosed tags, and malformed structures with precise line numbers.",
+      keywords: ["format XML online", "validate XML", "beautify XML", "XML syntax checker", "XML parser error"]
+    },
+    {
+      title: "Export or Convert XML Results",
+      icon: "💾",
+      description: "Download formatted XML files, copy to clipboard, or convert XML to JSON format. Export minified XML for production use or pretty-printed XML for debugging. Share formatted XML documents or open in new window for enhanced productivity.",
+      keywords: ["download XML", "copy XML", "XML to JSON", "export XML", "convert XML", "XML converter"]
+    }
   ]
 };
 

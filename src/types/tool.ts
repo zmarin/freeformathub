@@ -1,3 +1,10 @@
+export interface HowItWorksStep {
+  title: string;
+  icon: string;
+  description: string;
+  keywords?: string[];
+}
+
 export interface Tool {
   id: string;
   name: string;
@@ -14,6 +21,7 @@ export interface Tool {
   relatedTools: string[];
   seoTitle: string;
   seoDescription: string;
+  howItWorks?: HowItWorksStep[];
 }
 
 export interface ToolExample {

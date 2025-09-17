@@ -1,4 +1,4 @@
-import type { Tool, ToolResult, ToolConfig } from '../types';
+import type { Tool, ToolResult, ToolConfig } from '../../types';
 import { TOOL_CATEGORIES } from '../../lib/tools/registry';
 
 export interface Base64EncoderConfig extends ToolConfig {
@@ -78,6 +78,32 @@ export const BASE64_ENCODER_TOOL: Tool = {
     'jwt-decoder',
     'html-encoder',
     'unicode-encoder'
+  ],
+  howItWorks: [
+    {
+      title: "Input Text or Base64 Data",
+      icon: "📝",
+      description: "Paste text to encode or Base64 string to decode into our online Base64 encoder. Support for large text files, binary data, JSON objects, API keys, and any text content. Our Base64 tool handles both standard and URL-safe encoding formats for maximum compatibility.",
+      keywords: ["paste text", "Base64 input", "encode text", "decode Base64", "binary data", "API keys"]
+    },
+    {
+      title: "Configure Base64 Options",
+      icon: "⚙️",
+      description: "Choose between encode or decode mode, enable URL-safe Base64 encoding for URLs and filenames, add line breaks for better readability, and customize padding options. Our Base64 encoder offers both standard RFC 3548 and URL-safe RFC 4648 encoding variants.",
+      keywords: ["URL-safe Base64", "Base64 options", "line breaks", "Base64 padding", "RFC 3548", "RFC 4648"]
+    },
+    {
+      title: "Encode or Decode Instantly",
+      icon: "🔄",
+      description: "Click 'Encode' to convert text to Base64 or 'Decode' to convert Base64 back to text. Our Base64 converter processes data locally in your browser with no server uploads required. Get instant results with real-time conversion and error detection.",
+      keywords: ["encode Base64", "decode Base64", "Base64 converter", "Base64 online", "text to Base64"]
+    },
+    {
+      title: "Copy or Download Results",
+      icon: "💾",
+      description: "Copy encoded/decoded results to clipboard with one click, download as text files, or share Base64 strings directly. Perfect for data URIs, embedding images in CSS/HTML, API authentication tokens, and secure data transmission over text protocols.",
+      keywords: ["copy Base64", "download Base64", "data URI", "embed images", "authentication tokens", "Base64 file"]
+    }
   ]
 };
 
