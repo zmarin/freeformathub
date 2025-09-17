@@ -5,6 +5,20 @@ export interface HowItWorksStep {
   keywords?: string[];
 }
 
+export interface ProblemSolution {
+  problem: string;
+  solution: string;
+  icon: string;
+  keywords?: string[];
+}
+
+export interface ToolBenefit {
+  title: string;
+  description: string;
+  icon: string;
+  keywords?: string[];
+}
+
 export interface Tool {
   id: string;
   name: string;
@@ -22,6 +36,8 @@ export interface Tool {
   seoTitle: string;
   seoDescription: string;
   howItWorks?: HowItWorksStep[];
+  problemsSolved?: ProblemSolution[];
+  whyChoose?: ToolBenefit[];
 }
 
 export interface ToolExample {

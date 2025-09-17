@@ -135,6 +135,52 @@ export const JSON_FORMATTER_TOOL: Tool = {
       description: "Download formatted JSON files, copy to clipboard with one click, or view in interactive tree mode. Export minified JSON for production, or pretty-printed JSON for debugging. Share formatted JSON via direct link or open in new window for enhanced workflow.",
       keywords: ["download JSON", "copy JSON", "export JSON", "minify JSON", "JSON tree view", "JSON download"]
     }
+  ],
+  problemsSolved: [
+    {
+      problem: "Debugging minified or compact JSON data becomes nearly impossible when structures are condensed into single lines, making it difficult to identify issues, understand data hierarchy, or locate specific values in API responses and configuration files.",
+      solution: "Our JSON formatter instantly beautifies compressed JSON with proper indentation, line breaks, and visual structure. Advanced features include syntax highlighting, collapsible sections, and tree view mode for easy navigation through complex nested objects.",
+      icon: "🔍",
+      keywords: ["debug JSON", "minified JSON", "JSON structure", "beautify JSON", "JSON readability"]
+    },
+    {
+      problem: "Invalid JSON syntax errors are cryptic and hard to troubleshoot, especially with missing quotes, trailing commas, or incorrect nesting. Development workflows get blocked by syntax errors that are difficult to locate in large JSON files.",
+      solution: "Comprehensive JSON validation with detailed error messages, exact line and column numbers, visual error highlighting, and helpful suggestions for fixing common JSON syntax issues. Supports JSONC with automatic comment removal.",
+      icon: "⚠️",
+      keywords: ["JSON validation", "syntax errors", "JSON debugging", "invalid JSON", "JSON parser error"]
+    },
+    {
+      problem: "Managing JSON data across different systems requires various formats - sometimes minified for production, sometimes formatted for development, with different key sorting requirements and encoding standards for API compatibility.",
+      solution: "Flexible JSON processing with multiple output formats: minified for production, formatted for debugging, sorted keys for consistency, UTF-8 encoding support, and batch processing capabilities for handling multiple JSON files efficiently.",
+      icon: "🔄",
+      keywords: ["JSON conversion", "multiple formats", "JSON minifier", "sort JSON keys", "batch JSON processing"]
+    }
+  ],
+  whyChoose: [
+    {
+      title: "100% Privacy & Security",
+      description: "All JSON processing happens locally in your browser with zero data transmission to servers. No uploads, no logging, no data retention. Your sensitive JSON data, API responses, and configuration files remain completely private and secure.",
+      icon: "🔒",
+      keywords: ["private JSON formatter", "secure JSON tool", "no data upload", "local JSON processing"]
+    },
+    {
+      title: "Advanced JSON Features",
+      description: "Beyond basic formatting - supports JSONC comments, trailing commas, single quotes, duplicate key detection, special number handling, and interactive tree view. Perfect for modern development workflows with comprehensive JSON dialect support.",
+      icon: "⚡",
+      keywords: ["JSONC support", "advanced JSON", "JSON tree view", "duplicate keys", "JSON5 features"]
+    },
+    {
+      title: "Developer-Friendly Tools",
+      description: "Built for developers by developers. Keyboard shortcuts, auto-formatting, real-time validation, syntax highlighting, line numbers, path navigation, search functionality, and direct integration with popular development workflows.",
+      icon: "👨‍💻",
+      keywords: ["developer tools", "keyboard shortcuts", "real-time validation", "JSON development", "programming tools"]
+    },
+    {
+      title: "Lightning Fast Performance",
+      description: "Instant processing of large JSON files up to 10MB with optimized parsing algorithms. No waiting, no timeouts, no browser crashes. Handles complex nested structures and large arrays with consistent performance across all devices.",
+      icon: "⚡",
+      keywords: ["fast JSON formatter", "large JSON files", "JSON performance", "instant processing", "optimized JSON parser"]
+    }
   ]
 };
 

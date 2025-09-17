@@ -290,6 +290,107 @@ const jsonLd = {
       </div>
     </div>
 
+    <!-- Problems It Solves Section -->
+    {tool.problemsSolved && tool.problemsSolved.length > 0 && (
+      <div class="card" style="margin-bottom: var(--space-3xl);">
+        <div class="card-body">
+          <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--color-text-primary); margin-bottom: var(--space-2xl);">
+            Problems It Solves
+          </h2>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-2xl);">
+            {tool.problemsSolved.map((item: any, index: number) => (
+              <div style="display: flex; flex-direction: column; gap: var(--space-lg); padding: var(--space-lg); border-radius: var(--radius-lg); background-color: var(--color-surface-secondary);">
+                <div style="display: flex; align-items: center; gap: var(--space-md);">
+                  <div style="
+                    width: 40px;
+                    height: 40px;
+                    background-color: var(--color-danger-light);
+                    border-radius: var(--radius-lg);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+                    font-size: 1.25rem;
+                  ">
+                    {item.icon}
+                  </div>
+                  <h3 style="font-weight: 600; color: var(--color-text-primary); font-size: 1rem;">
+                    Problem
+                  </h3>
+                </div>
+                <p style="color: var(--color-text-secondary); font-size: 0.875rem; line-height: 1.6; margin-bottom: var(--space-md);">
+                  {item.problem}
+                </p>
+
+                <div style="display: flex; align-items: center; gap: var(--space-md);">
+                  <div style="
+                    width: 40px;
+                    height: 40px;
+                    background-color: var(--color-success-light);
+                    border-radius: var(--radius-lg);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+                  ">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color: var(--color-success);">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4"/>
+                    </svg>
+                  </div>
+                  <h4 style="font-weight: 600; color: var(--color-text-primary); font-size: 1rem;">
+                    Solution
+                  </h4>
+                </div>
+                <p style="color: var(--color-text-secondary); font-size: 0.875rem; line-height: 1.6;">
+                  {item.solution}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+
+    <!-- Why Choose This Tool Section -->
+    {tool.whyChoose && tool.whyChoose.length > 0 && (
+      <div class="card" style="margin-bottom: var(--space-3xl);">
+        <div class="card-body">
+          <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--color-text-primary); margin-bottom: var(--space-2xl);">
+            Why Choose This Tool
+          </h2>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-2xl);">
+            {tool.whyChoose.map((benefit: any, index: number) => (
+              <div style="display: flex; align-items: flex-start; gap: var(--space-lg);">
+                <div style="
+                  width: 48px;
+                  height: 48px;
+                  background: linear-gradient(135deg, var(--color-accent-light), var(--color-accent));
+                  border-radius: var(--radius-lg);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  flex-shrink: 0;
+                  font-size: 1.25rem;
+                ">
+                  {benefit.icon}
+                </div>
+                <div>
+                  <h3 style="font-weight: 600; margin-bottom: var(--space-sm); color: var(--color-text-primary);">
+                    {benefit.title}
+                  </h3>
+                  <p style="color: var(--color-text-secondary); font-size: 0.875rem; line-height: 1.6;">
+                    {benefit.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+
     <!-- In-Content Ad -->
     <div class="card" style="background-color: var(--color-surface-secondary); border: 2px dashed var(--color-border); text-align: center; padding: var(--space-2xl); margin-bottom: var(--space-3xl);">
       <AdPlacement type="content" lazy={true} />
