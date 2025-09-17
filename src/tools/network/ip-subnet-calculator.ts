@@ -398,7 +398,7 @@ export const IP_SUBNET_CALCULATOR_TOOL: Tool = {
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'network')!.subcategories!.find(sub => sub.id === 'ip-tools')!,
   slug: 'ip-subnet-calculator',
   icon: '🌐',
-  keywords: ['ip', 'subnet', 'cidr', 'network', 'calculator', 'netmask', 'wildcard'],
+  keywords: ['ip', 'subnet', 'cidr', 'network', 'calculator', 'netmask', 'wildcard', 'subnet mask', 'ip range', 'netmask calculator'],
   seoTitle: 'IP Subnet Calculator - CIDR, Netmask & Network Analysis | FreeFormatHub',
   seoDescription: 'Plan networks faster: compute subnet masks, CIDR ranges, binary masks, private/loopback flags, and subnet splits instantly. Export-friendly output with no data leaving your browser.',
   description: 'Plan IPv4 networks with instant subnet math, CIDR validation, binary masks, private range detection, and automated subnet splitting — tailored for network engineers and learners alike.',

@@ -133,6 +133,7 @@ import { PHONE_NUMBER_VALIDATOR_TOOL } from '../../tools/validators/phone-number
 import { CREDIT_CARD_VALIDATOR_TOOL } from '../../tools/validators/credit-card-validator';
 import { IBAN_VALIDATOR_TOOL } from '../../tools/validators/iban-validator';
 import { URL_VALIDATOR_TOOL } from '../../tools/validators/url-validator';
+import { HTML5_VALIDATOR_TOOL } from '../../tools/validators/html5-validator';
 
 // Note: Some tools might need adjustment based on their actual exported names
 // Import URL_PARSER_TOOL and URL_SHORTENER_TOOL - need to determine correct category
@@ -275,6 +276,7 @@ registerTool(PHONE_NUMBER_VALIDATOR_TOOL);
 registerTool(CREDIT_CARD_VALIDATOR_TOOL);
 registerTool(IBAN_VALIDATOR_TOOL);
 registerTool(URL_VALIDATOR_TOOL);
+registerTool(HTML5_VALIDATOR_TOOL);
 
 // Export everything from registry
 export * from './registry';

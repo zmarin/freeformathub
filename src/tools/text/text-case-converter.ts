@@ -9,15 +9,15 @@ export interface TextCaseConfig extends ToolConfig {
 
 export const TEXT_CASE_CONVERTER_TOOL: Tool = {
   id: 'text-case-converter',
-  name: 'Text Case Converter',
-  description: 'Convert text between 13 different case formats including camelCase, PascalCase, snake_case, kebab-case, UPPERCASE, lowercase, and more. Perfect for developers, writers, and content creators.',
+  name: 'Text Case & Camel Case Converter',
+  description: 'Convert text between 13 formats — including a dedicated camelCase converter — supporting PascalCase, snake_case, kebab-case, Title Case, constants, and more for developers and writers.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'text')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'text')!.subcategories!.find(sub => sub.id === 'text-transformation')!,
   slug: 'text-case-converter',
   icon: '🔤',
-  keywords: ['text', 'case', 'convert', 'uppercase', 'lowercase', 'camelcase', 'pascalcase', 'snakecase', 'kebabcase', 'titlecase', 'constantcase', 'dotcase', 'pathcase', 'alternating', 'inverse', 'programming', 'variables', 'naming conventions'],
-  seoTitle: 'Free Text Case Converter - 13 Formats: camelCase, snake_case, kebab-case & More',
-  seoDescription: 'Convert text between 13 case formats instantly. Supports camelCase, PascalCase, snake_case, kebab-case, UPPERCASE, Title Case, and more. Perfect for programming, URLs, and content formatting. Live preview, instant conversion, privacy-first.',
+  keywords: ['text', 'case', 'convert', 'uppercase', 'lowercase', 'camelcase', 'pascalcase', 'snakecase', 'kebabcase', 'titlecase', 'constantcase', 'dotcase', 'pathcase', 'alternating', 'inverse', 'programming', 'variables', 'naming conventions', 'camel case converter', 'camel to snake', 'title case converter'],
+  seoTitle: 'Free Camel Case Converter & Text Case Tool - 13 Formats Online',
+  seoDescription: 'Convert text between camelCase, PascalCase, snake_case, kebab-case, Title Case, and 8 more formats instantly. Developer-friendly camel case converter with live preview, acronym preservation, and privacy-first processing.',
   examples: [
     {
       title: 'Programming Variables (camelCase)',
@@ -141,6 +141,78 @@ export const TEXT_CASE_CONVERTER_TOOL: Tool = {
     'text-formatter',
     'string-utilities',
     'regex-tester'
+  ],
+  howItWorks: [
+    {
+      title: 'Paste or Type Your Text',
+      icon: '📝',
+      description: 'Drop in variables, titles, or paragraphs. The converter handles spaces, punctuation, numbers, and camelCase boundaries automatically for clean splits.',
+      keywords: ['paste text', 'input text', 'camelcase detection', 'automatic splitting', 'text cleanup']
+    },
+    {
+      title: 'Pick a Target Case',
+      icon: '🎯',
+      description: 'Choose from camelCase, PascalCase, snake_case, kebab-case, Title Case, CONSTANT_CASE, dot.case, path/case, alternating, and inverse options in one click.',
+      keywords: ['camel case converter', 'pascal case', 'snake case', 'kebab case', 'constant case']
+    },
+    {
+      title: 'Fine-Tune Options',
+      icon: '⚙️',
+      description: 'Preserve acronyms, set custom delimiters, and toggle live preview. Instantly see the transformed text as you tweak naming conventions.',
+      keywords: ['preserve acronyms', 'custom delimiter', 'live preview', 'naming convention', 'developer workflow']
+    },
+    {
+      title: 'Copy, Download, or Reuse',
+      icon: '📤',
+      description: 'Copy results, download files, or save conversions to history for later reference — perfect for documentation, API payloads, and batch updates.',
+      keywords: ['copy output', 'download result', 'history', 'documentation', 'api payloads']
+    }
+  ],
+  problemsSolved: [
+    {
+      problem: 'Manually converting sentence-style strings into camelCase variables or API fields is tedious and error-prone.',
+      solution: 'Instant camelCase conversion with optional acronym preservation keeps JavaScript, TypeScript, and Java code consistent in seconds.',
+      icon: '⚡',
+      keywords: ['camelcase conversion', 'javascript variables', 'api fields', 'type-safe', 'developer productivity']
+    },
+    {
+      problem: 'Teams juggling snake_case backends and camelCase frontends waste time rewriting property names by hand.',
+      solution: 'One-click snake_case ↔ camelCase transformations, plus batch paste support, speed up integrations and reduce mapping bugs.',
+      icon: '🔁',
+      keywords: ['snake to camel', 'api integration', 'naming consistency', 'backend frontend', 'mapping bugs']
+    },
+    {
+      problem: 'Writers and marketers need SEO-friendly slugs and Title Case headlines without juggling multiple tools.',
+      solution: 'Generate kebab-case slugs and polished Title Case headlines side-by-side, ensuring content is consistent across channels.',
+      icon: '📰',
+      keywords: ['title case', 'kebab case', 'seo slugs', 'content workflow', 'marketing assets']
+    }
+  ],
+  whyChoose: [
+    {
+      title: 'Developer-Centric Coverage',
+      description: 'Thirteen case styles in one place — from camelCase and PascalCase to dot.case and path/case — means fewer tabs when prepping code.',
+      icon: '👩‍💻',
+      keywords: ['developer tool', 'multi case', 'code prep', 'naming conventions']
+    },
+    {
+      title: 'Smart Acronym Handling',
+      description: 'Preserve or normalize acronyms (XML, HTTP, ID) based on your language style guide to keep code reviews frictionless.',
+      icon: '🔠',
+      keywords: ['acronym handling', 'style guide', 'code review', 'consistency']
+    },
+    {
+      title: 'Privacy-First Conversion',
+      description: 'All processing happens locally, so proprietary variable names and content never leave your browser.',
+      icon: '🔒',
+      keywords: ['client-side', 'secure tool', 'no upload', 'private data']
+    },
+    {
+      title: 'Workflow Extras',
+      description: 'History tracking, quick copy, and download helpers make batch renaming, documentation updates, and migrations painless.',
+      icon: '🗂️',
+      keywords: ['history tracking', 'copy helper', 'download', 'batch rename', 'documentation']
+    }
   ]
 };
 

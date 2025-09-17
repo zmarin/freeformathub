@@ -34,6 +34,8 @@ import { UuidGenerator } from '../components/tools/generators/UuidGenerator';
 
 // Validator components
 import { EmailValidator } from '../components/tools/validators/EmailValidator';
+import { JsonSchemaValidator } from '../components/tools/validators/JsonSchemaValidator';
+import { Html5Validator } from '../components/tools/validators/Html5Validator';
 
 // Text components
 import { TextCaseConverter } from '../components/tools/text/TextCaseConverter';
@@ -108,6 +110,8 @@ export const TOOL_COMPONENTS: Record<string, ToolComponent> = {
 
   // Validators
   'email-validator': EmailValidator,
+  'json-schema-validator': JsonSchemaValidator,
+  'html5-validator': Html5Validator,
 
   // Text tools
   'text-case-converter': TextCaseConverter,

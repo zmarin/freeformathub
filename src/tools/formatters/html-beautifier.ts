@@ -66,7 +66,7 @@ interface ParsedTag {
   column: number;
 }
 
-function parseHtml(html: string): ParsedTag[] {
+export function parseHtml(html: string): ParsedTag[] {
   const tokens: ParsedTag[] = [];
   let position = 0;
   let line = 1;
@@ -228,7 +228,7 @@ function parseAttributes(attributeString: string): Array<{ name: string; value: 
   return attributes;
 }
 
-function validateHtml(tokens: ParsedTag[]): ValidationError[] {
+export function validateHtml(tokens: ParsedTag[]): ValidationError[] {
   const errors: ValidationError[] = [];
   const tagStack: Array<{ name: string; line: number; column: number }> = [];
   
@@ -489,17 +489,35 @@ export function processHtmlBeautifier(input: string, config: HtmlBeautifierConfi
   }
 }
 
+export function validateHtmlDocument(input: string): {
+  errors: ValidationError[];
+  warnings: ValidationError[];
+  tokens: ParsedTag[];
+} {
+  const tokens = parseHtml(input);
+  const validationErrors = validateHtml(tokens);
+
+  const errors = validationErrors.filter(issue => issue.type === 'error');
+  const warnings = validationErrors.filter(issue => issue.type === 'warning');
+
+  return {
+    errors,
+    warnings,
+    tokens
+  };
+}
+
 export const HTML_BEAUTIFIER_TOOL: Tool = {
   id: 'html-beautifier',
-  name: 'HTML Beautifier & Minifier',
-  description: 'Beautify, validate, and minify HTML5 with intelligent indentation, attribute sorting, linting insights, and production-ready minification — powered entirely in the browser.',
+  name: 'HTML Beautifier & Prettier',
+  description: 'Beautify, validate, and minify HTML5 with an online prettier that adds intelligent indentation, attribute sorting, linting insights, and production-ready minification — powered entirely in the browser.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!.subcategories!.find(sub => sub.id === 'code-formatting')!,
   slug: 'html-beautifier',
   icon: 'Code',
-  tags: ['html', 'beautify', 'minify', 'format', 'validate', 'web'],
+  tags: ['html', 'beautify', 'minify', 'prettier', 'format', 'validate', 'web'],
   complexity: 'beginner',
-  keywords: ['html', 'beautify', 'minify', 'format', 'validate', 'web', 'indentation', 'optimization'],
+  keywords: ['html', 'beautify', 'minify', 'format', 'validate', 'web', 'indentation', 'optimization', 'html prettier online', 'html formatter', 'html pretty print'],
   
   examples: [
     {
@@ -588,8 +606,8 @@ export const HTML_BEAUTIFIER_TOOL: Tool = {
   ],
   
   relatedTools: ['xml-formatter', 'css-beautifier', 'js-beautifier'],
-  seoTitle: 'HTML Beautifier & Minifier - Free HTML Formatter and Validator',
-  seoDescription: 'Clean up HTML instantly: beautify markup, validate structure, sort attributes, and minify for production. Privacy-first editor with drag & drop, copy, and download.',
+  seoTitle: 'HTML Beautifier & Prettier Online - Free HTML Formatter & Validator',
+  seoDescription: 'Clean up HTML instantly: pretty-print markup, validate structure, sort attributes, and minify for production. Privacy-first editor with drag & drop, copy, and download.',
   howItWorks: [
     {
       title: 'Load Your Markup',
