@@ -73,7 +73,7 @@ import { CssBeautifier } from '../components/tools/formatters/CssBeautifier';
 import { JsBeautifier } from '../components/tools/formatters/JsBeautifier';
 import { SqlFormatter } from '../components/tools/formatters/SqlFormatter';
 import { CsvFormatter } from '../components/tools/formatters/CsvFormatter';
-// import { HtmlBeautifier } from '../components/tools/formatters/HtmlBeautifier'; // Temporarily disabled due to syntax error
+import { HtmlBeautifier } from '../components/tools/formatters/HtmlBeautifier';
 
 // Generator components
 import { BarcodeGenerator } from '../components/tools/generators/BarcodeGenerator';
@@ -206,7 +206,7 @@ export const TOOL_COMPONENTS: Record<string, ToolComponent> = {
   'js-beautifier': JsBeautifier,
   'sql-formatter': SqlFormatter,
   'csv-formatter': CsvFormatter,
-  // 'html-beautifier': HtmlBeautifier,
+  'html-beautifier': HtmlBeautifier,
 
   // Generator tools
   'barcode-generator': BarcodeGenerator,

@@ -82,8 +82,7 @@ export const XML_FORMATTER_TOOL: Tool = {
   relatedTools: [
     'json-formatter',
     'yaml-formatter',
-    'html-formatter',
-    'xpath-tester',
+    'html-beautifier',
     'base64-encoder'
   ],
   howItWorks: [
