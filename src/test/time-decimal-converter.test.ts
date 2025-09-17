@@ -239,4 +239,35 @@ describe('Time Decimal Converter', () => {
       expect(result.metadata?.decimalHours).toBe(8.55); // 8:33 = 8.55 exactly
     });
   });
+
+  describe('Enhanced Bidirectional Features', () => {
+    it('should detect input type for time format', () => {
+      const result = processTimeDecimal('8:30', defaultConfig);
+      expect(result.success).toBe(true);
+      expect(result.metadata?.detectedInputType).toBe('time');
+    });
+
+    it('should detect input type for decimal format', () => {
+      const config = { ...defaultConfig, inputFormat: 'decimal' as const };
+      const result = processTimeDecimal('8.5', config);
+      expect(result.success).toBe(true);
+      expect(result.metadata?.detectedInputType).toBe('decimal');
+    });
+
+    it('should use smart output format for time input', () => {
+      const config = { ...defaultConfig, outputFormat: 'auto' as const };
+      const result = processTimeDecimal('8:30', config);
+      expect(result.success).toBe(true);
+      expect(result.output).toContain('→ Decimal Hours');
+      expect(result.output).toContain('**Detected**: Time Format');
+    });
+
+    it('should use smart output format for decimal input', () => {
+      const config = { ...defaultConfig, outputFormat: 'auto' as const, inputFormat: 'decimal' as const };
+      const result = processTimeDecimal('8.5', config);
+      expect(result.success).toBe(true);
+      expect(result.output).toContain('→ Time Format');
+      expect(result.output).toContain('**Detected**: Decimal Hours');
+    });
+  });
 });

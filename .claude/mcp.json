@@ -1,12 +1,11 @@
 {
   "mcpServers": {
-    "coolify": {
+    "dokploy": {
       "command": "npx",
-      "args": ["@felixallistar/coolify-mcp"],
+      "args": ["-y", "@ahdev/dokploy-mcp"],
       "env": {
-        "COOLIFY_API_TOKEN": "2|diasyTmnTPzLvdFnrk6XP56foxAXnP9SXE5QSZDJ2de741a7",
-        "COOLIFY_API_URL": "http://31.97.125.102:8000/api/v1",
-        "COOLIFY_TEAM_ID": "0"
+        "DOKPLOY_URL": "http://178.156.128.52:3000/api",
+        "DOKPLOY_API_KEY": "my_appscGXmQAXfkVMdQgrvAgiCflJtnkXqNwwdzhVtYjPllIEaQirghXipiEljSQytnPQv"
       }
     },
     "context7": {

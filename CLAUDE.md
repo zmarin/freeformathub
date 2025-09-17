@@ -111,14 +111,16 @@ The tool registry automatically handles:
 
 ## Deployment Architecture
 
-**Production (Coolify)**:
+**Production (Dokploy)**:
 - Auto-deploy from GitHub pushes to master branch
 - Serves static files from Astro build (`./dist/`)
-- Environment variables managed via Coolify UI
-- SSL certificates automatically managed
+- Environment variables managed via Dokploy UI
+- SSL certificates automatically managed via Let's Encrypt
 - Domain: `https://freeformathub.com`
+- Uses optimized Dockerfile at `deployment/docker/Dockerfile`
+- Nginx configuration at `deployment/nginx/dokploy.conf`
 
-**Environment Variables (Required in Coolify)**:
+**Environment Variables (Required in Dokploy UI)**:
 ```
 NODE_ENV=production
 PUBLIC_GA_MEASUREMENT_ID=G-34Z7YVSEZ2

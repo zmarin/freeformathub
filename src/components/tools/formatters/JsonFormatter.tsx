@@ -63,6 +63,8 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
   const [dragActive, setDragActive] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPath, setCurrentPath] = useState('$');
+  const [currentMatchPath, setCurrentMatchPath] = useState<string | undefined>();
+  const [searchMatches, setSearchMatches] = useState<Array<{ path: string; key: string; value: any; type: 'key' | 'value' }>>([]);
   const [viewMode, setViewMode] = useState<'tree' | 'text'>('tree');
   const [parsedData, setParsedData] = useState<any>(null);
 
@@ -172,7 +174,40 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
   // New handlers for enhanced features
   const handleSearch = useCallback((term: string) => {
     setSearchTerm(term);
-  }, []);
+    setCurrentMatchPath(undefined);
+
+    // Find all matches when search term changes
+    if (term && parsedData) {
+      const matches: Array<{ path: string; key: string; value: any; type: 'key' | 'value' }> = [];
+      const searchLower = term.toLowerCase();
+
+      const searchInData = (obj: any, currentPath: string) => {
+        if (typeof obj === 'object' && obj !== null) {
+          Object.entries(obj).forEach(([key, value]) => {
+            const newPath = Array.isArray(obj) ? `${currentPath}[${key}]` : `${currentPath}.${key}`;
+
+            // Search in keys
+            if (key.toLowerCase().includes(searchLower)) {
+              matches.push({ path: newPath, key, value, type: 'key' });
+            }
+
+            // Search in string values
+            if (typeof value === 'string' && value.toLowerCase().includes(searchLower)) {
+              matches.push({ path: newPath, key, value, type: 'value' });
+            }
+
+            // Recursively search nested objects/arrays
+            searchInData(value, newPath);
+          });
+        }
+      };
+
+      searchInData(parsedData, '$');
+      setSearchMatches(matches);
+    } else {
+      setSearchMatches([]);
+    }
+  }, [parsedData]);
 
   const handlePathClick = useCallback((path: string) => {
     setCurrentPath(path);
@@ -183,9 +218,12 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
   }, []);
 
   const handleNavigateToMatch = useCallback((matchIndex: number) => {
-    // This would be used to highlight specific matches in the tree view
-    // Implementation depends on how we want to handle search navigation
-  }, []);
+    if (searchMatches.length > 0 && matchIndex >= 0 && matchIndex < searchMatches.length) {
+      const match = searchMatches[matchIndex];
+      setCurrentMatchPath(match.path);
+      setCurrentPath(match.path);
+    }
+  }, [searchMatches]);
 
   const handleToggleViewMode = useCallback(() => {
     setViewMode(prev => prev === 'tree' ? 'text' : 'tree');
@@ -548,6 +586,7 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
               <JsonTreeView
                 data={parsedData}
                 searchTerm={searchTerm}
+                currentMatchPath={currentMatchPath}
                 onPathClick={handlePathClick}
                 onValueCopy={handleValueCopy}
                 maxDepth={3}

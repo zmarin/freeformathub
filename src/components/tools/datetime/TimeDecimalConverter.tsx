@@ -9,7 +9,7 @@ interface TimeDecimalConverterProps {
 
 const DEFAULT_CONFIG: TimeDecimalConfig = {
   inputFormat: 'auto',
-  outputFormat: 'both',
+  outputFormat: 'auto',
   decimalPrecision: 2,
   roundingMode: 'standard',
   timeFormat: '24hour',
@@ -30,12 +30,12 @@ const QUICK_CONVERSIONS = [
 ];
 
 const DECIMAL_TO_TIME = [
-  { label: '8.5 → 8:30', input: '8.5', description: '8 and a half hours' },
-  { label: '7.75 → 7:45', input: '7.75', description: '7 hours 45 minutes' },
-  { label: '2.25 → 2:15', input: '2.25', description: '2 hours 15 minutes' },
-  { label: '0.5 → 0:30', input: '0.5', description: 'Half hour' },
-  { label: '1.33 → 1:20', input: '1.33', description: '1 hour 20 minutes' },
-  { label: '10.0 → 10:00', input: '10.0', description: '10 hours exact' },
+  { label: '8.5 → 8:30', input: '8.5', description: 'Payroll decimal to time' },
+  { label: '7.75 → 7:45', input: '7.75', description: 'Timesheet entry conversion' },
+  { label: '2.25 → 2:15', input: '2.25', description: 'Meeting duration conversion' },
+  { label: '0.5 → 0:30', input: '0.5', description: 'Half hour break time' },
+  { label: '14.5 → 2:30 PM', input: '14.5', description: 'Decimal to 12-hour format', config: { timeFormat: '12hour' } },
+  { label: '40.0 → 40:00', input: '40.0', description: 'Weekly total hours' },
 ];
 
 const COMMON_EXAMPLES = [
@@ -208,13 +208,19 @@ export function TimeDecimalConverter({ className = '' }: TimeDecimalConverterPro
   };
 
   // Quick action handlers
-  const handleQuickConversion = useCallback((value: string, batch: boolean = false) => {
+  const handleQuickConversion = useCallback((value: string, batch: boolean = false, configOverride?: Partial<TimeDecimalConfig>) => {
     setInput(value);
-    if (batch !== config.batchMode) {
+    const newConfig = { ...config, ...(configOverride || {}), batchMode: batch };
+
+    // Apply config changes if provided
+    if (configOverride) {
+      handleConfigChange({ ...configOverride, batchMode: batch });
+    } else if (batch !== config.batchMode) {
       handleConfigChange({ batchMode: batch });
     }
+
     if (autoFormat) {
-      processTime(value, { ...config, batchMode: batch });
+      processTime(value, newConfig);
     }
   }, [config, autoFormat, processTime, handleConfigChange]);
 
@@ -222,6 +228,28 @@ export function TimeDecimalConverter({ className = '' }: TimeDecimalConverterPro
   const togglePayroll = useCallback(() => {
     handleConfigChange({ calculatePayroll: !config.calculatePayroll });
   }, [config.calculatePayroll, handleConfigChange]);
+
+  // Swap input/output functionality
+  const handleSwap = useCallback(() => {
+    if (!metadata || !output) return;
+
+    // Extract the converted value based on detected input type
+    let swapValue = '';
+    if (metadata.detectedInputType === 'time') {
+      // Input was time, output was decimal, so use decimal value
+      swapValue = metadata.decimalHours?.toFixed(config.decimalPrecision) || '';
+    } else {
+      // Input was decimal, output was time, so use time value
+      swapValue = metadata.formattedTime || '';
+    }
+
+    if (swapValue) {
+      setInput(swapValue);
+      if (autoFormat) {
+        processTime(swapValue, config);
+      }
+    }
+  }, [metadata, output, config, autoFormat, processTime]);
 
   // Calculate text statistics
   const getTextStats = (text: string) => {
@@ -403,6 +431,25 @@ export function TimeDecimalConverter({ className = '' }: TimeDecimalConverterPro
               </span>
               {output && (
                 <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+                  {metadata?.detectedInputType && !config.batchMode && (
+                    <button
+                      onClick={handleSwap}
+                      className="btn btn-outline"
+                      style={{
+                        padding: 'var(--space-xs) var(--space-sm)',
+                        fontSize: '0.75rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 'var(--space-xs)'
+                      }}
+                      title="Use result as new input"
+                    >
+                      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                      </svg>
+                      ⇄ Swap
+                    </button>
+                  )}
                   <button
                     onClick={handleCopy}
                     className={copied ? 'btn btn-secondary' : 'btn btn-outline'}
@@ -497,6 +544,7 @@ export function TimeDecimalConverter({ className = '' }: TimeDecimalConverterPro
                   className="form-select"
                   style={{ fontSize: '0.75rem', width: '100%' }}
                 >
+                  <option value="auto">Smart (adapts to input)</option>
                   <option value="both">Both formats</option>
                   <option value="decimal">Decimal only</option>
                   <option value="time">Time only</option>
@@ -637,7 +685,7 @@ export function TimeDecimalConverter({ className = '' }: TimeDecimalConverterPro
                 {DECIMAL_TO_TIME.map((conv, idx) => (
                   <button
                     key={idx}
-                    onClick={() => handleQuickConversion(conv.input)}
+                    onClick={() => handleQuickConversion(conv.input, false, (conv as any).config)}
                     className="btn btn-outline"
                     style={{ fontSize: '0.625rem', padding: 'var(--space-xs)', justifyContent: 'flex-start', fontFamily: 'var(--font-family-mono)' }}
                     title={conv.description}

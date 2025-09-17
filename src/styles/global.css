@@ -42,6 +42,28 @@
   --color-text-muted: #94a3b8;
   --color-text-inverse: #ffffff;
 
+  /* JSON Syntax Colors */
+  --color-json-key: #1d4ed8;
+  --color-json-string: #059669;
+  --color-json-number: #dc2626;
+  --color-json-boolean: #9333ea;
+  --color-json-null: #6b7280;
+  --color-json-bracket-object: #4338ca;
+  --color-json-bracket-array: #c2410c;
+
+  /* Tree Structure */
+  --color-tree-line: #e2e8f0;
+  --color-tree-guide: #cbd5e1;
+  --color-tree-hover: #f8fafc;
+
+  /* Search Highlighting */
+  --color-search-highlight: #fbbf24;
+  --color-search-highlight-bg: #fef3c7;
+  --color-search-current: #ffffff;
+  --color-search-current-bg: #3b82f6;
+  --color-search-current-border: #1d4ed8;
+  --color-search-context: #f1f5f9;
+
   /* Spacing System */
   --space-xs: 0.25rem;  /* 4px */
   --space-sm: 0.5rem;   /* 8px */
@@ -74,6 +96,38 @@
   --transition-slow: 350ms ease;
 }
 
+/* JSON Tree Animations */
+@keyframes search-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 2px var(--color-search-current-border)33;
+  }
+  50% {
+    box-shadow: 0 0 0 4px var(--color-search-current-border)66;
+  }
+}
+
+@keyframes tree-expand {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tree-collapse {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
 /* Dark Mode Overrides */
 .dark {
   --color-background: #0f172a;
@@ -86,6 +140,28 @@
   --color-text-secondary: #cbd5e1;
   --color-text-muted: #94a3b8;
   --color-text-inverse: #1e293b;
+
+  /* JSON Syntax Colors (Dark Mode) */
+  --color-json-key: #60a5fa;
+  --color-json-string: #34d399;
+  --color-json-number: #f87171;
+  --color-json-boolean: #a78bfa;
+  --color-json-null: #9ca3af;
+  --color-json-bracket-object: #8b5cf6;
+  --color-json-bracket-array: #fb923c;
+
+  /* Tree Structure (Dark Mode) */
+  --color-tree-line: #475569;
+  --color-tree-guide: #64748b;
+  --color-tree-hover: #334155;
+
+  /* Search Highlighting (Dark Mode) */
+  --color-search-highlight: #f59e0b;
+  --color-search-highlight-bg: #451a03;
+  --color-search-current: #000000;
+  --color-search-current-bg: #60a5fa;
+  --color-search-current-border: #2563eb;
+  --color-search-context: #334155;
 }
 
 /* Base Styles */

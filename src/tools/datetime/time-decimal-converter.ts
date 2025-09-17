@@ -3,7 +3,7 @@ import { TOOL_CATEGORIES } from '../../lib/tools/registry';
 
 export interface TimeDecimalConfig extends ToolConfig {
   inputFormat: 'time' | 'decimal' | 'auto';
-  outputFormat: 'both' | 'decimal' | 'time';
+  outputFormat: 'both' | 'decimal' | 'time' | 'auto';
   decimalPrecision: 1 | 2 | 3 | 4;
   roundingMode: 'standard' | 'legal' | 'payroll' | 'quarter' | 'tenth';
   timeFormat: '24hour' | '12hour';
@@ -25,6 +25,7 @@ export interface TimeConversion {
   totalSeconds: number;
   payrollAmount?: number;
   breakdown?: string;
+  detectedInputType?: 'time' | 'decimal';
 }
 
 export const TIME_DECIMAL_CONVERTER_TOOL: Tool = {
@@ -230,6 +231,7 @@ export function processTimeDecimal(input: string, config: TimeDecimalConfig): To
           totalMinutes: conversion.totalMinutes,
           payrollAmount: conversion.payrollAmount,
           breakdown: conversion.breakdown,
+          detectedInputType: conversion.detectedInputType,
           inputFormat: config.inputFormat,
           outputFormat: config.outputFormat,
           precision: config.decimalPrecision
@@ -250,17 +252,23 @@ function convertSingleEntry(input: string, config: TimeDecimalConfig): TimeConve
   let hours: number;
   let minutes: number;
   let seconds: number = 0;
+  let detectedInputType: 'time' | 'decimal';
 
   // Auto-detect input format
+  let actualInputFormat = config.inputFormat;
   if (config.inputFormat === 'auto') {
     if (/^\d+\.?\d*$/.test(trimmed)) {
-      config.inputFormat = 'decimal';
+      actualInputFormat = 'decimal';
+      detectedInputType = 'decimal';
     } else {
-      config.inputFormat = 'time';
+      actualInputFormat = 'time';
+      detectedInputType = 'time';
     }
+  } else {
+    detectedInputType = config.inputFormat as 'time' | 'decimal';
   }
 
-  if (config.inputFormat === 'decimal') {
+  if (actualInputFormat === 'decimal') {
     // Parse decimal hours
     decimal = parseFloat(trimmed);
     if (isNaN(decimal)) {
@@ -317,7 +325,8 @@ function convertSingleEntry(input: string, config: TimeDecimalConfig): TimeConve
     totalMinutes,
     totalSeconds,
     payrollAmount,
-    breakdown
+    breakdown,
+    detectedInputType
   };
 }
 
@@ -399,15 +408,30 @@ function formatTime(hours: number, minutes: number, seconds: number, format: str
 function formatSingleResult(conversion: TimeConversion, config: TimeDecimalConfig): string {
   let result = '# Time Conversion Result\n\n';
 
-  if (config.outputFormat === 'both' || config.outputFormat === 'decimal') {
-    result += `**Decimal Hours**: ${conversion.decimal.toFixed(config.decimalPrecision)}\n`;
+  // Determine smart output format
+  let actualOutputFormat = config.outputFormat;
+  if (config.outputFormat === 'auto') {
+    // Smart output: show the opposite of what was detected as input
+    actualOutputFormat = conversion.detectedInputType === 'time' ? 'decimal' : 'time';
   }
 
-  if (config.outputFormat === 'both' || config.outputFormat === 'time') {
-    result += `**Time Format**: ${conversion.formatted}\n`;
+  // Show input type detection info
+  if (conversion.detectedInputType) {
+    const arrow = conversion.detectedInputType === 'time' ? '→ Decimal Hours' : '→ Time Format';
+    result += `**Detected**: ${conversion.detectedInputType === 'time' ? 'Time Format' : 'Decimal Hours'} ${arrow}\n\n`;
   }
 
-  if (config.showBreakdown && conversion.breakdown && config.outputFormat !== 'time') {
+  if (actualOutputFormat === 'both' || actualOutputFormat === 'decimal') {
+    const isMainResult = actualOutputFormat === 'decimal' || (actualOutputFormat === 'both' && conversion.detectedInputType === 'time');
+    result += `**${isMainResult ? '✓ ' : ''}Decimal Hours**: ${conversion.decimal.toFixed(config.decimalPrecision)}\n`;
+  }
+
+  if (actualOutputFormat === 'both' || actualOutputFormat === 'time') {
+    const isMainResult = actualOutputFormat === 'time' || (actualOutputFormat === 'both' && conversion.detectedInputType === 'decimal');
+    result += `**${isMainResult ? '✓ ' : ''}Time Format**: ${conversion.formatted}\n`;
+  }
+
+  if (config.showBreakdown && conversion.breakdown && actualOutputFormat !== 'time') {
     result += `**Breakdown**: ${conversion.breakdown}\n`;
   }
 

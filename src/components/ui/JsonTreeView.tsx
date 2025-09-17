@@ -4,6 +4,7 @@ import { copyToClipboard } from '../../lib/utils';
 export interface JsonTreeViewProps {
   data: any;
   searchTerm?: string;
+  currentMatchPath?: string;
   onPathClick?: (path: string) => void;
   onValueCopy?: (value: any, path: string) => void;
   maxDepth?: number;
@@ -16,6 +17,7 @@ interface TreeNodeProps {
   depth: number;
   isLast: boolean;
   searchTerm?: string;
+  currentMatchPath?: string;
   onPathClick?: (path: string) => void;
   onValueCopy?: (value: any, path: string) => void;
   maxDepth?: number;
@@ -38,15 +40,23 @@ const formatValue = (value: any): string => {
 
 const getValueColor = (type: string): string => {
   switch (type) {
-    case 'string': return 'var(--color-secondary)';
-    case 'number': return 'var(--color-accent)';
-    case 'boolean': return 'var(--color-warning)';
-    case 'null': return 'var(--color-text-muted)';
+    case 'string': return 'var(--color-json-string)';
+    case 'number': return 'var(--color-json-number)';
+    case 'boolean': return 'var(--color-json-boolean)';
+    case 'null': return 'var(--color-json-null)';
     default: return 'var(--color-text-primary)';
   }
 };
 
-const highlightSearch = (text: string, searchTerm?: string): React.ReactNode => {
+const getBracketColor = (isArray: boolean): string => {
+  return isArray ? 'var(--color-json-bracket-array)' : 'var(--color-json-bracket-object)';
+};
+
+const getKeyColor = (): string => {
+  return 'var(--color-json-key)';
+};
+
+const highlightSearch = (text: string, searchTerm?: string, isCurrentMatch?: boolean): React.ReactNode => {
   if (!searchTerm || !text.toLowerCase().includes(searchTerm.toLowerCase())) {
     return text;
   }
@@ -59,10 +69,14 @@ const highlightSearch = (text: string, searchTerm?: string): React.ReactNode => 
           <mark
             key={index}
             style={{
-              backgroundColor: 'var(--color-warning-light)',
-              color: 'var(--color-warning)',
-              padding: '1px 2px',
-              borderRadius: '2px'
+              backgroundColor: isCurrentMatch ? 'var(--color-search-current-bg)' : 'var(--color-search-highlight-bg)',
+              color: isCurrentMatch ? 'var(--color-search-current)' : 'var(--color-search-highlight)',
+              padding: '3px 6px',
+              borderRadius: '4px',
+              fontWeight: isCurrentMatch ? 'bold' : '600',
+              border: isCurrentMatch ? '2px solid var(--color-search-current-border)' : '1px solid var(--color-search-highlight)',
+              boxShadow: isCurrentMatch ? '0 0 0 2px var(--color-search-current-border)33' : 'none',
+              animation: isCurrentMatch ? 'search-pulse 2s ease-in-out infinite' : 'none'
             }}
           >
             {part}
@@ -81,6 +95,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({
   depth,
   isLast,
   searchTerm,
+  currentMatchPath,
   onPathClick,
   onValueCopy,
   maxDepth = 10,
@@ -111,24 +126,46 @@ const TreeNode: React.FC<TreeNodeProps> = ({
   const renderValue = () => {
     if (isExpandable) {
       const count = Array.isArray(data) ? data.length : Object.keys(data).length;
+      const itemText = Array.isArray(data) ? (count === 1 ? 'item' : 'items') : (count === 1 ? 'property' : 'properties');
       const open = Array.isArray(data) ? '[' : '{';
       const close = Array.isArray(data) ? ']' : '}';
-      const summary = `${open}${isExpanded ? '' : '…'}${close} ${count}`;
 
       return (
         <span style={{
           color: 'var(--color-text-secondary)',
-          fontStyle: 'italic',
           fontSize: '0.85em'
         }}>
-          {summary}
+          <span style={{ color: getBracketColor(Array.isArray(data)), fontWeight: 'bold' }}>{open}</span>
+          {!isExpanded && (
+            <span style={{ fontStyle: 'italic', margin: '0 0.25rem' }}>…</span>
+          )}
+          {!isExpanded && (
+            <span style={{ color: getBracketColor(Array.isArray(data)), fontWeight: 'bold' }}>{close}</span>
+          )}
+          <span style={{
+            marginLeft: '0.5rem',
+            fontSize: '0.75em',
+            color: 'var(--color-text-muted)',
+            fontStyle: 'italic'
+          }}>
+            {count} {itemText}
+          </span>
         </span>
       );
     }
 
+    // For primitive values, check if they match search and highlight
+    const formattedValue = formatValue(data);
+    const shouldHighlight = searchTerm &&
+      typeof data === 'string' &&
+      data.toLowerCase().includes(searchTerm.toLowerCase());
+
     return (
       <span style={{ color: getValueColor(dataType) }}>
-        {formatValue(data)}
+        {shouldHighlight ?
+          highlightSearch(formattedValue.slice(1, -1), searchTerm, currentMatchPath === path) :
+          formattedValue
+        }
       </span>
     );
   };
@@ -141,8 +178,15 @@ const TreeNode: React.FC<TreeNodeProps> = ({
       ? data.map((item, index) => [index, item])
       : Object.entries(data);
 
+    const close = Array.isArray(data) ? ']' : '}';
+
     return (
-      <div style={{ marginLeft: '1rem' }}>
+      <div
+        style={{
+          marginTop: '0.25rem',
+          animation: 'tree-expand 0.2s ease-out'
+        }}
+      >
         {entries.map(([key, value], index) => {
           const childPath = Array.isArray(data) ? `${path}[${key}]` : `${path}.${key}`;
           const isLastChild = index === entries.length - 1;
@@ -155,6 +199,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({
               depth={depth + 1}
               isLast={isLastChild}
               searchTerm={searchTerm}
+              currentMatchPath={currentMatchPath}
               onPathClick={onPathClick}
               onValueCopy={onValueCopy}
               maxDepth={maxDepth}
@@ -163,21 +208,53 @@ const TreeNode: React.FC<TreeNodeProps> = ({
             />
           );
         })}
+        {/* Closing bracket */}
+        <div style={{
+          padding: '0.25rem 0.5rem 0.25rem 0',
+          color: getBracketColor(Array.isArray(data)),
+          fontWeight: 'bold',
+          fontFamily: 'var(--font-family-mono)',
+          fontSize: '0.875rem',
+          borderLeft: '2px solid var(--color-tree-line)',
+          marginLeft: '0.75rem',
+          paddingLeft: '0.75rem'
+        }}>
+          {close}
+        </div>
       </div>
     );
   };
 
   return (
-    <div>
+    <div
+      className="json-tree-node"
+      style={{
+        position: 'relative',
+        borderLeft: depth > 0 ? '2px solid var(--color-tree-line)' : 'none',
+        marginLeft: depth > 0 ? '0.75rem' : '0',
+        paddingLeft: depth > 0 ? '0.75rem' : '0'
+      }}
+    >
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           gap: '0.5rem',
-          padding: '0.125rem 0',
+          padding: '0.25rem 0.5rem 0.25rem 0',
           fontFamily: 'var(--font-family-mono)',
           fontSize: '0.875rem',
-          lineHeight: '1.4'
+          lineHeight: '1.4',
+          borderRadius: '4px',
+          transition: 'all var(--transition-fast)',
+          cursor: 'pointer',
+          position: 'relative'
+        }}
+        className="json-tree-node-content"
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = 'var(--color-tree-hover)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = 'transparent';
         }}
       >
         {/* Expand/Collapse Button */}
@@ -185,29 +262,47 @@ const TreeNode: React.FC<TreeNodeProps> = ({
           <button
             onClick={() => onToggleExpanded(path)}
             style={{
-              background: 'none',
-              border: 'none',
+              background: 'var(--color-surface)',
+              border: '1px solid var(--color-border)',
+              borderRadius: '4px',
               cursor: 'pointer',
-              padding: '0.125rem',
+              padding: '0.25rem',
               display: 'flex',
               alignItems: 'center',
+              justifyContent: 'center',
               color: 'var(--color-text-secondary)',
-              fontSize: '0.75rem'
+              fontSize: '0.7rem',
+              width: '1.5rem',
+              height: '1.5rem',
+              transition: 'all var(--transition-fast)',
+              transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)'
             }}
             title={isExpanded ? 'Collapse' : 'Expand'}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--color-border-light)';
+              e.currentTarget.style.borderColor = 'var(--color-primary)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--color-surface)';
+              e.currentTarget.style.borderColor = 'var(--color-border)';
+            }}
           >
-            {isExpanded ? '▼' : '▶'}
+            ▶
           </button>
         )}
 
         {/* Indentation placeholder */}
         {!isExpandable && (
-          <span style={{ width: '1rem', display: 'inline-block' }} />
+          <span style={{ width: '1.5rem', display: 'inline-block' }} />
         )}
 
         {/* Key/Index */}
-        <span style={{ color: 'var(--color-primary)', fontWeight: 500 }}>
-          {highlightSearch(path.split('.').pop()?.replace(/[\[\]]/g, '') || 'root', searchTerm)}:
+        <span style={{ color: getKeyColor(), fontWeight: 500 }}>
+          {highlightSearch(
+            path.split('.').pop()?.replace(/[\[\]]/g, '') || 'root',
+            searchTerm,
+            currentMatchPath === path
+          )}:
         </span>
 
         {/* Value */}
@@ -286,6 +381,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({
 export const JsonTreeView: React.FC<JsonTreeViewProps> = ({
   data,
   searchTerm,
+  currentMatchPath,
   onPathClick,
   onValueCopy,
   maxDepth = 10,
@@ -444,9 +540,23 @@ export const JsonTreeView: React.FC<JsonTreeViewProps> = ({
           {`
             .tree-node-actions {
               opacity: 0 !important;
+              transition: opacity var(--transition-fast);
             }
-            div:hover > div > .tree-node-actions {
+            .json-tree-node-content:hover .tree-node-actions {
               opacity: 1 !important;
+            }
+            .json-tree-node:hover {
+              position: relative;
+            }
+            .json-tree-node:hover::before {
+              content: '';
+              position: absolute;
+              left: -2px;
+              top: 0;
+              bottom: 0;
+              width: 3px;
+              background: var(--color-tree-guide);
+              border-radius: 2px;
             }
           `}
         </style>
@@ -457,6 +567,7 @@ export const JsonTreeView: React.FC<JsonTreeViewProps> = ({
           depth={0}
           isLast={true}
           searchTerm={searchTerm}
+          currentMatchPath={currentMatchPath}
           onPathClick={onPathClick}
           onValueCopy={onValueCopy}
           maxDepth={maxDepth}
