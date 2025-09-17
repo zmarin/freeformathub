@@ -103,4 +103,55 @@ describe('JSON Formatter', () => {
     expect(dupPaths).toContain('$');
     expect(dupPaths).toContain('$.b');
   });
+
+  it('should detect duplicate keys that differ only by escape sequences', () => {
+    const input = '{"\\u0061":1,"a":2}';
+    const cfg: JsonFormatterConfig = {
+      indent: 2,
+      sortKeys: false,
+      removeComments: false,
+      validateOnly: true,
+      detectDuplicateKeys: true,
+    } as any;
+    const result = formatJson(input, cfg);
+    expect(result.success).toBe(true);
+    expect(result.metadata?.duplicateCount).toBe(1);
+    const duplicates = result.metadata?.duplicates || [];
+    expect(duplicates).toHaveLength(1);
+    expect(duplicates[0]?.key).toBe('a');
+  });
+
+  it('should respect indent size when using tabs', () => {
+    const input = '{"a":{"b":1}}';
+    const cfg: JsonFormatterConfig = {
+      indent: 4,
+      sortKeys: false,
+      removeComments: false,
+      validateOnly: false,
+      useTabs: true,
+    } as any;
+    const result = formatJson(input, cfg);
+    expect(result.success).toBe(true);
+    const lines = result.output?.split('\n') || [];
+    expect(lines.length).toBeGreaterThan(1);
+    const line = lines[1];
+    expect(line).toBeDefined();
+    expect(line).toMatch(/^\t{4}"a": \{/);
+  });
+
+  it('should preserve unicode escaping in minified mode', () => {
+    const input = '{"greeting":"Привет"}';
+    const cfg: JsonFormatterConfig = {
+      indent: 0,
+      sortKeys: false,
+      removeComments: false,
+      validateOnly: false,
+      escapeUnicode: true,
+    } as any;
+    const result = formatJson(input, cfg);
+    expect(result.success).toBe(true);
+    expect(result.output).toContain('\\u041f');
+    expect(result.output).not.toContain('Привет');
+    expect(result.output).not.toContain('\n');
+  });
 });

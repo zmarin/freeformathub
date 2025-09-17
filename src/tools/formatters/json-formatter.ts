@@ -163,25 +163,21 @@ export function formatJson(input: string, config: JsonFormatterConfig): ToolResu
       : parsed;
 
     // Format with specified indentation
-    let formatted: string;
     const indentSize = Math.max(0, Number(config.indent ?? 2));
-    // const indentUnit = config.useTabs ? '\t' : ' '; // unused
-    const indentStr = indentSize > 0 && !config.useTabs ? ' '.repeat(indentSize) : (config.useTabs ? '\t' : '');
+    const indentStr = indentSize > 0
+      ? (config.useTabs ? '\t'.repeat(Math.max(1, indentSize)) : ' '.repeat(indentSize))
+      : '';
 
-    if (indentSize === 0) {
-      // Minified
-      formatted = JSON.stringify(sortedJson);
-    } else {
-      formatted = prettyStringify(sortedJson, {
-        indentStr: indentStr || '  ',
-        sortKeys: !!config.sortKeys,
-        sortKeysCaseInsensitive: !!config.sortKeysCaseInsensitive,
-        inlineShortArrays: config.inlineShortArrays ?? true,
-        inlineArrayMaxLength: config.inlineArrayMaxLength ?? 5,
-        inlineArrayMaxLineLength: config.inlineArrayMaxLineLength ?? 80,
-        escapeUnicode: !!config.escapeUnicode,
-      });
-    }
+    let formatted = prettyStringify(sortedJson, {
+      indentStr,
+      sortKeys: !!config.sortKeys,
+      sortKeysCaseInsensitive: !!config.sortKeysCaseInsensitive,
+      inlineShortArrays: config.inlineShortArrays ?? true,
+      inlineArrayMaxLength: config.inlineArrayMaxLength ?? 5,
+      inlineArrayMaxLineLength: config.inlineArrayMaxLineLength ?? 80,
+      escapeUnicode: !!config.escapeUnicode,
+      minify: indentSize === 0,
+    });
 
     if (config.ensureFinalNewline) {
       if (!formatted.endsWith('\n')) formatted += '\n';
@@ -640,33 +636,10 @@ function detectDuplicateKeys(src: string): { duplicates: Array<{ path: string; k
       continue;
     }
 
-    if (ch === '"') { inString = 'double'; advance(); continue; }
-    if (ch === "'") { inString = 'single'; advance(); continue; }
-
-    // skip whitespace
-    if (ch === ' ' || ch === '\t' || ch === '\r' || ch === '\n') { advance(); continue; }
-
-    // skip comments
-    if (ch === '/' && next === '/') { while (i < src.length && src[i] !== '\n') advance(); continue; }
-    if (ch === '/' && next === '*') { advance(2); while (i < src.length && !(src[i] === '*' && src[i + 1] === '/')) advance(); advance(2); continue; }
-
-    if (ch === '{') { pushObj(); advance(); continue; }
-    if (ch === '[') { pushArr(); advance(); continue; }
-    if (ch === '}' || ch === ']') { stack.pop(); advance(); continue; }
-
-    // Track array element index increments on commas at array level
-    if (ch === ',' && stack.at(-1)?.type === 'array') {
-      const arr = stack.at(-1)!;
-      arr.index = (arr.index ?? 0) + 1;
-      advance();
-      continue;
-    }
-
     // Detect keys in objects: "key" :
     if (ch === '"' && stack.at(-1)?.type === 'object') {
       // read string key
-      let key = '';
-      // capture key start for error location
+      const keyTokenStart = i;
       keyStartLine = line;
       keyStartCol = col;
       advance();
@@ -675,8 +648,16 @@ function detectDuplicateKeys(src: string): { duplicates: Array<{ path: string; k
         const c = src[i];
         if (!esc && c === '"') { advance(); break; }
         if (!esc && c === '\\') { esc = true; advance(); continue; }
-        if (esc) { key += c; esc = false; advance(); continue; }
-        key += c; advance();
+        if (esc) { esc = false; advance(); continue; }
+        advance();
+      }
+      const keyTokenEnd = i;
+      const keyLiteral = src.slice(keyTokenStart, keyTokenEnd);
+      let key: string;
+      try {
+        key = JSON.parse(keyLiteral);
+      } catch {
+        key = keyLiteral.slice(1, -1);
       }
       // skip whitespace/comments
       while (i < src.length) {
@@ -701,6 +682,28 @@ function detectDuplicateKeys(src: string): { duplicates: Array<{ path: string; k
       continue;
     }
 
+    if (ch === '"') { inString = 'double'; advance(); continue; }
+    if (ch === "'") { inString = 'single'; advance(); continue; }
+
+    // skip whitespace
+    if (ch === ' ' || ch === '\t' || ch === '\r' || ch === '\n') { advance(); continue; }
+
+    // skip comments
+    if (ch === '/' && next === '/') { while (i < src.length && src[i] !== '\n') advance(); continue; }
+    if (ch === '/' && next === '*') { advance(2); while (i < src.length && !(src[i] === '*' && src[i + 1] === '/')) advance(); advance(2); continue; }
+
+    if (ch === '{') { pushObj(); advance(); continue; }
+    if (ch === '[') { pushArr(); advance(); continue; }
+    if (ch === '}' || ch === ']') { stack.pop(); advance(); continue; }
+
+    // Track array element index increments on commas at array level
+    if (ch === ',' && stack.at(-1)?.type === 'array') {
+      const arr = stack.at(-1)!;
+      arr.index = (arr.index ?? 0) + 1;
+      advance();
+      continue;
+    }
+
     // Track path using keys only on parse side; here we keep simple
     advance();
   }
@@ -715,11 +718,12 @@ type PrettyOptions = {
   inlineArrayMaxLength: number;
   inlineArrayMaxLineLength: number;
   escapeUnicode: boolean;
+  minify: boolean;
 };
 
 function prettyStringify(value: any, opts: PrettyOptions, level = 0): string {
-  const indent = opts.indentStr.repeat(level);
-  const nextIndent = opts.indentStr.repeat(level + 1);
+  const indent = opts.minify ? '' : opts.indentStr.repeat(level);
+  const nextIndent = opts.minify ? '' : opts.indentStr.repeat(level + 1);
 
   const stringifyString = (s: string) => {
     const json = JSON.stringify(s);
@@ -752,6 +756,11 @@ function prettyStringify(value: any, opts: PrettyOptions, level = 0): string {
   if (Array.isArray(value)) {
     if (value.length === 0) return '[]';
 
+    if (opts.minify) {
+      const parts = value.map(v => prettyStringify(v, opts, level + 1));
+      return `[${parts.join(',')}]`;
+    }
+
     const allPrimitive = value.every(v => v === null || typeof v !== 'object');
     if (opts.inlineShortArrays && allPrimitive && value.length <= opts.inlineArrayMaxLength) {
       const parts = value.map(v => stringifyPrimitive(v));
@@ -775,6 +784,11 @@ function prettyStringify(value: any, opts: PrettyOptions, level = 0): string {
       : a.localeCompare(b)
     );
   }
+  if (opts.minify) {
+    const parts = keys.map((k) => `${stringifyString(k)}:${prettyStringify((value as any)[k], opts, level + 1)}`);
+    return `{${parts.join(',')}}`;
+  }
+
   const lines = keys.map((k) => {
     const v = (value as any)[k];
     return `${nextIndent}${stringifyString(k)}: ${prettyStringify(v, opts, level + 1)}`;
