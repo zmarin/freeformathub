@@ -397,17 +397,22 @@ export const JsonTreeView: React.FC<JsonTreeViewProps> = ({
 }) => {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(['$']));
   const [allExpanded, setAllExpanded] = useState(defaultExpanded);
-  const [containerHeight, setContainerHeight] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('json-tree-height');
-      return saved ? parseInt(saved, 10) : initialHeight;
-    }
-    return initialHeight;
-  });
+  const [containerHeight, setContainerHeight] = useState(initialHeight);
   const [isResizing, setIsResizing] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const resizeStartY = useRef(0);
   const resizeStartHeight = useRef(0);
+
+  // Load saved height from localStorage after hydration
+  useEffect(() => {
+    const saved = localStorage.getItem('json-tree-height');
+    if (saved) {
+      const height = parseInt(saved, 10);
+      if (!isNaN(height)) {
+        setContainerHeight(height);
+      }
+    }
+  }, []);
 
   // Auto-expand all nodes on mount if defaultExpanded is true
   useEffect(() => {
