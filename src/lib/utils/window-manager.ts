@@ -443,6 +443,17 @@ function formatFileSize(bytes: number): string {
  * Quick utility function for formatter tools
  */
 export function openFormatterInNewWindow(content: string, language: string, toolName: string, filename?: string): void {
+  // For JSON, open the interactive tree viewer if content is valid JSON
+  if (language === 'json' && toolName.toLowerCase().includes('json')) {
+    try {
+      JSON.parse(content); // Validate JSON
+      openJsonTreeViewer(content, toolName, filename);
+      return;
+    } catch {
+      // Fall back to text view if invalid JSON
+    }
+  }
+
   openInNewWindow(
     {
       content,
@@ -457,6 +468,81 @@ export function openFormatterInNewWindow(content: string, language: string, tool
       center: true
     }
   );
+}
+
+/**
+ * Open JSON content in the interactive tree viewer
+ */
+export function openJsonTreeViewer(content: string, toolName?: string, filename?: string): void {
+  try {
+    // Generate a unique key for localStorage
+    const storageKey = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+    // Store JSON data in localStorage (for large data that won't fit in URL)
+    localStorage.setItem(`json-tree-data-${storageKey}`, content);
+
+    // Build the viewer URL
+    const baseUrl = window.location.origin;
+    const viewerUrl = `${baseUrl}/viewer/json-tree?key=${storageKey}`;
+
+    // Open in new window
+    const windowFeatures = 'width=1200,height=800,scrollbars=yes,resizable=yes';
+    const newWindow = window.open(viewerUrl, '_blank', windowFeatures);
+
+    if (newWindow) {
+      newWindow.focus();
+
+      // Clean up localStorage after window is likely loaded
+      setTimeout(() => {
+        try {
+          localStorage.removeItem(`json-tree-data-${storageKey}`);
+        } catch (error) {
+          console.warn('Failed to clean up localStorage:', error);
+        }
+      }, 10000); // 10 seconds should be enough for the page to load
+    } else {
+      // Fallback: try with URL parameter for smaller JSON
+      if (content.length < 2000) {
+        const encodedData = encodeURIComponent(content);
+        const fallbackUrl = `${baseUrl}/viewer/json-tree?data=${encodedData}`;
+        window.open(fallbackUrl, '_blank', windowFeatures);
+      } else {
+        console.error('Failed to open JSON tree viewer and data too large for URL parameter');
+        // Fall back to text view
+        openInNewWindow(
+          {
+            content,
+            language: 'json',
+            filename: filename || 'formatted.json',
+            title: `${toolName} Output`
+          },
+          {
+            title: `${toolName} - FreeFormatHub`,
+            width: 1000,
+            height: 700,
+            center: true
+          }
+        );
+      }
+    }
+  } catch (error) {
+    console.error('Failed to open JSON tree viewer:', error);
+    // Fall back to text view
+    openInNewWindow(
+      {
+        content,
+        language: 'json',
+        filename: filename || 'formatted.json',
+        title: `${toolName} Output`
+      },
+      {
+        title: `${toolName} - FreeFormatHub`,
+        width: 1000,
+        height: 700,
+        center: true
+      }
+    );
+  }
 }
 
 /**

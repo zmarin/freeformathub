@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { copyToClipboard } from '../../lib/utils';
 
 export interface JsonTreeViewProps {
@@ -9,6 +9,9 @@ export interface JsonTreeViewProps {
   onValueCopy?: (value: any, path: string) => void;
   maxDepth?: number;
   className?: string;
+  defaultExpanded?: boolean;
+  initialHeight?: number;
+  onHeightChange?: (height: number) => void;
 }
 
 interface TreeNodeProps {
@@ -385,10 +388,43 @@ export const JsonTreeView: React.FC<JsonTreeViewProps> = ({
   onPathClick,
   onValueCopy,
   maxDepth = 10,
-  className = ''
+  className = '',
+  defaultExpanded = true,
+  initialHeight = 500,
+  onHeightChange
 }) => {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set(['$']));
-  const [allExpanded, setAllExpanded] = useState(false);
+  const [allExpanded, setAllExpanded] = useState(defaultExpanded);
+  const [containerHeight, setContainerHeight] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('json-tree-height');
+      return saved ? parseInt(saved, 10) : initialHeight;
+    }
+    return initialHeight;
+  });
+  const [isResizing, setIsResizing] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const resizeStartY = useRef(0);
+  const resizeStartHeight = useRef(0);
+
+  // Auto-expand all nodes on mount if defaultExpanded is true
+  useEffect(() => {
+    if (defaultExpanded && data) {
+      const getAllPaths = (obj: any, currentPath: string, paths: Set<string>) => {
+        if (typeof obj === 'object' && obj !== null) {
+          paths.add(currentPath);
+          Object.entries(obj).forEach(([key, value]) => {
+            const newPath = Array.isArray(obj) ? `${currentPath}[${key}]` : `${currentPath}.${key}`;
+            getAllPaths(value, newPath, paths);
+          });
+        }
+      };
+
+      const allPaths = new Set<string>();
+      getAllPaths(data, '$', allPaths);
+      setExpandedNodes(allPaths);
+    }
+  }, [data, defaultExpanded]);
 
   // Auto-expand nodes that contain search matches
   useEffect(() => {
@@ -418,6 +454,84 @@ export const JsonTreeView: React.FC<JsonTreeViewProps> = ({
     }
   }, [searchTerm, data]);
 
+  // Handle resize functionality
+  const handleResizeStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizing(true);
+    resizeStartY.current = e.clientY;
+    resizeStartHeight.current = containerHeight;
+  }, [containerHeight]);
+
+  const handleResizeMove = useCallback((e: MouseEvent) => {
+    if (!isResizing) return;
+    const deltaY = e.clientY - resizeStartY.current;
+    const newHeight = Math.max(200, Math.min(800, resizeStartHeight.current + deltaY));
+    setContainerHeight(newHeight);
+
+    // Save to localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('json-tree-height', newHeight.toString());
+    }
+
+    onHeightChange?.(newHeight);
+  }, [isResizing, onHeightChange]);
+
+  const handleResizeEnd = useCallback(() => {
+    setIsResizing(false);
+  }, []);
+
+  const toggleFullscreen = useCallback(() => {
+    setIsFullscreen(prev => !prev);
+  }, []);
+
+  // Add event listeners for resize
+  useEffect(() => {
+    if (isResizing) {
+      document.addEventListener('mousemove', handleResizeMove);
+      document.addEventListener('mouseup', handleResizeEnd);
+      document.body.style.cursor = 'ns-resize';
+      document.body.style.userSelect = 'none';
+
+      return () => {
+        document.removeEventListener('mousemove', handleResizeMove);
+        document.removeEventListener('mouseup', handleResizeEnd);
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+      };
+    }
+  }, [isResizing, handleResizeMove, handleResizeEnd]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return; // Don't interfere with input fields
+      }
+
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key.toLowerCase()) {
+          case 'e':
+            e.preventDefault();
+            if (e.shiftKey) {
+              handleCollapseAll();
+            } else {
+              handleExpandAll();
+            }
+            break;
+        }
+      }
+
+      // F11 for fullscreen (without modifier keys)
+      if (e.key === 'F11') {
+        e.preventDefault();
+        toggleFullscreen();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleExpandAll, handleCollapseAll, toggleFullscreen]);
+
   const handleToggleExpanded = useCallback((path: string) => {
     setExpandedNodes(prev => {
       const newSet = new Set(prev);
@@ -445,12 +559,22 @@ export const JsonTreeView: React.FC<JsonTreeViewProps> = ({
     getAllPaths(data, '$', allPaths);
     setExpandedNodes(allPaths);
     setAllExpanded(true);
+
+    // Save preference
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('json-tree-default-expanded', 'true');
+    }
   }, [data]);
 
   const handleCollapseAll = useCallback(() => {
     // Collapse all nodes (including root) so nothing is expanded
     setExpandedNodes(new Set());
     setAllExpanded(false);
+
+    // Save preference
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('json-tree-default-expanded', 'false');
+    }
   }, []);
 
   const stats = useMemo(() => {
@@ -505,11 +629,19 @@ export const JsonTreeView: React.FC<JsonTreeViewProps> = ({
         backgroundColor: 'var(--color-surface-secondary)',
         fontSize: '0.875rem'
       }}>
-        <div style={{ display: 'flex', gap: 'var(--space-lg)' }}>
+        <div style={{ display: 'flex', gap: 'var(--space-lg)', alignItems: 'center' }}>
           <span>Objects: <strong>{stats.objects}</strong></span>
           <span>Arrays: <strong>{stats.arrays}</strong></span>
           <span>Primitives: <strong>{stats.primitives}</strong></span>
           <span>Max Depth: <strong>{stats.maxDepth}</strong></span>
+          <span style={{
+            fontSize: '0.75rem',
+            color: 'var(--color-text-muted)',
+            marginLeft: 'auto',
+            display: isFullscreen ? 'none' : 'inline'
+          }}>
+            Ctrl+E: Expand | Ctrl+Shift+E: Collapse | F11: Fullscreen
+          </span>
         </div>
 
         <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
@@ -527,15 +659,43 @@ export const JsonTreeView: React.FC<JsonTreeViewProps> = ({
           >
             Collapse All
           </button>
+          <button
+            onClick={toggleFullscreen}
+            className="btn btn-outline"
+            style={{ padding: 'var(--space-xs) var(--space-sm)', fontSize: '0.75rem' }}
+            title={isFullscreen ? 'Exit Fullscreen (F11)' : 'Fullscreen (F11)'}
+          >
+            {isFullscreen ? '↙️' : '↗️'}
+          </button>
         </div>
       </div>
 
       {/* Tree Content */}
-      <div style={{
-        padding: 'var(--space-lg)',
-        maxHeight: '500px',
-        overflowY: 'auto'
-      }}>
+      <div
+        style={{
+          position: isFullscreen ? 'fixed' : 'relative',
+          top: isFullscreen ? '0' : 'auto',
+          left: isFullscreen ? '0' : 'auto',
+          right: isFullscreen ? '0' : 'auto',
+          bottom: isFullscreen ? '0' : 'auto',
+          zIndex: isFullscreen ? '9999' : 'auto',
+          height: isFullscreen ? '100vh' : `${containerHeight}px`,
+          display: 'flex',
+          flexDirection: 'column',
+          background: 'var(--color-surface)',
+          border: '1px solid var(--color-border)',
+          borderRadius: isFullscreen ? '0' : 'var(--radius-lg)',
+          transition: 'all var(--transition-normal)'
+        }}
+      >
+        <div
+          style={{
+            padding: 'var(--space-lg)',
+            flex: 1,
+            overflowY: 'auto',
+            overflowX: 'auto'
+          }}
+        >
         <style>
           {`
             .tree-node-actions {
@@ -561,19 +721,45 @@ export const JsonTreeView: React.FC<JsonTreeViewProps> = ({
           `}
         </style>
 
-        <TreeNode
-          data={data}
-          path="$"
-          depth={0}
-          isLast={true}
-          searchTerm={searchTerm}
-          currentMatchPath={currentMatchPath}
-          onPathClick={onPathClick}
-          onValueCopy={onValueCopy}
-          maxDepth={maxDepth}
-          expandedNodes={expandedNodes}
-          onToggleExpanded={handleToggleExpanded}
-        />
+          <TreeNode
+            data={data}
+            path="$"
+            depth={0}
+            isLast={true}
+            searchTerm={searchTerm}
+            currentMatchPath={currentMatchPath}
+            onPathClick={onPathClick}
+            onValueCopy={onValueCopy}
+            maxDepth={maxDepth}
+            expandedNodes={expandedNodes}
+            onToggleExpanded={handleToggleExpanded}
+          />
+        </div>
+
+        {/* Resize Handle */}
+        {!isFullscreen && (
+          <div
+            onMouseDown={handleResizeStart}
+            style={{
+              height: '8px',
+              background: isResizing ? 'var(--color-primary)' : 'var(--color-border)',
+              cursor: 'ns-resize',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderTop: '1px solid var(--color-border)',
+              transition: 'background-color var(--transition-fast)'
+            }}
+            title="Drag to resize"
+          >
+            <div style={{
+              width: '30px',
+              height: '3px',
+              background: 'var(--color-text-muted)',
+              borderRadius: '2px'
+            }} />
+          </div>
+        )}
       </div>
     </div>
   );
