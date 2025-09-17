@@ -5,12 +5,14 @@ export interface JsonPathBreadcrumbProps {
   path: string;
   onPathClick?: (path: string) => void;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 export const JsonPathBreadcrumb: React.FC<JsonPathBreadcrumbProps> = ({
   path,
   onPathClick,
-  className = ''
+  className = '',
+  style
 }) => {
   const [copied, setCopied] = useState(false);
 
@@ -81,7 +83,8 @@ export const JsonPathBreadcrumb: React.FC<JsonPathBreadcrumbProps> = ({
         borderRadius: 'var(--radius-md)',
         fontFamily: 'var(--font-family-mono)',
         fontSize: '0.875rem',
-        border: '1px solid var(--color-border)'
+        border: '1px solid var(--color-border)',
+        ...style
       }}
     >
       {/* Path Label */}

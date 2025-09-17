@@ -5,6 +5,7 @@ export interface JsonSearchBarProps {
   onSearch: (searchTerm: string) => void;
   onNavigateToMatch: (matchIndex: number) => void;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 interface SearchMatch {
@@ -18,7 +19,8 @@ export const JsonSearchBar: React.FC<JsonSearchBarProps> = ({
   data,
   onSearch,
   onNavigateToMatch,
-  className = ''
+  className = '',
+  style
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentMatchIndex, setCurrentMatchIndex] = useState(-1);
@@ -150,7 +152,8 @@ export const JsonSearchBar: React.FC<JsonSearchBarProps> = ({
         padding: 'var(--space-md)',
         backgroundColor: 'var(--color-surface)',
         border: '1px solid var(--color-border)',
-        borderRadius: 'var(--radius-md)'
+        borderRadius: 'var(--radius-md)',
+        ...style
       }}
     >
       {/* Search Icon */}

@@ -9,6 +9,7 @@ export interface JsonTreeViewProps {
   onValueCopy?: (value: any, path: string) => void;
   maxDepth?: number;
   className?: string;
+  style?: React.CSSProperties;
   defaultExpanded?: boolean;
   initialHeight?: number;
   onHeightChange?: (height: number) => void;
@@ -389,6 +390,7 @@ export const JsonTreeView: React.FC<JsonTreeViewProps> = ({
   onValueCopy,
   maxDepth = 10,
   className = '',
+  style,
   defaultExpanded = true,
   initialHeight = 500,
   onHeightChange
@@ -649,7 +651,8 @@ export const JsonTreeView: React.FC<JsonTreeViewProps> = ({
       <div className={className} style={{
         padding: 'var(--space-xl)',
         textAlign: 'center',
-        color: 'var(--color-text-secondary)'
+        color: 'var(--color-text-secondary)',
+        ...style
       }}>
         No data to display
       </div>
@@ -657,7 +660,7 @@ export const JsonTreeView: React.FC<JsonTreeViewProps> = ({
   }
 
   return (
-    <div className={className}>
+    <div className={className} style={style}>
       {/* Tree Controls */}
       <div style={{
         display: 'flex',
