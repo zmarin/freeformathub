@@ -1,9 +1,248 @@
 ---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToolSearch from '../../components/ui/ToolSearch.tsx';
+import ToolCategories from '../../components/ui/ToolCategories.tsx';
+import type { Tool, ToolCategory, ToolSubcategory } from '../../types/tool';
+import { TOOL_CATEGORIES, getAllTools } from '../../lib/tools/registry';
+import '../../lib/tools/index';
+
 export const prerender = true;
-export function GET() {
-  return new Response(null, {
-    status: 301,
-    headers: { Location: '/formatters' }
-  });
+
+const pageTitle = 'Browse All FreeFormatHub Tools';
+const pageDescription = 'Search and explore every formatter, converter, encoder, validator, and generator available on FreeFormatHub—all client-side, instant, and free to use.';
+
+const allTools = getAllTools();
+const totalTools = allTools.length;
+
+interface CategorySection {
+  category: ToolCategory;
+  subcategories: Array<ToolSubcategory & { tools: Tool[] }>;
+  uncategorized: Tool[];
+  total: number;
 }
+
+const categorySections: CategorySection[] = TOOL_CATEGORIES
+  .map((category) => {
+    const categoryTools = allTools.filter((tool) => tool.category.id === category.id);
+    if (categoryTools.length === 0) {
+      return null;
+    }
+
+    const subcategories = (category.subcategories ?? [])
+      .map((subcategory) => ({
+        ...subcategory,
+        tools: categoryTools.filter((tool) => tool.subcategory?.id === subcategory.id),
+      }))
+      .filter((subcategory) => subcategory.tools.length > 0);
+
+    const uncategorized = categoryTools.filter((tool) => {
+      if (!tool.subcategory?.id) return true;
+      return !subcategories.some((subcategory) => subcategory.id === tool.subcategory?.id);
+    });
+
+    return {
+      category,
+      subcategories,
+      uncategorized,
+      total: categoryTools.length,
+    } satisfies CategorySection;
+  })
+  .filter((section): section is CategorySection => section !== null);
+
+const categoryNavigation = categorySections.map(({ category, total }) => ({
+  id: category.id,
+  name: category.name,
+  total,
+}));
 ---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  keywords={['developer tools', 'data tools', 'formatters', 'converters', 'validators', 'encoders']}
+>
+  <main class="bg-surface py-12 lg:py-16">
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div class="max-w-2xl">
+          <p class="text-sm uppercase tracking-wide text-blue-600 dark:text-blue-400 font-semibold mb-2">
+            Tool Directory
+          </p>
+          <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            Explore {totalTools}+ Free Online Tools
+          </h1>
+          <p class="text-base md:text-lg text-gray-600 dark:text-gray-300">
+            Browse every formatter, converter, encoder, validator, and generator available on FreeFormatHub. All tools run locally in your browser for instant, private results.
+          </p>
+        </div>
+        <div class="flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400">
+          <div class="flex flex-col">
+            <span class="text-gray-900 dark:text-white font-semibold text-xl">{categorySections.length}</span>
+            <span>Categories</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-gray-900 dark:text-white font-semibold text-xl">{totalTools}</span>
+            <span>Tools</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8 max-w-3xl">
+        <ToolSearch
+          placeholder="Search {totalTools}+ tools (e.g., JSON formatter, subnet calculator, camel case)"
+          size="large"
+          client:load
+        />
+      </div>
+
+      {categoryNavigation.length > 0 && (
+        <nav class="mt-10">
+          <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-4">
+            Jump to category
+          </h2>
+          <div class="flex flex-wrap gap-3">
+            {categoryNavigation.map((item) => (
+              <a
+                href={`#${item.id}`}
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
+              >
+                <span class="font-medium">{item.name}</span>
+                <span class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300">
+                  {item.total}
+                </span>
+              </a>
+            ))}
+          </div>
+        </nav>
+      )}
+    </section>
+
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-14">
+      <ToolCategories categories={TOOL_CATEGORIES} client:idle />
+    </section>
+
+    {categorySections.map(({ category, subcategories, uncategorized, total }) => (
+      <section id={category.id} class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 lg:mt-20">
+        <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between mb-6">
+          <div>
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+              {category.name}
+            </h2>
+            <p class="text-gray-600 dark:text-gray-300 mt-2 max-w-2xl">
+              {category.description}
+            </p>
+          </div>
+          <span class="inline-flex items-center px-3 py-1 text-sm rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-300 border border-blue-100 dark:border-blue-800">
+            {total} tools
+          </span>
+        </div>
+
+        {subcategories.map((subcategory) => (
+          <div class="mt-10" id={`${category.id}-${subcategory.id}`}>
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+              <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                {subcategory.name}
+              </h3>
+              <span class="text-sm text-gray-500 dark:text-gray-400">
+                {subcategory.tools.length} tools
+              </span>
+            </div>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-4 max-w-3xl">
+              {subcategory.description}
+            </p>
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {subcategory.tools.map((tool) => (
+                <a
+                  href={`/${tool.category.id}/${tool.slug}`}
+                  class="group block h-full p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-lg transition-all"
+                >
+                  <div class="flex items-start gap-4">
+                    <div class={`flex h-12 w-12 items-center justify-center rounded-lg bg-${category.color}-100 dark:bg-${category.color}-900 text-2xl transition-transform group-hover:scale-110`}>
+                      <span>{tool.icon}</span>
+                    </div>
+                    <div>
+                      <h4 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                        {tool.name}
+                      </h4>
+                      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-3">
+                        {tool.description}
+                      </p>
+                    </div>
+                  </div>
+                  {tool.keywords?.length > 0 && (
+                    <div class="mt-4 flex flex-wrap gap-2">
+                      {tool.keywords.slice(0, 4).map((keyword) => (
+                        <span class="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300">
+                          {keyword}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </a>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        {uncategorized.length > 0 && (
+          <div class="mt-10">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+              <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                Other {category.name}
+              </h3>
+              <span class="text-sm text-gray-500 dark:text-gray-400">
+                {uncategorized.length} tools
+              </span>
+            </div>
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {uncategorized.map((tool) => (
+                <a
+                  href={`/${tool.category.id}/${tool.slug}`}
+                  class="group block h-full p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-lg transition-all"
+                >
+                  <div class="flex items-start gap-4">
+                    <div class={`flex h-12 w-12 items-center justify-center rounded-lg bg-${category.color}-100 dark:bg-${category.color}-900 text-2xl transition-transform group-hover:scale-110`}>
+                      <span>{tool.icon}</span>
+                    </div>
+                    <div>
+                      <h4 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                        {tool.name}
+                      </h4>
+                      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-3">
+                        {tool.description}
+                      </p>
+                    </div>
+                  </div>
+                  {tool.keywords?.length > 0 && (
+                    <div class="mt-4 flex flex-wrap gap-2">
+                      {tool.keywords.slice(0, 4).map((keyword) => (
+                        <span class="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300">
+                          {keyword}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+      </section>
+    ))}
+  </main>
+  <style>
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .line-clamp-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  </style>
+</BaseLayout>

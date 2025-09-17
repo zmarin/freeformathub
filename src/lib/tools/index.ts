@@ -111,7 +111,7 @@ import { MOCK_DATA_GENERATOR_TOOL } from '../../tools/generators/mock-data-gener
 import { GIT_DIFF_VISUALIZER_TOOL } from '../../tools/development/git-diff-visualizer';
 import { JSON_FLATTENER_TOOL } from '../../tools/development/json-flattener';
 import { JSON_PATH_EXTRACTOR_TOOL } from '../../tools/development/json-path-extractor';
-import { JSON_SCHEMA_VALIDATOR_TOOL } from '../../tools/development/json-schema-validator';
+import { JSON_SCHEMA_VALIDATOR_TOOL } from '../../tools/validators/json-schema-validator';
 import { CONFIG_FILE_VALIDATOR_TOOL } from '../../tools/development/config-file-validator';
 import { YAML_VALIDATOR_TOOL } from '../../tools/development/yaml-validator';
 import { SQL_QUERY_BUILDER_TOOL } from '../../tools/development/sql-query-builder';
@@ -126,6 +126,7 @@ import { BINARY_HEX_VIEWER_TOOL } from '../../tools/data/binary-hex-viewer';
 import { IMAGE_METADATA_EXTRACTOR_TOOL } from '../../tools/data/image-metadata-extractor';
 import { IMAGE_COMPRESSOR_TOOL } from '../../tools/data/image-compressor';
 import { PDF_TOOLS_TOOL } from '../../tools/data/pdf-tools';
+import { CSV_SPLITTER_TOOL } from '../../tools/data/csv-splitter';
 
 // Validator tools
 import { EMAIL_VALIDATOR_TOOL } from '../../tools/validators/email-validator';
@@ -269,6 +270,7 @@ registerTool(BINARY_HEX_VIEWER_TOOL);
 registerTool(IMAGE_METADATA_EXTRACTOR_TOOL);
 registerTool(IMAGE_COMPRESSOR_TOOL);
 registerTool(PDF_TOOLS_TOOL);
+registerTool(CSV_SPLITTER_TOOL);
 
 // Validators
 registerTool(EMAIL_VALIDATOR_TOOL);

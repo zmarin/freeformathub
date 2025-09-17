@@ -73,6 +73,9 @@ import { TimestampConverter } from '../components/tools/datetime/TimestampConver
 import { CronGenerator } from '../components/tools/datetime/CronGenerator';
 import { TimeDecimalConverter } from '../components/tools/datetime/TimeDecimalConverter';
 
+// Data tools
+import { CsvSplitter } from '../components/tools/data/CsvSplitter';
+
 export type ToolComponent = React.ComponentType<any>;
 
 export const TOOL_COMPONENTS: Record<string, ToolComponent> = {
@@ -148,6 +151,9 @@ export const TOOL_COMPONENTS: Record<string, ToolComponent> = {
   'timestamp-converter': TimestampConverter,
   'cron-generator': CronGenerator,
   'time-decimal-converter': TimeDecimalConverter,
+
+  // Data tools
+  'csv-splitter': CsvSplitter,
 };
 
 export function getToolComponent(slug: string): ToolComponent | null {
