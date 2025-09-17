@@ -40,6 +40,21 @@ const jsonLd = {
     ]
   }
 };
+
+// Add FAQ structured data if available
+if (tool.faq && tool.faq.length > 0) {
+  jsonLd.mainEntity = {
+    "@type": "FAQPage",
+    "mainEntity": tool.faq.map((faqItem: any) => ({
+      "@type": "Question",
+      "name": faqItem.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faqItem.answer
+      }
+    }))
+  };
+}
 ---
 
 <BaseLayout
@@ -126,10 +141,6 @@ const jsonLd = {
         </div>
       </header>
 
-      <!-- Header Ad Placement -->
-      <div class="card" style="background-color: var(--color-surface-secondary); border: 2px dashed var(--color-border); text-align: center; padding: var(--space-xl);">
-        <AdPlacement type="header" lazy={false} />
-      </div>
     </div>
   </section>
 
@@ -140,12 +151,27 @@ const jsonLd = {
       <slot />
     </div>
 
-    <!-- How It Works Section -->
+    <!-- How It Works Section - Collapsible -->
     <div class="card" style="margin-bottom: var(--space-3xl);">
-      <div class="card-body">
-        <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--color-text-primary); margin-bottom: var(--space-2xl);">
-          How It Works
-        </h2>
+      <details class="group">
+        <summary style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          cursor: pointer;
+          padding: var(--space-2xl);
+          border-bottom: 1px solid var(--color-border);
+          background-color: var(--color-surface-secondary);
+          border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        ">
+          <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--color-text-primary);">
+            How It Works
+          </h2>
+          <svg class="w-6 h-6 group-open:rotate-180 transition-transform" style="color: var(--color-text-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </summary>
+        <div style="padding: var(--space-2xl);">
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-2xl);">
           {tool.howItWorks && tool.howItWorks.length > 0 ? (
@@ -287,16 +313,31 @@ const jsonLd = {
             </>
           )}
         </div>
-      </div>
+      </details>
     </div>
 
-    <!-- Problems It Solves Section -->
+    <!-- Problems It Solves Section - Collapsible -->
     {tool.problemsSolved && tool.problemsSolved.length > 0 && (
       <div class="card" style="margin-bottom: var(--space-3xl);">
-        <div class="card-body">
-          <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--color-text-primary); margin-bottom: var(--space-2xl);">
-            Problems It Solves
-          </h2>
+        <details class="group">
+          <summary style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: var(--space-2xl);
+            border-bottom: 1px solid var(--color-border);
+            background-color: var(--color-surface-secondary);
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+          ">
+            <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--color-text-primary);">
+              Problems It Solves
+            </h2>
+            <svg class="w-6 h-6 group-open:rotate-180 transition-transform" style="color: var(--color-text-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div style="padding: var(--space-2xl);">
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-2xl);">
             {tool.problemsSolved.map((item: any, index: number) => (
@@ -349,16 +390,32 @@ const jsonLd = {
             ))}
           </div>
         </div>
-      </div>
+      </details>
+    </div>
     )}
 
-    <!-- Why Choose This Tool Section -->
+    <!-- Why Choose This Tool Section - Collapsible -->
     {tool.whyChoose && tool.whyChoose.length > 0 && (
       <div class="card" style="margin-bottom: var(--space-3xl);">
-        <div class="card-body">
-          <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--color-text-primary); margin-bottom: var(--space-2xl);">
-            Why Choose This Tool
-          </h2>
+        <details class="group" open>
+          <summary style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: var(--space-2xl);
+            border-bottom: 1px solid var(--color-border);
+            background-color: var(--color-surface-secondary);
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+          ">
+            <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--color-text-primary);">
+              Why Choose This Tool
+            </h2>
+            <svg class="w-6 h-6 group-open:rotate-180 transition-transform" style="color: var(--color-text-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div style="padding: var(--space-2xl);">
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-2xl);">
             {tool.whyChoose.map((benefit: any, index: number) => (
@@ -388,7 +445,8 @@ const jsonLd = {
             ))}
           </div>
         </div>
-      </div>
+      </details>
+    </div>
     )}
 
     <!-- In-Content Ad -->

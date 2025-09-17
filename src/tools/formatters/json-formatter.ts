@@ -29,8 +29,8 @@ export const JSON_FORMATTER_TOOL: Tool = {
   slug: 'json-formatter',
   icon: '{}',
   keywords: ['json', 'format', 'beautify', 'validate', 'pretty print', 'minify', 'parser'],
-  seoTitle: 'Free JSON/JSONC Formatter & Validator | Sort Keys, Inline Arrays, Duplicate Keys',
-  seoDescription: 'Powerful JSON/JSONC formatter with safe comment stripping, key sorting, inline arrays, duplicate key detection, special-number coercion, and rich error details. 100% local.',
+  seoTitle: 'Free JSON Formatter & Validator Online - Format, Validate & Beautify JSON',
+  seoDescription: 'Format & validate JSON instantly! Free online JSON formatter with JSONC support, error detection, tree view & one-click copy. No uploads, 100% private & secure.',
   examples: [
     {
       title: 'Basic JSON Formatting',

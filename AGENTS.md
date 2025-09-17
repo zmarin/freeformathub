@@ -1,38 +1,32 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-- `src/pages/`: Astro routes (kebab-case); entry pages like `index.astro` and API routes like `sitemap.xml.ts`.
-- `src/components/`: UI components (React `.tsx`, PascalCase filenames).
-- `src/tools/`: Tool implementations grouped by domain (e.g., `formatters/json-formatter.ts`, `encoders/base64-image-encoder.ts`) exporting a `Tool` config plus functions.
-- `src/lib/`: Shared registries and helpers (e.g., `lib/tools/registry.ts`).
-- `src/test/`: Vitest specs (`*.test.ts`) and setup (`test/setup.ts`).
-- `public/`: Static assets. `dist/`: Build output (generated). `.astro/`: Astro internals (generated).
+- Place Astro routes in `src/pages/` (kebab-case filenames) for both page entries and API routes such as `sitemap.xml.ts`.
+- Build UI components in `src/components/` using React `.tsx` and PascalCase filenames; keep shared helpers in `src/lib/`.
+- Implement reusable tools in `src/tools/`, grouping by domain (e.g., `formatters/json-formatter.ts`) and exporting a `Tool` config alongside pure helpers.
+- Store Vitest specs in `src/test/`, mirroring the feature under test, and keep static assets in `public/`.
 
 ## Build, Test, and Development Commands
-- `npm run dev`: Start local dev server with hot reload.
-- `npm run build`: Production build to `dist/`.
-- `npm run preview`: Preview the production build locally.
-- `npm test` / `npm run test:run`: Run Vitest in watch/CI mode.
-- `npm run test:ui`: Open Vitest UI.
-- `npm run astro`: Access the Astro CLI directly.
+- `npm run dev` — start the Astro dev server with hot reload.
+- `npm run build` — produce the optimized bundle in `dist/` for deployment.
+- `npm run preview` — serve the production build locally to validate deployment behavior.
+- `npm test` / `npm run test:run` — execute Vitest in watch or CI mode; use `npm run test:ui` for the testing dashboard.
 
 ## Coding Style & Naming Conventions
-- TypeScript + Astro + React (Node >= 20). JSX via `react-jsx`.
-- Formatting: Prettier; Linting: ESLint. Use 2-space indentation, semicolons, single quotes in TS when possible.
-- Filenames: PascalCase for React components (`MyWidget.tsx`), kebab-case for pages/routes (`json-formatter.astro`), camelCase for utilities.
-- Expose tools as `CONST_TOOL` and keep pure functions (e.g., `formatJson`, `processImageToBase64`).
+- Write TypeScript, Astro, and React with 2-space indentation, semicolons, and single quotes where possible.
+- Use Prettier for formatting and ESLint for linting before submitting changes.
+- Prefer PascalCase for React components, kebab-case for routes, camelCase for utilities, and export tools as `CONST_TOOL` constants.
 
 ## Testing Guidelines
-- Framework: Vitest (`jsdom`) with Testing Library for React components.
-- Location: `src/test/*.test.ts` (mirror tool/component names, e.g., `json-formatter.test.ts`).
-- Commands: `npm test` locally; `npm run test:run` in CI.
-- Aim for meaningful unit coverage on new/changed logic; include edge cases and error paths.
+- Use Vitest with Testing Library (`jsdom` environment) for unit and component coverage.
+- Name tests `*.test.ts` under `src/test/`, mirroring the target module (e.g., `json-formatter.test.ts`).
+- Cover edge cases and error paths; ensure new logic includes meaningful unit coverage.
 
 ## Commit & Pull Request Guidelines
-- Commit style: Conventional Commits (`feat:`, `fix:`, `chore:`, etc.).
-- PRs: Clear description, link related issues, include screenshots for UI changes, and steps to verify.
-- Before opening: run `npm run build` and `npm test`; update docs when behavior changes.
+- Follow Conventional Commit prefixes (e.g., `feat:`, `fix:`, `chore:`) and keep messages focused.
+- Open PRs with a clear summary, linked issues, verification steps, and screenshots for UI changes.
+- Run `npm run build` and `npm test` locally before requesting review; update documentation when behavior shifts.
 
 ## Security & Configuration Tips
-- Do not commit secrets. Client-only processing; keep large payloads out of the repo.
-- Deployment: `astro.config.mjs` uses `NODE_ENV` for `site` and `DEPLOY_TARGET=github-pages` for `base`—test both `dev` and `preview` locally.
+- Avoid committing secrets; all processing should remain client-side.
+- Validate behavior with both `npm run dev` and `npm run preview`, honoring `NODE_ENV` and `DEPLOY_TARGET=github-pages` in `astro.config.mjs`.
