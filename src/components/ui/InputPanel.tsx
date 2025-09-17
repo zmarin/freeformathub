@@ -1,36 +1,56 @@
 import { useState, useCallback, type ChangeEvent } from 'react';
-import { copyToClipboard } from '../../lib/utils';
+
+interface ExampleItem {
+  title: string;
+  value: string;
+}
 
 interface InputPanelProps {
-  value: string;
-  onChange: (value: string) => void;
+  value?: string;
+  input?: string;
+  onChange?: (value: string) => void;
+  onInputChange?: (value: string) => void;
   placeholder?: string;
   label?: string;
+  title?: string;
+  description?: string;
   accept?: string;
   maxLength?: number;
   rows?: number;
   className?: string;
   syntax?: string;
-  examples?: Array<{ title: string; value: string }>;
+  language?: string;
+  examples?: ExampleItem[];
+  onExampleClick?: (example: ExampleItem) => void;
 }
 
 export function InputPanel({
   value,
+  input,
   onChange,
+  onInputChange,
   placeholder = 'Enter your input here...',
-  label = 'Input',
+  label,
+  title,
+  description,
   accept,
   maxLength,
   rows = 10,
   className = '',
   syntax,
+  language,
   examples = [],
+  onExampleClick,
 }: InputPanelProps) {
+  const resolvedValue = value ?? input ?? '';
+  const handleChange = onChange ?? onInputChange ?? (() => {});
+  const displayLabel = title ?? label ?? 'Input';
+  const displaySyntax = syntax ?? language;
   const [dragActive, setDragActive] = useState(false);
 
   const handleInputChange = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
-    onChange(e.target.value);
-  }, [onChange]);
+    handleChange(e.target.value);
+  }, [handleChange]);
 
   const handleFileUpload = useCallback(async (file: File) => {
     if (maxLength && file.size > maxLength) {
@@ -40,11 +60,11 @@ export function InputPanel({
 
     try {
       const content = await file.text();
-      onChange(content);
+      handleChange(content);
     } catch (error) {
       alert('Failed to read file. Please make sure it\'s a valid text file.');
     }
-  }, [onChange, maxLength]);
+  }, [handleChange, maxLength]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -75,19 +95,23 @@ export function InputPanel({
   const handlePaste = useCallback(async () => {
     try {
       const text = await navigator.clipboard.readText();
-      onChange(text);
+      handleChange(text);
     } catch (error) {
       alert('Failed to read from clipboard. Please make sure you have granted clipboard permissions.');
     }
-  }, [onChange]);
+  }, [handleChange]);
 
-  const loadExample = useCallback((example: { title: string; value: string }) => {
-    onChange(example.value);
-  }, [onChange]);
+  const loadExample = useCallback((example: ExampleItem) => {
+    if (onExampleClick) {
+      onExampleClick(example);
+    } else {
+      handleChange(example.value);
+    }
+  }, [handleChange, onExampleClick]);
 
   const clear = useCallback(() => {
-    onChange('');
-  }, [onChange]);
+    handleChange('');
+  }, [handleChange]);
 
   return (
     <div className={`bg-white dark:bg-gray-800 ${className}`}>
@@ -95,11 +119,11 @@ export function InputPanel({
       <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center space-x-2">
           <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-            {label}
+            {displayLabel}
           </h3>
-          {value && (
+          {resolvedValue && (
             <span className="text-xs text-gray-500 dark:text-gray-400">
-              {value.length} characters
+              {resolvedValue.length} characters
             </span>
           )}
         </div>
@@ -113,7 +137,7 @@ export function InputPanel({
                           bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300
                           focus:outline-none focus:ring-2 focus:ring-blue-500"
                 onChange={(e) => {
-                  const example = examples[parseInt(e.target.value)];
+                  const example = examples[parseInt(e.target.value, 10)];
                   if (example) loadExample(example);
                   e.target.value = '';
                 }}
@@ -155,7 +179,7 @@ export function InputPanel({
           </button>
 
           {/* Clear button */}
-          {value && (
+          {resolvedValue && (
             <button
               onClick={clear}
               className="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 
@@ -167,6 +191,13 @@ export function InputPanel({
         </div>
       </div>
 
+      {/* Optional description */}
+      {description && (
+        <div className="px-4 pt-3 text-xs text-gray-500 dark:text-gray-400">
+          {description}
+        </div>
+      )}
+
       {/* Input area */}
       <div
         className={`relative ${dragActive ? 'bg-blue-50 dark:bg-blue-900/20 border-2 border-dashed border-blue-300 dark:border-blue-600' : ''}`}
@@ -176,7 +207,7 @@ export function InputPanel({
         onDragLeave={handleDrag}
       >
         <textarea
-          value={value}
+          value={resolvedValue}
           onChange={handleInputChange}
           placeholder={placeholder}
           rows={rows}
@@ -200,17 +231,17 @@ export function InputPanel({
       </div>
 
       {/* Status bar */}
-      {(maxLength || syntax) && (
+      {(maxLength || displaySyntax) && (
         <div className="flex items-center justify-between px-4 py-2 text-xs text-gray-500 dark:text-gray-400 
                        border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
           <div className="flex items-center space-x-4">
-            {syntax && (
-              <span>Syntax: {syntax}</span>
+            {displaySyntax && (
+              <span>Syntax: {displaySyntax}</span>
             )}
           </div>
           {maxLength && (
-            <span className={value.length > maxLength * 0.9 ? 'text-yellow-600 dark:text-yellow-400' : ''}>
-              {value.length} / {maxLength}
+            <span className={resolvedValue.length > maxLength * 0.9 ? 'text-yellow-600 dark:text-yellow-400' : ''}>
+              {resolvedValue.length} / {maxLength}
             </span>
           )}
         </div>

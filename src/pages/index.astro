@@ -7,21 +7,6 @@ import ToolCategories from '../components/ui/ToolCategories.tsx';
 import ToolSearch from '../components/ui/ToolSearch.tsx';
 import AdPlacement from '../components/ads/AdPlacement.astro';
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "FreeFormatHub",
-  "description": "Free online business and developer tools for formatting, converting, and validating data. Zero friction tools that just work.",
-  "applicationCategory": "DeveloperApplication",
-  "operatingSystem": "Any",
-  "permissions": "no-storage",
-  "isAccessibleForFree": true,
-  "author": {
-    "@type": "Organization",
-    "name": "FreeFormatHub"
-  }
-};
-
 const curatedCategoryId = 'formatters';
 const curatedCategory = getCategory(curatedCategoryId);
 const curatedTools = getToolsByCategory(curatedCategoryId).slice(0, 6);
@@ -51,6 +36,229 @@ const trendingTools = trendingIds
   .map((id) => getTool(id))
   .filter((t) => !!t)
   .slice(0, 8);
+
+// Enhanced structured data for homepage SEO
+const baseUrl = 'https://freeformathub.com';
+
+// Organization schema
+const organizationSchema = {
+  "@type": "Organization",
+  "@id": `${baseUrl}#organization`,
+  "name": "FreeFormatHub",
+  "url": baseUrl,
+  "logo": {
+    "@type": "ImageObject",
+    "url": `${baseUrl}/logo.png`,
+    "width": 200,
+    "height": 200
+  },
+  "description": "Free online developer tools for formatting, converting, and validating data with complete privacy and security.",
+  "foundingDate": "2024",
+  "sameAs": [
+    "https://github.com/freeformathub"
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer service",
+    "email": "contact@freeformathub.com",
+    "availableLanguage": ["English"]
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Kijevska 5",
+    "addressLocality": "Split",
+    "postalCode": "21000",
+    "addressCountry": "Croatia"
+  },
+  "areaServed": "Worldwide",
+  "serviceType": "Online Developer Tools"
+};
+
+// WebSite schema with search functionality
+const websiteSchema = {
+  "@type": "WebSite",
+  "@id": `${baseUrl}#website`,
+  "name": "FreeFormatHub",
+  "alternateName": "Free Format Hub",
+  "description": "Free online business and developer tools for formatting, converting, encoding, and validating data. JSON formatter, Base64 encoder, URL decoder, and more.",
+  "url": baseUrl,
+  "publisher": organizationSchema,
+  "inLanguage": "en-US",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": `${baseUrl}/search?q={search_term_string}`,
+      "actionPlatform": [
+        "http://schema.org/DesktopWebPlatform",
+        "http://schema.org/MobileWebPlatform"
+      ]
+    },
+    "query-input": "required name=search_term_string"
+  }
+};
+
+// Main WebApplication schema
+const webApplicationSchema = {
+  "@type": "WebApplication",
+  "@id": `${baseUrl}#webapp`,
+  "name": "FreeFormatHub",
+  "description": "Free online business and developer tools for formatting, converting, and validating data. Zero friction tools that just work.",
+  "url": baseUrl,
+  "applicationCategory": "DeveloperApplication",
+  "applicationSubCategory": "Data Processing Tools",
+  "operatingSystem": "Any",
+  "permissions": "no-storage",
+  "isAccessibleForFree": true,
+  "installUrl": baseUrl,
+  "browserRequirements": "Requires JavaScript. Supported browsers: Chrome, Firefox, Safari, Edge",
+  "softwareVersion": "1.0",
+  "datePublished": "2024-01-01",
+  "dateModified": new Date().toISOString().split('T')[0],
+  "inLanguage": "en",
+  "creator": organizationSchema,
+  "publisher": organizationSchema,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "@id": `${baseUrl}#offer`,
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock",
+    "validFrom": "2024-01-01",
+    "description": "Free access to all developer tools and features",
+    "seller": organizationSchema
+  },
+  "featureList": [
+    "JSON Formatter & Validator",
+    "Base64 Encoder/Decoder",
+    "URL Encoder/Decoder",
+    "JWT Token Decoder",
+    "XML Formatter",
+    "YAML Formatter",
+    "CSS Beautifier",
+    "HTML Formatter",
+    "SQL Formatter",
+    "Text Case Converter",
+    "Color Converter",
+    "Hash Generator",
+    "Password Generator",
+    "QR Code Generator",
+    "Image Converter",
+    "CSV Tools",
+    "And 100+ more tools"
+  ],
+  "screenshot": [
+    `${baseUrl}/screenshots/homepage.png`,
+    `${baseUrl}/screenshots/json-formatter.png`,
+    `${baseUrl}/screenshots/base64-encoder.png`
+  ]
+};
+
+// ItemList for trending tools
+const trendingToolsListSchema = {
+  "@type": "ItemList",
+  "@id": `${baseUrl}#trending-tools`,
+  "name": "Trending Developer Tools",
+  "description": "Most popular developer tools on FreeFormatHub",
+  "numberOfItems": trendingTools.length,
+  "itemListElement": trendingTools.map((tool, index) => ({
+    "@type": "ListItem",
+    "position": index + 1,
+    "item": {
+      "@type": "SoftwareApplication",
+      "name": tool.name,
+      "description": tool.description,
+      "url": `${baseUrl}/${tool.category.id}/${tool.slug}`,
+      "applicationCategory": tool.category.name,
+      "isAccessibleForFree": true
+    }
+  }))
+};
+
+// FAQ schema for common questions
+const faqSchema = {
+  "@type": "FAQPage",
+  "@id": `${baseUrl}#faq`,
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Are these tools really free to use?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, all tools on FreeFormatHub are completely free to use with no registration required. There are no hidden fees or premium tiers."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is my data secure when using these tools?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Absolutely. All processing happens locally in your browser. No data is sent to our servers or stored anywhere. Your information remains completely private."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What types of tools are available?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "We offer 100+ tools including JSON formatters, Base64 encoders, URL decoders, text converters, image tools, validators, generators, and much more for developers and businesses."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need to install anything to use these tools?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No installation required. All tools work directly in your web browser on any device - desktop, tablet, or mobile."
+      }
+    }
+  ]
+};
+
+// Service schema for SEO
+const serviceSchema = {
+  "@type": "Service",
+  "@id": `${baseUrl}#service`,
+  "name": "Online Developer Tools Service",
+  "description": "Free online tools for developers and businesses to format, convert, encode, and validate data",
+  "provider": organizationSchema,
+  "areaServed": "Worldwide",
+  "availableChannel": {
+    "@type": "ServiceChannel",
+    "serviceUrl": baseUrl,
+    "serviceType": "Online Platform"
+  },
+  "category": "Software Development Tools",
+  "serviceType": "Data Processing and Formatting Tools",
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Developer Tools Catalog",
+    "itemListElement": TOOL_CATEGORIES.map((category, index) => ({
+      "@type": "Offer",
+      "itemOffered": {
+        "@type": "Service",
+        "name": category.name,
+        "description": category.description,
+        "category": category.name
+      },
+      "price": "0",
+      "priceCurrency": "USD"
+    }))
+  }
+};
+
+// Comprehensive JSON-LD structure
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    organizationSchema,
+    websiteSchema,
+    webApplicationSchema,
+    trendingToolsListSchema,
+    faqSchema,
+    serviceSchema
+  ]
+};
 ---
 
 <BaseLayout 

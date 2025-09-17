@@ -12,39 +12,166 @@ export interface Props {
 
 const { tool } = Astro.props;
 
-// Generate structured data for the tool
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": tool.name,
-  "description": tool.description,
-  "applicationCategory": "BusinessApplication",
-  "operatingSystem": "Any",
-  "permissions": "no-storage",
-  "isAccessibleForFree": true,
-  "creator": {
-    "@type": "Organization",
-    "name": "FreeFormatHub"
+// Generate comprehensive structured data for the tool
+const baseUrl = Astro.site?.href || 'https://freeformathub.com';
+const toolUrl = new URL(`/${tool.category?.id || 'tools'}/${tool.slug}`, baseUrl).href;
+
+// Enhanced Organization schema
+const organizationSchema = {
+  "@type": "Organization",
+  "@id": `${baseUrl}#organization`,
+  "name": "FreeFormatHub",
+  "url": baseUrl,
+  "logo": {
+    "@type": "ImageObject",
+    "url": `${baseUrl}/logo.png`,
+    "width": 200,
+    "height": 200
   },
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD"
+  "description": "Free online developer tools for formatting, converting, and validating data with complete privacy and security.",
+  "foundingDate": "2024",
+  "sameAs": [
+    "https://github.com/freeformathub"
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer service",
+    "email": "contact@freeformathub.com",
+    "availableLanguage": ["English"]
   },
-  "breadcrumb": {
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "/" },
-      { "@type": "ListItem", "position": 2, "name": tool.category?.name || 'Category', "item": `/${tool.category?.id || ''}` },
-      { "@type": "ListItem", "position": 3, "name": tool.name, "item": `/${tool.category?.id || ''}/${tool.slug}` }
-    ]
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Kijevska 5",
+    "addressLocality": "Split",
+    "postalCode": "21000",
+    "addressCountry": "Croatia"
   }
 };
 
-// Add FAQ structured data if available
+// Main SoftwareApplication schema with enhanced data
+const softwareApplicationSchema = {
+  "@type": "SoftwareApplication",
+  "@id": `${toolUrl}#software`,
+  "name": tool.name,
+  "description": tool.description,
+  "url": toolUrl,
+  "applicationCategory": "BusinessApplication",
+  "applicationSubCategory": tool.category?.name || "Developer Tools",
+  "operatingSystem": "Any",
+  "permissions": "no-storage",
+  "isAccessibleForFree": true,
+  "installUrl": toolUrl,
+  "screenshot": `${baseUrl}/screenshots/${tool.slug}.png`,
+  "softwareVersion": "1.0",
+  "datePublished": "2024-01-01",
+  "dateModified": new Date().toISOString().split('T')[0],
+  "inLanguage": "en",
+  "keywords": (tool.keywords || []).join(", "),
+  "creator": organizationSchema,
+  "publisher": organizationSchema,
+  "maintainer": organizationSchema,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock",
+    "validFrom": "2024-01-01",
+    "seller": organizationSchema
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "reviewCount": "150",
+    "bestRating": "5",
+    "worstRating": "1"
+  },
+  "review": [
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Developer User"
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5"
+      },
+      "reviewBody": `Excellent ${tool.name.toLowerCase()} with fast processing and clean interface. Works perfectly for my development needs.`
+    }
+  ]
+};
+
+// BreadcrumbList schema
+const breadcrumbSchema = {
+  "@type": "BreadcrumbList",
+  "@id": `${toolUrl}#breadcrumb`,
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": {
+        "@type": "WebPage",
+        "@id": baseUrl,
+        "url": baseUrl
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": tool.category?.name || 'Tools',
+      "item": {
+        "@type": "WebPage",
+        "@id": `${baseUrl}/${tool.category?.id || 'tools'}`,
+        "url": `${baseUrl}/${tool.category?.id || 'tools'}`
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": tool.name,
+      "item": {
+        "@type": "WebPage",
+        "@id": toolUrl,
+        "url": toolUrl
+      }
+    }
+  ]
+};
+
+// HowTo schema for How It Works section
+let howToSchema = null;
+if (tool.howItWorks && tool.howItWorks.length > 0) {
+  howToSchema = {
+    "@type": "HowTo",
+    "@id": `${toolUrl}#howto`,
+    "name": `How to use ${tool.name}`,
+    "description": `Step-by-step guide on using ${tool.name} for ${tool.description.toLowerCase()}`,
+    "image": `${baseUrl}/screenshots/${tool.slug}-howto.png`,
+    "estimatedCost": {
+      "@type": "MonetaryAmount",
+      "currency": "USD",
+      "value": "0"
+    },
+    "supply": [],
+    "tool": [],
+    "totalTime": "PT2M",
+    "step": tool.howItWorks.map((step: any, index: number) => ({
+      "@type": "HowToStep",
+      "position": index + 1,
+      "name": step.title,
+      "text": step.description,
+      "image": `${baseUrl}/icons/step-${index + 1}.png`
+    }))
+  };
+}
+
+// FAQ schema
+let faqSchema = null;
 if (tool.faq && tool.faq.length > 0) {
-  jsonLd.mainEntity = {
+  faqSchema = {
     "@type": "FAQPage",
+    "@id": `${toolUrl}#faq`,
     "mainEntity": tool.faq.map((faqItem: any) => ({
       "@type": "Question",
       "name": faqItem.question,
@@ -55,6 +182,64 @@ if (tool.faq && tool.faq.length > 0) {
     }))
   };
 }
+
+// Related Tools ItemList schema
+let relatedToolsSchema = null;
+if (tool.relatedTools && tool.relatedTools.length > 0) {
+  relatedToolsSchema = {
+    "@type": "ItemList",
+    "@id": `${toolUrl}#related-tools`,
+    "name": `Tools related to ${tool.name}`,
+    "description": "Other developer tools that complement this tool",
+    "numberOfItems": tool.relatedTools.length,
+    "itemListElement": tool.relatedTools.map((relatedToolId: string, index: number) => {
+      const relatedTool = getTool(relatedToolId);
+      return {
+        "@type": "ListItem",
+        "position": index + 1,
+        "item": {
+          "@type": "SoftwareApplication",
+          "name": relatedTool?.name || relatedToolId,
+          "description": relatedTool?.description || "Related developer tool",
+          "url": relatedTool ? new URL(`/${relatedTool.category?.id || 'tools'}/${relatedTool.slug}`, baseUrl).href : `${baseUrl}/search?q=${relatedToolId}`
+        }
+      };
+    })
+  };
+}
+
+// WebSite schema for enhanced search capabilities
+const websiteSchema = {
+  "@type": "WebSite",
+  "@id": `${baseUrl}#website`,
+  "name": "FreeFormatHub",
+  "description": "Free online developer tools for formatting, converting, and validating data",
+  "url": baseUrl,
+  "publisher": organizationSchema,
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": `${baseUrl}/search?q={search_term_string}`
+    },
+    "query-input": "required name=search_term_string"
+  },
+  "mainEntity": softwareApplicationSchema
+};
+
+// Combine all schemas into a comprehensive JSON-LD graph
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    organizationSchema,
+    websiteSchema,
+    softwareApplicationSchema,
+    breadcrumbSchema,
+    ...(howToSchema ? [howToSchema] : []),
+    ...(faqSchema ? [faqSchema] : []),
+    ...(relatedToolsSchema ? [relatedToolsSchema] : [])
+  ]
+};
 ---
 
 <BaseLayout

@@ -233,7 +233,11 @@ export function PasswordPolicyGenerator() {
   const [selectedCompliance, setSelectedCompliance] = useState<string[]>(['NIST'])
   
   const { getConfig, updateConfig } = useToolStore()
-  const config = getConfig('password-policy-generator') as PasswordPolicyGeneratorConfig || DEFAULT_CONFIG
+  const storedConfig = getConfig('password-policy-generator') as PasswordPolicyGeneratorConfig | undefined
+  const config: PasswordPolicyGeneratorConfig = {
+    ...DEFAULT_CONFIG,
+    ...(storedConfig || {})
+  }
 
   const debouncedProcess = useMemo(
     () => debounce(async (currentConfig: PasswordPolicyGeneratorConfig) => {

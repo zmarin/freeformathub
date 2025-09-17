@@ -1,0 +1,251 @@
+---
+export interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  canonicalPath?: string;
+  customStyles?: string;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  canonicalPath = '/',
+  customStyles
+} = Astro.props;
+
+const siteUrl = Astro.site?.href || 'https://freeformathub.com';
+const canonicalUrl = canonical || new URL(canonicalPath, siteUrl).href;
+const adClient = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-PLACEHOLDER';
+
+const baseStyles = `
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    margin: 0;
+    background: #f8fafc;
+    color: #0f172a;
+    line-height: 1.6;
+  }
+
+  a {
+    color: #2563eb;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  header {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    padding: 3.5rem 0;
+    text-align: center;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .hero p {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .cta-button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    background: #2563eb;
+    color: #fff;
+    font-weight: 600;
+    transition: background 0.2s ease-in-out;
+  }
+
+  .cta-button:focus,
+  .cta-button:hover {
+    background: #1d4ed8;
+  }
+
+  main {
+    padding: 2.5rem 0 3rem;
+  }
+
+  section + section {
+    margin-top: 2.5rem;
+  }
+
+  .card-grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    padding: 0;
+    margin: 0;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+  }
+
+  .card h3 {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    font-size: 1.2rem;
+  }
+
+  .card p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #334155;
+  }
+
+  .info {
+    background: #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.75rem;
+  }
+
+  footer {
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 2rem 0;
+    text-align: center;
+  }
+
+  footer a {
+    color: #93c5fd;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+    }
+
+    body {
+      background: #020617;
+      color: #e2e8f0;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+    }
+
+    .card {
+      background: #0f172a;
+      box-shadow: 0 10px 25px rgba(2, 6, 23, 0.35);
+    }
+
+    .card p {
+      color: #cbd5f5;
+    }
+
+    .info {
+      background: #1e293b;
+    }
+
+    footer {
+      background: #020617;
+    }
+  }
+`;
+
+const ampStyles = customStyles ? `${baseStyles}\n${customStyles}` : baseStyles;
+---
+
+<!DOCTYPE html>
+<html lang="en" amp>
+  <head>
+    <meta charset="utf-8" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1" />
+
+    <script async src="https://cdn.ampproject.org/v0.js"></script>
+    <script
+      async
+      custom-element="amp-auto-ads"
+      src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js"
+    ></script>
+
+    <style amp-boilerplate>
+      body {
+        -webkit-animation: -amp-start 8s steps(1, end) 0s 1 normal both;
+        -moz-animation: -amp-start 8s steps(1, end) 0s 1 normal both;
+        -ms-animation: -amp-start 8s steps(1, end) 0s 1 normal both;
+        animation: -amp-start 8s steps(1, end) 0s 1 normal both;
+      }
+      @-webkit-keyframes -amp-start {
+        from {
+          visibility: hidden;
+        }
+        to {
+          visibility: visible;
+        }
+      }
+      @-moz-keyframes -amp-start {
+        from {
+          visibility: hidden;
+        }
+        to {
+          visibility: visible;
+        }
+      }
+      @-ms-keyframes -amp-start {
+        from {
+          visibility: hidden;
+        }
+        to {
+          visibility: visible;
+        }
+      }
+      @-o-keyframes -amp-start {
+        from {
+          visibility: hidden;
+        }
+        to {
+          visibility: visible;
+        }
+      }
+      @keyframes -amp-start {
+        from {
+          visibility: hidden;
+        }
+        to {
+          visibility: visible;
+        }
+      }
+    </style>
+    <noscript>
+      <style amp-boilerplate>
+        body {
+          -webkit-animation: none;
+          -moz-animation: none;
+          -ms-animation: none;
+          animation: none;
+        }
+      </style>
+    </noscript>
+
+    <style amp-custom set:html={ampStyles}></style>
+  </head>
+  <body>
+    <amp-auto-ads type="adsense" data-ad-client={adClient}></amp-auto-ads>
+    <slot />
+  </body>
+</html>

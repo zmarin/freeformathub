@@ -1,0 +1,134 @@
+---
+import AmpLayout from '../../layouts/AmpLayout.astro';
+import { getTool } from '../../lib/tools/registry';
+
+const siteUrl = Astro.site?.href || 'https://freeformathub.com';
+const canonicalUrl = new URL('/', siteUrl).href;
+
+const trendingIds = [
+  'json-formatter',
+  'base64-encoder',
+  'csv-formatter',
+  'yaml-formatter',
+  'color-converter',
+  'unit-converter'
+];
+
+const featuredTools = trendingIds
+  .map((id) => getTool(id))
+  .filter((tool) => !!tool)
+  .map((tool) => ({
+    name: tool!.name,
+    description: tool!.description,
+    url: `/${tool!.category.id}/${tool!.slug}`
+  }));
+
+const benefits = [
+  'Fast, frictionless tools that run directly in the browser — no sign-up needed.',
+  'Accurate results for developers, analysts, marketers, and data teams.',
+  'Privacy-friendly experience: nothing leaves your device.',
+  'Dozens of converters, validators, encoders, and generators — with more added regularly.'
+];
+
+const customStyles = `
+  header .container {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  main section {
+    margin-bottom: 2.5rem;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .card p + p {
+    margin-top: 1rem;
+  }
+
+  .tool-link {
+    font-weight: 600;
+    display: inline-block;
+  }
+
+  .benefits {
+    list-style: disc;
+    margin: 1.5rem 0 0;
+    padding-left: 1.25rem;
+    color: #1f2937;
+  }
+
+  .benefits li + li {
+    margin-top: 0.75rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .benefits {
+      color: #e2e8f0;
+    }
+  }
+`;
+---
+
+<AmpLayout
+  title="FreeFormatHub AMP"
+  description="Instant, privacy-first formatting and conversion tools optimized for high-speed AMP experiences."
+  canonical={canonicalUrl}
+  customStyles={customStyles}
+>
+  <header class="hero">
+    <div class="container">
+      <h1>FreeFormatHub — AMP Edition</h1>
+      <p>
+        Lightning-fast formatting, conversion, and validation tools built for mobile performance.
+        Use this streamlined AMP experience or jump to the full interactive site when you need more power.
+      </p>
+      <a class="cta-button" href="/">Visit the full experience</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="container">
+      <h2>Popular Tools</h2>
+      <ul class="card-grid">
+        {featuredTools.map((tool) => (
+          <li class="card">
+            <h3>{tool.name}</h3>
+            <p>{tool.description}</p>
+            <p>
+              <a class="tool-link" href={tool.url}>Open tool ↗</a>
+            </p>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="container info">
+      <h2>Why Choose FreeFormatHub</h2>
+      <p>
+        FreeFormatHub delivers pro-grade utilities for developers and business teams. Every tool is
+        available instantly with no installations, tracking, or account friction.
+      </p>
+      <ul class="benefits">
+        {benefits.map((benefit) => (
+          <li>{benefit}</li>
+        ))}
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>© {new Date().getFullYear()} FreeFormatHub — Tools that just work.</p>
+      <p>
+        <a href="/privacy">Privacy Policy</a>
+        {' · '}
+        <a href="/terms">Terms of Service</a>
+      </p>
+    </div>
+  </footer>
+</AmpLayout>
