@@ -1,8 +1,11 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { Scissors, Play } from 'lucide-react';
 import { processCsvSplitter, type CsvSplitterConfig, type CsvSplitResult } from '../../../tools/data/csv-splitter';
 import { useToolStore } from '../../../lib/store';
-import { debounce, copyToClipboard, downloadFile } from '../../../lib/utils';
-import JSZip from 'jszip';
+import { debounce } from '../../../lib/utils';
+import { InputPanel } from '../../ui/InputPanel';
+import { CsvSplitterConfig } from './CsvSplitterConfig';
+import { CsvSplitterResults } from './CsvSplitterResults';
 
 interface CsvSplitterProps {
   className?: string;
@@ -66,10 +69,8 @@ export function CsvSplitter({ className = '' }: CsvSplitterProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [config, setConfig] = useState<CsvSplitterConfig>(DEFAULT_CONFIG);
   const [metadata, setMetadata] = useState<Record<string, any> | undefined>();
-  const [copied, setCopied] = useState<{ [key: string]: boolean }>({});
-  const [dragActive, setDragActive] = useState(false);
+  const [availableColumns, setAvailableColumns] = useState<string[]>([]);
   const [showPreview, setShowPreview] = useState(true);
-  const [downloadProgress, setDownloadProgress] = useState<string | undefined>();
 
   const { addToHistory, getConfig: getSavedConfig, updateConfig: updateSavedConfig } = useToolStore();
 
@@ -137,77 +138,46 @@ export function CsvSplitter({ className = '' }: CsvSplitterProps) {
     }
   }, [input, config, debouncedProcess]);
 
-  // File upload handler
-  const handleFileUpload = useCallback(async (file: File) => {
-    try {
-      const content = await file.text();
-      setInput(content);
-    } catch (error) {
-      setError('Failed to read file. Please make sure it\'s a valid CSV file.');
+  // Parse CSV headers for column detection
+  const parseCSVHeaders = useCallback((csvContent: string) => {
+    if (!csvContent.trim()) return [];
+
+    const delimiter = config.delimiter === 'custom' ? config.customDelimiter : config.delimiter;
+    const firstLine = csvContent.split('\n')[0];
+
+    if (!firstLine) return [];
+
+    // Simple CSV parsing for headers
+    const headers = [];
+    let current = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < firstLine.length; i++) {
+      const char = firstLine[i];
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === delimiter && !inQuotes) {
+        headers.push(current.trim().replace(/^"|"$/g, ''));
+        current = '';
+      } else {
+        current += char;
+      }
     }
-  }, []);
+    headers.push(current.trim().replace(/^"|"$/g, ''));
 
-  // Drag and drop handlers
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setDragActive(true);
-  }, []);
+    return headers.filter(h => h.length > 0);
+  }, [config.delimiter, config.customDelimiter]);
 
-  const handleDragLeave = useCallback(() => {
-    setDragActive(false);
-  }, []);
-
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setDragActive(false);
-    const files = Array.from(e.dataTransfer.files);
-    if (files.length > 0 && files[0].type === 'text/csv') {
-      handleFileUpload(files[0]);
+  // Update available columns when input or config changes
+  useEffect(() => {
+    if (input.trim()) {
+      const columns = parseCSVHeaders(input);
+      setAvailableColumns(columns);
+    } else {
+      setAvailableColumns([]);
     }
-  }, [handleFileUpload]);
+  }, [input, parseCSVHeaders]);
 
-  // Copy to clipboard handler
-  const handleCopy = useCallback(async (content: string, filename: string) => {
-    try {
-      await copyToClipboard(content);
-      setCopied({ ...copied, [filename]: true });
-      setTimeout(() => {
-        setCopied(prev => ({ ...prev, [filename]: false }));
-      }, 2000);
-    } catch (error) {
-      setError('Failed to copy to clipboard');
-    }
-  }, [copied]);
-
-  // Download single file
-  const handleDownloadFile = useCallback((split: CsvSplitResult) => {
-    downloadFile(split.content, split.filename, 'text/csv');
-  }, []);
-
-  // Download all files as ZIP
-  const handleDownloadZip = useCallback(async () => {
-    if (splits.length === 0) return;
-
-    try {
-      setDownloadProgress('Creating ZIP file...');
-      const zip = new JSZip();
-
-      splits.forEach((split) => {
-        zip.file(split.filename, split.content);
-      });
-
-      setDownloadProgress('Generating download...');
-      const content = await zip.generateAsync({ type: 'blob' });
-
-      setDownloadProgress('Starting download...');
-      downloadFile(content, 'csv_splits.zip', 'application/zip');
-
-      setDownloadProgress(undefined);
-    } catch (error) {
-      setError('Failed to create ZIP file');
-      setDownloadProgress(undefined);
-    }
-  }, [splits]);
 
   // Handle config changes
   const handleConfigChange = useCallback((key: keyof CsvSplitterConfig, value: any) => {
@@ -221,316 +191,100 @@ export function CsvSplitter({ className = '' }: CsvSplitterProps) {
     processCsv(input, config);
   }, [input, config, processCsv]);
 
-  // Load example
-  const handleLoadExample = useCallback((example: { title: string; value: string }) => {
-    setInput(example.value);
-  }, []);
-
-  // Format file size
-  const formatFileSize = useCallback((bytes: number) => {
-    if (bytes === 0) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
-  }, []);
 
   return (
-    <div className={`csv-splitter-tool ${className}`}>
+    <div className={`space-y-6 ${className}`}>
       {/* Input Section */}
-      <div className="tool-section">
-        <div className="section-header">
-          <h3>📁 CSV Input</h3>
-          <div className="section-actions">
-            <select
-              value=""
-              onChange={(e) => {
-                const example = EXAMPLES.find(ex => ex.title === e.target.value);
-                if (example) handleLoadExample(example);
-              }}
-              className="example-select"
-            >
-              <option value="">Load Example...</option>
-              {EXAMPLES.map((example) => (
-                <option key={example.title} value={example.title}>
-                  {example.title}
-                </option>
-              ))}
-            </select>
-            <label className="file-upload-btn">
-              📤 Upload CSV
-              <input
-                type="file"
-                accept=".csv,text/csv"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) handleFileUpload(file);
-                }}
-                style={{ display: 'none' }}
-              />
-            </label>
-          </div>
-        </div>
-
-        <div
-          className={`input-area ${dragActive ? 'drag-active' : ''}`}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-        >
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Paste your CSV data here or drag and drop a CSV file..."
-            className="input-textarea"
-            rows={12}
-          />
-          {dragActive && (
-            <div className="drag-overlay">
-              <div className="drag-message">
-                📁 Drop CSV file to upload
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+      <InputPanel
+        value={input}
+        onChange={setInput}
+        label="CSV Input"
+        placeholder="Paste your CSV data here or drag and drop a CSV file..."
+        accept=".csv,text/csv"
+        examples={EXAMPLES}
+        rows={12}
+        syntax="csv"
+      />
 
       {/* Configuration Section */}
-      <div className="tool-section">
-        <div className="section-header">
-          <h3>⚙️ Split Configuration</h3>
-        </div>
+      <div className="space-y-4">
+        <CsvSplitterConfig
+          config={config}
+          onChange={handleConfigChange}
+          availableColumns={availableColumns}
+        />
 
-        <div className="config-grid">
-          <div className="config-group">
-            <label>Split Mode</label>
-            <select
-              value={config.splitMode}
-              onChange={(e) => handleConfigChange('splitMode', e.target.value)}
-            >
-              <option value="rows">By Row Count</option>
-              <option value="size">By File Size</option>
-              <option value="column">By Column Values</option>
-            </select>
-          </div>
+        {/* Process Button and Preview Toggle */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={handleManualProcess}
+                disabled={isLoading || !input.trim()}
+                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700
+                          disabled:bg-blue-400 text-white rounded-md transition-colors font-medium
+                          focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {isLoading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                    <span>Splitting...</span>
+                  </>
+                ) : (
+                  <>
+                    <Scissors className="w-4 h-4" />
+                    <span>Split CSV</span>
+                  </>
+                )}
+              </button>
 
-          {config.splitMode === 'rows' && (
-            <div className="config-group">
-              <label>Rows Per File</label>
-              <input
-                type="number"
-                min="1"
-                max="1000000"
-                value={config.rowsPerFile}
-                onChange={(e) => handleConfigChange('rowsPerFile', parseInt(e.target.value) || 1000)}
-              />
+              {splits.length > 0 && (
+                <label className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                  <input
+                    type="checkbox"
+                    checked={showPreview}
+                    onChange={(e) => setShowPreview(e.target.checked)}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded
+                              dark:border-gray-600 dark:bg-gray-700"
+                  />
+                  <span>Show file previews</span>
+                </label>
+              )}
             </div>
-          )}
 
-          {config.splitMode === 'size' && (
-            <>
-              <div className="config-group">
-                <label>Max File Size</label>
-                <input
-                  type="number"
-                  min="1"
-                  value={config.maxFileSize}
-                  onChange={(e) => handleConfigChange('maxFileSize', parseInt(e.target.value) || 1024)}
-                />
+            {availableColumns.length > 0 && (
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="font-medium">{availableColumns.length}</span> columns detected
               </div>
-              <div className="config-group">
-                <label>Size Unit</label>
-                <select
-                  value={config.fileSizeUnit}
-                  onChange={(e) => handleConfigChange('fileSizeUnit', e.target.value)}
-                >
-                  <option value="KB">KB</option>
-                  <option value="MB">MB</option>
-                </select>
-              </div>
-            </>
-          )}
-
-          {config.splitMode === 'column' && (
-            <div className="config-group">
-              <label>Split Column</label>
-              <input
-                type="text"
-                value={config.splitColumn}
-                onChange={(e) => handleConfigChange('splitColumn', e.target.value)}
-                placeholder="Column name (e.g., region, category)"
-              />
-            </div>
-          )}
-
-          <div className="config-group">
-            <label>Delimiter</label>
-            <select
-              value={config.delimiter}
-              onChange={(e) => handleConfigChange('delimiter', e.target.value)}
-            >
-              <option value=",">Comma (,)</option>
-              <option value=";">Semicolon (;)</option>
-              <option value="\t">Tab (\t)</option>
-              <option value="|">Pipe (|)</option>
-              <option value="custom">Custom</option>
-            </select>
-          </div>
-
-          {config.delimiter === 'custom' && (
-            <div className="config-group">
-              <label>Custom Delimiter</label>
-              <input
-                type="text"
-                value={config.customDelimiter}
-                onChange={(e) => handleConfigChange('customDelimiter', e.target.value)}
-                placeholder="Enter delimiter"
-                maxLength={1}
-              />
-            </div>
-          )}
-
-          <div className="config-group">
-            <label>Filename Pattern</label>
-            <input
-              type="text"
-              value={config.filenamePattern}
-              onChange={(e) => handleConfigChange('filenamePattern', e.target.value)}
-              placeholder="part_{n} (use {n} for number)"
-            />
+            )}
           </div>
         </div>
-
-        <div className="config-options">
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              checked={config.keepHeaders}
-              onChange={(e) => handleConfigChange('keepHeaders', e.target.checked)}
-            />
-            Keep headers in each file
-          </label>
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              checked={config.zipOutput}
-              onChange={(e) => handleConfigChange('zipOutput', e.target.checked)}
-            />
-            Download as ZIP
-          </label>
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              checked={showPreview}
-              onChange={(e) => setShowPreview(e.target.checked)}
-            />
-            Show file previews
-          </label>
-        </div>
-
-        <button
-          className="process-btn primary"
-          onClick={handleManualProcess}
-          disabled={isLoading || !input.trim()}
-        >
-          {isLoading ? '⏳ Splitting...' : '✂️ Split CSV'}
-        </button>
       </div>
 
       {/* Error Display */}
       {error && (
-        <div className="tool-section error-section">
-          <div className="error-message">
-            <span className="error-icon">❌</span>
-            {error}
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <div className="flex items-start space-x-2 text-red-800 dark:text-red-200">
+            <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            </svg>
+            <div>
+              <p className="font-medium">Error</p>
+              <p className="text-sm mt-1">{error}</p>
+            </div>
           </div>
         </div>
       )}
 
       {/* Results Section */}
       {splits.length > 0 && (
-        <div className="tool-section">
-          <div className="section-header">
-            <h3>📊 Split Results</h3>
-            <div className="section-actions">
-              {config.zipOutput && (
-                <button
-                  className="download-all-btn"
-                  onClick={handleDownloadZip}
-                  disabled={!!downloadProgress}
-                >
-                  {downloadProgress || '📦 Download All as ZIP'}
-                </button>
-              )}
-            </div>
-          </div>
-
-          {metadata && (
-            <div className="stats-grid">
-              <div className="stat-item">
-                <span className="stat-label">Files Created</span>
-                <span className="stat-value">{metadata.totalFiles}</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-label">Total Rows</span>
-                <span className="stat-value">{metadata.totalRows?.toLocaleString()}</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-label">Original Size</span>
-                <span className="stat-value">{formatFileSize(metadata.originalSize)}</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-label">Processing Time</span>
-                <span className="stat-value">{metadata.processingTime}ms</span>
-              </div>
-            </div>
-          )}
-
-          <div className="splits-list">
-            {splits.map((split, index) => (
-              <div key={index} className="split-item">
-                <div className="split-header">
-                  <div className="split-info">
-                    <h4 className="split-filename">📄 {split.filename}</h4>
-                    <div className="split-stats">
-                      <span>{split.rowCount} rows</span>
-                      <span>{formatFileSize(split.size)}</span>
-                    </div>
-                  </div>
-                  <div className="split-actions">
-                    <button
-                      className="copy-btn"
-                      onClick={() => handleCopy(split.content, split.filename)}
-                      title="Copy to clipboard"
-                    >
-                      {copied[split.filename] ? '✅' : '📋'}
-                    </button>
-                    <button
-                      className="download-btn"
-                      onClick={() => handleDownloadFile(split)}
-                      title="Download file"
-                    >
-                      💾
-                    </button>
-                  </div>
-                </div>
-
-                {showPreview && split.preview && split.preview.length > 0 && (
-                  <div className="split-preview">
-                    <div className="preview-header">Preview (first {split.preview.length} rows):</div>
-                    <div className="preview-content">
-                      {split.preview.map((row, rowIndex) => (
-                        <div key={rowIndex} className="preview-row">
-                          {row}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
+        <CsvSplitterResults
+          splits={splits}
+          metadata={metadata}
+          zipOutput={config.zipOutput}
+          showPreview={showPreview}
+          onError={setError}
+        />
       )}
     </div>
   );
