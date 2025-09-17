@@ -11,14 +11,14 @@ export interface UrlEncoderConfig extends ToolConfig {
 export const URL_ENCODER_TOOL: Tool = {
   id: 'url-encoder',
   name: 'URL Encoder & Decoder',
-  description: 'Encode and decode URLs and URI components safely with various encoding options for web development.',
+  description: 'Encode or decode full URLs and URI components with precise control over reserved characters, space handling, and percent encoding — perfect for debugging query strings and APIs.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'encoders')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'encoders')!.subcategories!.find(sub => sub.id === 'url-encoding')!,
   slug: 'url-encoder',
   icon: '🔗',
   keywords: ['url', 'uri', 'encode', 'decode', 'percent', 'encoding', 'web', 'query', 'parameters'],
   seoTitle: 'Free URL Encoder & Decoder Online - Encode & Decode URLs',
-  seoDescription: 'Encode and decode URLs and URI components instantly. Free online URL encoder with support for query parameters, special characters, and reserved characters. Privacy-first.',
+  seoDescription: 'Clean up query strings, encode parameters, or decode percent-encoded URLs instantly. Supports component vs. full-URL modes, space (+/%20) control, and reserved character handling — all offline.',
   examples: [
     {
       title: 'Basic URL Encoding',
@@ -104,6 +104,46 @@ export const URL_ENCODER_TOOL: Tool = {
       icon: "📋",
       description: "Copy encoded URLs to clipboard, download as text files, or use directly in web applications, forms, and APIs. Perfect for query string parameters, GET requests, REST API endpoints, file uploads, and creating safe links with special characters.",
       keywords: ["copy URL", "download URL", "query string", "GET requests", "REST API", "URL parameters"]
+    }
+  ],
+  problemsSolved: [
+    {
+      problem: 'Mis-encoded query strings break APIs and analytics tracking when reserved characters or spaces slip through unescaped.',
+      solution: 'Switch between URI and component encoding to preserve structure while percent-encoding only what is required. Choose + or %20 for spaces to meet platform-specific expectations.',
+      icon: '🧩',
+      keywords: ['query string', 'percent encoding', 'reserved characters', 'space encoding', 'URI vs component']
+    },
+    {
+      problem: 'Troubleshooting encoded URLs is frustrating when % sequences are invalid or double-encoded, producing unreadable text.',
+      solution: 'Decode mode cleans up + characters, verifies percent sequences, and surfaces errors when the payload is malformed so you can fix upstream logic quickly.',
+      icon: '🩺',
+      keywords: ['decode URL', 'invalid percent', 'double encoding', 'URL debugging', 'error handling']
+    },
+    {
+      problem: 'Front-end and backend teams often need to share canonical examples of encoded URLs for documentation and onboarding.',
+      solution: 'Generate consistent, standards-compliant URLs with metadata on encoded characters and lengths to drop directly into docs, tests, or Postman collections.',
+      icon: '📘',
+      keywords: ['API documentation', 'encoded examples', 'Postman', 'developer onboarding', 'reference URLs']
+    }
+  ],
+  whyChoose: [
+    {
+      title: 'Accurate by Default',
+      description: 'The tool honors RFC 3986 rules, automatically correcting space handling and reserved characters so you can trust every encoded output.',
+      icon: '📐',
+      keywords: ['RFC 3986', 'standards compliant', 'accurate encoding', 'URL safety']
+    },
+    {
+      title: 'Built for Developers',
+      description: 'Toggle modes, inspect metadata, copy outputs, and download payloads without leaving the page. Tool history keeps past conversions handy during debugging sessions.',
+      icon: '👨‍💻',
+      keywords: ['developer tools', 'tool history', 'copy results', 'download URLs']
+    },
+    {
+      title: 'Secure Local Processing',
+      description: 'No networking and no logging — the encoder runs entirely in your browser, keeping production URLs, tokens, and PII safe.',
+      icon: '🔒',
+      keywords: ['client-side', 'secure URL encoder', 'no upload', 'private data']
     }
   ]
 };

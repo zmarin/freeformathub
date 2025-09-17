@@ -492,7 +492,7 @@ export function processHtmlBeautifier(input: string, config: HtmlBeautifierConfi
 export const HTML_BEAUTIFIER_TOOL: Tool = {
   id: 'html-beautifier',
   name: 'HTML Beautifier & Minifier',
-  description: 'Format, beautify, and minify HTML code with proper indentation, validation, and optimization. Supports HTML5 standards and provides detailed error reporting.',
+  description: 'Beautify, validate, and minify HTML5 with intelligent indentation, attribute sorting, linting insights, and production-ready minification — powered entirely in the browser.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!.subcategories!.find(sub => sub.id === 'code-formatting')!,
   slug: 'html-beautifier',
@@ -589,5 +589,77 @@ export const HTML_BEAUTIFIER_TOOL: Tool = {
   
   relatedTools: ['xml-formatter', 'css-beautifier', 'js-beautifier'],
   seoTitle: 'HTML Beautifier & Minifier - Free HTML Formatter and Validator',
-  seoDescription: 'Format, beautify, and minify HTML code online. Validate HTML syntax, fix indentation, and optimize for web performance.'
+  seoDescription: 'Clean up HTML instantly: beautify markup, validate structure, sort attributes, and minify for production. Privacy-first editor with drag & drop, copy, and download.',
+  howItWorks: [
+    {
+      title: 'Load Your Markup',
+      icon: '🧾',
+      description: 'Paste snippets, drag-and-drop HTML files, or use built-in examples. The editor supports long documents, inline scripts, and component templates without network calls.',
+      keywords: ['paste HTML', 'drag and drop', 'html snippets', 'component templates', 'offline editor']
+    },
+    {
+      title: 'Choose Formatting Mode',
+      icon: '⚙️',
+      description: 'Pick beautify or minify, adjust indentation (spaces/tabs), sort attributes, trim whitespace, and decide whether to preserve comments or empty lines.',
+      keywords: ['beautify html', 'minify html', 'indentation', 'attribute sorting', 'html options']
+    },
+    {
+      title: 'Validate & Inspect',
+      icon: '🔍',
+      description: 'Enable validation to flag unclosed tags, mismatched nesting, or invalid attributes with precise line and column details before shipping changes.',
+      keywords: ['html validation', 'unclosed tags', 'linting', 'error detection', 'line numbers']
+    },
+    {
+      title: 'Export Production Output',
+      icon: '📤',
+      description: 'Copy results, download formatted files, or send minified HTML straight to your build pipeline. Tool history keeps earlier runs for quick comparisons.',
+      keywords: ['download html', 'copy markup', 'minified html', 'tool history', 'build pipeline']
+    }
+  ],
+  problemsSolved: [
+    {
+      problem: 'Large HTML templates written collaboratively often end up with inconsistent indentation and stray whitespace that makes reviews difficult.',
+      solution: 'Beautify mode normalizes spacing, applies consistent indentation, and sorts attributes so teams can focus on logic instead of formatting debates.',
+      icon: '🪄',
+      keywords: ['html beautifier', 'indentation cleanup', 'attribute sorting', 'code review', 'team workflows']
+    },
+    {
+      problem: 'Broken markup from missing closing tags or improper nesting ships to production when editors lack immediate validation feedback.',
+      solution: 'Real-time validation highlights structural issues with actionable error messages, preventing regressions before you commit or deploy.',
+      icon: '🚨',
+      keywords: ['html validation', 'unclosed tags', 'error reporting', 'quality assurance', 'bug prevention']
+    },
+    {
+      problem: 'Manual minification is tedious and risky, yet production builds demand compact HTML to optimize performance metrics.',
+      solution: 'Minify mode strips redundant whitespace while respecting inline scripts/styles, giving you production-ready markup in one click.',
+      icon: '⚡',
+      keywords: ['html minifier', 'performance optimization', 'whitespace removal', 'page speed', 'production build']
+    }
+  ],
+  whyChoose: [
+    {
+      title: 'Browser-Only Processing',
+      description: 'Sensitive landing pages, customer templates, or CMS exports never leave your machine. Everything runs client-side for privacy and compliance.',
+      icon: '🔒',
+      keywords: ['client-side html', 'secure formatter', 'no upload', 'privacy']
+    },
+    {
+      title: 'Advanced Formatting Controls',
+      description: 'Tweak indentation, line length, attribute order, comment handling, and self-closing tag behavior to match your team’s coding standards.',
+      icon: '🎛️',
+      keywords: ['indentation control', 'attribute sorting', 'comment handling', 'self closing tags']
+    },
+    {
+      title: 'Developer-Friendly UI',
+      description: 'Auto-processing, diff-friendly output, keyboard shortcuts, and copy/download buttons speed up repetitive cleanup during refactors.',
+      icon: '🧑‍💻',
+      keywords: ['auto formatting', 'keyboard shortcuts', 'copy html', 'download html', 'developer productivity']
+    },
+    {
+      title: 'Integrated Validation Insights',
+      description: 'Highlight warnings and errors inline with codes and locations so QA teams can document issues or share fixes with designers and content authors.',
+      icon: '📋',
+      keywords: ['validation insights', 'error codes', 'qa tooling', 'collaboration']
+    }
+  ]
 };

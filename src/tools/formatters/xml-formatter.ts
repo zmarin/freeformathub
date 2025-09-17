@@ -13,14 +13,14 @@ export interface XmlFormatterConfig extends ToolConfig {
 export const XML_FORMATTER_TOOL: Tool = {
   id: 'xml-formatter',
   name: 'XML Formatter & Validator',
-  description: 'Format, validate, and minify XML data with syntax checking, JSON conversion, and beautification options.',
+  description: 'Format, validate, minify, and convert XML with namespace-aware parsing, attribute sorting, JSON export, and instant error diagnostics — purpose-built for SOAP, RSS, and config workflows.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!.subcategories!.find(sub => sub.id === 'xml-formatting')!,
   slug: 'xml-formatter',
   icon: '📋',
   keywords: ['xml', 'format', 'validate', 'beautify', 'minify', 'convert', 'json', 'parser', 'soap', 'rss'],
   seoTitle: 'Free XML Formatter & Validator Online - Format & Validate XML',
-  seoDescription: 'Format, validate, and convert XML data instantly. Free online XML formatter with JSON conversion, syntax validation, and beautification. Privacy-first.',
+  seoDescription: 'Beautify, validate, minify, and convert XML in seconds. Attribute sorting, namespace checks, JSON conversion, and SOAP-aware diagnostics — all processed locally for privacy.',
   examples: [
     {
       title: 'Basic XML Formatting',
@@ -110,6 +110,52 @@ export const XML_FORMATTER_TOOL: Tool = {
       icon: "💾",
       description: "Download formatted XML files, copy to clipboard, or convert XML to JSON format. Export minified XML for production use or pretty-printed XML for debugging. Share formatted XML documents or open in new window for enhanced productivity.",
       keywords: ["download XML", "copy XML", "XML to JSON", "export XML", "convert XML", "XML converter"]
+    }
+  ],
+  problemsSolved: [
+    {
+      problem: 'Compressed or single-line XML is difficult to audit, which slows debugging, code reviews, and incident response when APIs or integrations misbehave.',
+      solution: 'Instantly beautify XML with consistent indentation, optional attribute sorting, and whitespace normalization so complex SOAP or RSS payloads become readable at a glance.',
+      icon: '🧭',
+      keywords: ['beautify XML', 'readable XML', 'SOAP formatter', 'indent XML', 'debug XML']
+    },
+    {
+      problem: 'Malformed XML can take hours to track down when parsers only report generic errors without line numbers or context.',
+      solution: 'The validator highlights unclosed tags, namespace issues, and attribute mistakes with precise line and column detail, making it easy to pinpoint and resolve schema violations.',
+      icon: '🚨',
+      keywords: ['XML validator', 'namespace errors', 'line numbers', 'schema issues', 'error diagnostics']
+    },
+    {
+      problem: 'Teams frequently need JSON versions of XML payloads for front-end tooling, API testing, or documentation but lack a reliable converter.',
+      solution: 'Use the convert-to-JSON mode to produce clean JSON representations of XML structures, ready for mock APIs, diffing, or data exchange pipelines without external dependencies.',
+      icon: '🔄',
+      keywords: ['XML to JSON', 'data conversion', 'api testing', 'integration tooling', 'xml workflow']
+    }
+  ],
+  whyChoose: [
+    {
+      title: 'Client-Side Security',
+      description: 'Process sensitive configuration files and SOAP payloads entirely in your browser—no uploads, no retention, and instant deletion as you navigate away.',
+      icon: '🔒',
+      keywords: ['private XML formatter', 'local processing', 'secure tooling', 'no uploads']
+    },
+    {
+      title: 'Modes for Every Workflow',
+      description: 'Switch between format, validate, minify, and XML→JSON conversion without leaving the page. Each mode includes tailored metadata to speed up QA and release reviews.',
+      icon: '🎛️',
+      keywords: ['format XML', 'validate XML', 'minify XML', 'convert XML', 'developer workflow']
+    },
+    {
+      title: 'Enterprise-Ready Diagnostics',
+      description: 'Namespace detection, comment removal, empty-node cleanup, and attribute control help you deliver standards-compliant XML for enterprise integrations and legacy platforms.',
+      icon: '🏢',
+      keywords: ['namespace support', 'attribute sorting', 'comment removal', 'enterprise XML']
+    },
+    {
+      title: 'Productivity-Focused UI',
+      description: 'Drag-and-drop files, copy formatted results, download outputs, and revisit previous runs via tool history to streamline repetitive XML chores.',
+      icon: '⚙️',
+      keywords: ['drag and drop XML', 'copy results', 'download XML', 'tool history']
     }
   ]
 };

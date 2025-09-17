@@ -489,8 +489,8 @@ export const REGEX_TESTER_TOOL: Tool = {
   icon: '🔍',
   keywords: ['regex', 'regexp', 'regular', 'expression', 'pattern', 'match', 'test', 'validation', 'search'],
   seoTitle: 'Regex Tester - Test Regular Expressions Online | FreeFormatHub',
-  seoDescription: 'Test and debug regular expressions with real-time matching, group capture, pattern explanation, and multiple test modes. Support for all JavaScript regex features.',
-  description: 'Test and debug regular expressions with real-time pattern matching, group capture analysis, and comprehensive pattern explanations. Supports all JavaScript regex features and flags.',
+  seoDescription: 'Debug regular expressions fast. Real-time matches, group capture tables, replace/split modes, pattern explanations, and flag toggles — powered by JavaScript regex.',
+  description: 'Debug regular expressions with real-time execution, capture group analysis, replacer previews, split testing, and pattern breakdowns across all JavaScript regex features.',
   
   examples: [
     {
@@ -591,5 +591,77 @@ test.email@domain.co.uk`,
     'Catastrophic backtracking - avoid nested quantifiers in complex patterns'
   ],
 
-  relatedTools: ['text-diff', 'string-escape', 'mock-data-generator', 'text-statistics']
+  relatedTools: ['text-diff', 'string-escape', 'mock-data-generator', 'text-statistics'],
+  howItWorks: [
+    {
+      title: 'Write or Paste Your Pattern',
+      icon: '✍️',
+      description: 'Enter regex syntax with optional flags. The editor supports syntax highlighting, flag toggles, and instant validation for malformed expressions.',
+      keywords: ['regex pattern', 'syntax highlighting', 'regex flags', 'pattern editor', 'validation']
+    },
+    {
+      title: 'Add Test Data & Choose Mode',
+      icon: '🧪',
+      description: 'Paste sample text, enable multi-input testing, and switch between test, match, replace, or split modes to simulate your real-world use case.',
+      keywords: ['test mode', 'replace mode', 'split mode', 'multi input', 'sample data']
+    },
+    {
+      title: 'Inspect Matches & Groups',
+      icon: '🔬',
+      description: 'View match tables with positions, lengths, and capture groups (named or numbered). Replacement previews show before/after output for confidence.',
+      keywords: ['match table', 'capture groups', 'named groups', 'replace preview', 'regex debugging']
+    },
+    {
+      title: 'Understand the Pattern',
+      icon: '🧠',
+      description: 'Leverage the pattern explanation panel to break down tokens, quantifiers, anchors, and lookarounds so teams can document complex expressions.',
+      keywords: ['pattern explanation', 'regex documentation', 'token breakdown', 'quantifiers', 'lookarounds']
+    }
+  ],
+  problemsSolved: [
+    {
+      problem: 'Regex bugs surface late because developers lack a safe environment to test complex patterns against sample data.',
+      solution: 'Run patterns against multiple inputs, switch between match modes, and inspect live output to validate logic before deploying.',
+      icon: '🛠️',
+      keywords: ['regex testing', 'bug prevention', 'sample data', 'pre deployment', 'debugging']
+    },
+    {
+      problem: 'Capture group behavior is hard to visualize, leading to brittle replace operations or misaligned parsing.',
+      solution: 'Detailed tables show each group’s content, start, and length so you can fine-tune replacements or parsing strategies confidently.',
+      icon: '📊',
+      keywords: ['capture groups', 'regex replace', 'parsing', 'group analysis', 'reliability']
+    },
+    {
+      problem: 'Team members struggle to understand advanced regex syntax when onboarding or reviewing code.',
+      solution: 'Pattern explanations highlight anchors, character classes, quantifiers, and lookarounds, turning cryptic expressions into readable documentation.',
+      icon: '📘',
+      keywords: ['regex explanation', 'team onboarding', 'documentation', 'code review', 'education']
+    }
+  ],
+  whyChoose: [
+    {
+      title: 'Real-Time Feedback',
+      description: 'Instant execution keeps validation fast as you edit, making it easier to iterate on complex patterns without context switching.',
+      icon: '⚡',
+      keywords: ['real time regex', 'instant feedback', 'fast iteration', 'live testing']
+    },
+    {
+      title: 'Private by Design',
+      description: 'Regex inputs, sample data, and results stay inside your browser, protecting logs, customer data, and proprietary patterns.',
+      icon: '🔒',
+      keywords: ['client-side', 'secure regex tester', 'no upload', 'privacy']
+    },
+    {
+      title: 'Productivity Enhancers',
+      description: 'Keyboard shortcuts, copy/download buttons, dark mode, and history tracking support power users working through large test suites.',
+      icon: '🧑‍💻',
+      keywords: ['keyboard shortcuts', 'download results', 'history tracking', 'dark mode']
+    },
+    {
+      title: 'Full JavaScript Feature Set',
+      description: 'Support for dotAll, unicode, lookbehinds, and sticky flags ensures parity with modern JavaScript engines and runtime behavior.',
+      icon: '🧰',
+      keywords: ['javascript regex', 'dotall', 'unicode', 'lookbehind', 'sticky flag']
+    }
+  ]
 };

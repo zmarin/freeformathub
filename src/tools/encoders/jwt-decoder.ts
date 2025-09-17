@@ -19,14 +19,14 @@ export interface JwtParts {
 export const JWT_DECODER_TOOL: Tool = {
   id: 'jwt-decoder',
   name: 'JWT Decoder & Validator',
-  description: 'Decode and validate JSON Web Tokens (JWT) with detailed header and payload inspection.',
+  description: 'Inspect JSON Web Tokens with instant header/payload decoding, signature awareness, claim validation, and security warnings — all in-browser.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'encoders')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'encoders')!.subcategories!.find(sub => sub.id === 'crypto-encoding')!,
   slug: 'jwt-decoder',
   icon: '🎫',
   keywords: ['jwt', 'json web token', 'decode', 'validate', 'auth', 'authorization', 'security', 'token'],
   seoTitle: 'Free JWT Decoder & Validator Online - Decode JSON Web Tokens',
-  seoDescription: 'Decode and validate JWT tokens instantly. Free online JWT decoder with header and payload inspection, signature validation, and detailed token analysis. Privacy-first.',
+  seoDescription: 'Decode JWTs in seconds. View headers, payload claims, expiry status, Base64 segments, and signature insights. Private, client-side token analysis.',
   examples: [
     {
       title: 'Standard JWT Token',
@@ -85,6 +85,78 @@ export const JWT_DECODER_TOOL: Tool = {
     'url-encoder',
     'hash-generator',
     'uuid-generator'
+  ],
+  howItWorks: [
+    {
+      title: 'Paste Your JWT',
+      icon: '📋',
+      description: 'Drop in access tokens from dev, staging, or production environments. The decoder validates the three-part JWT structure before parsing.',
+      keywords: ['jwt input', 'access token', 'three part token', 'dev tooling', 'token structure']
+    },
+    {
+      title: 'Decode Header & Payload',
+      icon: '🧾',
+      description: 'Toggle pretty-printed JSON, inspect raw Base64 segments, and review algorithms, token type, issuer, subject, audience, and custom claims.',
+      keywords: ['header claims', 'payload claims', 'jwt algorithm', 'pretty json', 'raw base64']
+    },
+    {
+      title: 'Check Expiry & Warnings',
+      icon: '⏱️',
+      description: 'See issued-at/expiry timestamps converted to ISO time, plus flags for expired tokens, missing claims, or absent signatures.',
+      keywords: ['token expiry', 'issued at', 'claim validation', 'missing claims', 'security warnings']
+    },
+    {
+      title: 'Export Findings Securely',
+      icon: '📤',
+      description: 'Copy decoded sections, download analysis, or store runs in tool history for debugging incident reports — without ever sending tokens to a server.',
+      keywords: ['copy jwt', 'download analysis', 'tool history', 'incident response', 'secure debugging']
+    }
+  ],
+  problemsSolved: [
+    {
+      problem: 'Debugging authentication issues is slow when you cannot quickly visualize JWT claims during incident response.',
+      solution: 'Decode tokens instantly with formatted JSON and metadata so developers can pinpoint claim mismatches or audience errors immediately.',
+      icon: '🚑',
+      keywords: ['auth debugging', 'claim mismatch', 'incident response', 'jwt inspection', 'developer tooling']
+    },
+    {
+      problem: 'Security reviews require verifying expiry dates, algorithms, and presence of critical claims without risking data exposure.',
+      solution: 'All decoding happens locally with expiry checks, algorithm visibility, and warnings when essential claims are missing.',
+      icon: '🛡️',
+      keywords: ['security review', 'expiry validation', 'jwt algorithm', 'missing claims', 'local decoding']
+    },
+    {
+      problem: 'Tokens from multiple environments need comparison, but raw Base64 segments make diffs cumbersome.',
+      solution: 'Switch between raw and formatted views, then export structured summaries for documentation or automated diffing.',
+      icon: '🔍',
+      keywords: ['token comparison', 'raw jwt', 'formatted view', 'documentation', 'diffing']
+    }
+  ],
+  whyChoose: [
+    {
+      title: 'Client-Side Privacy',
+      description: 'Tokens stay on your machine, keeping access credentials, PII claims, and signed metadata out of third-party services.',
+      icon: '🔒',
+      keywords: ['client-side jwt', 'secure decoding', 'no upload', 'privacy']
+    },
+    {
+      title: 'Actionable Metadata',
+      description: 'Surface algorithms, issuer, subject, audience, signature presence, and expiration flags to support audits and regression testing.',
+      icon: '📊',
+      keywords: ['jwt metadata', 'token audit', 'issuer', 'audience', 'signature flag']
+    },
+    {
+      title: 'Flexible Views',
+      description: 'Toggle formatted or raw output for both header and payload, making it easy to copy segments into Postman, curl scripts, or docs.',
+      icon: '🧰',
+      keywords: ['raw header', 'raw payload', 'pretty json', 'postman', 'documentation']
+    },
+    {
+      title: 'Developer-Friendly UX',
+      description: 'Keyboard shortcuts, history tracking, and copy/download controls help auth engineers troubleshoot tokens faster.',
+      icon: '🧑‍💻',
+      keywords: ['keyboard shortcuts', 'tool history', 'copy token', 'auth engineering']
+    }
   ]
 };
 

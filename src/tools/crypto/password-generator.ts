@@ -17,14 +17,14 @@ export interface PasswordGeneratorConfig extends ToolConfig {
 export const PASSWORD_GENERATOR_TOOL: Tool = {
   id: 'password-generator',
   name: 'Password Generator',
-  description: 'Generate secure, random passwords with customizable length, character sets, and security rules for accounts and applications.',
+  description: 'Generate cryptographically strong passwords with custom length, character sets, exclusion rules, entropy estimates, and bulk export — all processed locally.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'crypto')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'crypto')!.subcategories!.find(sub => sub.id === 'passwords')!,
   slug: 'password-generator',
   icon: '🔐',
   keywords: ['password', 'generate', 'random', 'secure', 'strength', 'characters', 'symbols', 'security'],
   seoTitle: 'Free Password Generator Online - Generate Secure Random Passwords',
-  seoDescription: 'Generate strong, secure passwords instantly. Free online password generator with customizable length, character sets, and security options. Privacy-first.',
+  seoDescription: 'Create secure passwords instantly. Choose length, character sets, exclusion rules, entropy targets, and export-ready lists — private, client-side generation.',
   examples: [
     {
       title: 'Strong Password (12 chars)',
@@ -89,6 +89,78 @@ export const PASSWORD_GENERATOR_TOOL: Tool = {
     'base64-encoder',
     'text-case-converter',
     'random-string-generator'
+  ],
+  howItWorks: [
+    {
+      title: 'Set Security Requirements',
+      icon: '🧩',
+      description: 'Choose password length, quantity, and which character sets to include. Toggle options to exclude similar or ambiguous characters and add custom sets when policies demand them.',
+      keywords: ['password length', 'character sets', 'exclude similar', 'custom characters', 'compliance']
+    },
+    {
+      title: 'Enforce Complexity Rules',
+      icon: '⚙️',
+      description: 'Enable rule enforcement to guarantee that each password contains uppercase, lowercase, numbers, and symbols as required by corporate policies.',
+      keywords: ['complexity rules', 'uppercase requirement', 'symbol requirement', 'policy compliance', 'strong passwords']
+    },
+    {
+      title: 'Generate & Inspect Strength',
+      icon: '🔐',
+      description: 'Passwords are generated with secure randomness in the browser. View entropy estimates, total combination counts, and configuration snapshots to document strength.',
+      keywords: ['entropy estimate', 'secure random', 'password strength', 'combinations', 'security report']
+    },
+    {
+      title: 'Export & Store Safely',
+      icon: '📤',
+      description: 'Copy passwords, download lists, or log runs in tool history for auditing. Pair with a password manager to store and share credentials securely.',
+      keywords: ['copy passwords', 'download list', 'tool history', 'password manager', 'secure storage']
+    }
+  ],
+  problemsSolved: [
+    {
+      problem: 'Manually crafting strong passwords wastes time and often results in weak or reused credentials.',
+      solution: 'Generate dozens of unique, high-entropy passwords in seconds with flexible length controls so every account stays unique.',
+      icon: '⚡',
+      keywords: ['password automation', 'unique passwords', 'high entropy', 'security hygiene', 'productivity']
+    },
+    {
+      problem: 'Security policies forbid similar or ambiguous characters, yet many generators offer no way to exclude them.',
+      solution: 'Toggle exclusions for lookalike and ambiguous characters to produce user-friendly passwords that still meet strength requirements.',
+      icon: '✅',
+      keywords: ['policy compliance', 'exclude ambiguous', 'user friendly', 'password policy', 'accessibility']
+    },
+    {
+      problem: 'Teams need auditable evidence that generated passwords meet entropy targets for audits and compliance.',
+      solution: 'Entropy estimates, combination counts, and configuration snapshots accompany each run for easy export into audit logs or ticketing systems.',
+      icon: '📊',
+      keywords: ['entropy reporting', 'audit trail', 'compliance', 'security documentation', 'password strength']
+    }
+  ],
+  whyChoose: [
+    {
+      title: 'Local-Only Generation',
+      description: 'All randomness is produced client-side, so sensitive credentials never leave your device — critical for regulated environments.',
+      icon: '🔒',
+      keywords: ['client-side', 'secure generator', 'no upload', 'regulated industries']
+    },
+    {
+      title: 'Enterprise Flexibility',
+      description: 'Custom character sets, rule enforcement, and bulk output support the password policies of SaaS platforms, IT teams, and MSPs.',
+      icon: '🏢',
+      keywords: ['enterprise password', 'bulk generation', 'custom sets', 'managed services']
+    },
+    {
+      title: 'Actionable Metrics',
+      description: 'Strength estimations, combination math, and configuration summaries help security teams justify policy changes and educate stakeholders.',
+      icon: '📈',
+      keywords: ['strength metrics', 'combination math', 'security education', 'policy insight']
+    },
+    {
+      title: 'Productivity-Focused UX',
+      description: 'Keyboard shortcuts, auto-processing, copy/download buttons, and stored history streamline onboarding and credential rotations.',
+      icon: '🧑‍💻',
+      keywords: ['keyboard shortcuts', 'auto generate', 'copy password', 'credential rotation', 'onboarding']
+    }
   ]
 };
 

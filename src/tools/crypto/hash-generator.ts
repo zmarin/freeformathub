@@ -13,14 +13,14 @@ export interface HashGeneratorConfig extends ToolConfig {
 export const HASH_GENERATOR_TOOL: Tool = {
   id: 'hash-generator',
   name: 'Hash Generator (MD5, SHA-1, SHA-256)',
-  description: 'Generate cryptographic hashes using MD5, SHA-1, SHA-256, and other algorithms with multiple output formats.',
+  description: 'Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes with optional salting, multi-algorithm output, hex/Base64 formatting, and detailed metadata — all client-side.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'crypto')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'crypto')!.subcategories!.find(sub => sub.id === 'hashing')!,
   slug: 'hash-generator',
   icon: '🔐',
   keywords: ['hash', 'md5', 'sha1', 'sha256', 'checksum', 'digest', 'crypto', 'security', 'integrity'],
   seoTitle: 'Free Hash Generator Online - MD5, SHA-1, SHA-256 Hash Calculator',
-  seoDescription: 'Generate cryptographic hashes instantly with MD5, SHA-1, SHA-256 algorithms. Free online hash calculator with hex and Base64 output formats. Privacy-first.',
+  seoDescription: 'Calculate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 digests instantly. Supports salts, multiple algorithms, hex or Base64 output, and length metadata — no uploads required.',
   examples: [
     {
       title: 'Simple Text Hashing',
@@ -85,6 +85,78 @@ export const HASH_GENERATOR_TOOL: Tool = {
     'jwt-decoder',
     'password-generator',
     'checksum-validator'
+  ],
+  howItWorks: [
+    {
+      title: 'Enter Text or Drop Files',
+      icon: '📝',
+      description: 'Paste plain text, JSON payloads, or drag-and-drop file contents to hash. The tool supports Unicode input and updates automatically as you type or upload.',
+      keywords: ['hash text', 'file hashing', 'drag and drop', 'unicode hashing', 'automatic hashing']
+    },
+    {
+      title: 'Choose Algorithms & Salt',
+      icon: '⚙️',
+      description: 'Select one or many algorithms (MD5, SHA-1, SHA-256, SHA-384, SHA-512), add an optional salt prefix, and pick hex or Base64 output formatting for each digest.',
+      keywords: ['SHA-256', 'MD5', 'salted hash', 'Base64 hash', 'multiple hashes']
+    },
+    {
+      title: 'Generate Hashes Instantly',
+      icon: '⚡',
+      description: 'Hashes are produced locally using the Web Crypto API (plus an MD5 implementation) with no network requests. Toggle uppercase output and include digest lengths when needed.',
+      keywords: ['web crypto', 'local hashing', 'uppercase hex', 'digest length', 'client-side security']
+    },
+    {
+      title: 'Export & Share Results',
+      icon: '📤',
+      description: 'Copy hashes, download CSV/text exports, or revisit past calculations through tool history to document integrity checks for QA, releases, or security reviews.',
+      keywords: ['copy hash', 'download hash', 'hash reports', 'tool history', 'integrity verification']
+    }
+  ],
+  problemsSolved: [
+    {
+      problem: 'Manual hash calculations across multiple algorithms slow down release checklists and increase the risk of transcription mistakes.',
+      solution: 'Generate several digests in one click with synchronized outputs so QA teams and DevOps engineers can compare MD5, SHA-1, and SHA-256 values side by side.',
+      icon: '🧮',
+      keywords: ['multiple hashes', 'release checklist', 'qa tooling', 'integrity verification', 'devops']
+    },
+    {
+      problem: 'Security audits require salted hashes and consistent output formatting, but ad-hoc scripts often produce uneven results.',
+      solution: 'Apply optional salt prefixes, enforce uppercase hex, include length metadata, and share reproducible output for compliance documentation.',
+      icon: '🔏',
+      keywords: ['salted hash', 'compliance', 'uppercase hex', 'metadata', 'audit trail']
+    },
+    {
+      problem: 'Teams need a trusted, offline tool to verify downloads or troubleshoot cache keys without leaking sensitive data.',
+      solution: 'All hashing runs in-browser with no telemetry, enabling safe checksum verification of deployment artifacts, API responses, or customer files.',
+      icon: '🛡️',
+      keywords: ['offline hashing', 'checksum verification', 'secure tool', 'privacy-first', 'no upload']
+    }
+  ],
+  whyChoose: [
+    {
+      title: 'On-Device Security',
+      description: 'Hashes never leave your machine. Ideal for confidential payloads, production credentials, and compliance workflows that forbid remote tooling.',
+      icon: '🔒',
+      keywords: ['client-side hashing', 'secure hash tool', 'no network', 'private data']
+    },
+    {
+      title: 'Power for Professionals',
+      description: 'Support for multi-algorithm output, salts, uppercase hex, and digest lengths mirrors the needs of SRE, DevOps, and security engineers.',
+      icon: '🛠️',
+      keywords: ['multi algorithm', 'salt support', 'digest length', 'professional tooling']
+    },
+    {
+      title: 'Actionable Metadata',
+      description: 'Each run includes algorithm names, output lengths, and configuration snapshots so you can paste results into tickets or audit logs with confidence.',
+      icon: '📊',
+      keywords: ['hash metadata', 'audit logs', 'configuration snapshot', 'reporting']
+    },
+    {
+      title: 'Streamlined UX',
+      description: 'Auto-processing, keyboard shortcuts, copy/download buttons, and history make repeat hashing tasks fast during investigations or build pipelines.',
+      icon: '⚙️',
+      keywords: ['auto hash', 'keyboard shortcuts', 'copy hash', 'download hash', 'tool history']
+    }
   ]
 };
 

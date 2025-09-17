@@ -11,14 +11,14 @@ export interface UuidGeneratorConfig extends ToolConfig {
 export const UUID_GENERATOR_TOOL: Tool = {
   id: 'uuid-generator',
   name: 'UUID/GUID Generator',
-  description: 'Generate UUID (Universally Unique Identifier) and GUID strings in various formats including v1, v4, and v7.',
+  description: 'Generate UUID/GUID identifiers in v1, v4, v7, or nil form with timestamp annotations, bulk output, and flexible formatting options.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'generators')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'generators')!.subcategories!.find(sub => sub.id === 'identifiers')!,
   slug: 'uuid-generator',
   icon: '🆔',
   keywords: ['uuid', 'guid', 'identifier', 'unique', 'random', 'v1', 'v4', 'v7', 'generator'],
   seoTitle: 'Free UUID/GUID Generator Online - Generate UUID v1, v4, v7',
-  seoDescription: 'Generate UUID and GUID identifiers instantly. Free online UUID generator with v1, v4, v7 support and multiple output formats. Privacy-first.',
+  seoDescription: 'Produce v1, v4, v7, or nil UUIDs on demand. Choose output casing, compact mode, brace wrapping, and per-UUID timestamps — all client-side.',
   examples: [
     {
       title: 'UUID v4 (Random)',
@@ -83,6 +83,78 @@ export const UUID_GENERATOR_TOOL: Tool = {
     'random-string-generator',
     'base64-encoder',
     'jwt-decoder'
+  ],
+  howItWorks: [
+    {
+      title: 'Select UUID Version & Format',
+      icon: '⚙️',
+      description: 'Pick v1, v4, v7, or nil identifiers. Configure casing, compact vs. hyphenated output, brace wrapping, and optional timestamp metadata.',
+      keywords: ['uuid version', 'uuid format', 'v4 generator', 'brace format', 'timestamp option']
+    },
+    {
+      title: 'Set Quantity & Options',
+      icon: '🧮',
+      description: 'Generate single or bulk UUID sets with configurable counts. Toggle timestamp annotations and history tracking for reproducibility.',
+      keywords: ['bulk uuid', 'uuid count', 'history tracking', 'timestamp annotations', 'reproducibility']
+    },
+    {
+      title: 'Generate Secure Identifiers',
+      icon: '🔐',
+      description: 'UUIDs are generated locally via Web Crypto APIs or hardened fallbacks, ensuring high-quality randomness and privacy for sensitive workflows.',
+      keywords: ['secure uuid', 'web crypto', 'local generation', 'privacy-first', 'random uuid']
+    },
+    {
+      title: 'Export & Integrate',
+      icon: '📤',
+      description: 'Copy UUIDs, download lists, or push them into tool history for audit trails. Perfect for seeding databases, tests, and distributed tracing.',
+      keywords: ['copy uuid', 'download uuid', 'audit trail', 'database seeding', 'distributed tracing']
+    }
+  ],
+  problemsSolved: [
+    {
+      problem: 'Manual UUID generation slows development environments and increases the chance of reuse or collision.',
+      solution: 'Create hundreds of UUIDs instantly with crypto-backed randomness, ensuring unique identifiers for staging and production assets.',
+      icon: '⚡',
+      keywords: ['rapid uuid', 'development tooling', 'collision avoidance', 'unique identifiers', 'devops']
+    },
+    {
+      problem: 'Teams need deterministic formatting (uppercase, compact, braces) to match API expectations and database schemas.',
+      solution: 'Configure output casing and formatting per run, keeping APIs, logs, and documentation aligned without manual string manipulation.',
+      icon: '🧱',
+      keywords: ['uuid formatting', 'uppercase uuid', 'compact uuid', 'api consistency', 'database schema']
+    },
+    {
+      problem: 'Audits require timestamp correlation or historical context for generated IDs used in deployments.',
+      solution: 'Include generation timestamps and store runs in history so ops teams can trace when identifiers were created.',
+      icon: '🕒',
+      keywords: ['timestamped uuid', 'audit trail', 'deployment tracking', 'ops visibility', 'history']
+    }
+  ],
+  whyChoose: [
+    {
+      title: 'Client-Side Reliability',
+      description: 'No identifiers leave your browser. Ideal for regulated environments and offline-friendly workflows.',
+      icon: '🔒',
+      keywords: ['offline uuid', 'secure generator', 'no network', 'privacy']
+    },
+    {
+      title: 'Comprehensive Version Support',
+      description: 'Generate v1 for legacy systems, v4 for random IDs, v7 for time-sortable identifiers, or nil UUIDs for protocol defaults.',
+      icon: '🔄',
+      keywords: ['uuid v1', 'uuid v4', 'uuid v7', 'nil uuid', 'protocol support']
+    },
+    {
+      title: 'Developer-Centric UX',
+      description: 'Keyboard shortcuts, copy/download controls, and persistent history keep repetitive ID generation quick during development and testing.',
+      icon: '🧑‍💻',
+      keywords: ['keyboard shortcuts', 'download uuids', 'copy uuids', 'developer productivity']
+    },
+    {
+      title: 'Integration Ready',
+      description: 'Export results in standard, compact, uppercase, or brace formats to drop directly into configuration files, YAML manifests, or API payloads.',
+      icon: '🧰',
+      keywords: ['yaml ready', 'api payload', 'config files', 'brace uuid', 'compact format']
+    }
   ]
 };
 

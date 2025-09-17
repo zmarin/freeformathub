@@ -400,8 +400,8 @@ export const IP_SUBNET_CALCULATOR_TOOL: Tool = {
   icon: '🌐',
   keywords: ['ip', 'subnet', 'cidr', 'network', 'calculator', 'netmask', 'wildcard'],
   seoTitle: 'IP Subnet Calculator - CIDR, Netmask & Network Analysis | FreeFormatHub',
-  seoDescription: 'Calculate IP subnet information, CIDR notation, subnet masks, usable IP ranges, and split networks into subnets. Essential tool for network administrators.',
-  description: 'Calculate subnet information from CIDR notation including network addresses, broadcast addresses, subnet masks, usable IP ranges, and subnet splitting for network planning.',
+  seoDescription: 'Plan networks faster: compute subnet masks, CIDR ranges, binary masks, private/loopback flags, and subnet splits instantly. Export-friendly output with no data leaving your browser.',
+  description: 'Plan IPv4 networks with instant subnet math, CIDR validation, binary masks, private range detection, and automated subnet splitting — tailored for network engineers and learners alike.',
   
   examples: [
     {
@@ -501,6 +501,77 @@ export const IP_SUBNET_CALCULATOR_TOOL: Tool = {
     'Invalid IP address format - each octet must be 0-255',
     'Insufficient bits for subnet splitting - cannot create more subnets than available host bits allow'
   ],
-
-  relatedTools: ['url-encoder', 'hash-generator', 'regex-tester']
+  relatedTools: ['url-encoder', 'hash-generator', 'regex-tester'],
+  howItWorks: [
+    {
+      title: 'Enter Network Details',
+      icon: '📝',
+      description: 'Paste CIDR blocks (e.g., 10.0.0.0/16) or individual addresses. The calculator validates IPv4 syntax and highlights formatting mistakes before processing.',
+      keywords: ['cidr input', 'ipv4 validation', 'network address', 'subnet calculator', 'ip planner']
+    },
+    {
+      title: 'Select Calculation Mode',
+      icon: '⚙️',
+      description: 'Switch between calculations, validations, or subnet splitting. Toggle broadcast, wildcard, binary views, and choose detailed, compact, or tabular output formats.',
+      keywords: ['subnet split', 'wildcard mask', 'binary mask', 'output formats', 'network mode']
+    },
+    {
+      title: 'Review Rich Network Data',
+      icon: '📊',
+      description: 'Receive instant results with network/broadcast addresses, usable host ranges, classification, private/multicast flags, and optional binary breakdown for ACL work.',
+      keywords: ['usable hosts', 'network classification', 'private network', 'binary representation', 'acl planning']
+    },
+    {
+      title: 'Export & Document',
+      icon: '📄',
+      description: 'Copy the generated markdown-style report, download output, or store runs in tool history to share with teammates and paste into change requests.',
+      keywords: ['network report', 'copy results', 'download subnet', 'documentation', 'change management']
+    }
+  ],
+  problemsSolved: [
+    {
+      problem: 'Subnet math by hand is slow and error-prone, especially when juggling multiple VLANs or address pools under deadline.',
+      solution: 'Compute masks, usable ranges, totals, and binary representations instantly so network engineers can focus on architecture instead of arithmetic.',
+      icon: '⏱️',
+      keywords: ['subnet math', 'usable range', 'network automation', 'vlan planning', 'binary mask']
+    },
+    {
+      problem: 'Documentation requires consistent reporting of private status, network class, and wildcard masks for security reviews.',
+      solution: 'Auto-generated summaries include private/public flags, loopback/multicast indicators, and wildcard masks ready for ACLs and change tickets.',
+      icon: '📋',
+      keywords: ['network documentation', 'wildcard mask', 'acl planning', 'security review', 'change ticket']
+    },
+    {
+      problem: 'Splitting address space into even subnets can be confusing without visualizing the new ranges and host counts.',
+      solution: 'Use the split mode to carve networks into equal subnets with clear start/end addresses and host availability for each child subnet.',
+      icon: '🧩',
+      keywords: ['subnetting', 'split network', 'host count', 'network segmentation', 'ip planning']
+    }
+  ],
+  whyChoose: [
+    {
+      title: 'Private & Offline',
+      description: 'Network inventories, infrastructure plans, and customer ranges stay on your device. Ideal for sensitive enterprise environments.',
+      icon: '🔒',
+      keywords: ['offline calculator', 'secure networking', 'no upload', 'sensitive data']
+    },
+    {
+      title: 'Operator-Grade Detail',
+      description: 'Fields for wildcard masks, binary output, and classification mirror what engineers need for ACLs, BGP policies, and firewall rules.',
+      icon: '🛠️',
+      keywords: ['acl planning', 'firewall rules', 'bgp policies', 'network engineering']
+    },
+    {
+      title: 'Flexible Output',
+      description: 'Switch between detailed markdown, compact summaries, or tables to match internal documentation standards and runbooks.',
+      icon: '🗂️',
+      keywords: ['markdown report', 'compact output', 'table view', 'documentation']
+    },
+    {
+      title: 'Integrated History',
+      description: 'Revisit previous calculations through tool history, making audits and troubleshooting faster when networks evolve.',
+      icon: '🕒',
+      keywords: ['tool history', 'network audit', 'troubleshooting', 'repeatable workflow']
+    }
+  ]
 };

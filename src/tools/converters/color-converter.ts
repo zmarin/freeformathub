@@ -22,14 +22,14 @@ export interface ColorResult {
 export const COLOR_CONVERTER_TOOL: Tool = {
   id: 'color-converter',
   name: 'Color Format Converter',
-  description: 'Convert colors between different formats: HEX, RGB, HSL, HSV, CMYK, LAB, and named colors with live preview.',
+  description: 'Convert and compare colors across HEX, RGB, HSL, HSV, CMYK, LAB, and named palettes with live preview, alpha handling, and palette-ready exports.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'converters')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'converters')!.subcategories!.find(sub => sub.id === 'colors-design')!,
   slug: 'color-converter',
   icon: '🎨',
   keywords: ['color', 'hex', 'rgb', 'hsl', 'hsv', 'cmyk', 'lab', 'convert', 'palette', 'design'],
   seoTitle: 'Free Color Converter Online - HEX, RGB, HSL, HSV, CMYK',
-  seoDescription: 'Convert colors between different formats instantly. Free online color converter supporting HEX, RGB, HSL, HSV, CMYK, LAB with color preview. Privacy-first.',
+  seoDescription: 'Translate colors between HEX, RGB, HSL, HSV, CMYK, LAB, and named sets with alpha support, live previews, and palette exports. Fast, accurate, and private.',
   examples: [
     {
       title: 'HEX to RGB',
@@ -100,6 +100,78 @@ export const COLOR_CONVERTER_TOOL: Tool = {
     'contrast-checker',
     'image-color-picker',
     'css-generator'
+  ],
+  howItWorks: [
+    {
+      title: 'Input Any Color Format',
+      icon: '🖌️',
+      description: 'Paste HEX, RGB(A), HSL(A), HSV, CMYK, LAB, or CSS named colors. Auto-detection picks the right parser, and manual overrides help with edge cases.',
+      keywords: ['hex input', 'rgb parsing', 'auto detect color', 'lab color', 'css named colors']
+    },
+    {
+      title: 'Pick Output Targets',
+      icon: '🎯',
+      description: 'Select which formats to display, toggle uppercase HEX, and include alpha channels. Designers can focus on the formats their tools require.',
+      keywords: ['output formats', 'uppercase hex', 'alpha channel', 'designer workflow', 'color settings']
+    },
+    {
+      title: 'Preview & Fine-Tune',
+      icon: '👀',
+      description: 'See live color swatches, inspect numeric breakdowns, and compare LAB values for accessibility and brand consistency checks.',
+      keywords: ['color preview', 'lab comparison', 'accessibility', 'brand consistency', 'color analytics']
+    },
+    {
+      title: 'Export & Share Palettes',
+      icon: '📤',
+      description: 'Copy formatted outputs, download palette snippets, or drop conversions into tool history for later reference when collaborating.',
+      keywords: ['palette export', 'copy colors', 'download colors', 'tool history', 'collaboration']
+    }
+  ],
+  problemsSolved: [
+    {
+      problem: 'Hand-converting between color models wastes time and introduces rounding mistakes in design specs and QA documents.',
+      solution: 'Generate synchronized HEX, RGB, HSL, HSV, CMYK, and LAB values instantly with consistent rounding so designers and developers stay aligned.',
+      icon: '⏱️',
+      keywords: ['color conversion', 'design handoff', 'rounding consistency', 'hex rgb hsl', 'qa docs']
+    },
+    {
+      problem: 'Ensuring cross-platform color consistency is difficult when web, print, and design tools rely on different models.',
+      solution: 'Compare values across digital and print spaces, including CMYK and LAB, to confirm brand colors before exporting assets or sending to vendors.',
+      icon: '🎯',
+      keywords: ['brand colors', 'print vs digital', 'cmyk conversion', 'lab color', 'color accuracy']
+    },
+    {
+      problem: 'Designers often need quick previews with transparency support to test overlays and UI states without opening a heavy design suite.',
+      solution: 'Use the live preview with alpha awareness to visualize overlays, backgrounds, and accessible contrasts directly in the browser.',
+      icon: '🪟',
+      keywords: ['alpha preview', 'transparency', 'ui states', 'design workflow', 'quick preview']
+    }
+  ],
+  whyChoose: [
+    {
+      title: 'Pixel-Perfect Accuracy',
+      description: 'Conversion formulas are tuned for professional workflows, including LAB precision and CMYK rounding, so your specs match across mediums.',
+      icon: '🎯',
+      keywords: ['accurate color', 'lab precision', 'cmyk rounding', 'professional workflow']
+    },
+    {
+      title: 'Privacy-Friendly',
+      description: 'Brand palettes, in-progress designs, and client colors never leave your browser. Ideal for agencies working under NDA.',
+      icon: '🔒',
+      keywords: ['client-side', 'secure color tool', 'nda friendly', 'no upload']
+    },
+    {
+      title: 'Designed for Teams',
+      description: 'Copy/paste friendly outputs, downloadable snippets, and persistent history streamline design handoffs and QA reviews.',
+      icon: '🤝',
+      keywords: ['collaboration', 'design handoff', 'palette sharing', 'history']
+    },
+    {
+      title: 'Versatile Format Support',
+      description: 'From CSS-ready HEX to print-focused CMYK, the converter adapts to product, marketing, and brand teams in one place.',
+      icon: '🧰',
+      keywords: ['hex rgb hsl', 'cmyk lab', 'format versatility', 'marketing', 'brand toolkit']
+    }
   ]
 };
 

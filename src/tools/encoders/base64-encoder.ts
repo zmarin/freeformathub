@@ -10,14 +10,14 @@ export interface Base64EncoderConfig extends ToolConfig {
 export const BASE64_ENCODER_TOOL: Tool = {
   id: 'base64-encoder',
   name: 'Base64 Encoder & Decoder',
-  description: 'Encode and decode Base64 strings safely and efficiently with support for URL-safe encoding.',
+  description: 'Encode, decode, and inspect Base64 payloads with URL-safe mode, line-break control, drag-and-drop input, and instant validation — all in your browser.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'encoders')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'encoders')!.subcategories!.find(sub => sub.id === 'base-encoding')!,
   slug: 'base64-encoder',
   icon: '🔒',
   keywords: ['base64', 'encode', 'decode', 'encoding', 'decoding', 'binary', 'text'],
   seoTitle: 'Free Base64 Encoder & Decoder Online - Encode & Decode Base64',
-  seoDescription: 'Encode and decode Base64 strings instantly. Free online Base64 encoder with URL-safe support and line break options. Privacy-first, no data upload.',
+  seoDescription: 'Convert text, JSON, or binary data with the Base64 encoder & decoder. Supports URL-safe mode, line breaks, drag & drop files, and real-time validation — private, client-side processing.',
   examples: [
     {
       title: 'Basic Text Encoding',
@@ -103,6 +103,46 @@ export const BASE64_ENCODER_TOOL: Tool = {
       icon: "💾",
       description: "Copy encoded/decoded results to clipboard with one click, download as text files, or share Base64 strings directly. Perfect for data URIs, embedding images in CSS/HTML, API authentication tokens, and secure data transmission over text protocols.",
       keywords: ["copy Base64", "download Base64", "data URI", "embed images", "authentication tokens", "Base64 file"]
+    }
+  ],
+  problemsSolved: [
+    {
+      problem: 'Manual Base64 conversion is error-prone, especially when working with long payloads, binary files, or JSON blobs that need reliable encoding before transmission.',
+      solution: 'Encode large payloads instantly with drag-and-drop file support, automatic size reporting, and line-break options. The tool processes everything locally so sensitive data never leaves your browser.',
+      icon: '⚡',
+      keywords: ['Base64 encoder', 'binary to Base64', 'line breaks', 'drag and drop', 'local processing']
+    },
+    {
+      problem: 'Decoding Base64 strings that arrive malformed or URL-safe encoded can lead to confusing errors and unreadable output.',
+      solution: 'Automatic cleanup converts URL-safe characters, repairs padding, and flags invalid characters with clear validation errors so you can correct issues before consuming the data.',
+      icon: '🛡️',
+      keywords: ['Base64 validation', 'padding errors', 'URL-safe Base64', 'decode Base64', 'error handling']
+    },
+    {
+      problem: 'Developers often need insight into payload sizes and encoding behavior to meet platform limits or diagnose downstream failures.',
+      solution: 'Detailed metadata shows original vs. encoded length, compression overhead, padding usage, and encoding mode so you can document or troubleshoot integrations quickly.',
+      icon: '📊',
+      keywords: ['payload size', 'metadata', 'encoding analytics', 'developer tooling', 'Base64 stats']
+    }
+  ],
+  whyChoose: [
+    {
+      title: 'Privacy-First Conversion',
+      description: 'All encoding and decoding happens in the browser — no uploads, no logging. Safely process API keys, credentials, or binary blobs without leaving your machine.',
+      icon: '🔒',
+      keywords: ['client-side', 'secure Base64', 'no server', 'private encoding']
+    },
+    {
+      title: 'Flexible Encoding Controls',
+      description: 'Toggle URL-safe mode, add line breaks, or switch between encode/decode workflows instantly. The tool respects RFC 4648 defaults while giving you precise control over output.',
+      icon: '🧰',
+      keywords: ['URL-safe Base64', 'line breaks', 'encoding options', 'RFC 4648']
+    },
+    {
+      title: 'Developer-Centric UX',
+      description: 'Paste, drag files, copy results, download text, or store past runs in tool history. The streamlined interface keeps repetitive encoding tasks fast for busy engineers.',
+      icon: '👩‍💻',
+      keywords: ['drag and drop', 'copy to clipboard', 'download results', 'tool history']
     }
   ]
 };
