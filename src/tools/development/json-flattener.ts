@@ -483,6 +483,7 @@ export const JSON_FLATTENER_TOOL: Tool = {
   id: 'json-flattener',
   name: 'JSON Flattener',
   description: 'Flatten nested JSON objects to flat key-value pairs or unflatten back to nested structure with customizable delimiters and array handling',
+  icon: '🗂️',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'development')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'development')!.subcategories!.find(sub => sub.id === 'json-tools')!,
   tags: ['json', 'flatten', 'unflatten', 'nested', 'object', 'array', 'key-value', 'transform'],

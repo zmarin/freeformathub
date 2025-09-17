@@ -1228,6 +1228,7 @@ export const LOG_ANALYSIS_TOOL: Tool = {
   id: 'log-analysis-tool',
   name: 'Log Analysis Tool',
   description: 'Comprehensive log file analysis with security, performance, and traffic insights for Apache, Nginx, and other web server logs',
+  icon: '📊',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'development')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'development')!.subcategories!.find(sub => sub.id === 'debugging-tools')!,
   tags: ['logs', 'analysis', 'security', 'performance', 'monitoring', 'apache', 'nginx', 'web server', 'traffic', 'analytics'],

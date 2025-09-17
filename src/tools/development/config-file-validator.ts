@@ -1349,6 +1349,7 @@ export const CONFIG_FILE_VALIDATOR_TOOL: Tool = {
   id: 'config-file-validator',
   name: 'Configuration File Validator',
   description: 'Comprehensive validation for configuration files including JSON, YAML, TOML, XML, Dockerfile, Nginx, Apache configs with syntax, security, and best practices checking',
+  icon: '⚙️',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'development')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'development')!.subcategories!.find(sub => sub.id === 'config-tools')!,
   tags: ['config', 'validation', 'json', 'yaml', 'toml', 'xml', 'dockerfile', 'nginx', 'apache', 'security', 'syntax', 'best-practices'],

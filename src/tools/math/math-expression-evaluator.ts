@@ -453,6 +453,7 @@ export const MATH_EXPRESSION_EVALUATOR_TOOL: Tool = {
   id: 'math-expression-evaluator',
   name: 'Math Expression Evaluator',
   description: 'Evaluate complex mathematical expressions with support for functions, constants, variables, and multiple output formats including step-by-step solutions',
+  icon: '🧮',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'math')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'math')!.subcategories!.find(sub => sub.id === 'calculators')!,
   tags: ['math', 'calculator', 'expression', 'algebra', 'trigonometry', 'logarithm', 'function', 'evaluate'],

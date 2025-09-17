@@ -655,6 +655,7 @@ export const WEBHOOK_TESTING_TOOL: Tool = {
   id: 'webhook-testing-tool',
   name: 'Webhook Testing Tool',
   description: 'Comprehensive webhook testing with multiple scenarios, authentication, performance analysis, and security validation',
+  icon: '🔗',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'web')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'web')!.subcategories!.find(sub => sub.id === 'api-tools')!,
   tags: ['webhook', 'testing', 'api', 'http', 'integration', 'automation', 'performance', 'security', 'validation'],

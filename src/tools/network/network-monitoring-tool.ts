@@ -599,6 +599,7 @@ export const NETWORK_MONITORING_TOOL: Tool = {
   id: 'network-monitoring-tool',
   name: 'Network Monitoring Tool',
   description: 'Comprehensive network monitoring with ping, traceroute, port scanning, DNS lookup, SSL checks, and performance analysis',
+  icon: '📡',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'network')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'network')!.subcategories!.find(sub => sub.id === 'monitoring')!,
   tags: ['network', 'monitoring', 'ping', 'traceroute', 'ssl', 'dns', 'performance', 'diagnostics', 'uptime'],

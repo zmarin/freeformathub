@@ -494,6 +494,7 @@ export const CSS_GRID_GENERATOR_TOOL: Tool = {
   id: 'css-grid-generator',
   name: 'CSS Grid Generator',
   description: 'Generate CSS Grid layouts with visual editor, responsive breakpoints, named areas, and custom positioning. Create complex grid systems with HTML and CSS code generation.',
+  icon: '⚏',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'web')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'web')!.subcategories!.find(sub => sub.id === 'css-tools')!,
   tags: ['css', 'grid', 'layout', 'generator', 'responsive', 'web', 'design', 'frontend'],

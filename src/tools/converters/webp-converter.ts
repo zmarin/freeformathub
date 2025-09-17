@@ -370,6 +370,7 @@ export const WEBP_CONVERTER_TOOL: Tool = {
   id: 'webp-converter',
   name: 'WebP Image Converter',
   description: 'Convert images to and from WebP format with advanced compression settings, quality optimization, and detailed conversion metrics. Supports JPEG, PNG, GIF, BMP input with lossless and lossy modes.',
+  icon: '🖼️',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'converters')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'converters')!.subcategories!.find(sub => sub.id === 'images-media')!,
   tags: ['webp', 'image', 'converter', 'compression', 'optimization', 'jpeg', 'png', 'format'],

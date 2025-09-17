@@ -365,6 +365,7 @@ export const JWT_GENERATOR_TOOL: Tool = {
   id: 'jwt-generator',
   name: 'JWT Generator',
   description: 'Generate JSON Web Tokens (JWT) with custom claims, standard fields, and multiple signing algorithms including HMAC and RSA',
+  icon: '🔐',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'crypto')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'crypto')!.subcategories!.find(sub => sub.id === 'encryption')!,
   tags: ['jwt', 'token', 'authentication', 'oauth', 'security', 'auth', 'json', 'signing'],

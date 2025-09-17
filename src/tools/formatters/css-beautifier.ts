@@ -647,9 +647,10 @@ export function processCssBeautifier(input: string, config: CssBeautifierConfig)
 export const CSS_BEAUTIFIER_TOOL: Tool = {
   id: 'css-beautifier',
   name: 'CSS Beautifier & Minifier',
+  description: 'Format, beautify, and minify CSS code with proper indentation, validation, and optimization. Supports CSS3, media queries, and nested rules with comprehensive formatting options.',
+  icon: '✨',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!.subcategories!.find(sub => sub.id === 'css-formatting')!,
-  description: 'Format, beautify, and minify CSS code with proper indentation, validation, and optimization. Supports CSS3, media queries, and nested rules with comprehensive formatting options.',
   tags: ['css', 'beautifier', 'minifier', 'formatter', 'web', 'stylesheet', 'validation'],
   complexity: 'intermediate',
   examples: [

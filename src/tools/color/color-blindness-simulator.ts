@@ -496,6 +496,7 @@ export const COLOR_BLINDNESS_SIMULATOR_TOOL: Tool = {
   id: 'color-blindness-simulator',
   name: 'Color Blindness Simulator',
   description: 'Simulate how colors appear to people with different types of color vision deficiencies. Test website accessibility, generate reports, and get alternative color recommendations for inclusive design.',
+  icon: '👁️',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'color')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'color')!.subcategories!.find(sub => sub.id === 'accessibility')!,
   tags: ['color', 'accessibility', 'color-blindness', 'simulator', 'a11y', 'inclusive', 'design', 'wcag'],
