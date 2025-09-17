@@ -508,37 +508,6 @@ export const JsonTreeView: React.FC<JsonTreeViewProps> = ({
     }
   }, [isResizing, handleResizeMove, handleResizeEnd]);
 
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
-        return; // Don't interfere with input fields
-      }
-
-      if (e.ctrlKey || e.metaKey) {
-        switch (e.key.toLowerCase()) {
-          case 'e':
-            e.preventDefault();
-            if (e.shiftKey) {
-              handleCollapseAll();
-            } else {
-              handleExpandAll();
-            }
-            break;
-        }
-      }
-
-      // F11 for fullscreen (without modifier keys)
-      if (e.key === 'F11') {
-        e.preventDefault();
-        toggleFullscreen();
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [handleExpandAll, handleCollapseAll, toggleFullscreen]);
-
   const handleToggleExpanded = useCallback((path: string) => {
     setExpandedNodes(prev => {
       const newSet = new Set(prev);
@@ -583,6 +552,37 @@ export const JsonTreeView: React.FC<JsonTreeViewProps> = ({
       localStorage.setItem('json-tree-default-expanded', 'false');
     }
   }, []);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return; // Don't interfere with input fields
+      }
+
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key.toLowerCase()) {
+          case 'e':
+            e.preventDefault();
+            if (e.shiftKey) {
+              handleCollapseAll();
+            } else {
+              handleExpandAll();
+            }
+            break;
+        }
+      }
+
+      // F11 for fullscreen (without modifier keys)
+      if (e.key === 'F11') {
+        e.preventDefault();
+        toggleFullscreen();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleExpandAll, handleCollapseAll, toggleFullscreen]);
 
   const stats = useMemo(() => {
     const calculateStats = (obj: any): { objects: number; arrays: number; primitives: number; maxDepth: number } => {
