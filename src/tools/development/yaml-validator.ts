@@ -649,19 +649,19 @@ export function processYamlValidator(input: string, config: YamlValidatorConfig)
 
 export const YAML_VALIDATOR_TOOL: Tool = {
   id: 'yaml-validator',
-  name: 'YAML Validator',
+  name: 'Validate YAML - YAML Validator & Syntax Checker',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'development')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'development')!.subcategories!.find(sub => sub.id === 'config-tools')!,
   slug: 'yaml-validator',
   icon: '📄',
-  keywords: ['yaml', 'yml', 'validate', 'syntax', 'parser', 'configuration', 'data', 'structure'],
-  seoTitle: 'YAML Validator - Validate YAML Syntax & Structure | FreeFormatHub',
-  seoDescription: 'Validate YAML files with comprehensive syntax checking, indentation validation, and structure analysis. Perfect for configuration files.',
-  description: 'Validate YAML documents with comprehensive syntax checking, indentation validation, structure analysis, and best practice recommendations.',
+  keywords: ['validate yaml', 'yaml validator', 'yaml syntax checker', 'validate yml', 'yaml', 'yml', 'syntax', 'parser', 'configuration', 'data', 'structure', 'yaml online validator'],
+  seoTitle: 'Validate YAML Online - Free YAML Validator & Syntax Checker Tool',
+  seoDescription: 'Validate YAML syntax online with our free YAML validator. Check YAML files, find syntax errors, and validate indentation. Works in your browser.',
+  description: 'Validate YAML syntax online with comprehensive error checking, indentation validation, and structure analysis. Free YAML validator for configuration files, Docker Compose, Kubernetes manifests, and more.',
 
   examples: [
     {
-      title: 'Valid YAML Configuration',
+      title: 'Validate YAML Configuration File',
       input: `# Application Configuration
 app:
   name: "My Application"
@@ -738,17 +738,21 @@ Recommendations:
   ],
 
   useCases: [
-    'Validating configuration files (Docker Compose, Kubernetes, CI/CD)',
-    'Checking YAML syntax in development workflows',
-    'Analyzing complex YAML document structures',
-    'Ensuring YAML best practices and consistency',
-    'Debugging YAML parsing issues',
+    'Validate YAML syntax before deployment',
+    'Check Docker Compose and Kubernetes manifest files',
+    'Validate CI/CD pipeline configuration files',
+    'Debug YAML parsing errors in development',
+    'Ensure YAML best practices and consistency',
     'Code review assistance for YAML files',
     'Educational purposes for learning YAML syntax',
-    'Automated validation in build pipelines'
+    'Online YAML validation without installation'
   ],
 
   faq: [
+    {
+      question: 'How do I validate YAML syntax online?',
+      answer: 'Simply paste your YAML content into the validator, and it will instantly check for syntax errors, indentation issues, and structural problems. No installation required - everything runs in your browser.'
+    },
     {
       question: 'What YAML features does the validator support?',
       answer: 'The validator supports YAML 1.2 features including scalars, sequences, mappings, anchors, references, comments, and multi-document files.'

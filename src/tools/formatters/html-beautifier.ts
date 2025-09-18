@@ -509,19 +509,19 @@ export function validateHtmlDocument(input: string): {
 
 export const HTML_BEAUTIFIER_TOOL: Tool = {
   id: 'html-beautifier',
-  name: 'HTML Beautifier & Prettier',
-  description: 'Beautify, validate, and minify HTML5 with an online prettier that adds intelligent indentation, attribute sorting, linting insights, and production-ready minification — powered entirely in the browser.',
+  name: 'HTML Prettier Online - Beautifier & Formatter',
+  description: 'Format HTML code with prettier-style beautification online. Free HTML formatter with intelligent indentation, attribute sorting, validation, and minification — all in your browser.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!.subcategories!.find(sub => sub.id === 'code-formatting')!,
   slug: 'html-beautifier',
   icon: 'Code',
   tags: ['html', 'beautify', 'minify', 'prettier', 'format', 'validate', 'web'],
   complexity: 'beginner',
-  keywords: ['html', 'beautify', 'minify', 'format', 'validate', 'web', 'indentation', 'optimization', 'html prettier online', 'html formatter', 'html pretty print'],
+  keywords: ['html prettier online', 'html formatter', 'html beautifier', 'html pretty print', 'prettier', 'beautify', 'minify', 'format', 'validate', 'web', 'indentation', 'optimization', 'online html formatter', 'free html prettier'],
   
   examples: [
     {
-      title: 'Beautify Minified HTML',
+      title: 'Prettier-Style HTML Formatting',
       input: `<!DOCTYPE html><html><head><title>Example</title></head><body><div class="container"><h1>Hello World</h1><p>This is a paragraph.</p></div></body></html>`,
       output: `<!DOCTYPE html>
 <html>
@@ -535,7 +535,7 @@ export const HTML_BEAUTIFIER_TOOL: Tool = {
     </div>
   </body>
 </html>`,
-      description: 'Format compact HTML with proper indentation and line breaks'
+      description: 'Format compact HTML with Prettier-style beautification and indentation'
     },
     {
       title: 'Minify Formatted HTML',
@@ -569,14 +569,19 @@ export const HTML_BEAUTIFIER_TOOL: Tool = {
   ],
   
   useCases: [
-    'Code formatting and beautification',
-    'HTML minification for production',
+    'Prettier-style HTML code formatting and beautification',
+    'Online HTML formatting without installation',
+    'HTML minification for production deployment',
     'Code validation and error detection',
-    'Converting between indentation styles',
+    'Converting between indentation styles (spaces/tabs)',
     'Optimizing HTML for web performance'
   ],
   
   faq: [
+    {
+      question: 'Is this an HTML Prettier alternative that works online?',
+      answer: 'Yes! This tool provides Prettier-style HTML formatting in your browser without installing Node.js or VS Code extensions. Perfect for quick HTML beautification online.'
+    },
     {
       question: 'What\'s the difference between beautify and minify?',
       answer: 'Beautify adds proper indentation, line breaks, and formatting for readability. Minify removes unnecessary whitespace and formatting to reduce file size.'
@@ -586,8 +591,8 @@ export const HTML_BEAUTIFIER_TOOL: Tool = {
       answer: 'Yes, when validation is enabled, it checks for common HTML errors like unclosed tags, mismatched tags, and invalid attributes.'
     },
     {
-      question: 'Can I customize the indentation style?',
-      answer: 'Yes, you can choose between spaces or tabs, and set the number of spaces for indentation (2, 4, 8 spaces).'
+      question: 'Can I customize the indentation style like Prettier?',
+      answer: 'Yes, you can choose between spaces or tabs, and set the number of spaces for indentation (2, 4, 8 spaces) just like Prettier configuration.'
     },
     {
       question: 'Are comments preserved during processing?',
@@ -606,8 +611,8 @@ export const HTML_BEAUTIFIER_TOOL: Tool = {
   ],
   
   relatedTools: ['xml-formatter', 'css-beautifier', 'js-beautifier'],
-  seoTitle: 'HTML Beautifier & Prettier Online - Free HTML Formatter & Validator',
-  seoDescription: 'Clean up HTML instantly: pretty-print markup, validate structure, sort attributes, and minify for production. Privacy-first editor with drag & drop, copy, and download.',
+  seoTitle: 'HTML Prettier Online - Free HTML Beautifier & Formatter Tool',
+  seoDescription: 'Format HTML with Prettier-style beautification online. Free HTML formatter with indentation, validation, and minification. No upload required - runs in your browser.',
   howItWorks: [
     {
       title: 'Load Your Markup',

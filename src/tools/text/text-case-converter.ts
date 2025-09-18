@@ -9,15 +9,15 @@ export interface TextCaseConfig extends ToolConfig {
 
 export const TEXT_CASE_CONVERTER_TOOL: Tool = {
   id: 'text-case-converter',
-  name: 'Text Case & Camel Case Converter',
+  name: 'Camel Case Converter - Text Case Converter Tool',
   description: 'Convert text between 13 formats — including a dedicated camelCase converter — supporting PascalCase, snake_case, kebab-case, Title Case, constants, and more for developers and writers.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'text')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'text')!.subcategories!.find(sub => sub.id === 'text-transformation')!,
   slug: 'text-case-converter',
   icon: '🔤',
   keywords: ['text', 'case', 'convert', 'uppercase', 'lowercase', 'camelcase', 'pascalcase', 'snakecase', 'kebabcase', 'titlecase', 'constantcase', 'dotcase', 'pathcase', 'alternating', 'inverse', 'programming', 'variables', 'naming conventions', 'camel case converter', 'camel to snake', 'title case converter'],
-  seoTitle: 'Free Camel Case Converter & Text Case Tool - 13 Formats Online',
-  seoDescription: 'Convert text between camelCase, PascalCase, snake_case, kebab-case, Title Case, and 8 more formats instantly. Developer-friendly camel case converter with live preview, acronym preservation, and privacy-first processing.',
+  seoTitle: 'Camel Case Converter - Free Online Text Case Converter Tool',
+  seoDescription: 'Convert text to camelCase, PascalCase, snake_case, kebab-case, and 9 more formats. Free camel case converter with live preview and developer-friendly features.',
   examples: [
     {
       title: 'Programming Variables (camelCase)',

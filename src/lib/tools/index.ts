@@ -94,6 +94,7 @@ import { MATH_EXPRESSION_EVALUATOR_TOOL } from '../../tools/math/math-expression
 
 // Network tools
 import { IP_SUBNET_CALCULATOR_TOOL } from '../../tools/network/ip-subnet-calculator';
+import { IP_RANGE_CALCULATOR_TOOL } from '../../tools/network/ip-range-calculator';
 import { DNS_LOOKUP_TOOL } from '../../tools/network/dns-lookup';
 import { WHOIS_LOOKUP_TOOL } from '../../tools/network/whois-lookup';
 import { PORT_SCANNER_TOOL } from '../../tools/network/port-scanner';
@@ -238,6 +239,7 @@ registerTool(MATH_EXPRESSION_EVALUATOR_TOOL);
 
 // Network
 registerTool(IP_SUBNET_CALCULATOR_TOOL);
+registerTool(IP_RANGE_CALCULATOR_TOOL);
 registerTool(DNS_LOOKUP_TOOL);
 registerTool(WHOIS_LOOKUP_TOOL);
 registerTool(PORT_SCANNER_TOOL);

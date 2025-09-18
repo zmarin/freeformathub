@@ -85,6 +85,7 @@ import { UuidGenerator } from '../components/tools/generators/UuidGenerator';
 // Network components
 import { ApiRateLimiterCalculator } from '../components/tools/network/ApiRateLimiterCalculator';
 import { DnsLookup } from '../components/tools/network/DnsLookup';
+import { IpRangeCalculator } from '../components/tools/network/IpRangeCalculator';
 import { IpSubnetCalculator } from '../components/tools/network/IpSubnetCalculator';
 import { PortScanner } from '../components/tools/network/PortScanner';
 import { WhoisLookup } from '../components/tools/network/WhoisLookup';
@@ -218,6 +219,7 @@ export const TOOL_COMPONENTS: Record<string, ToolComponent> = {
   // Network tools
   'api-rate-limiter-calculator': ApiRateLimiterCalculator,
   'dns-lookup': DnsLookup,
+  'ip-range-calculator': IpRangeCalculator,
   'ip-subnet-calculator': IpSubnetCalculator,
   'port-scanner': PortScanner,
   'whois-lookup': WhoisLookup,

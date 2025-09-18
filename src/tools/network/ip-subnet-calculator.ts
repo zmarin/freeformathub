@@ -393,34 +393,32 @@ export function processSubnetCalculator(input: string, config: SubnetCalculatorC
 
 export const IP_SUBNET_CALCULATOR_TOOL: Tool = {
   id: 'ip-subnet-calculator',
-  name: 'IP Subnet Calculator',
+  name: 'IP Subnet Calculator - Netmask & CIDR Calculator',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'network')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'network')!.subcategories!.find(sub => sub.id === 'ip-tools')!,
   slug: 'ip-subnet-calculator',
   icon: '🌐',
-  keywords: ['ip', 'subnet', 'cidr', 'network', 'calculator', 'netmask', 'wildcard', 'subnet mask', 'ip range', 'netmask calculator'],
-  seoTitle: 'IP Subnet Calculator - CIDR, Netmask & Network Analysis | FreeFormatHub',
-  seoDescription: 'Plan networks faster: compute subnet masks, CIDR ranges, binary masks, private/loopback flags, and subnet splits instantly. Export-friendly output with no data leaving your browser.',
-  description: 'Plan IPv4 networks with instant subnet math, CIDR validation, binary masks, private range detection, and automated subnet splitting — tailored for network engineers and learners alike.',
+  keywords: ['ip netmask calculator', 'netmask calculator', 'ip subnet calculator', 'netmask cidr calculator', 'subnet calculator', 'first usable ip address calculator', 'cidr', 'network', 'wildcard', 'subnet mask', 'ip range'],
+  seoTitle: 'IP Subnet Calculator - Netmask, CIDR & First/Last Usable IP Calculator',
+  seoDescription: 'Calculate IP subnet masks, CIDR notation, first & last usable IP addresses. Free netmask calculator with network analysis and subnet planning tools.',
+  description: 'Calculate IP subnets, netmasks, CIDR notation, and find first/last usable IP addresses. Complete network calculator with subnet splitting and binary analysis for network engineers.',
   
   examples: [
     {
-      title: 'Basic Subnet Calculation',
+      title: 'First & Last Usable IP Calculator',
       input: '192.168.1.0/24',
       output: `# IP Subnet Calculator Results
 
 ## Network Information
 
 - **Network**: 192.168.1.0/24
+- **Netmask**: 255.255.255.0 (CIDR /24)
+- **First Usable IP**: 192.168.1.1 ⭐
+- **Last Usable IP**: 192.168.1.254 ⭐
 - **Network Address**: 192.168.1.0
 - **Broadcast Address**: 192.168.1.255
-- **Subnet Mask**: 255.255.255.0
-- **CIDR Notation**: /24
-- **First Usable IP**: 192.168.1.1
-- **Last Usable IP**: 192.168.1.254
-- **Total Host Addresses**: 256
 - **Usable Host Addresses**: 254`,
-      description: 'Calculate basic subnet information for a Class C network'
+      description: 'Find first and last usable IP addresses in a subnet - perfect for DHCP configuration'
     },
     {
       title: 'Private Network Analysis',
@@ -465,14 +463,19 @@ export const IP_SUBNET_CALCULATOR_TOOL: Tool = {
   ],
   
   useCases: [
-    'Network planning and IP address management',
+    'Find first and last usable IP addresses in any subnet',
+    'Calculate netmask and CIDR notation for network planning',
     'Subnet design for VLANs and network segmentation',
-    'Calculating usable IP ranges for DHCP configuration',
-    'Network troubleshooting and verification',
+    'DHCP pool configuration with usable IP ranges',
+    'Network troubleshooting and IP verification',
     'Learning and understanding subnetting concepts'
   ],
   
   faq: [
+    {
+      question: 'How do I find the first usable IP address in a subnet?',
+      answer: 'The first usable IP address is always the network address + 1. For example, in subnet 192.168.1.0/24, the network address is 192.168.1.0, so the first usable IP is 192.168.1.1. This calculator shows you both automatically.'
+    },
     {
       question: 'What is CIDR notation?',
       answer: 'CIDR (Classless Inter-Domain Routing) notation represents an IP network using an IP address followed by a slash and the number of network bits (e.g., 192.168.1.0/24). The number after the slash indicates how many bits are used for the network portion.'
