@@ -48,66 +48,6 @@ const toolsCollection = defineCollection({
   })
 });
 
-// Educational tutorials collection
-const tutorialsCollection = defineCollection({
-  type: 'content',
-  schema: z.object({
-    title: z.string(),
-    description: z.string(),
-    category: z.string(),
-    difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
-    publishDate: z.date(),
-    updateDate: z.date().optional(),
-    author: z.string().optional().default('FreeFormatHub Team'),
-    tags: z.array(z.string()).optional().default([]),
-    featured: z.boolean().optional().default(false),
-    readTime: z.number().optional(), // minutes
-    relatedTools: z.array(z.string()).optional().default([]),
-    seoTitle: z.string().optional(),
-    seoDescription: z.string().optional(),
-    ogImage: z.string().optional()
-  })
-});
-
-// How-to guides collection
-const guidesCollection = defineCollection({
-  type: 'content',
-  schema: z.object({
-    title: z.string(),
-    description: z.string(),
-    category: z.string(),
-    difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
-    publishDate: z.date(),
-    updateDate: z.date().optional(),
-    author: z.string().optional().default('FreeFormatHub Team'),
-    tags: z.array(z.string()).optional().default([]),
-    featured: z.boolean().optional().default(false),
-    readTime: z.number().optional(), // minutes
-    relatedTools: z.array(z.string()).optional().default([]),
-    prerequisites: z.array(z.string()).optional().default([]),
-    seoTitle: z.string().optional(),
-    seoDescription: z.string().optional(),
-    ogImage: z.string().optional()
-  })
-});
-
-// FAQ collection for common questions
-const faqCollection = defineCollection({
-  type: 'content',
-  schema: z.object({
-    title: z.string(),
-    description: z.string(),
-    category: z.string().optional(),
-    publishDate: z.date(),
-    updateDate: z.date().optional(),
-    featured: z.boolean().optional().default(false),
-    relatedTools: z.array(z.string()).optional().default([]),
-    tags: z.array(z.string()).optional().default([]),
-    seoTitle: z.string().optional(),
-    seoDescription: z.string().optional()
-  })
-});
-
 // Category metadata collection
 const categoriesCollection = defineCollection({
   type: 'data',
@@ -133,31 +73,7 @@ const categoriesCollection = defineCollection({
   })
 });
 
-// Blog posts collection for announcements and updates
-const blogCollection = defineCollection({
-  type: 'content',
-  schema: z.object({
-    title: z.string(),
-    description: z.string(),
-    publishDate: z.date(),
-    updateDate: z.date().optional(),
-    author: z.string().optional().default('FreeFormatHub Team'),
-    tags: z.array(z.string()).optional().default([]),
-    featured: z.boolean().optional().default(false),
-    draft: z.boolean().optional().default(false),
-    readTime: z.number().optional(), // minutes
-    seoTitle: z.string().optional(),
-    seoDescription: z.string().optional(),
-    ogImage: z.string().optional(),
-    category: z.string().optional()
-  })
-});
-
 export const collections = {
   'tools': toolsCollection,
-  'tutorials': tutorialsCollection,
-  'guides': guidesCollection,
-  'faq': faqCollection,
-  'categories': categoriesCollection,
-  'blog': blogCollection
+  'categories': categoriesCollection
 };

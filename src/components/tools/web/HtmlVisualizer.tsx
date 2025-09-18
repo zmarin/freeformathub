@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import {
   Play,
-  RotateCcw,
   Trash2,
   Code2,
   Eye,

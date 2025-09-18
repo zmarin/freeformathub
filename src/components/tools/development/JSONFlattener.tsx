@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { Layers, ArrowRightLeft, Settings, Eye, Code2, Copy, Download, RotateCcw, CheckCircle, XCircle } from 'lucide-react';
+import { Layers, ArrowRightLeft, Settings, Eye, Code2, Copy, Download, CheckCircle, XCircle } from 'lucide-react';
 import { processJSONFlattener, JSONFlattenerConfig } from '../../../tools/development/json-flattener';
 import { InputPanel, OutputPanel, OptionsPanel } from '../../ui';
 import { debounce } from '../../../lib/utils';
