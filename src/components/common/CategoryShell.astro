@@ -12,6 +12,7 @@ export interface Props {
 
 const { category, tools } = Astro.props;
 const safeTools = tools ?? [];
+const baseUrl = 'https://freeformathub.com';
 
 // Generate structured data for the category
 const jsonLd = {
@@ -29,7 +30,7 @@ const jsonLd = {
       "position": index + 1,
       "name": tool.name,
       "description": tool.description,
-      "url": getToolUrl(tool),
+      "url": baseUrl + getToolUrl(tool),
       "applicationCategory": "BusinessApplication",
       "isAccessibleForFree": true
     }))
@@ -41,13 +42,13 @@ const jsonLd = {
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "/"
+        "item": baseUrl
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": category.name,
-        "item": getCategoryUrl(category)
+        "item": baseUrl + getCategoryUrl(category)
       }
     ]
   }

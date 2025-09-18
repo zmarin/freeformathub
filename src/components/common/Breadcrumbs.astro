@@ -11,17 +11,27 @@ export interface Props {
 }
 
 const { items, className = '' } = Astro.props;
+const baseUrl = 'https://freeformathub.com';
 
 // Generate structured data for breadcrumbs
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
-  "itemListElement": items.map((item, index) => ({
-    "@type": "ListItem",
-    "position": index + 1,
-    "name": item.name,
-    "item": item.current ? undefined : item.url
-  }))
+  "itemListElement": items.map((item, index) => {
+    const breadcrumbItem: any = {
+      "@type": "ListItem",
+      "position": index + 1,
+      "name": item.name
+    };
+
+    // Only add item field for non-current items, and ensure absolute URLs
+    if (!item.current) {
+      const absoluteUrl = item.url.startsWith('http') ? item.url : baseUrl + item.url;
+      breadcrumbItem.item = absoluteUrl;
+    }
+
+    return breadcrumbItem;
+  })
 };
 ---
 
