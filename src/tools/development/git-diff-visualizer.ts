@@ -1103,6 +1103,7 @@ export const GIT_DIFF_VISUALIZER_TOOL: Tool = {
   description: 'Advanced Git diff analysis with visual representation, code quality assessment, security insights, and comprehensive change impact analysis',
   icon: '📊',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'development')!,
+  slug: 'git-diff-visualizer',
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'development')!.subcategories!.find(sub => sub.id === 'version-control')!,
   tags: ['git', 'diff', 'version-control', 'code-review', 'analysis', 'visualization', 'quality', 'security', 'changes'],
   complexity: 'advanced',

@@ -650,6 +650,7 @@ export const CSS_BEAUTIFIER_TOOL: Tool = {
   description: 'Format, beautify, and minify CSS code with proper indentation, validation, and optimization. Supports CSS3, media queries, and nested rules with comprehensive formatting options.',
   icon: '✨',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!,
+  slug: 'css-beautifier',
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!.subcategories!.find(sub => sub.id === 'css-formatting')!,
   tags: ['css', 'beautifier', 'minifier', 'formatter', 'web', 'stylesheet', 'validation'],
   complexity: 'intermediate',
