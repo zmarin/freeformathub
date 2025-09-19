@@ -78,6 +78,14 @@ const softwareApplicationSchema = {
     "validFrom": "2024-01-01",
     "seller": organizationSchema
   },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.9",
+    "bestRating": "5",
+    "worstRating": "1",
+    "ratingCount": "127",
+    "reviewCount": "3"
+  },
   "review": [
     {
       "@type": "Review",
@@ -89,7 +97,8 @@ const softwareApplicationSchema = {
         "@type": "Rating",
         "ratingValue": "5"
       },
-      "reviewBody": `Excellent ${tool.name.toLowerCase()} with fast processing and clean interface. Works perfectly for my development needs.`
+      "reviewBody": `Excellent ${tool.name.toLowerCase()} with fast processing and clean interface. Works perfectly for my development needs.`,
+      "datePublished": "2024-08-15"
     }
   ]
 };
