@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-FreeFormatHub is a privacy-first business and developer tools platform built with Astro + React Islands. It provides **111 comprehensive business and developer tools** for formatting, converting, encoding, and validating data. All processing happens client-side with no data leaving the browser, ensuring complete privacy and offline functionality.
+FreeFormatHub is a privacy-first business and developer tools platform built with Astro + React Islands. It provides **119 comprehensive business and developer tools** for formatting, converting, encoding, and validating data. All processing happens client-side with no data leaving the browser, ensuring complete privacy and offline functionality.
 
 **Tech Stack:**
 - **Framework**: Astro (SSG) with React Islands for interactive components
@@ -76,7 +76,7 @@ Every tool follows a consistent 4-file pattern:
 - Fallback loading strategies for missing components
 
 **Tool Registry** (`src/lib/tools/registry.ts`):
-- Central registry for all 111 tools with category organization
+- Central registry for all 119 tools with category organization
 - Search functionality across tools
 - Type-safe tool metadata management
 - Sitemap generation
@@ -122,7 +122,7 @@ The registry automatically handles SEO metadata, category organization, search i
 
 ## Tool Categories & Distribution
 
-**Current Tools: 111 across 14 categories:**
+**Current Tools: 119 across 14 categories:**
 - **Formatters** (8): JSON, XML, YAML, CSS, HTML, JS, SQL, CSV formatters
 - **Converters** (15): Format conversion, data transformation tools
 - **Encoders** (11): Base64, Base32, URL, JWT, HTML entities, certificates
@@ -206,6 +206,6 @@ The registry automatically handles SEO metadata, category organization, search i
 ### Build Verification
 - Always run `npm run build` after adding/modifying tools
 - Check sitemap.xml for any "undefined" entries (indicates missing slug)
-- Verify all 111 tools appear in sitemap with priority 0.9
+- Verify all 119 tools appear in sitemap with priority 0.9
 
 The platform maintains strict privacy standards while providing comprehensive developer tools with excellent SEO and performance optimization.

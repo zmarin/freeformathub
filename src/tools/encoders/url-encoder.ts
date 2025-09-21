@@ -71,6 +71,46 @@ export const URL_ENCODER_TOOL: Tool = {
     {
       question: 'Are there characters that don\'t need encoding?',
       answer: 'Yes, unreserved characters (A-Z, a-z, 0-9, -, ., _, ~) don\'t need encoding. Reserved characters (: / ? # [ ] @ ! $ & \' ( ) * + , ; =) may need encoding depending on context.'
+    },
+    {
+      question: 'How do I encode URLs online safely?',
+      answer: 'Use our URL encoder tool to safely encode URLs and query parameters. All encoding happens in your browser - no URLs are sent to servers, ensuring privacy for sensitive links and API endpoints.'
+    },
+    {
+      question: 'What characters need to be URL encoded?',
+      answer: 'Special characters like spaces, &, =, ?, #, %, +, and non-ASCII characters must be URL encoded. Our tool automatically identifies and encodes these characters with their percent-encoded equivalents.'
+    },
+    {
+      question: 'How do I decode URL encoded strings?',
+      answer: 'Switch to "Decode" mode and paste your URL-encoded string. The tool will convert percent-encoded characters (%20, %21, etc.) back to their original form, making URLs human-readable.'
+    },
+    {
+      question: 'Why do I see %20 instead of spaces in URLs?',
+      answer: '%20 is the URL-encoded representation of a space character. URLs cannot contain literal spaces, so they must be encoded as %20 or sometimes + in query parameters.'
+    },
+    {
+      question: 'Can I encode query parameters separately?',
+      answer: 'Yes, use the "Component" mode to encode individual query parameters or URL components. This is essential when parameter values contain special characters like &, =, or #.'
+    },
+    {
+      question: 'What\'s the difference between URL encoding and HTML encoding?',
+      answer: 'URL encoding uses percent signs (%) for web addresses and HTTP requests. HTML encoding uses ampersand entities (&amp;) for displaying content in web pages. Use the appropriate encoding for your context.'
+    },
+    {
+      question: 'How do I fix "Invalid URL" errors?',
+      answer: 'Invalid URL errors often occur due to unencoded special characters. Use our URL encoder to properly encode your URLs, especially query parameters and path components with special characters.'
+    },
+    {
+      question: 'Can I encode non-English characters in URLs?',
+      answer: 'Yes, the tool supports UTF-8 encoding for international characters, emojis, and symbols. Non-ASCII characters are automatically converted to their percent-encoded form for URL compatibility.'
+    },
+    {
+      question: 'What are common URL encoding mistakes?',
+      answer: 'Common mistakes include: not encoding query parameters, double-encoding URLs, using + for spaces in paths (should be %20), and not encoding special characters in form data.'
+    },
+    {
+      question: 'How do I encode URLs for API requests?',
+      answer: 'For API requests, encode query parameters using "Component" mode to ensure special characters don\'t break the URL structure. This is crucial for search queries, user input, and dynamic parameters.'
     }
   ],
   relatedTools: [

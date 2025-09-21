@@ -20,6 +20,9 @@ import { NumberBaseConverter } from '../components/tools/converters/NumberBaseCo
 import { UnitConverter } from '../components/tools/converters/UnitConverter';
 import { WebPConverter } from '../components/tools/converters/WebPConverter';
 import { XmlToJsonConverter } from '../components/tools/converters/XmlToJsonConverter';
+import PdfTextExtractor from '../components/tools/converters/PdfTextExtractor';
+import ExcelToJsonConverter from '../components/tools/converters/ExcelToJsonConverter';
+import JsonToExcelConverter from '../components/tools/converters/JsonToExcelConverter';
 
 // Crypto components
 import { EncryptionTool } from '../components/tools/crypto/EncryptionTool';
@@ -33,6 +36,7 @@ import { PasswordStrengthChecker } from '../components/tools/crypto/PasswordStre
 // Data components
 import { BinaryHexViewer } from '../components/tools/data/BinaryHexViewer';
 import { CsvSplitter } from '../components/tools/data/CsvSplitter';
+import CsvTableViewer from '../components/tools/data/CsvTableViewer';
 import { ImageCompressor } from '../components/tools/data/ImageCompressor';
 import { ImageMetadataExtractor } from '../components/tools/data/ImageMetadataExtractor';
 import PdfTools from '../components/tools/data/PdfTools';
@@ -102,6 +106,10 @@ import { TextAnalytics } from '../components/tools/text/TextAnalytics';
 import { TextCaseConverter } from '../components/tools/text/TextCaseConverter';
 import { TextDiff } from '../components/tools/text/TextDiff';
 import { TextStatistics } from '../components/tools/text/TextStatistics';
+import { WordCounter } from '../components/tools/text/WordCounter';
+import LineDeduplicator from '../components/tools/text/LineDeduplicator';
+import TextFindReplace from '../components/tools/text/TextFindReplace';
+import ListSorter from '../components/tools/text/ListSorter';
 
 // Validator components
 import { CreditCardValidator } from '../components/tools/validators/CreditCardValidator';
@@ -154,6 +162,9 @@ export const TOOL_COMPONENTS: Record<string, ToolComponent> = {
   'image-format-converter': ImageFormatConverter,
   'image-to-base64-converter': ImageToBase64Converter,
   'webp-converter': WebPConverter,
+  'pdf-text-extractor': PdfTextExtractor,
+  'excel-to-json': ExcelToJsonConverter,
+  'json-to-excel': JsonToExcelConverter,
 
   // Crypto tools
   'hash-generator': HashGenerator,
@@ -167,6 +178,7 @@ export const TOOL_COMPONENTS: Record<string, ToolComponent> = {
   // Data tools
   'binary-hex-viewer': BinaryHexViewer,
   'csv-splitter': CsvSplitter,
+  'csv-table-viewer': CsvTableViewer,
   'image-compressor': ImageCompressor,
   'image-metadata-extractor': ImageMetadataExtractor,
   'pdf-tools': PdfTools,
@@ -231,11 +243,15 @@ export const TOOL_COMPONENTS: Record<string, ToolComponent> = {
   'text-analytics': TextAnalytics,
   'text-diff': TextDiff,
   'text-statistics': TextStatistics,
+  'word-counter': WordCounter,
   'diff-checker': DiffChecker,
   'ascii-art-generator': AsciiArtGenerator,
   'lorem-ipsum-generator': LoremIpsumGenerator,
   'lorem-ipsum': LoremIpsum,
   'markdown-table-generator': MarkdownTableGenerator,
+  'line-deduplicator': LineDeduplicator,
+  'text-find-replace': TextFindReplace,
+  'list-sorter': ListSorter,
 
   // Validator tools
   'email-validator': EmailValidator,

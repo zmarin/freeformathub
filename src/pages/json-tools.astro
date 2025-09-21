@@ -1,0 +1,247 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getAllTools } from '../lib/tools/registry';
+
+const title = 'Free JSON Tools Online - Format, Validate & Convert JSON Data';
+const description = 'Comprehensive collection of free JSON tools for developers. Format, validate, convert, and manipulate JSON data online. No downloads required, works offline.';
+
+// Get all JSON-related tools
+const jsonTools = getAllTools().filter(tool =>
+  (tool.keywords && tool.keywords.some(keyword => keyword.toLowerCase().includes('json'))) ||
+  tool.category.id === 'formatters' ||
+  tool.name.toLowerCase().includes('json')
+);
+
+const featuredJsonTools = [
+  'json-formatter',
+  'json-to-csv',
+  'csv-to-json',
+  'json-to-xml-converter',
+  'xml-to-json-converter',
+  'json-to-typescript',
+  'json-path-extractor',
+  'json-schema-validator'
+];
+
+const featuredTools = featuredJsonTools.map(id =>
+  jsonTools.find(tool => tool.id === id)
+).filter(Boolean);
+
+const otherJsonTools = jsonTools.filter(tool =>
+  !featuredJsonTools.includes(tool.id)
+);
+---
+
+<BaseLayout title={title} description={description}>
+  <main class="container mx-auto px-4 py-8">
+    {/* Hero Section */}
+    <div class="text-center mb-12">
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+        Free JSON Tools for Developers
+      </h1>
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+        Professional-grade JSON tools for formatting, validation, conversion, and data manipulation.
+        All tools work offline in your browser - no uploads, completely secure and private.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg">
+          <span class="font-semibold">{jsonTools.length}+</span> JSON Tools
+        </div>
+        <div class="bg-green-100 text-green-800 px-4 py-2 rounded-lg">
+          100% Free & Private
+        </div>
+        <div class="bg-purple-100 text-purple-800 px-4 py-2 rounded-lg">
+          Works Offline
+        </div>
+      </div>
+    </div>
+
+    {/* Featured JSON Tools */}
+    <section class="mb-16">
+      <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">
+        Most Popular JSON Tools
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {featuredTools.map((tool) => (
+          <a href={`/${tool.category.id}/${tool.slug}`}
+             class="block p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center mb-3">
+              <span class="text-2xl mr-3">{tool.icon}</span>
+              <h3 class="text-lg font-semibold text-gray-900 line-clamp-2">
+                {tool.name.replace(/ - .*$/, '')}
+              </h3>
+            </div>
+            <p class="text-gray-600 text-sm line-clamp-3 mb-4">
+              {tool.description}
+            </p>
+            <div class="flex flex-wrap gap-1">
+              {tool.keywords && tool.keywords.slice(0, 3).map((keyword) => (
+                <span class="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded">
+                  {keyword}
+                </span>
+              ))}
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    {/* JSON Use Cases */}
+    <section class="mb-16 bg-gray-50 rounded-lg p-8">
+      <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">
+        Why Use JSON Tools?
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="text-center">
+          <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <span class="text-2xl">🚀</span>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">API Development</h3>
+          <p class="text-gray-600">
+            Format and validate JSON responses from REST APIs, test endpoints, and debug API integration issues with proper JSON formatting.
+          </p>
+        </div>
+        <div class="text-center">
+          <div class="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <span class="text-2xl">📊</span>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">Data Processing</h3>
+          <p class="text-gray-600">
+            Convert JSON to CSV, Excel, XML, and other formats. Transform and manipulate JSON data for analysis and reporting.
+          </p>
+        </div>
+        <div class="text-center">
+          <div class="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+            <span class="text-2xl">🔧</span>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">Code Generation</h3>
+          <p class="text-gray-600">
+            Generate TypeScript interfaces, validate JSON schemas, and create code templates from JSON data structures.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    {/* Additional JSON Tools */}
+    {otherJsonTools.length > 0 && (
+      <section class="mb-16">
+        <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">
+          More JSON Tools
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {otherJsonTools.map((tool) => (
+            <a href={`/${tool.category.id}/${tool.slug}`}
+               class="block p-4 bg-white border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
+              <div class="flex items-center">
+                <span class="text-xl mr-3">{tool.icon}</span>
+                <div>
+                  <h3 class="font-medium text-gray-900 line-clamp-1">
+                    {tool.name.replace(/ - .*$/, '')}
+                  </h3>
+                  <p class="text-gray-600 text-sm line-clamp-1">
+                    {tool.description}
+                  </p>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {/* JSON Best Practices */}
+    <section class="mb-16">
+      <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">
+        JSON Best Practices
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-white p-6 rounded-lg border border-gray-200">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">✅ Do's</h3>
+          <ul class="space-y-2 text-gray-600">
+            <li>• Use consistent naming conventions (camelCase or snake_case)</li>
+            <li>• Validate JSON structure before production use</li>
+            <li>• Use proper data types (strings, numbers, booleans)</li>
+            <li>• Keep JSON structure flat when possible</li>
+            <li>• Include version information for API responses</li>
+            <li>• Use meaningful property names</li>
+          </ul>
+        </div>
+        <div class="bg-white p-6 rounded-lg border border-gray-200">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">❌ Don'ts</h3>
+          <ul class="space-y-2 text-gray-600">
+            <li>• Don't use functions or comments in JSON</li>
+            <li>• Avoid deeply nested structures (>3 levels)</li>
+            <li>• Don't use undefined values (use null instead)</li>
+            <li>• Avoid single quotes (use double quotes)</li>
+            <li>• Don't expose sensitive data in JSON responses</li>
+            <li>• Avoid extremely large JSON payloads</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    {/* FAQ Section */}
+    <section class="bg-gray-50 rounded-lg p-8">
+      <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">
+        Frequently Asked Questions
+      </h2>
+      <div class="space-y-6">
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">
+            What is JSON and why is it important?
+          </h3>
+          <p class="text-gray-600">
+            JSON (JavaScript Object Notation) is a lightweight, text-based data interchange format. It's widely used in web APIs, configuration files, and data storage because it's human-readable and easy to parse programmatically.
+          </p>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">
+            Are these JSON tools free to use?
+          </h3>
+          <p class="text-gray-600">
+            Yes, all our JSON tools are completely free with no limitations on usage, file size, or features. No registration required and no hidden costs.
+          </p>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">
+            Is my JSON data secure when using these tools?
+          </h3>
+          <p class="text-gray-600">
+            Absolutely. All JSON processing happens locally in your browser. No data is uploaded to our servers, ensuring complete privacy and security for your sensitive JSON data.
+          </p>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">
+            Can I use these tools offline?
+          </h3>
+          <p class="text-gray-600">
+            Yes, once the page loads, all JSON tools work offline. You can format, validate, and convert JSON data without an internet connection.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

@@ -101,6 +101,42 @@ export const JSON_FORMATTER_TOOL: Tool = {
     {
       question: 'Can I minify JSON as well as format it?',
       answer: 'Yes, set the indent to 0 to create minified (compact) JSON output.'
+    },
+    {
+      question: 'How do I pretty print JSON online?',
+      answer: 'Simply paste your JSON into the formatter and click "Format JSON". The tool will automatically pretty print your JSON with proper indentation, making it readable and well-structured.'
+    },
+    {
+      question: 'Can I validate JSON syntax errors online?',
+      answer: 'Yes, our JSON validator automatically detects syntax errors, missing quotes, unclosed brackets, trailing commas, and other common JSON formatting issues with detailed error messages and line numbers.'
+    },
+    {
+      question: 'How do I fix "Unexpected token" JSON errors?',
+      answer: 'Unexpected token errors usually mean missing quotes around strings, extra commas, or invalid characters. Our validator highlights the exact location and suggests fixes for these common JSON syntax problems.'
+    },
+    {
+      question: 'Can I convert minified JSON to readable format?',
+      answer: 'Absolutely! Paste your minified (compressed) JSON and our formatter will expand it into a readable, properly indented format with clear structure and hierarchy.'
+    },
+    {
+      question: 'Does this tool work with JSON API responses?',
+      answer: 'Yes, perfect for formatting API responses from REST APIs, GraphQL, or any web service. Copy API response JSON directly from your browser network tab or API client and format it instantly.'
+    },
+    {
+      question: 'How do I sort JSON keys alphabetically?',
+      answer: 'Enable the "Sort keys alphabetically" option in the formatting settings. This will reorganize all object properties in alphabetical order, making JSON data easier to compare and analyze.'
+    },
+    {
+      question: 'Can I remove comments from JSONC files?',
+      answer: 'Yes, the tool automatically removes both single-line (//) and multi-line (/* */) comments from JSONC (JSON with Comments) files, converting them to valid JSON format.'
+    },
+    {
+      question: 'What\'s the maximum JSON file size supported?',
+      answer: 'The tool can handle JSON files up to 10MB efficiently. Larger files may work but could slow down your browser. For very large datasets, consider splitting them into smaller files.'
+    },
+    {
+      question: 'How do I download formatted JSON?',
+      answer: 'After formatting your JSON, click the "Download" button to save the formatted result as a .json file, or use "Copy" to copy the formatted JSON to your clipboard for pasting elsewhere.'
     }
   ],
   relatedTools: [

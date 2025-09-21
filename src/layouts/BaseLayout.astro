@@ -469,6 +469,10 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-34Z7YVSEZ2';
               <div class="hidden md:flex items-center gap-1">
                 <a href="/" class="btn btn-outline" style="font-weight: 500;">Home</a>
                 <a href="/tools" class="btn btn-outline" style="font-weight: 500;">Tools</a>
+                <a href="/json-tools" class="btn btn-outline" style="font-weight: 500;">JSON</a>
+                <a href="/data-converters" class="btn btn-outline" style="font-weight: 500;">Converters</a>
+                <a href="/text-tools" class="btn btn-outline" style="font-weight: 500;">Text</a>
+                <a href="/password-tools" class="btn btn-outline" style="font-weight: 500;">Security</a>
               </div>
 
               <!-- Mobile Menu Button -->
@@ -552,6 +556,37 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-34Z7YVSEZ2';
               </svg>
               Encoders
             </a>
+
+            <!-- Business Tools Section -->
+            <div style="margin-top: var(--space-lg); padding-top: var(--space-lg); border-top: 1px solid var(--color-border);">
+              <h4 style="font-size: 0.875rem; font-weight: 600; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--space-md);">Business Tools</h4>
+              <div style="display: flex; flex-direction: column; gap: var(--space-sm);">
+                <a href="/json-tools" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  JSON Tools
+                </a>
+                <a href="/data-converters" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                  </svg>
+                  Data Converters
+                </a>
+                <a href="/text-tools" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
+                  </svg>
+                  Text Tools
+                </a>
+                <a href="/password-tools" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  Security Tools
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </nav>

@@ -546,15 +546,15 @@ export function processTextStatistics(input: string, config: TextStatisticsConfi
 
 export const TEXT_STATISTICS_TOOL: Tool = {
   id: 'text-statistics',
-  name: 'Text Statistics Calculator',
+  name: 'Word Counter & Character Counter - Text Statistics Calculator',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'text')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'text')!.subcategories!.find(sub => sub.id === 'text-analysis')!,
   slug: 'text-statistics',
   icon: '📊',
-  keywords: ['text', 'statistics', 'analysis', 'word count', 'readability'],
-  seoTitle: 'Text Statistics Calculator - Word Count & Readability Analysis | FreeFormatHub',
-  seoDescription: 'Comprehensive text analysis tool with word count, readability scores, frequency analysis, and detailed statistics for any text content.',
-  description: 'Comprehensive text analysis tool that calculates detailed statistics including word count, readability scores, frequency analysis, sentence structure, and language detection for any text content.',
+  keywords: ['word counter', 'character counter', 'word count', 'character count', 'text statistics', 'text analysis', 'readability', 'text length', 'document word count'],
+  seoTitle: 'Free Word Counter & Character Counter Online - Text Statistics Tool | FreeFormatHub',
+  seoDescription: 'Free online word counter and character counter with detailed text statistics. Count words, characters, sentences, paragraphs, and analyze readability. No upload required.',
+  description: 'Professional word counter and character counter tool that provides instant text statistics including word count, character count, sentence count, paragraph count, readability scores, and detailed text analysis for any document or content.',
   
   examples: [
     {
@@ -626,7 +626,34 @@ Every morning, he would venture out to discover new paths and meet interesting c
       description: 'Analyze narrative text for style and structure'
     }
   ],
-  
+
+  howItWorks: [
+    {
+      title: "Paste or Type Your Text",
+      icon: "📝",
+      description: "Enter your text directly into the word counter tool. Paste from documents, articles, essays, or type directly. The tool instantly counts words and characters as you type, providing real-time statistics for any content length.",
+      keywords: ["paste text", "word counter input", "character counter", "text analysis", "real-time counting"]
+    },
+    {
+      title: "Configure Analysis Options",
+      icon: "⚙️",
+      description: "Customize your text analysis by choosing which statistics to include. Enable basic stats (word count, character count), advanced metrics (readability scores), frequency analysis, and language detection based on your needs.",
+      keywords: ["text analysis options", "word count settings", "readability analysis", "text statistics configuration"]
+    },
+    {
+      title: "View Instant Word Count & Statistics",
+      icon: "📊",
+      description: "Get immediate results showing word count, character count (with and without spaces), sentence count, paragraph count, and advanced metrics. All processing happens locally in your browser for complete privacy.",
+      keywords: ["instant word count", "character count results", "text statistics", "document analysis", "word counter results"]
+    },
+    {
+      title: "Export or Share Results",
+      icon: "📋",
+      description: "Copy your text statistics to clipboard or download the analysis report. Perfect for academic papers, content writing, SEO optimization, and meeting specific word count requirements for essays or articles.",
+      keywords: ["export word count", "download text statistics", "copy results", "academic writing", "essay word count"]
+    }
+  ],
+
   useCases: [
     'Content writing and editing optimization',
     'Academic writing analysis and improvement',
@@ -636,6 +663,22 @@ Every morning, he would venture out to discover new paths and meet interesting c
   ],
   
   faq: [
+    {
+      question: 'How accurate is the word counter?',
+      answer: 'The word counter is very accurate and uses standard whitespace separation to count words. It handles multiple spaces, line breaks, and various text formats correctly, providing reliable word counts for essays, articles, and documents.'
+    },
+    {
+      question: 'Does the character counter include spaces?',
+      answer: 'Yes, the tool provides both character count with spaces and character count without spaces. The with-spaces count includes all characters including spaces, punctuation, and line breaks.'
+    },
+    {
+      question: 'Can I use this word counter for essays and academic papers?',
+      answer: 'Absolutely! This word counter is perfect for academic writing, essays, research papers, and any content with word count requirements. It provides accurate counts that match standard academic guidelines.'
+    },
+    {
+      question: 'Is this word counter free to use?',
+      answer: 'Yes, this online word counter and character counter tool is completely free to use with no limits, no registration required, and no data is uploaded to servers - everything processes locally in your browser.'
+    },
     {
       question: 'What readability scores are calculated?',
       answer: 'The tool calculates Flesch Reading Ease, Flesch-Kincaid Grade Level, Automated Readability Index, Coleman-Liau Index, Gunning Fog Index, and SMOG Index to assess text difficulty.'
@@ -647,10 +690,6 @@ Every morning, he would venture out to discover new paths and meet interesting c
     {
       question: 'What advanced statistics are included?',
       answer: 'Advanced stats include lexical diversity, syllable counts, complex word identification, word length distributions, and unique vocabulary metrics.'
-    },
-    {
-      question: 'How accurate is the language detection?',
-      answer: 'The language detection uses pattern matching for common words and is suitable for basic identification. For precise language detection, use specialized tools.'
     },
     {
       question: 'Can I analyze multiple paragraphs?',

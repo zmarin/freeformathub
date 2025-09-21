@@ -70,6 +70,46 @@ export const BASE64_ENCODER_TOOL: Tool = {
     {
       question: 'Why is my Base64 string longer than the original?',
       answer: 'Base64 encoding increases size by approximately 33% because it uses more characters to represent the same data.'
+    },
+    {
+      question: 'How do I encode text to Base64 online?',
+      answer: 'Simply paste your text into the input field and click "Encode". Our Base64 encoder supports all text formats including UTF-8, special characters, and multi-language content.'
+    },
+    {
+      question: 'Can I decode Base64 strings with this tool?',
+      answer: 'Yes, switch to "Decode" mode to convert Base64 strings back to readable text. The tool automatically detects and handles both standard and URL-safe Base64 formats.'
+    },
+    {
+      question: 'What\'s the difference between Base64 and Base64 URL-safe?',
+      answer: 'Standard Base64 uses +, /, and = characters. URL-safe Base64 replaces + with -, / with _, and removes padding (=) to safely include in URLs without encoding conflicts.'
+    },
+    {
+      question: 'Can I encode files to Base64?',
+      answer: 'Yes, drag and drop files or use the file picker to encode any file type to Base64. Perfect for embedding images in CSS/HTML or creating data URIs for web development.'
+    },
+    {
+      question: 'How do I create a data URI from an image?',
+      answer: 'Upload your image file and the tool will generate a complete data URI with the correct MIME type, like "data:image/png;base64,..." ready for HTML img tags or CSS backgrounds.'
+    },
+    {
+      question: 'Is Base64 encoding secure for passwords?',
+      answer: 'No, Base64 is not secure for passwords. It\'s easily decoded by anyone. Use proper password hashing algorithms like bcrypt, Argon2, or PBKDF2 for password security.'
+    },
+    {
+      question: 'Why do I see padding characters (=) in Base64?',
+      answer: 'Padding characters (=) are added to make the Base64 string length a multiple of 4. They indicate the original data length and ensure proper decoding.'
+    },
+    {
+      question: 'Can I encode binary data to Base64?',
+      answer: 'Absolutely! Base64 is specifically designed for encoding binary data into text format. Upload any binary file and get a Base64 representation that\'s safe for text-based protocols.'
+    },
+    {
+      question: 'How large files can I encode to Base64?',
+      answer: 'The tool can handle files up to 10MB efficiently. Remember that Base64 encoding increases file size by ~33%, so a 10MB file becomes ~13MB when encoded.'
+    },
+    {
+      question: 'What are common uses for Base64 encoding?',
+      answer: 'Email attachments (MIME), embedding images in HTML/CSS, API tokens, configuration files, database blob storage, and transmitting binary data over text protocols like JSON or XML.'
     }
   ],
   relatedTools: [

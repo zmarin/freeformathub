@@ -45,6 +45,7 @@ import { TEXT_CASE_CONVERTER_TOOL } from '../../tools/text/text-case-converter';
 import { TEXT_DIFF_TOOL } from '../../tools/text/text-diff';
 import { DIFF_CHECKER_TOOL } from '../../tools/text/diff-checker';
 import { TEXT_STATISTICS_TOOL } from '../../tools/text/text-statistics';
+import { WORD_COUNTER_TOOL } from '../../tools/text/word-counter';
 import { TEXT_ANALYTICS_TOOL } from '../../tools/text/text-analytics';
 import { LOREM_IPSUM_GENERATOR_TOOL } from '../../tools/text/lorem-ipsum-generator';
 import { LOREM_IPSUM_TOOL } from '../../tools/text/lorem-ipsum';
@@ -52,6 +53,9 @@ import { REGEX_TESTER_TOOL } from '../../tools/text/regex-tester';
 import { REGEX_PATTERN_ANALYZER_TOOL } from '../../tools/text/regex-pattern-analyzer';
 import { MARKDOWN_TABLE_GENERATOR_TOOL } from '../../tools/text/markdown-table-generator';
 import { ASCII_ART_GENERATOR_TOOL } from '../../tools/text/ascii-art-generator';
+import { LINE_DEDUPLICATOR_TOOL } from '../../tools/text/line-deduplicator';
+import { TEXT_FIND_REPLACE_TOOL } from '../../tools/text/text-find-replace';
+import { LIST_SORTER_TOOL } from '../../tools/text/list-sorter';
 
 // Crypto tools
 import { HASH_GENERATOR_TOOL } from '../../tools/crypto/hash-generator';
@@ -128,6 +132,10 @@ import { IMAGE_METADATA_EXTRACTOR_TOOL } from '../../tools/data/image-metadata-e
 import { IMAGE_COMPRESSOR_TOOL } from '../../tools/data/image-compressor';
 import { PDF_TOOLS_TOOL } from '../../tools/data/pdf-tools';
 import { CSV_SPLITTER_TOOL } from '../../tools/data/csv-splitter';
+import { CSV_TABLE_VIEWER_TOOL } from '../../tools/data/csv-table-viewer';
+import { PDF_TEXT_EXTRACTOR_TOOL } from '../../tools/converters/pdf-text-extractor';
+import { EXCEL_TO_JSON_TOOL } from '../../tools/converters/excel-to-json';
+import { JSON_TO_EXCEL_TOOL } from '../../tools/converters/json-to-excel';
 
 // Validator tools
 import { EMAIL_VALIDATOR_TOOL } from '../../tools/validators/email-validator';
@@ -169,6 +177,9 @@ registerTool(DATA_URI_CONVERTER_TOOL);
 registerTool(UNIT_CONVERTER_TOOL);
 registerTool(NUMBER_BASE_CONVERTER_TOOL);
 registerTool(COLOR_CONVERTER_TOOL);
+registerTool(PDF_TEXT_EXTRACTOR_TOOL);
+registerTool(EXCEL_TO_JSON_TOOL);
+registerTool(JSON_TO_EXCEL_TOOL);
 
 // Encoders
 registerTool(BASE64_ENCODER_TOOL);
@@ -188,6 +199,7 @@ registerTool(TEXT_CASE_CONVERTER_TOOL);
 registerTool(TEXT_DIFF_TOOL);
 registerTool(DIFF_CHECKER_TOOL);
 registerTool(TEXT_STATISTICS_TOOL);
+registerTool(WORD_COUNTER_TOOL);
 registerTool(TEXT_ANALYTICS_TOOL);
 registerTool(LOREM_IPSUM_GENERATOR_TOOL);
 registerTool(LOREM_IPSUM_TOOL);
@@ -195,6 +207,9 @@ registerTool(REGEX_TESTER_TOOL);
 registerTool(REGEX_PATTERN_ANALYZER_TOOL);
 registerTool(MARKDOWN_TABLE_GENERATOR_TOOL);
 registerTool(ASCII_ART_GENERATOR_TOOL);
+registerTool(LINE_DEDUPLICATOR_TOOL);
+registerTool(TEXT_FIND_REPLACE_TOOL);
+registerTool(LIST_SORTER_TOOL);
 
 // Crypto
 registerTool(HASH_GENERATOR_TOOL);
@@ -273,6 +288,7 @@ registerTool(IMAGE_METADATA_EXTRACTOR_TOOL);
 registerTool(IMAGE_COMPRESSOR_TOOL);
 registerTool(PDF_TOOLS_TOOL);
 registerTool(CSV_SPLITTER_TOOL);
+registerTool(CSV_TABLE_VIEWER_TOOL);
 
 // Validators
 registerTool(EMAIL_VALIDATOR_TOOL);

@@ -194,14 +194,47 @@ export function generateSitemapEntries(baseUrl: string = 'https://freeformathub.
     });
   }
   
-  // Tools
+  // Tools with priority based on popularity and SEO value
   const allTools = getAllTools();
+
+  // High-priority tools (popular/frequently used)
+  const highPriorityTools = [
+    'json-formatter', 'base64-encoder', 'url-encoder', 'password-generator',
+    'hash-generator', 'jwt-decoder', 'text-statistics', 'word-counter',
+    'json-to-csv', 'csv-to-json', 'xml-to-json-converter', 'json-to-xml-converter',
+    'html-beautifier', 'css-beautifier', 'yaml-formatter', 'sql-formatter',
+    'timestamp-converter', 'regex-tester', 'uuid-generator', 'qr-code-generator'
+  ];
+
+  // Recently added or featured tools (medium-high priority)
+  const featuredTools = [
+    'list-sorter', 'csv-table-viewer', 'jwt-generator', 'encryption-tool',
+    'html-entity-encoder', 'html-entity-decoder', 'emoji-converter',
+    'markdown-converter', 'image-format-converter', 'color-converter',
+    'math-expression-evaluator', 'mock-data-generator', 'cron-generator',
+    'text-case-converter', 'diff-checker', 'line-deduplicator'
+  ];
+
   for (const tool of allTools) {
+    const isHighPriority = highPriorityTools.includes(tool.id);
+    const isFeaturedTool = featuredTools.includes(tool.id);
+
+    let priority = '0.7'; // Default priority
+    let changefreq = 'monthly';
+
+    if (isHighPriority) {
+      priority = '0.9';
+      changefreq = 'weekly';
+    } else if (isFeaturedTool) {
+      priority = '0.8';
+      changefreq = 'weekly';
+    }
+
     entries.push({
       url: `${base}/${tool.category.id}/${tool.slug}`,
       lastmod,
-      changefreq: 'monthly',
-      priority: '0.9'
+      changefreq,
+      priority
     });
   }
   

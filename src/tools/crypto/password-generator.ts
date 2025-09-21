@@ -81,6 +81,42 @@ export const PASSWORD_GENERATOR_TOOL: Tool = {
     {
       question: 'Is it safe to generate passwords online?',
       answer: 'This tool generates passwords entirely in your browser - no data is sent to servers. However, for maximum security, use offline tools for critical passwords.'
+    },
+    {
+      question: 'What makes a strong password?',
+      answer: 'Strong passwords are long (12+ characters), use mixed character types (uppercase, lowercase, numbers, symbols), avoid dictionary words, and are unique for each account.'
+    },
+    {
+      question: 'How do I generate a secure password online?',
+      answer: 'Use our secure password generator with at least 12 characters, enable all character types, and generate multiple passwords to choose from. All generation happens in your browser for maximum security.'
+    },
+    {
+      question: 'Can I create passwords without special characters?',
+      answer: 'Yes, disable the "Include symbols" option. However, passwords without special characters are weaker. Consider using longer lengths (16+ characters) to compensate for reduced complexity.'
+    },
+    {
+      question: 'What\'s the difference between random and pronounceable passwords?',
+      answer: 'Random passwords use any valid characters for maximum security. Pronounceable passwords use patterns that are easier to read aloud but may be slightly less secure.'
+    },
+    {
+      question: 'How often should I change my passwords?',
+      answer: 'Change passwords immediately if there\'s a security breach, every 90 days for high-security accounts, or annually for regular accounts. Focus on using unique, strong passwords rather than frequent changes.'
+    },
+    {
+      question: 'Can I use the same password for multiple accounts?',
+      answer: 'Never reuse passwords! Each account should have a unique password. If one account is compromised, unique passwords prevent attackers from accessing your other accounts.'
+    },
+    {
+      question: 'What are common password mistakes to avoid?',
+      answer: 'Avoid: personal information (names, dates), dictionary words, simple patterns (123, abc), short passwords (<8 chars), and reusing passwords across multiple sites.'
+    },
+    {
+      question: 'How do hackers crack passwords?',
+      answer: 'Common methods include dictionary attacks (trying common passwords), brute force (trying all combinations), and credential stuffing (using leaked passwords). Strong, unique passwords defend against these attacks.'
+    },
+    {
+      question: 'Is it better to use passphrases or random passwords?',
+      answer: 'Both can be secure. Passphrases (4+ random words) are easier to remember and type. Random passwords are harder to crack but require a password manager. Choose based on your security needs and preferences.'
     }
   ],
   relatedTools: [
