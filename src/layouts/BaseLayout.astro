@@ -40,6 +40,35 @@ const twitterSite = '@freeformathub';
 const robots = robotsContent || 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
 // Google Analytics ID (from env with fallback)
 const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-34Z7YVSEZ2';
+
+interface NavLink {
+  href: string;
+  label: string;
+}
+
+const secondaryNavLinks: NavLink[] = [
+  { href: '/', label: 'Home' },
+  { href: '/tools', label: 'All Tools' },
+  { href: '/json-tools', label: 'JSON' },
+  { href: '/data-converters', label: 'Converters' },
+  { href: '/text-tools', label: 'Text' },
+  { href: '/password-tools', label: 'Security' }
+];
+
+const currentPath = Astro.url.pathname;
+const isActiveLink = (href: string) => {
+  if (href === '/') {
+    return currentPath === '/';
+  }
+  return currentPath === href || currentPath.startsWith(`${href}/`);
+};
+
+const getNavLinkClasses = (active: boolean) => [
+  'inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-colors border',
+  active
+    ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+    : 'text-[color:var(--color-text-secondary)] border-transparent hover:text-[color:var(--color-text-primary)] hover:bg-[color:var(--color-surface-secondary)]'
+].join(' ');
 ---
 
 <!DOCTYPE html>
@@ -465,16 +494,6 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-34Z7YVSEZ2';
                 <span class="btn-text">Theme</span>
               </button>
 
-              <!-- Desktop Navigation Menu -->
-              <div class="hidden md:flex items-center gap-1">
-                <a href="/" class="btn btn-outline" style="font-weight: 500;">Home</a>
-                <a href="/tools" class="btn btn-outline" style="font-weight: 500;">Tools</a>
-                <a href="/json-tools" class="btn btn-outline" style="font-weight: 500;">JSON</a>
-                <a href="/data-converters" class="btn btn-outline" style="font-weight: 500;">Converters</a>
-                <a href="/text-tools" class="btn btn-outline" style="font-weight: 500;">Text</a>
-                <a href="/password-tools" class="btn btn-outline" style="font-weight: 500;">Security</a>
-              </div>
-
               <!-- Mobile Menu Button -->
               <button
                 id="mobile-menu-toggle"
@@ -487,6 +506,28 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-34Z7YVSEZ2';
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
+            </div>
+          </div>
+
+          <!-- Secondary Navigation (Desktop) -->
+          <div class="hidden md:block pb-4">
+            <div
+              style="background-color: var(--color-surface-secondary); border-radius: var(--radius-xl); padding: var(--space-sm); border: 1px solid var(--color-border-light); margin-top: var(--space-sm);"
+            >
+              <nav aria-label="Popular tool collections">
+                <ul class="flex flex-wrap items-center gap-2">
+                  {secondaryNavLinks.map((link) => {
+                    const active = isActiveLink(link.href);
+                    return (
+                      <li key={link.href}>
+                        <a href={link.href} class={getNavLinkClasses(active)}>
+                          {link.label}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </nav>
             </div>
           </div>
 
