@@ -158,16 +158,47 @@ This document will be converted to a complete HTML page with styling.
     config: { ...DEFAULT_CONFIG, mode: 'markdown-to-html' as const, outputFormat: 'full-html' as const, generateToc: true }
   },
   {
-    name: 'HTML to Markdown',
-    input: `<h1>My Article</h1>
-<p>This is a paragraph with <strong>bold</strong> and <em>italic</em> text.</p>
-<p>Here's a <a href="https://example.com">link</a> and some code:</p>
-<pre><code>console.log('Hello');</code></pre>
+    name: 'HTML to Markdown (Enhanced)',
+    input: `<h1>Advanced HTML Document</h1>
+<p>This demonstrates <strong>enhanced HTML parsing</strong> with <em>complex structures</em>.</p>
+
+<h2>Features</h2>
 <ul>
-<li>List item 1</li>
-<li>List item 2</li>
-</ul>`,
-    config: { ...DEFAULT_CONFIG, mode: 'html-to-markdown' as const }
+  <li>Basic list item</li>
+  <li>Item with <a href="https://example.com" title="Example">link and title</a></li>
+  <li>
+    Nested list:
+    <ul>
+      <li>Nested item 1</li>
+      <li>Nested item 2</li>
+    </ul>
+  </li>
+</ul>
+
+<h3>Task List Support</h3>
+<ul class="task-list">
+  <li class="task-list-item"><input type="checkbox" checked disabled> Completed task</li>
+  <li class="task-list-item"><input type="checkbox" disabled> Pending task</li>
+</ul>
+
+<table>
+  <thead>
+    <tr><th>Name</th><th>Status</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Project A</td><td><strong>Active</strong></td></tr>
+    <tr><td>Project B</td><td><em>On Hold</em></td></tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p>This is a <strong>formatted quote</strong> with styling preserved.</p>
+</blockquote>
+
+<pre><code class="language-javascript">function demo() {
+  console.log('Syntax highlighting preserved!');
+}</code></pre>`,
+    config: { ...DEFAULT_CONFIG, mode: 'html-to-markdown' as const, enableTables: true, enableTaskLists: true }
   },
 ];
 
