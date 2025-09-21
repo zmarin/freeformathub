@@ -6,6 +6,7 @@ import ColorBlindnessSimulator from '../components/tools/color/ColorBlindnessSim
 
 // Converter components
 import { ColorConverter } from '../components/tools/converters/ColorConverter';
+import { CurrencyConverter } from '../components/tools/converters/CurrencyConverter';
 import { CssToTailwindConverter } from '../components/tools/converters/CssToTailwindConverter';
 import { CsvToJson } from '../components/tools/converters/CsvToJson';
 import { DataFormatTransformer } from '../components/tools/converters/DataFormatTransformer';
@@ -155,6 +156,7 @@ export const TOOL_COMPONENTS: Record<string, ToolComponent> = {
   'xml-to-json-converter': XmlToJsonConverter,
   'markdown-converter': MarkdownConverter,
   'color-converter': ColorConverter,
+  'currency-converter': CurrencyConverter,
   'number-base-converter': NumberBaseConverter,
   'unit-converter': UnitConverter,
   'css-to-tailwind-converter': CssToTailwindConverter,
