@@ -5,11 +5,12 @@
   "tools": [
     {
       "id": "hacker-news-ai-blog",
+      "slug": "hacker-news-ai-blog",
       "name": "Hacker News AI Blog Generator",
       "description": "Transform Hacker News discussions into engaging, professional blog articles, analysis pieces, and tech insights. Generate original content from developer community buzz using AI-powered article creation.",
       "icon": "✍️",
       "keywords": ["hacker news", "tech news", "ai content", "blog generator", "tech articles", "developer insights", "content creation", "news analysis", "tech trends", "startup news"],
-      "layout": "wide",
+      "layout": "default",
       "layoutOptions": {
         "showBreadcrumbs": true,
         "showRelatedTools": true,
