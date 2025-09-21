@@ -140,7 +140,6 @@ import { UrlParser } from '../components/tools/web/UrlParser';
 import { UrlShortener } from '../components/tools/web/UrlShortener';
 import { UserAgentParser } from '../components/tools/web/UserAgentParser';
 import { WebhookTestingTool } from '../components/tools/web/WebhookTestingTool';
-import { HackerNewsAIBlogGenerator } from '../components/tools/web/HackerNewsAIBlogGenerator';
 
 export type ToolComponent = React.ComponentType<any>;
 
@@ -285,7 +284,6 @@ export const TOOL_COMPONENTS: Record<string, ToolComponent> = {
   'url-shortener': UrlShortener,
   'user-agent-parser': UserAgentParser,
   'webhook-testing-tool': WebhookTestingTool,
-  'hacker-news-ai-blog': HackerNewsAIBlogGenerator,
 
   // Web utilities still considered web
   // 'html-beautifier': HtmlBeautifier,

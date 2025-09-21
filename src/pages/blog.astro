@@ -1,0 +1,403 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Get the latest tools data
+const LATEST_TOOLS = [
+  {
+    name: "Unit Converter",
+    slug: "unit-converter",
+    category: "converters",
+    description: "Transform measurements across all units - length, weight, temperature, and more with precision and ease.",
+    icon: "⚖️",
+    highlights: ["50+ unit types", "Real-time conversion", "Scientific precision", "Global standards"],
+    useCase: "Perfect for engineers, scientists, and international projects requiring accurate unit conversions.",
+    dateAdded: "2025-01-21"
+  },
+  {
+    name: "Currency Converter",
+    slug: "currency-converter",
+    category: "converters",
+    description: "Real-time currency exchange with beautiful charts and historical data powered by European Central Bank rates.",
+    icon: "💱",
+    highlights: ["31 global currencies", "Live ECB rates", "30-day charts", "No API limits"],
+    useCase: "Essential for international business, travel planning, and financial analysis with real-time accuracy.",
+    dateAdded: "2025-01-21"
+  },
+  {
+    name: "Timezone Converter",
+    slug: "timezone-converter",
+    category: "datetime",
+    description: "Schedule meetings across timezones with smart business hours detection and global city database.",
+    icon: "🌍",
+    highlights: ["35+ major cities", "Meeting optimizer", "DST awareness", "Business hours"],
+    useCase: "Streamline global team coordination and never miss another international meeting time.",
+    dateAdded: "2025-01-21"
+  },
+  {
+    name: "Markdown Converter",
+    slug: "markdown-converter",
+    category: "converters",
+    description: "Transform Markdown to HTML and back with syntax highlighting and real-time preview.",
+    icon: "📝",
+    highlights: ["Bidirectional conversion", "Syntax highlighting", "Live preview", "Copy-ready output"],
+    useCase: "Perfect for documentation, README files, and converting between markup formats.",
+    dateAdded: "2025-01-21"
+  },
+  {
+    name: "URL Encoder",
+    slug: "url-encoder",
+    category: "encoders",
+    description: "Encode and decode URLs with support for components, query parameters, and special characters.",
+    icon: "🔗",
+    highlights: ["Component encoding", "Query string support", "Special characters", "Decode validation"],
+    useCase: "Essential for web development, API integration, and handling complex URL structures.",
+    dateAdded: "2025-01-21"
+  },
+  {
+    name: "Password Generator",
+    slug: "password-generator",
+    category: "crypto",
+    description: "Generate ultra-secure passwords with customizable complexity and entropy calculation.",
+    icon: "🔐",
+    highlights: ["Custom complexity", "Entropy scoring", "Multiple formats", "Security tips"],
+    useCase: "Create bulletproof passwords for accounts, applications, and security-critical systems.",
+    dateAdded: "2025-01-21"
+  },
+  {
+    name: "Base64 Encoder",
+    slug: "base64-encoder",
+    category: "encoders",
+    description: "Encode and decode Base64 data with file support and format validation.",
+    icon: "🔤",
+    highlights: ["File support", "Format validation", "Chunk processing", "Error detection"],
+    useCase: "Handle data encoding for APIs, email attachments, and web application data transfer.",
+    dateAdded: "2025-01-21"
+  },
+  {
+    name: "JSON Formatter",
+    slug: "json-formatter",
+    category: "formatters",
+    description: "Beautiful JSON formatting with syntax highlighting, validation, and structure analysis.",
+    icon: "📋",
+    highlights: ["Syntax highlighting", "Error detection", "Minification", "Structure tree"],
+    useCase: "Debug APIs, format configuration files, and analyze JSON data structures efficiently.",
+    dateAdded: "2025-01-21"
+  },
+  {
+    name: "CSV Table Viewer",
+    slug: "csv-table-viewer",
+    category: "data",
+    description: "Interactive CSV viewer with sorting, filtering, and data analysis capabilities.",
+    icon: "📊",
+    highlights: ["Interactive tables", "Sort & filter", "Data statistics", "Export options"],
+    useCase: "Analyze spreadsheet data, validate CSV imports, and visualize tabular information.",
+    dateAdded: "2025-01-21"
+  },
+  {
+    name: "List Sorter",
+    slug: "list-sorter",
+    category: "text",
+    description: "Sort text lists with multiple algorithms, remove duplicates, and apply transformations.",
+    icon: "📝",
+    highlights: ["Multiple sort types", "Duplicate removal", "Case handling", "Reverse sorting"],
+    useCase: "Organize data lists, clean up text files, and prepare sorted content for applications.",
+    dateAdded: "2025-01-21"
+  },
+  {
+    name: "Text Find & Replace",
+    slug: "text-find-replace",
+    category: "text",
+    description: "Advanced text search and replace with regex support and batch operations.",
+    icon: "🔍",
+    highlights: ["Regex support", "Case sensitivity", "Batch replace", "Match highlighting"],
+    useCase: "Process large text files, clean data, and perform complex text transformations.",
+    dateAdded: "2025-01-21"
+  },
+  {
+    name: "Line Deduplicator",
+    slug: "line-deduplicator",
+    category: "text",
+    description: "Remove duplicate lines from text with case-insensitive options and statistics.",
+    icon: "🗂️",
+    highlights: ["Preserve order", "Case options", "Statistics", "Empty line handling"],
+    useCase: "Clean up log files, remove duplicate entries, and optimize text-based datasets.",
+    dateAdded: "2025-01-21"
+  },
+  {
+    name: "JSON to Excel Converter",
+    slug: "json-to-excel",
+    category: "converters",
+    description: "Convert JSON data to Excel spreadsheets with formatting and multiple sheet support.",
+    icon: "📊",
+    highlights: ["Multi-sheet support", "Auto formatting", "Type detection", "Download ready"],
+    useCase: "Export API data to Excel, create reports, and share JSON data with non-technical users.",
+    dateAdded: "2025-01-21"
+  },
+  {
+    name: "Excel to JSON Converter",
+    slug: "excel-to-json",
+    category: "converters",
+    description: "Transform Excel files to JSON with sheet selection and data type preservation.",
+    icon: "📈",
+    highlights: ["Sheet selection", "Type preservation", "Header mapping", "Error handling"],
+    useCase: "Import spreadsheet data to APIs, migrate Excel data, and integrate with web applications.",
+    dateAdded: "2025-01-21"
+  },
+  {
+    name: "PDF Text Extractor",
+    slug: "pdf-text-extractor",
+    category: "converters",
+    description: "Extract text content from PDF files with formatting preservation and page selection.",
+    icon: "📄",
+    highlights: ["Page selection", "Format preservation", "Text extraction", "Copy-ready output"],
+    useCase: "Extract content from documents, convert PDFs for processing, and recover text data.",
+    dateAdded: "2025-01-21"
+  },
+  {
+    name: "Word Counter",
+    slug: "word-counter",
+    category: "text",
+    description: "Comprehensive text analysis with words, characters, paragraphs, and reading time.",
+    icon: "📏",
+    highlights: ["Multiple metrics", "Reading time", "Character analysis", "Real-time count"],
+    useCase: "Analyze content length, meet writing requirements, and optimize text for platforms.",
+    dateAdded: "2025-01-21"
+  },
+  {
+    name: "Text Statistics",
+    slug: "text-statistics",
+    category: "text",
+    description: "Deep text analysis with readability scores, word frequency, and linguistic metrics.",
+    icon: "📈",
+    highlights: ["Readability scores", "Word frequency", "Sentiment analysis", "Complexity metrics"],
+    useCase: "Optimize content readability, analyze writing quality, and improve text effectiveness.",
+    dateAdded: "2025-01-21"
+  },
+  {
+    name: "Network Monitoring Tool",
+    slug: "network-monitoring-tool",
+    category: "network",
+    description: "Monitor network connectivity, latency, and performance with real-time diagnostics.",
+    icon: "📡",
+    highlights: ["Real-time monitoring", "Latency tracking", "Connection testing", "Performance metrics"],
+    useCase: "Diagnose network issues, monitor uptime, and optimize network performance.",
+    dateAdded: "2025-01-20"
+  },
+  {
+    name: "Math Expression Evaluator",
+    slug: "math-expression-evaluator",
+    category: "math",
+    description: "Evaluate complex mathematical expressions with functions, constants, and variables.",
+    icon: "🧮",
+    highlights: ["Complex expressions", "Built-in functions", "Constants library", "Variable support"],
+    useCase: "Calculate formulas, solve equations, and perform advanced mathematical operations.",
+    dateAdded: "2025-01-20"
+  },
+  {
+    name: "Webhook Testing Tool",
+    slug: "webhook-testing-tool",
+    category: "web",
+    description: "Test and debug webhooks with payload inspection, response analysis, and retry logic.",
+    icon: "🔄",
+    highlights: ["Payload inspection", "Response analysis", "Retry mechanisms", "Debug logging"],
+    useCase: "Debug webhook integrations, test API endpoints, and validate webhook functionality.",
+    dateAdded: "2025-01-20"
+  }
+];
+---
+
+<BaseLayout
+  title="Developer Tools Blog - Latest Features & Updates - FreeFormatHub"
+  description="Discover the latest developer tools, features, and updates. Learn how to use cutting-edge formatting, conversion, and development utilities."
+  keywords="developer tools, programming utilities, code formatting, data conversion, web development tools, developer blog"
+>
+  <div class="min-h-screen bg-gray-50">
+    <!-- Hero Section -->
+    <div class="bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 text-white py-16">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="text-center">
+          <h1 class="text-4xl md:text-5xl font-bold mb-4">🛠️ Developer Tools Blog</h1>
+          <p class="text-xl md:text-2xl mb-6 text-purple-100">
+            Latest tools, features, and developer insights
+          </p>
+          <p class="text-lg text-purple-200 max-w-2xl mx-auto">
+            Discover powerful new utilities, learn advanced techniques, and stay updated
+            with the newest additions to our comprehensive developer toolkit.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Featured Tools Section -->
+    <div class="max-w-6xl mx-auto px-4 py-12">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">🚀 Latest Tool Releases</h2>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          Explore our newest developer tools designed to streamline your workflow and boost productivity.
+          Each tool is crafted with precision and tested by developers, for developers.
+        </p>
+      </div>
+
+      <!-- Tools Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {LATEST_TOOLS.slice(0, 12).map((tool, index) => (
+          <article class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 hover:border-blue-200 transform hover:-translate-y-1">
+            <!-- Tool Header -->
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-3">
+                <span class="text-3xl">{tool.icon}</span>
+                <div>
+                  <h3 class="text-lg font-bold text-gray-800">{tool.name}</h3>
+                  <span class="text-sm text-blue-600 font-medium capitalize">{tool.category}</span>
+                </div>
+              </div>
+              {index < 3 && (
+                <span class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+                  🔥 HOT
+                </span>
+              )}
+            </div>
+
+            <!-- Description -->
+            <p class="text-gray-600 mb-4 leading-relaxed">{tool.description}</p>
+
+            <!-- Highlights -->
+            <div class="mb-4">
+              <h4 class="text-sm font-semibold text-gray-700 mb-2">✨ Key Features:</h4>
+              <div class="grid grid-cols-2 gap-1">
+                {tool.highlights.map(highlight => (
+                  <span class="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-lg font-medium">
+                    {highlight}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <!-- Use Case -->
+            <div class="mb-6">
+              <h4 class="text-sm font-semibold text-gray-700 mb-2">💡 Perfect For:</h4>
+              <p class="text-sm text-gray-600 leading-relaxed">{tool.useCase}</p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+              <a href={`/${tool.category}/${tool.slug}`}
+                 class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 font-medium text-sm shadow-md hover:shadow-lg">
+                Try Tool →
+              </a>
+              <span class="text-xs text-gray-500">{tool.dateAdded}</span>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <!-- More Tools Section -->
+      <div class="mt-16 text-center">
+        <h3 class="text-2xl font-bold text-gray-800 mb-4">🎯 More Recent Additions</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {LATEST_TOOLS.slice(12).map(tool => (
+            <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 p-4 border border-gray-100">
+              <div class="text-center">
+                <span class="text-2xl mb-2 block">{tool.icon}</span>
+                <h4 class="font-bold text-gray-800 mb-2">{tool.name}</h4>
+                <p class="text-sm text-gray-600 mb-3 line-clamp-2">{tool.description}</p>
+                <a href={`/${tool.category}/${tool.slug}`}
+                   class="inline-block bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+                  Explore
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Developer Insights Section -->
+      <div class="mt-20 bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-8 text-white">
+        <div class="text-center mb-8">
+          <h3 class="text-2xl font-bold mb-4">💻 Developer Insights</h3>
+          <p class="text-gray-300 max-w-2xl mx-auto">
+            Learn how these tools solve real development challenges and discover best practices
+            from our engineering team.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-gray-800 rounded-xl p-6">
+            <h4 class="font-bold mb-3">🔧 Tool Categories</h4>
+            <p class="text-gray-300 text-sm mb-4">
+              Our tools span 14 categories, from text processing to cryptography, ensuring comprehensive coverage.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="bg-blue-600 text-xs px-2 py-1 rounded">Converters</span>
+              <span class="bg-purple-600 text-xs px-2 py-1 rounded">Formatters</span>
+              <span class="bg-green-600 text-xs px-2 py-1 rounded">Encoders</span>
+            </div>
+          </div>
+
+          <div class="bg-gray-800 rounded-xl p-6">
+            <h4 class="font-bold mb-3">⚡ Performance Focus</h4>
+            <p class="text-gray-300 text-sm mb-4">
+              All tools process data client-side for maximum speed and privacy protection.
+            </p>
+            <div class="space-y-2 text-sm text-gray-400">
+              <div>• No server round-trips</div>
+              <div>• Instant processing</div>
+              <div>• Complete privacy</div>
+            </div>
+          </div>
+
+          <div class="bg-gray-800 rounded-xl p-6">
+            <h4 class="font-bold mb-3">🎨 User Experience</h4>
+            <p class="text-gray-300 text-sm mb-4">
+              Consistent design language and intuitive interfaces across all 119+ tools.
+            </p>
+            <div class="space-y-2 text-sm text-gray-400">
+              <div>• Gradient design system</div>
+              <div>• Responsive layouts</div>
+              <div>• Accessibility focused</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Call to Action -->
+      <div class="mt-16 text-center">
+        <h3 class="text-2xl font-bold text-gray-800 mb-4">🔥 Ready to Boost Your Productivity?</h3>
+        <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+          Join thousands of developers who save hours daily with our comprehensive toolkit.
+          All tools are free, privacy-focused, and work offline.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+          <a href="/"
+             class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 font-bold shadow-lg hover:shadow-xl">
+            Explore All Tools
+          </a>
+          <a href="/news"
+             class="bg-white text-gray-800 px-8 py-3 rounded-lg hover:bg-gray-50 transition-all duration-300 font-bold border-2 border-gray-200 hover:border-gray-300">
+            Read Tech News
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Credits -->
+    <div class="bg-gray-100 py-8">
+      <div class="max-w-6xl mx-auto px-4 text-center">
+        <p class="text-gray-600">
+          All tools are open source and privacy-first •
+          <a href="https://github.com" target="_blank" rel="noopener" class="text-blue-600 hover:text-blue-800 font-medium">View on GitHub</a> •
+          Built with ❤️ for developers
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  </style>
+</BaseLayout>

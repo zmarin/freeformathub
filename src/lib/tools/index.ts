@@ -83,7 +83,6 @@ import { WEBHOOK_TESTING_TOOL } from '../../tools/web/webhook-testing-tool';
 import { HTTP_STATUS_CODES_TOOL } from '../../tools/web/http-status-codes';
 import { USER_AGENT_PARSER_TOOL } from '../../tools/web/user-agent-parser';
 import { SECURITY_HEADERS_ANALYZER_TOOL } from '../../tools/web/security-headers-analyzer';
-import { HACKER_NEWS_AI_BLOG_TOOL } from '../../tools/web/hacker-news-ai-blog';
 
 // Color tools
 import { ADVANCED_COLOR_PALETTE_GENERATOR_TOOL } from '../../tools/color/advanced-color-palette-generator';
@@ -242,7 +241,6 @@ registerTool(USER_AGENT_PARSER_TOOL);
 registerTool(SECURITY_HEADERS_ANALYZER_TOOL);
 registerTool(URL_PARSER_TOOL);
 registerTool(URL_SHORTENER_TOOL);
-registerTool(HACKER_NEWS_AI_BLOG_TOOL);
 
 // Color
 registerTool(ADVANCED_COLOR_PALETTE_GENERATOR_TOOL);
