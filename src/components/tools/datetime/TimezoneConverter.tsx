@@ -247,42 +247,91 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
   };
 
   return (
-    <div className={`grid grid-cols-1 lg:grid-cols-2 gap-0 ${className}`}>
-      {/* Input Panel */}
-      <div className="border-r border-gray-200 dark:border-gray-700">
-        <InputPanel
-          value={input}
-          onChange={handleInputChange}
-          label={config.meetingMode ? 'Meeting Scheduler' : 'Time Input'}
-          placeholder={config.meetingMode ?
-            'Meeting mode enabled - select timezones below and find optimal meeting times' :
-            config.useCurrentTime ?
-              'Using current time - disable "Use Current Time" to enter custom time' :
-              'Enter time in HH:MM format (e.g., 14:30, 09:15)'}
-          syntax="text"
-          disabled={config.useCurrentTime || config.meetingMode}
-          examples={[
-            {
-              title: 'Morning Meeting',
-              value: '09:00',
-            },
-            {
-              title: 'Lunch Time',
-              value: '12:30',
-            },
-            {
-              title: 'End of Day',
-              value: '17:00',
-            },
-          ]}
-        />
+    <div className={`w-full h-full ${className}`}>
+      {/* Stylish Timezone Converter Container */}
+      <div className="bg-gradient-to-br from-blue-500 via-purple-600 to-purple-700 p-6 rounded-2xl shadow-xl h-full">
+        <div className="bg-white/95 backdrop-blur-sm rounded-xl p-6 shadow-lg h-full overflow-y-auto">
 
-        {/* Mode Selection */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex flex-wrap gap-2 mb-4">
+          {/* Header */}
+          <div className="text-center mb-6">
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">🌍 Timezone Calculator</h1>
+            <p className="text-gray-600">Convert times across different time zones instantly</p>
+          </div>
+
+          {/* Current Time Display */}
+          <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600 mb-1">
+                {new Date().toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit',
+                  hour12: false
+                })}
+              </div>
+              <div className="text-sm text-gray-600">
+                {Intl.DateTimeFormat().resolvedOptions().timeZone}
+              </div>
+            </div>
+          </div>
+          {/* Amount Input */}
+          <div className="mb-4">
+            <label className="block font-medium text-gray-700 mb-2">Time Input</label>
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => handleInputChange(e.target.value)}
+              placeholder={config.useCurrentTime ? 'Using current time...' : 'Enter time in HH:MM format'}
+              disabled={config.useCurrentTime}
+              className="w-full px-4 py-3 text-lg border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors duration-300 bg-white shadow-sm"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  // Process input
+                }
+              }}
+            />
+          </div>
+
+          {/* Timezone Selection Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            {/* From Timezone */}
+            <div>
+              <label className="block font-medium text-gray-700 mb-2">From Timezone</label>
+              <select
+                value={config.fromTimezone}
+                onChange={(e) => setFromTimezone(e.target.value)}
+                className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors duration-300 bg-white cursor-pointer shadow-sm"
+              >
+                {TIMEZONE_DATABASE.map(tz => (
+                  <option key={tz.id} value={tz.id}>
+                    {tz.name}, {tz.country}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* To Timezone */}
+            <div>
+              <label className="block font-medium text-gray-700 mb-2">To Timezone</label>
+              <select
+                value={config.toTimezone}
+                onChange={(e) => setToTimezone(e.target.value)}
+                className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors duration-300 bg-white cursor-pointer shadow-sm"
+              >
+                {TIMEZONE_DATABASE.map(tz => (
+                  <option key={tz.id} value={tz.id}>
+                    {tz.name}, {tz.country}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Mode Selection Buttons */}
+          <div className="flex flex-wrap gap-2 mb-4 justify-center">
             <button
               onClick={() => setConfig({ ...config, meetingMode: false, useCurrentTime: true })}
-              className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 ${
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 ${
                 !config.meetingMode
                   ? 'bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500'
                   : 'bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300 focus:ring-gray-500'
@@ -292,7 +341,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
             </button>
             <button
               onClick={() => setConfig({ ...config, meetingMode: true })}
-              className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 ${
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 ${
                 config.meetingMode
                   ? 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500'
                   : 'bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300 focus:ring-gray-500'
@@ -300,174 +349,80 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
             >
               Meeting Finder
             </button>
+            <button
+              onClick={() => setConfig({ ...config, useCurrentTime: !config.useCurrentTime })}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 ${
+                config.useCurrentTime
+                  ? 'bg-purple-600 hover:bg-purple-700 text-white focus:ring-purple-500'
+                  : 'bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300 focus:ring-gray-500'
+              }`}
+            >
+              {config.useCurrentTime ? 'Use Custom Time' : 'Use Current Time'}
+            </button>
           </div>
 
-          {!config.meetingMode && (
-            <div className="space-y-4">
-              {/* From/To Timezone Selection */}
-              <div className="grid grid-cols-1 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    From Timezone:
-                  </label>
-                  <select
-                    value={config.fromTimezone}
-                    onChange={(e) => setFromTimezone(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                  >
-                    {TIMEZONE_DATABASE.map(tz => (
-                      <option key={tz.id} value={tz.id}>
-                        {tz.name}, {tz.country} ({tz.abbreviation})
-                      </option>
-                    ))}
-                  </select>
-                </div>
+          {/* Convert Button */}
+          <button
+            onClick={() => {
+              const currentInput = config.useCurrentTime ?
+                new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) :
+                input;
+              debouncedProcess(currentInput, config);
+            }}
+            className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-lg font-semibold rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-md focus:outline-none"
+          >
+            {config.meetingMode ? 'Find Best Meeting Time' : 'Convert Time'}
+          </button>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    To Timezone:
-                  </label>
-                  <select
-                    value={config.toTimezone}
-                    onChange={(e) => setToTimezone(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                  >
-                    {TIMEZONE_DATABASE.map(tz => (
-                      <option key={tz.id} value={tz.id}>
-                        {tz.name}, {tz.country} ({tz.abbreviation})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {!config.useCurrentTime && (
-                <button
-                  onClick={insertCurrentTime}
-                  className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  Insert Current Time
-                </button>
-              )}
+          {/* Error Display */}
+          {error && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-700 text-center text-sm">{error}</p>
             </div>
           )}
 
-          {/* Timezone Search and Selection */}
-          <div className="mt-4">
-            <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                {config.meetingMode ? 'Select Timezones for Meeting:' : 'Additional Timezones:'}
-              </label>
-              <span className="text-xs text-gray-500">
-                {config.selectedTimezones.length} selected
-              </span>
-            </div>
-
-            <input
-              type="text"
-              placeholder="Search cities or countries..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 mb-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm"
-            />
-
-            {/* Popular Timezones */}
-            <div className="mb-3">
-              <div className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Popular:</div>
-              <div className="flex flex-wrap gap-1">
-                {POPULAR_TIMEZONES.map(tzId => {
-                  const tz = TIMEZONE_DATABASE.find(t => t.id === tzId);
-                  const isSelected = config.selectedTimezones.includes(tzId);
-                  return (
-                    <button
-                      key={tzId}
-                      onClick={() => isSelected ? removeTimezone(tzId) : addTimezone(tzId)}
-                      className={`px-2 py-1 text-xs rounded transition-colors ${
-                        isSelected
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300'
-                      }`}
-                    >
-                      {tz?.name}
-                    </button>
-                  );
-                })}
+          {/* Result Display */}
+          <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg min-h-[100px] flex flex-col justify-center items-center shadow-inner">
+            {isLoading ? (
+              <div className="flex items-center space-x-3">
+                <div className="w-6 h-6 border-3 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                <span className="text-gray-600">Converting...</span>
               </div>
-            </div>
-
-            {/* Filtered Timezone List */}
-            <div className="max-h-40 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded-lg">
-              {filteredTimezones.slice(0, 10).map(tz => {
-                const isSelected = config.selectedTimezones.includes(tz.id);
-                return (
-                  <button
-                    key={tz.id}
-                    onClick={() => isSelected ? removeTimezone(tz.id) : addTimezone(tz.id)}
-                    className={`w-full px-3 py-2 text-left text-sm border-b border-gray-200 dark:border-gray-600 last:border-b-0 transition-colors ${
-                      isSelected
-                        ? 'bg-blue-50 text-blue-900 dark:bg-blue-900 dark:text-blue-100'
-                        : 'hover:bg-gray-50 dark:hover:bg-gray-700'
-                    }`}
-                  >
-                    <div className="font-medium">{tz.name}</div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400">
-                      {tz.country} • {tz.abbreviation}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
+            ) : output ? (
+              <div className="text-center w-full">
+                <div className="text-lg font-bold text-blue-600 mb-2">Conversion Result:</div>
+                <div className="text-gray-600 text-sm whitespace-pre-wrap max-h-40 overflow-y-auto">
+                  {output}
+                </div>
+              </div>
+            ) : (
+              <div className="text-gray-500 text-center">
+                <div className="text-sm">
+                  {config.meetingMode ? 'Select timezones and click Find Best Meeting Time' : 'Enter a time and click Convert'}
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Selected Timezones with Current Times */}
+          {/* Additional Timezones */}
           {config.selectedTimezones.length > 0 && (
-            <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Current Times:
-              </div>
-              <div className="space-y-2">
+            <div className="mt-6">
+              <h4 className="text-lg font-medium text-gray-700 mb-3">Current Times in Selected Timezones:</h4>
+              <div className="grid grid-cols-1 gap-2">
                 {config.selectedTimezones.map(tzId => (
-                  <div key={tzId} className="flex items-center justify-between text-sm">
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium truncate">{getTimezoneDisplay(tzId)}</div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="font-mono text-blue-600 dark:text-blue-400">
-                        {currentTimes[tzId] || 'Loading...'}
-                      </span>
-                      <button
-                        onClick={() => removeTimezone(tzId)}
-                        className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-                        title="Remove timezone"
-                      >
-                        ×
-                      </button>
-                    </div>
+                  <div key={tzId} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <span className="font-medium text-gray-700">{getTimezoneDisplay(tzId)}</span>
+                    <span className="font-mono text-blue-600">
+                      {currentTimes[tzId] || 'Loading...'}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
           )}
+
         </div>
-
-        {/* Options */}
-        <OptionsPanel
-          options={OPTIONS}
-          config={config}
-          onChange={handleConfigChange}
-        />
       </div>
-
-      {/* Output Panel */}
-      <OutputPanel
-        value={output}
-        error={error}
-        isLoading={isLoading}
-        label={config.meetingMode ? 'Meeting Schedule' : 'Timezone Conversion'}
-        syntax="text"
-        downloadFilename="timezone-conversion.txt"
-        downloadContentType="text/plain"
-      />
     </div>
   );
 }
