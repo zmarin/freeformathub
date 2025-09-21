@@ -48,6 +48,48 @@ const organizationSchema = {
   }
 };
 
+// LocalBusiness schema for better local SEO
+const localBusinessSchema = {
+  "@type": "LocalBusiness",
+  "@id": `${baseUrl}#localbusiness`,
+  "name": "FreeFormatHub",
+  "url": baseUrl,
+  "logo": `${baseUrl}/logo.png`,
+  "description": "Free online developer tools for formatting, converting, and validating data with complete privacy and security.",
+  "telephone": "+385-21-XXX-XXX",
+  "email": "contact@freeformathub.com",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Kijevska 5",
+    "addressLocality": "Split",
+    "postalCode": "21000",
+    "addressCountry": "Croatia",
+    "addressRegion": "Dalmatia"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": "43.5081",
+    "longitude": "16.4402"
+  },
+  "openingHours": "Mo-Su 00:00-23:59",
+  "priceRange": "Free",
+  "paymentAccepted": "Not applicable",
+  "currenciesAccepted": "Not applicable",
+  "areaServed": {
+    "@type": "Country",
+    "name": "Worldwide"
+  },
+  "serviceArea": {
+    "@type": "GeoCircle",
+    "geoMidpoint": {
+      "@type": "GeoCoordinates",
+      "latitude": "43.5081",
+      "longitude": "16.4402"
+    },
+    "geoRadius": "20000000"
+  }
+};
+
 // Main SoftwareApplication schema with enhanced data
 const softwareApplicationSchema = {
   "@type": "SoftwareApplication",
@@ -234,6 +276,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     organizationSchema,
+    localBusinessSchema,
     websiteSchema,
     softwareApplicationSchema,
     breadcrumbSchema,

@@ -133,6 +133,62 @@ const getNavLinkClasses = (active: boolean) => [
       <meta name="google-site-verification" content={import.meta.env.PUBLIC_ADSENSE_VERIFICATION} />
     )}
 
+    <!-- Google Search Console Verification (separate from AdSense) -->
+    {import.meta.env.PUBLIC_GOOGLE_SEARCH_CONSOLE_VERIFICATION && (
+      <meta name="google-site-verification" content={import.meta.env.PUBLIC_GOOGLE_SEARCH_CONSOLE_VERIFICATION} />
+    )}
+
+    <!-- Enhanced SEO Meta Tags -->
+    <meta name="author" content="FreeFormatHub" />
+    <meta name="publisher" content="FreeFormatHub" />
+    <meta name="application-name" content="FreeFormatHub" />
+    <meta name="apple-mobile-web-app-title" content="FreeFormatHub" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- Enhanced Security -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    <!-- Geographic and Language Meta -->
+    <meta name="geo.region" content="HR" />
+    <meta name="geo.placename" content="Split, Croatia" />
+    <meta name="geo.position" content="43.5081;16.4402" />
+    <meta name="ICBM" content="43.5081, 16.4402" />
+    <meta name="language" content="English" />
+    <meta name="distribution" content="global" />
+    <meta name="rating" content="general" />
+
+    <!-- Microsoft/Bing -->
+    <meta name="msvalidate.01" content={import.meta.env.PUBLIC_BING_VERIFICATION} />
+    <meta name="msapplication-TileColor" content="#3b82f6" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+
+    <!-- Yandex -->
+    <meta name="yandex-verification" content={import.meta.env.PUBLIC_YANDEX_VERIFICATION} />
+
+    <!-- Pinterest -->
+    <meta name="p:domain_verify" content={import.meta.env.PUBLIC_PINTEREST_VERIFICATION} />
+
+    <!-- Facebook Domain Verification -->
+    <meta name="facebook-domain-verification" content={import.meta.env.PUBLIC_FACEBOOK_DOMAIN_VERIFICATION} />
+
+    <!-- Google Tag Manager (optional - loads if GTM_ID is set) -->
+    {import.meta.env.PUBLIC_GTM_ID && (
+      <>
+        <script define:vars={{GTM_ID: import.meta.env.PUBLIC_GTM_ID}}>
+          (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+          })(window,document,'script','dataLayer',GTM_ID);
+        </script>
+      </>
+    )}
+
     <!-- Google Consent Mode v2 (must load before gtag) -->
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -449,6 +505,18 @@ const getNavLinkClasses = (active: boolean) => [
   </head>
   
   <body style="background-color: var(--color-background); color: var(--color-text-primary);">
+    <!-- Google Tag Manager (noscript) -->
+    {import.meta.env.PUBLIC_GTM_ID && (
+      <noscript>
+        <iframe
+          src={`https://www.googletagmanager.com/ns.html?id=${import.meta.env.PUBLIC_GTM_ID}`}
+          height="0"
+          width="0"
+          style="display:none;visibility:hidden">
+        </iframe>
+      </noscript>
+    )}
+
     <!-- Skip to main content -->
     <a
       href="#main-content"

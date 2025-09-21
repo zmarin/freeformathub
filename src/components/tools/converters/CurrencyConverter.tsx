@@ -87,6 +87,9 @@ export function CurrencyConverter({ className = '' }: CurrencyConverterProps) {
   const [filteredToCurrencies, setFilteredToCurrencies] = useState(Object.keys(CURRENCY_DATABASE));
   const [conversionHistory, setConversionHistory] = useState<any[]>([]);
   const [lastUpdateTime, setLastUpdateTime] = useState<string>('');
+  const [showChart, setShowChart] = useState(false);
+  const [chartData, setChartData] = useState<any[]>([]);
+  const [isLoadingChart, setIsLoadingChart] = useState(false);
 
   const { addToHistory } = useToolStore();
 
@@ -233,21 +236,148 @@ export function CurrencyConverter({ className = '' }: CurrencyConverterProps) {
     return `${currency.symbol}${amount.toFixed(config.precision)}`;
   };
 
+  const loadHistoricalChart = async () => {
+    setIsLoadingChart(true);
+    setShowChart(true);
+
+    try {
+      const result = await processCurrencyConverter({
+        ...config,
+        amount: parseFloat(input) || 100,
+        showChart: true,
+        chartPeriod: '30d'
+      });
+
+      if (result.success && result.conversion?.historical) {
+        const chartPoints = result.conversion.historical.map(point => ({
+          date: new Date(point.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+          rate: point.rate,
+          timestamp: point.timestamp
+        }));
+        setChartData(chartPoints);
+      }
+    } catch (error) {
+      console.error('Failed to load chart data:', error);
+    }
+
+    setIsLoadingChart(false);
+  };
+
+  const renderMiniChart = () => {
+    if (!chartData.length) return null;
+
+    const maxRate = Math.max(...chartData.map(d => d.rate));
+    const minRate = Math.min(...chartData.map(d => d.rate));
+    const range = maxRate - minRate;
+
+    return (
+      <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
+        <div className="flex justify-between items-center mb-4">
+          <h4 className="font-semibold text-gray-700">30-Day Exchange Rate Trend</h4>
+          <button
+            onClick={() => setShowChart(false)}
+            className="text-gray-500 hover:text-gray-700 text-sm"
+          >
+            ✕ Hide
+          </button>
+        </div>
+
+        <div className="relative h-32 bg-white rounded-lg p-4 overflow-hidden">
+          {/* Chart SVG */}
+          <svg className="w-full h-full" viewBox="0 0 400 100">
+            {/* Grid lines */}
+            <defs>
+              <pattern id="grid" width="40" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 20" fill="none" stroke="#f0f0f0" strokeWidth="1"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+
+            {/* Chart line */}
+            <polyline
+              fill="none"
+              stroke="url(#gradient)"
+              strokeWidth="2"
+              points={chartData.map((point, index) => {
+                const x = (index / (chartData.length - 1)) * 380 + 10;
+                const y = 90 - ((point.rate - minRate) / (range || 1)) * 70;
+                return `${x},${y}`;
+              }).join(' ')}
+            />
+
+            {/* Gradient definition */}
+            <defs>
+              <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#3b82f6" />
+                <stop offset="100%" stopColor="#8b5cf6" />
+              </linearGradient>
+            </defs>
+
+            {/* Data points */}
+            {chartData.map((point, index) => {
+              const x = (index / (chartData.length - 1)) * 380 + 10;
+              const y = 90 - ((point.rate - minRate) / (range || 1)) * 70;
+              return (
+                <circle
+                  key={index}
+                  cx={x}
+                  cy={y}
+                  r="3"
+                  fill="#3b82f6"
+                  className="hover:r-4 transition-all cursor-pointer"
+                >
+                  <title>{`${point.date}: ${point.rate.toFixed(6)}`}</title>
+                </circle>
+              );
+            })}
+          </svg>
+
+          {/* Chart labels */}
+          <div className="absolute bottom-1 left-4 right-4 flex justify-between text-xs text-gray-500">
+            <span>{chartData[0]?.date}</span>
+            <span className="font-medium">
+              {config.fromCurrency}/{config.toCurrency}
+            </span>
+            <span>{chartData[chartData.length - 1]?.date}</span>
+          </div>
+        </div>
+
+        {/* Chart stats */}
+        <div className="mt-3 grid grid-cols-3 gap-4 text-center">
+          <div className="bg-white rounded p-2">
+            <div className="text-xs text-gray-500">Highest</div>
+            <div className="font-semibold text-green-600">{maxRate.toFixed(6)}</div>
+          </div>
+          <div className="bg-white rounded p-2">
+            <div className="text-xs text-gray-500">Current</div>
+            <div className="font-semibold text-blue-600">
+              {chartData[chartData.length - 1]?.rate.toFixed(6)}
+            </div>
+          </div>
+          <div className="bg-white rounded p-2">
+            <div className="text-xs text-gray-500">Lowest</div>
+            <div className="font-semibold text-red-600">{minRate.toFixed(6)}</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className={`w-full max-w-4xl mx-auto ${className}`}>
+    <div className={`w-full h-full ${className}`}>
       {/* Stylish Currency Converter Container */}
-      <div className="bg-gradient-to-br from-blue-500 via-purple-600 to-purple-700 p-8 rounded-3xl shadow-2xl transform hover:scale-[1.02] transition-all duration-300">
-        <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-8 shadow-xl">
+      <div className="bg-gradient-to-br from-blue-500 via-purple-600 to-purple-700 p-6 rounded-2xl shadow-xl h-full">
+        <div className="bg-white/95 backdrop-blur-sm rounded-xl p-6 shadow-lg h-full overflow-y-auto">
 
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-800 mb-2">💱 Currency Converter</h1>
-            <p className="text-gray-600 text-lg">Real-time exchange rates powered by ECB</p>
+          <div className="text-center mb-6">
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">💱 Currency Converter</h1>
+            <p className="text-gray-600">Real-time exchange rates powered by ECB</p>
           </div>
 
           {/* Amount Input */}
-          <div className="mb-6">
-            <label className="block text-lg font-medium text-gray-700 mb-3">Amount</label>
+          <div className="mb-4">
+            <label className="block font-medium text-gray-700 mb-2">Amount</label>
             <input
               type="number"
               value={input}
@@ -255,7 +385,7 @@ export function CurrencyConverter({ className = '' }: CurrencyConverterProps) {
               placeholder="Enter amount"
               min="0"
               step="0.01"
-              className="w-full px-6 py-4 text-xl border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors duration-300 bg-white shadow-sm"
+              className="w-full px-4 py-3 text-lg border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors duration-300 bg-white shadow-sm"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   const amount = parseFloat(input) || 0;
@@ -266,13 +396,13 @@ export function CurrencyConverter({ className = '' }: CurrencyConverterProps) {
           </div>
 
           {/* Quick Amount Buttons */}
-          <div className="mb-6">
+          <div className="mb-4">
             <div className="flex flex-wrap gap-2 justify-center">
               {[1, 10, 100, 500, 1000, 5000].map(amount => (
                 <button
                   key={amount}
                   onClick={() => setQuickAmount(amount)}
-                  className="px-4 py-2 bg-gray-100 hover:bg-blue-100 rounded-lg text-sm font-medium transition-colors duration-200 border border-gray-200 hover:border-blue-300"
+                  className="px-3 py-1 bg-gray-100 hover:bg-blue-100 rounded text-sm font-medium transition-colors duration-200 border border-gray-200 hover:border-blue-300"
                 >
                   {amount.toLocaleString()}
                 </button>
@@ -281,14 +411,14 @@ export function CurrencyConverter({ className = '' }: CurrencyConverterProps) {
           </div>
 
           {/* Currency Selection Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             {/* From Currency */}
             <div>
-              <label className="block text-lg font-medium text-gray-700 mb-3">From</label>
+              <label className="block font-medium text-gray-700 mb-2">From</label>
               <select
                 value={config.fromCurrency}
                 onChange={(e) => handleCurrencyChange('from', e.target.value)}
-                className="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors duration-300 bg-white cursor-pointer shadow-sm"
+                className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors duration-300 bg-white cursor-pointer shadow-sm"
               >
                 {Object.entries(CURRENCY_DATABASE).map(([code, info]) => (
                   <option key={code} value={code}>
@@ -298,16 +428,16 @@ export function CurrencyConverter({ className = '' }: CurrencyConverterProps) {
               </select>
 
               {/* Popular From Currencies */}
-              <div className="mt-3">
-                <div className="text-sm font-medium text-gray-600 mb-2">Popular:</div>
-                <div className="flex flex-wrap gap-2">
+              <div className="mt-2">
+                <div className="text-xs font-medium text-gray-600 mb-1">Popular:</div>
+                <div className="flex flex-wrap gap-1">
                   {POPULAR_CURRENCIES.map(code => (
                     <button
                       key={code}
                       onClick={() => handleCurrencyChange('from', code)}
-                      className={`px-3 py-1 text-sm rounded-lg transition-all duration-200 ${
+                      className={`px-2 py-1 text-xs rounded transition-all duration-200 ${
                         config.fromCurrency === code
-                          ? 'bg-blue-500 text-white shadow-md'
+                          ? 'bg-blue-500 text-white shadow-sm'
                           : 'bg-gray-100 hover:bg-blue-100 text-gray-700 border border-gray-200'
                       }`}
                     >
@@ -320,11 +450,11 @@ export function CurrencyConverter({ className = '' }: CurrencyConverterProps) {
 
             {/* To Currency */}
             <div>
-              <label className="block text-lg font-medium text-gray-700 mb-3">To</label>
+              <label className="block font-medium text-gray-700 mb-2">To</label>
               <select
                 value={config.toCurrency}
                 onChange={(e) => handleCurrencyChange('to', e.target.value)}
-                className="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors duration-300 bg-white cursor-pointer shadow-sm"
+                className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors duration-300 bg-white cursor-pointer shadow-sm"
               >
                 {Object.entries(CURRENCY_DATABASE).map(([code, info]) => (
                   <option key={code} value={code}>
@@ -334,16 +464,16 @@ export function CurrencyConverter({ className = '' }: CurrencyConverterProps) {
               </select>
 
               {/* Popular To Currencies */}
-              <div className="mt-3">
-                <div className="text-sm font-medium text-gray-600 mb-2">Popular:</div>
-                <div className="flex flex-wrap gap-2">
+              <div className="mt-2">
+                <div className="text-xs font-medium text-gray-600 mb-1">Popular:</div>
+                <div className="flex flex-wrap gap-1">
                   {POPULAR_CURRENCIES.map(code => (
                     <button
                       key={code}
                       onClick={() => handleCurrencyChange('to', code)}
-                      className={`px-3 py-1 text-sm rounded-lg transition-all duration-200 ${
+                      className={`px-2 py-1 text-xs rounded transition-all duration-200 ${
                         config.toCurrency === code
-                          ? 'bg-blue-500 text-white shadow-md'
+                          ? 'bg-blue-500 text-white shadow-sm'
                           : 'bg-gray-100 hover:bg-blue-100 text-gray-700 border border-gray-200'
                       }`}
                     >
@@ -356,13 +486,13 @@ export function CurrencyConverter({ className = '' }: CurrencyConverterProps) {
           </div>
 
           {/* Swap Button */}
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center mb-4">
             <button
               onClick={swapCurrencies}
-              className="p-4 bg-gray-100 hover:bg-blue-500 hover:text-white rounded-full transition-all duration-300 transform hover:rotate-180 focus:outline-none shadow-lg hover:shadow-xl"
+              className="p-3 bg-gray-100 hover:bg-blue-500 hover:text-white rounded-full transition-all duration-300 transform hover:rotate-180 focus:outline-none shadow-md"
               title="Swap currencies"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
               </svg>
             </button>
@@ -374,20 +504,20 @@ export function CurrencyConverter({ className = '' }: CurrencyConverterProps) {
               const amount = parseFloat(input) || 0;
               if (amount > 0) debouncedProcess(amount, config);
             }}
-            className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xl font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 transform hover:-translate-y-1 transition-all duration-300 shadow-lg hover:shadow-xl focus:outline-none"
+            className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-lg font-semibold rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-md focus:outline-none"
           >
             Convert Currency
           </button>
 
           {/* Error Display */}
           {error && (
-            <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl">
-              <p className="text-red-700 text-center">{error}</p>
+            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-700 text-center text-sm">{error}</p>
             </div>
           )}
 
           {/* Result Display */}
-          <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl min-h-[120px] flex flex-col justify-center items-center shadow-inner">
+          <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg min-h-[100px] flex flex-col justify-center items-center shadow-inner">
             {isLoading ? (
               <div className="flex items-center space-x-3">
                 <div className="w-6 h-6 border-3 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
@@ -395,31 +525,56 @@ export function CurrencyConverter({ className = '' }: CurrencyConverterProps) {
               </div>
             ) : output ? (
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600 mb-2">
+                <div className="text-2xl font-bold text-blue-600 mb-1">
                   {output.split('=')[1]?.split('\n')[0]?.trim() || 'Converted amount will appear here'}
                 </div>
-                <div className="text-lg text-gray-600">
+                <div className="text-sm text-gray-600">
                   {formatCurrency(parseFloat(input) || 0, config.fromCurrency)} equals
                 </div>
               </div>
             ) : (
               <div className="text-gray-500 text-center">
-                <div className="text-lg">Enter an amount and click Convert</div>
+                <div className="text-sm">Enter an amount and click Convert</div>
               </div>
             )}
           </div>
 
           {/* Exchange Rate Display */}
           {output && !error && !isLoading && (
-            <div className="mt-4 text-center text-gray-600">
+            <div className="mt-3 text-center text-gray-600 text-sm">
               {output.split('\n').find(line => line.includes('Exchange Rate:'))}
             </div>
           )}
 
+          {/* Chart Toggle Button */}
+          {output && !error && !isLoading && (
+            <div className="mt-4 text-center">
+              <button
+                onClick={loadHistoricalChart}
+                disabled={isLoadingChart}
+                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white text-sm font-medium rounded-lg hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-md disabled:opacity-50"
+              >
+                {isLoadingChart ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                    Loading Chart...
+                  </>
+                ) : (
+                  <>
+                    📈 Show 30-Day Trend
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+
+          {/* Historical Chart */}
+          {showChart && renderMiniChart()}
+
           {/* Popular Currency Pairs */}
-          <div className="mt-8 p-6 bg-gray-50 rounded-xl">
-            <h3 className="text-lg font-semibold text-gray-700 mb-4 text-center">Quick Select</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+            <h3 className="font-semibold text-gray-700 mb-3 text-center">Quick Select</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
               {[
                 ['USD', 'EUR'], ['EUR', 'USD'], ['USD', 'GBP'],
                 ['USD', 'JPY'], ['EUR', 'GBP'], ['USD', 'CNY']
@@ -432,7 +587,7 @@ export function CurrencyConverter({ className = '' }: CurrencyConverterProps) {
                       setTimeout(() => debouncedProcess(parseFloat(input), { ...config, fromCurrency: from, toCurrency: to }), 100);
                     }
                   }}
-                  className="px-4 py-3 bg-white hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-lg text-sm font-medium transition-all duration-200 hover:shadow-md"
+                  className="px-3 py-2 bg-white hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded text-sm font-medium transition-all duration-200"
                 >
                   {CURRENCY_DATABASE[from]?.flag} {from} → {CURRENCY_DATABASE[to]?.flag} {to}
                 </button>

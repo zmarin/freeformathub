@@ -47,7 +47,7 @@ const CURRENCY_DATABASE: { [key: string]: { name: string; symbol: string; flag: 
   'BRL': { name: 'Brazilian Real', symbol: 'R$', flag: '🇧🇷' },
   'CAD': { name: 'Canadian Dollar', symbol: 'C$', flag: '🇨🇦' },
   'CHF': { name: 'Swiss Franc', symbol: 'CHF', flag: '🇨🇭' },
-  'CNY': { name: 'Chinese Yuan', symbol: '¥', flag: '🇨🇳' },
+  'CNY': { name: 'Chinese Renminbi Yuan', symbol: '¥', flag: '🇨🇳' },
   'CZK': { name: 'Czech Koruna', symbol: 'Kč', flag: '🇨🇿' },
   'DKK': { name: 'Danish Krone', symbol: 'kr', flag: '🇩🇰' },
   'EUR': { name: 'Euro', symbol: '€', flag: '🇪🇺' },
@@ -55,7 +55,7 @@ const CURRENCY_DATABASE: { [key: string]: { name: string; symbol: string; flag: 
   'HKD': { name: 'Hong Kong Dollar', symbol: 'HK$', flag: '🇭🇰' },
   'HUF': { name: 'Hungarian Forint', symbol: 'Ft', flag: '🇭🇺' },
   'IDR': { name: 'Indonesian Rupiah', symbol: 'Rp', flag: '🇮🇩' },
-  'ILS': { name: 'Israeli Shekel', symbol: '₪', flag: '🇮🇱' },
+  'ILS': { name: 'Israeli New Sheqel', symbol: '₪', flag: '🇮🇱' },
   'INR': { name: 'Indian Rupee', symbol: '₹', flag: '🇮🇳' },
   'ISK': { name: 'Icelandic Króna', symbol: 'kr', flag: '🇮🇸' },
   'JPY': { name: 'Japanese Yen', symbol: '¥', flag: '🇯🇵' },
@@ -71,7 +71,7 @@ const CURRENCY_DATABASE: { [key: string]: { name: string; symbol: string; flag: 
   'SGD': { name: 'Singapore Dollar', symbol: 'S$', flag: '🇸🇬' },
   'THB': { name: 'Thai Baht', symbol: '฿', flag: '🇹🇭' },
   'TRY': { name: 'Turkish Lira', symbol: '₺', flag: '🇹🇷' },
-  'USD': { name: 'US Dollar', symbol: '$', flag: '🇺🇸' },
+  'USD': { name: 'United States Dollar', symbol: '$', flag: '🇺🇸' },
   'ZAR': { name: 'South African Rand', symbol: 'R', flag: '🇿🇦' }
 };
 
