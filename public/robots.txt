@@ -16,12 +16,18 @@ Allow: /converters/
 Allow: /encoders/
 Allow: /crypto/
 
+# Allow Astro static assets (CSS, JS needed for proper page rendering)
+Allow: /_astro/*.css
+Allow: /_astro/*.js
+
 # Disallow admin and private areas
 Disallow: /admin/
 Disallow: /private/
-Disallow: /_astro/
 Disallow: /grafana/
 Disallow: /prometheus/
+
+# Block legacy Next.js paths that might still be cached/linked
+Disallow: /_next/
 
 # Crawl-delay for respectful crawling
 Crawl-delay: 1
