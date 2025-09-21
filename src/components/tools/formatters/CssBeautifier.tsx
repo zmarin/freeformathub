@@ -386,7 +386,7 @@ export function CssBeautifier({ className = '' }: CssBeautifierProps) {
   return (
     <div className={`${className}`}>
       {/* Sticky Controls Bar */}
-      <div className="sticky-top" style={{
+      <div className="sticky-top" className="grid-responsive" style={{
         backgroundColor: 'var(--color-surface-secondary)',
         borderBottom: '1px solid var(--color-border)',
         padding: 'var(--space-xl)',
@@ -458,15 +458,15 @@ export function CssBeautifier({ className = '' }: CssBeautifierProps) {
       </div>
 
       {/* Editor Layout */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
+      <div className="grid-responsive" style={{
+        // Responsive grid handled by CSS class
+        
         minHeight: '500px'
       }} className="md:grid-cols-1">
         {/* Input Panel */}
         <div style={{ position: 'relative', borderRight: '1px solid var(--color-border)' }} className="md:border-r-0 md:border-b md:border-b-gray-200">
           {/* Input Header */}
-          <div style={{
+          <div className="grid-responsive" style={{
             backgroundColor: 'var(--color-surface-secondary)',
             borderBottom: '1px solid var(--color-border)',
             padding: 'var(--space-lg)',
@@ -511,7 +511,7 @@ export function CssBeautifier({ className = '' }: CssBeautifierProps) {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Paste your CSS here or drag & drop a file..."
               className="form-textarea"
-              style={{
+              className="grid-responsive" style={{
                 width: '100%',
                 height: '100%',
                 border: 'none',
@@ -525,7 +525,7 @@ export function CssBeautifier({ className = '' }: CssBeautifierProps) {
               spellCheck={false}
             />
             {dragActive && (
-              <div style={{
+              <div className="grid-responsive" style={{
                 position: 'absolute',
                 inset: 0,
                 backgroundColor: 'var(--color-primary-light)',
@@ -545,7 +545,7 @@ export function CssBeautifier({ className = '' }: CssBeautifierProps) {
         {/* Output Panel */}
         <div style={{ position: 'relative' }}>
           {/* Output Header */}
-          <div style={{
+          <div className="grid-responsive" style={{
             backgroundColor: 'var(--color-surface-secondary)',
             borderBottom: '1px solid var(--color-border)',
             padding: 'var(--space-lg)',
@@ -587,7 +587,7 @@ export function CssBeautifier({ className = '' }: CssBeautifierProps) {
           {/* Output Content */}
           <div style={{ height: '500px', position: 'relative' }}>
             {error ? (
-              <div style={{
+              <div className="grid-responsive" style={{
                 padding: 'var(--space-lg)',
                 backgroundColor: 'var(--color-danger-light)',
                 color: 'var(--color-danger)',
@@ -606,7 +606,7 @@ export function CssBeautifier({ className = '' }: CssBeautifierProps) {
                 readOnly
                 placeholder="Formatted CSS will appear here..."
                 className="form-textarea"
-                style={{
+                className="grid-responsive" style={{
                   width: '100%',
                   height: '100%',
                   border: 'none',
@@ -626,12 +626,12 @@ export function CssBeautifier({ className = '' }: CssBeautifierProps) {
       </div>
 
       {/* Quick Examples & Options - Collapsible */}
-      <div style={{
+      <div className="grid-responsive" style={{
         borderTop: '1px solid var(--color-border)',
         backgroundColor: 'var(--color-surface)'
       }}>
         <details className="group">
-          <summary style={{
+          <summary className="grid-responsive" style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
@@ -662,7 +662,7 @@ export function CssBeautifier({ className = '' }: CssBeautifierProps) {
                     <div style={{ fontWeight: 600, marginBottom: 'var(--space-md)', color: 'var(--color-text-primary)' }}>
                       {example.title}
                     </div>
-                    <div style={{
+                    <div className="grid-responsive" style={{
                       backgroundColor: 'var(--color-surface-secondary)',
                       padding: 'var(--space-md)',
                       borderRadius: 'var(--radius-md)',
@@ -736,7 +736,7 @@ export function CssBeautifier({ className = '' }: CssBeautifierProps) {
 
               {/* Advanced options toggle */}
               <details className="group" style={{ marginTop: 'var(--space-lg)' }}>
-                <summary style={{
+                <summary className="grid-responsive" style={{
                   cursor: 'pointer',
                   fontWeight: 600,
                   color: 'var(--color-text-primary)',

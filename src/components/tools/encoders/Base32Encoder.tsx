@@ -102,7 +102,7 @@ const Base32Encoder: React.FC = () => {
   return (
     <div className="base32-encoder-tool">
       {/* Sticky Controls Bar */}
-      <div className="sticky-top" style={{
+      <div className="sticky-top" className="grid-responsive" style={{
         backgroundColor: 'var(--color-surface-secondary)',
         borderBottom: '1px solid var(--color-border)',
         padding: 'var(--space-xl)',
@@ -163,9 +163,9 @@ const Base32Encoder: React.FC = () => {
       </div>
 
       {/* Main Content Grid */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
+      <div className="grid-responsive" style={{
+        // Responsive grid handled by CSS class
+        
         minHeight: '500px'
       }} className="md:grid-cols-1">
         {/* Input Panel */}

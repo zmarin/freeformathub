@@ -497,6 +497,7 @@ export const CSS_GRID_GENERATOR_TOOL: Tool = {
   icon: '⚏',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'web')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'web')!.subcategories!.find(sub => sub.id === 'css-tools')!,
+  slug: 'css-grid-generator',
   tags: ['css', 'grid', 'layout', 'generator', 'responsive', 'web', 'design', 'frontend'],
   complexity: 'intermediate',
   examples,

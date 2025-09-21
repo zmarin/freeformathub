@@ -133,7 +133,7 @@ export function WebPConverter({ className = '' }: WebPConverterProps) {
   return (
     <div className={`flex flex-col ${className}`}>
       {/* Sticky Controls Bar */}
-      <div className="sticky-top" style={{
+      <div className="sticky-top" className="grid-responsive" style={{
         backgroundColor: 'var(--color-surface-secondary)',
         borderBottom: '1px solid var(--color-border)',
         padding: 'var(--space-xl)',
@@ -184,9 +184,9 @@ export function WebPConverter({ className = '' }: WebPConverterProps) {
       </div>
 
       {/* Main Content Area - Side by Side Grid */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
+      <div className="grid-responsive" style={{
+        // Responsive grid handled by CSS class
+        
         minHeight: '500px'
       }} className="md:grid-cols-1">
         {/* Input Panel */}

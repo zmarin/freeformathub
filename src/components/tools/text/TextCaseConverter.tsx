@@ -415,13 +415,13 @@ export function TextCaseConverter({ className = '' }: TextCaseConverterProps) {
       </div>
 
       {/* Editor Layout */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
+      <div className="grid-responsive" style={{
         minHeight: '500px'
-      }} className="md:grid-cols-1">
+      }}>
         {/* Input Panel */}
-        <div style={{ position: 'relative', borderRight: '1px solid var(--color-border)' }} className="md:border-r-0 md:border-b md:border-b-gray-200">
+        <div style={{ position: 'relative' }} className="grid-responsive-item"
+             data-mobile-border="bottom"
+             data-desktop-border="right">
           {/* Input Header */}
           <div style={{
             backgroundColor: 'var(--color-surface-secondary)',

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-FreeFormatHub is a privacy-first business and developer tools platform built with Astro + React Islands. It currently provides **101 comprehensive business and developer tools** for formatting, converting, encoding, and validating data. All processing happens client-side with no data leaving the browser, ensuring complete privacy and offline functionality.
+FreeFormatHub is a privacy-first business and developer tools platform built with Astro + React Islands. It provides **111 comprehensive business and developer tools** for formatting, converting, encoding, and validating data. All processing happens client-side with no data leaving the browser, ensuring complete privacy and offline functionality.
 
 **Tech Stack:**
 - **Framework**: Astro (SSG) with React Islands for interactive components
@@ -35,11 +35,8 @@ npm run test:ui      # Run tests with Vitest UI
 npm run test:run     # Run tests once (CI mode)
 npx vitest run --reporter=verbose src/test/specific-test.test.ts # Single test file
 
-# Deployment (Coolify Auto-Deploy)
-git push origin master  # Auto-triggers Coolify deployment
-# Manual deployment scripts (legacy):
-sudo ./scripts/deploy.sh                    # Local deployment on port 4600
-sudo ./scripts/force-deploy.sh             # Replace existing deployment
+# Deployment (Auto-Deploy via Git)
+git push origin master  # Auto-triggers deployment
 ```
 
 ## Architecture & Core Patterns
@@ -47,20 +44,25 @@ sudo ./scripts/force-deploy.sh             # Replace existing deployment
 ### Tool Implementation Pattern
 Every tool follows a consistent 4-file pattern:
 
-1. **Tool Definition** (`src/tools/tool-name.ts`):
+1. **Tool Definition** (`src/tools/[category]/tool-name.ts`):
    - Export tool configuration object with metadata, examples, FAQs
    - Export processing function with ToolResult return type
+   - **CRITICAL**: Must include `slug` property matching the filename
 
-2. **React Component** (`src/components/tools/ToolName.tsx`):
+2. **React Component** (`src/components/tools/[category]/ToolName.tsx`):
    - Interactive UI using shared components (InputPanel, OutputPanel, OptionsPanel)
+   - Component name derived from tool.name (PascalCase, non-alphanumeric removed)
    - Zustand store for state management
 
-3. **Routing**: Dynamic route `src/pages/[category]/[slug].astro` renders tools using ToolShell + ToolRenderer component based on the registry.
+3. **Dynamic Routing**: `src/pages/[category]/[slug].astro` renders all tools using ToolShell + ToolRenderer
+   - No individual tool pages needed
+   - Component discovery via `src/lib/component-map.ts`
 
 4. **Registration** (`src/lib/tools/index.ts`):
    - Import and register tool in TOOL_REGISTRY
+   - **Must call `registerTool(TOOL_NAME)`**
 
-### Key Components
+### Critical Architecture Components
 
 **ToolShell.astro**: Universal wrapper providing:
 - SEO optimization (meta tags, structured data, OpenGraph)
@@ -68,285 +70,142 @@ Every tool follows a consistent 4-file pattern:
 - Google Analytics (GA4) and AdSense integration
 - Cookie consent management
 
+**Dynamic Component Loading** (`src/lib/component-map.ts`):
+- Maps tool IDs to React components for production builds
+- Handles tree-shaking and code splitting
+- Fallback loading strategies for missing components
+
+**Tool Registry** (`src/lib/tools/registry.ts`):
+- Central registry for all 111 tools with category organization
+- Search functionality across tools
+- Type-safe tool metadata management
+- Sitemap generation
+
 **UI Components** (`src/components/ui/`):
 - `InputPanel.tsx`: Syntax highlighting, line numbers, validation
 - `OutputPanel.tsx`: Copy functionality, download options
 - `OptionsPanel.tsx`: Collapsible tool configuration
-
-**Tool Registry** (`src/lib/tools/registry.ts`):
-- Central registry for all tools with category organization
-- Search functionality across tools
-- Type-safe tool metadata management
 
 ### State Management
 - **Zustand stores** in `src/lib/store/` for complex tool state
 - **localStorage utilities** in `src/lib/storage/` for persistence
 - **Tool history** and preferences automatically managed
 
-### Content Architecture
-- **Tools**: Self-contained in `src/tools/` with full metadata (currently 101 tools)
-- **Categories**: 10 predefined categories in registry (formatters, converters, encoders, text, crypto, web, color, generators, network, validators)
-- **SEO Content**: Each tool includes examples, use cases, FAQs, and related tools
-
 ## Adding New Tools
 
-1. **Create tool definition** following the existing pattern in `src/tools/`
-2. **Implement React component** using shared UI components
-3. **No individual Astro pages needed**; tools are rendered via dynamic routing through ToolRenderer
-4. **Register in tool registry** for discoverability
+1. **Create tool definition** in `src/tools/[category]/tool-name.ts`:
+   ```typescript
+   export const TOOL_NAME_TOOL: Tool = {
+     id: 'tool-name',
+     name: 'Tool Display Name',
+     slug: 'tool-name', // REQUIRED - must match filename
+     category: TOOL_CATEGORIES.find(cat => cat.id === 'category')!,
+     // ... other required properties
+   };
+   ```
+
+2. **Create React component** in `src/components/tools/[category]/ToolName.tsx`:
+   - Component name must be PascalCase version of tool.name
+   - Use shared UI components (InputPanel, OutputPanel, OptionsPanel)
+
+3. **Register tool** in `src/lib/tools/index.ts`:
+   ```typescript
+   import { TOOL_NAME_TOOL } from '../../tools/category/tool-name';
+   registerTool(TOOL_NAME_TOOL);
+   ```
+
+4. **Add to component map** in `src/lib/component-map.ts` for production builds
+
 5. **Add tests** in `src/test/` following existing patterns
 
-The tool registry automatically handles:
-- SEO metadata generation
-- Category organization
-- Search indexing
-- Related tool suggestions
+The registry automatically handles SEO metadata, category organization, search indexing, and related tool suggestions.
 
-## Performance Considerations
+## Tool Categories & Distribution
 
-- **Bundle targets**: <100KB per tool page, <30KB CSS
-- **Core Web Vitals**: <1s LCP, optimized for 4G networks
-- **Client-side processing**: All tools work offline, no server dependencies
-- **Web Workers**: Ready for heavy computations (not yet implemented)
-
-## Deployment Architecture
-
-**Production (Dokploy)**:
-- Auto-deploy from GitHub pushes to master branch
-- Serves static files from Astro build (`./dist/`)
-- Environment variables managed via Dokploy UI
-- SSL certificates automatically managed via Let's Encrypt
-- Domain: `https://freeformathub.com`
-- Uses optimized Dockerfile at `deployment/docker/Dockerfile`
-- Nginx configuration at `deployment/nginx/dokploy.conf`
-
-**Environment Variables (Required in Dokploy UI)**:
-```
-NODE_ENV=production
-PUBLIC_GA_MEASUREMENT_ID=G-34Z7YVSEZ2
-PUBLIC_ADSENSE_CLIENT_ID=ca-pub-5745115058807126
-PUBLIC_HEADER_AD_SLOT=1234567890
-PUBLIC_SIDEBAR_AD_SLOT=2345678901
-PUBLIC_CONTENT_AD_SLOT=3456789012
-PUBLIC_FOOTER_AD_SLOT=4567890123
-PUBLIC_ADS_TEST_MODE=false
-PUBLIC_ADSENSE_VERIFICATION=your-verification-code-here
-```
-
-**Development**: Astro dev server
-- `npm run dev` starts server at `localhost:4321`
-- Uses `.env` file for local environment variables
-- Hot reload and TypeScript checking enabled
-
-## Testing Strategy
-
-- **Unit tests**: Tool logic and utility functions using Vitest
-- **Component tests**: React component behavior with Testing Library
-- **Integration tests**: Tool end-to-end workflows
-- **Test environment**: jsdom with Vitest globals and UI mode available
-- **Test commands**: `npm run test` (watch), `npm run test:ui` (UI), `npm run test:run` (CI)
+**Current Tools: 111 across 14 categories:**
+- **Formatters** (8): JSON, XML, YAML, CSS, HTML, JS, SQL, CSV formatters
+- **Converters** (15): Format conversion, data transformation tools
+- **Encoders** (11): Base64, Base32, URL, JWT, HTML entities, certificates
+- **Text** (10): Case conversion, diff, regex, Lorem ipsum, ASCII art
+- **Crypto** (7): Hash generation, encryption, password tools, JWT generator
+- **Web** (15): Minifiers, CSS tools, API builders, webhooks, security analyzers
+- **Color** (2): Palette generators, color blindness simulator
+- **DateTime** (4): Timestamp conversion, cron generator, time tools
+- **Math** (1): Expression evaluator
+- **Network** (7): IP calculators, DNS lookup, port scanner, monitoring
+- **Generators** (5): UUID, QR codes, barcodes, mock data
+- **Development** (12): Git diff, JSON tools, database tools, performance
+- **Data** (5): Binary viewer, image tools, PDF tools, CSV splitter
+- **Validators** (6): Email, phone, credit card, IBAN, URL, HTML5
 
 ## SEO & Analytics Architecture
 
-**Google Analytics (GA4)**:
-- Consent-based tracking via Google Consent Mode v2
-- Cookie consent managed by `CookieConsent.tsx` component
-- Analytics only loads after user consent
-- Measurement ID: `G-34Z7YVSEZ2`
-
-**Google AdSense Integration**:
-- Publisher ID: `ca-pub-5745115058807126`
-- Site verification via `google-site-verification` meta tag
-- `ads.txt` file at domain root for publisher verification
-- Consent-aware ad loading (loads only after user consent)
-- Ad placements: Header, Sidebar, Content, Footer
+**Privacy-First Analytics**:
+- Google Analytics (GA4) with consent-based tracking
+- Google AdSense integration with consent management
+- Cookie consent via `CookieConsent.tsx` component
+- Default deny all tracking (GDPR compliant)
 
 **SEO Optimization**:
 - Structured data (JSON-LD) for each tool page
 - OpenGraph and Twitter Card meta tags
 - Canonical URLs with normalized paths
 - Tool-specific meta descriptions and keywords
-- Sitemap generation through Astro
-- robots.txt configuration
+- Automatic sitemap generation
 
-**Cookie Consent Flow**:
-1. Default state: All tracking denied (GDPR compliant)
-2. User sees consent banner (`CookieConsent.tsx`)
-3. Upon consent: GA4 and AdSense scripts load dynamically
-4. Consent preferences stored in localStorage
+## Deployment Architecture
 
-## Storage & Privacy
+**Production Environment**:
+- Auto-deploy from GitHub pushes to master branch
+- Static site generation via Astro build
+- Environment variables managed externally
+- SSL certificates automatically managed
+- Domain: `https://freeformathub.com`
+
+**Development Environment**:
+- `npm run dev` starts server at `localhost:4321`
+- Hot reload and TypeScript checking enabled
+- Uses `.env` file for local environment variables
+
+## Performance Optimization
+
+- **Bundle targets**: <100KB per tool page, <30KB CSS
+- **Core Web Vitals**: <1s LCP, optimized for 4G networks
+- **Client-side processing**: All tools work offline, no server dependencies
+- **Dynamic imports**: Component-level code splitting
+- **Tree-shaking**: Optimized component registration
+
+## Testing Strategy
+
+- **Unit tests**: Tool logic and utility functions using Vitest
+- **Component tests**: React component behavior with Testing Library
+- **Integration tests**: Tool end-to-end workflows
+- **Test environment**: jsdom with Vitest globals and UI mode
+- **Commands**: `npm run test` (watch), `npm run test:ui` (UI), `npm run test:run` (CI)
+
+## Privacy & Storage
 
 - **Client-side processing**: All tool operations happen in browser
 - **localStorage**: User preferences, consent choices, tool history
 - **IndexedDB**: Large tool results and extended history
-- **Conditional tracking**: Analytics only with explicit user consent
 - **No server storage**: No user data sent to servers
+- **Consent management**: Analytics only with explicit user consent
 
-The architecture balances tool discoverability through SEO with privacy-conscious, consent-based analytics.
+## Critical Requirements
 
-## Current Tool Count & Distribution
+### Tool Definition Requirements
+- **MUST** include `slug` property matching filename
+- **MUST** be registered in `src/lib/tools/index.ts`
+- **MUST** have corresponding React component with correct naming
 
-The platform currently has **101 tools** across 10 categories:
-- **Formatters & Validators**: JSON, XML, YAML, HTML, CSS, SQL formatters
-- **Data Converters**: Format conversion, data transformation tools  
-- **Encoding & Decoding**: Base64, Base32, URL, JWT, HTML entities
-- **Text & String Tools**: Case conversion, diff, escape, statistics
-- **Cryptography & Security**: Hash generation, encryption, password tools
-- **Web Development**: Beautifiers, minifiers, selectors, API tools
-- **Color & Design**: Palette generators, converters, accessibility tools
-- **Code Generators**: UUID, QR codes, mock data, cron expressions
-- **Network Tools**: IP calculator, DNS lookup, port scanner
-- **Validators**: Email, phone, credit card, IBAN validation
+### Component Naming Convention
+- Tool name "JSON Formatter" → Component "JsonFormatter"
+- Tool name "Base64 Encoder" → Component "Base64Encoder"
+- Remove non-alphanumeric characters, use PascalCase
 
-## Tool Implementation Status
+### Build Verification
+- Always run `npm run build` after adding/modifying tools
+- Check sitemap.xml for any "undefined" entries (indicates missing slug)
+- Verify all 111 tools appear in sitemap with priority 0.9
 
-All 101 tools follow the complete architecture and are fully functional with:
-- ✅ Tool logic implementation (`src/tools/*.ts`)
-- ✅ React component UI (`src/components/tools/*.tsx`)
-- ✅ Dynamic routing through `src/pages/[category]/[slug].astro`
-- ✅ Registry integration (`src/lib/tools/index.ts`)
-
-## Port Configuration
-
-### Allocated Ports
-- **Port 4600**: Main application server
-- **Port 4601**: Prometheus metrics collection  
-- **Port 4602**: Grafana monitoring dashboard
-- **Port 4603**: Redis caching service
-
-### Port Management Integration
-```bash
-# Before making any port-related changes:
-# 1. Check PORT-CONFIG.md in this directory
-# 2. Validate ports: /home/projects/validate-ports-pre-deploy.sh validate-app freeformathub
-# 3. Get suggestions: node /home/projects/suggest-port.js suggest-for freeformathub
-# Never hardcode ports without checking: /home/projects/apps_ports_map.json
-```
-
-### System Message for LLMs
-```
-This project uses the centralized port management system.
-Allocated ports: 4600 (main), 4601 (prometheus), 4602 (grafana), 4603 (redis)
-Before changing ports:
-1. Check PORT-CONFIG.md in this directory
-2. Validate with: /home/projects/validate-ports-pre-deploy.sh validate-app freeformathub
-3. Get suggestions: node /home/projects/suggest-port.js suggest-for freeformathub
-Never hardcode ports without checking the registry at /home/projects/apps_ports_map.json
-
-Project-specific notes:
-- Astro static site with monitoring stack
-- Uses port range 4600-4603 for all services
-- Docker Compose manages service orchestration
-- Main app on 4600, monitoring services on 4601-4603
-- Always use production builds (per global CLAUDE.md instructions)
-```
-
-## Additional Architecture Components
-
-**Dynamic Component Loading**:
-- Component map (`src/lib/component-map.ts`) handles production imports
-- Fallback loading strategies for dynamic components
-- Tree-shaking optimized component registration
-
-**AdSense Setup**:
-- Follow `ADS-SETUP.md` for complete AdSense configuration
-- ads.txt file must be accessible at domain root
-- Environment variables required for ad placement IDs
-
-**Quality Assurance**:
-- Pre-commit hooks with Husky for code quality
-- ESLint for code linting with TypeScript support
-- Prettier for consistent code formatting
-- Type-checking required before deployment
-
-## Development Guidelines
-
-- Always be aware of Google tags and SEO optimization
-- Follow instructions in Claude folder files (design.md, requirements.md)
-- Update tasks.md with any development progress
-- Ensure ads.txt accessibility for AdSense verification
-- Test consent flow and analytics integration locally
-- keep in mind @ADS-SETUP.md
-- Root Cause
-
-  The production nginx CSP headers were blocking Google Analytics domains, and
-   there were timing issues with gtag initialization.
-
-  Key Fixes Applied
-
-  1. Updated Production Nginx CSP Headers
-
-  File: deployment/nginx/freeformathub-production.conf:43
-
-  Changed from restrictive CSP to allow GA domains:
-  # Before: Only 'self' allowed
-  script-src 'self' 'unsafe-inline'
-
-  # After: Added GA domains
-  script-src 'self' 'unsafe-inline' 'unsafe-eval'
-  https://*.googlesyndication.com https://*.googletagmanager.com
-  https://*.google-analytics.com
-
-  2. Fixed Dockerfile to Use Production Config
-
-  File: deployment/docker/Dockerfile
-
-  # Changed from dev config to production
-  COPY deployment/nginx/freeformathub-production.conf
-  /etc/nginx/conf.d/default.conf
-
-  3. Fixed GA Variable Injection in Astro
-
-  File: src/layouts/BaseLayout.astro
-
-  // Before: Broken syntax
-  <script>const GA_ID = {JSON.stringify(GA_ID)};</script>
-
-  // After: Proper Astro syntax
-  <script define:vars={{GA_ID}}>
-    const GA_ID_VALUE = GA_ID;
-    window.GA_ID = GA_ID_VALUE;
-  </script>
-
-  4. Fixed gtag Timing Issue
-
-  File: src/layouts/BaseLayout.astro
-
-  Added immediate gtag initialization:
-  // Initialize dataLayer and gtag function immediately
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-
-  // Set default consent before gtag.js loads
-  gtag('consent', 'default', {
-    analytics_storage: 'denied',
-    ad_storage: 'denied'
-  });
-
-  5. Added Missing Static File Routes
-
-  File: deployment/nginx/freeformathub-production.conf
-
-  # Favicon
-  location = /favicon.svg {
-      try_files /favicon.svg =404;
-      expires 1y;
-      add_header Cache-Control "public, immutable";
-  }
-
-  # Web manifest  
-  location = /site.webmanifest {
-      try_files /site.webmanifest =404;
-      expires 1y;
-      add_header Cache-Control "public";
-  }
-
-  Result
-
-  ✅ Google Analytics now loads and tracks properly✅ gtag.js script loads
-  without errors✅ Cookie consent system works✅ All static files serve
-  correctly
-
-  The main issue was the restrictive CSP blocking external scripts, combined
-  with async timing problems where gtag was called before being defined.
+The platform maintains strict privacy standards while providing comprehensive developer tools with excellent SEO and performance optimization.

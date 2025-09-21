@@ -386,7 +386,7 @@ export function JsonToXmlConverter({ className = '' }: JsonToXmlConverterProps) 
   return (
     <div className={`space-y-6 ${className}`}>
       {/* Sticky Controls Bar */}
-      <div className="sticky top-0 z-10" style={{
+      <div className="sticky top-0 z-10" className="grid-responsive" style={{
         backgroundColor: 'var(--color-surface-secondary)',
         borderBottom: '1px solid var(--color-border)',
         padding: 'var(--space-lg)'
@@ -431,9 +431,9 @@ export function JsonToXmlConverter({ className = '' }: JsonToXmlConverterProps) 
       </div>
 
       {/* Main Content Grid */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
+      <div className="grid-responsive" style={{
+        // Responsive grid handled by CSS class
+        
         gap: 'var(--space-xl)',
         minHeight: '500px'
       }} className="md:grid-cols-1">

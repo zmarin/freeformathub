@@ -602,6 +602,7 @@ export const NETWORK_MONITORING_TOOL: Tool = {
   icon: '📡',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'network')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'network')!.subcategories!.find(sub => sub.id === 'monitoring')!,
+  slug: 'network-monitoring-tool',
   tags: ['network', 'monitoring', 'ping', 'traceroute', 'ssl', 'dns', 'performance', 'diagnostics', 'uptime'],
   complexity: 'advanced',
   showInList: true,

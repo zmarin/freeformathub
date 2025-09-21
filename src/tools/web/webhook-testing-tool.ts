@@ -658,6 +658,7 @@ export const WEBHOOK_TESTING_TOOL: Tool = {
   icon: '🔗',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'web')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'web')!.subcategories!.find(sub => sub.id === 'api-tools')!,
+  slug: 'webhook-testing-tool',
   tags: ['webhook', 'testing', 'api', 'http', 'integration', 'automation', 'performance', 'security', 'validation'],
   complexity: 'advanced',
   showInList: true,

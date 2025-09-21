@@ -368,6 +368,7 @@ export const JWT_GENERATOR_TOOL: Tool = {
   icon: '🔐',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'crypto')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'crypto')!.subcategories!.find(sub => sub.id === 'encryption')!,
+  slug: 'jwt-generator',
   tags: ['jwt', 'token', 'authentication', 'oauth', 'security', 'auth', 'json', 'signing'],
   complexity: 'advanced',
   examples,

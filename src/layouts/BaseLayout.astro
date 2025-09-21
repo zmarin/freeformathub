@@ -437,9 +437,9 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-34Z7YVSEZ2';
               <LogoLink href="/" size="small" client:load />
             </div>
 
-            <!-- Centered Search -->
-            <div class="flex-1 max-w-2xl mx-12">
-              <div style="background-color: var(--color-surface-secondary); border-radius: var(--radius-xl); padding: var(--space-sm);">
+            <!-- Centered Search (Desktop) -->
+            <div class="hidden md:flex flex-1 max-w-2xl mx-12">
+              <div style="background-color: var(--color-surface-secondary); border-radius: var(--radius-xl); padding: var(--space-sm); width: 100%;">
                 <ToolSearch
                   placeholder="Search 100+ developer tools..."
                   size="large"
@@ -454,7 +454,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-34Z7YVSEZ2';
               <button
                 id="theme-toggle"
                 type="button"
-                class="btn btn-outline"
+                class="btn btn-outline btn-icon-only"
                 style="padding: var(--space-md); border-radius: var(--radius-lg);"
                 aria-label="Toggle theme"
               >
@@ -462,17 +462,99 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-34Z7YVSEZ2';
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                 </svg>
+                <span class="btn-text">Theme</span>
               </button>
 
-              <!-- Navigation Menu -->
+              <!-- Desktop Navigation Menu -->
               <div class="hidden md:flex items-center gap-1">
                 <a href="/" class="btn btn-outline" style="font-weight: 500;">Home</a>
                 <a href="/tools" class="btn btn-outline" style="font-weight: 500;">Tools</a>
               </div>
+
+              <!-- Mobile Menu Button -->
+              <button
+                id="mobile-menu-toggle"
+                type="button"
+                class="md:hidden btn btn-outline btn-icon-only"
+                style="padding: var(--space-md); border-radius: var(--radius-lg);"
+                aria-label="Open menu"
+              >
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Mobile Search (below header on mobile) -->
+          <div class="md:hidden pb-4">
+            <div style="background-color: var(--color-surface-secondary); border-radius: var(--radius-xl); padding: var(--space-sm);">
+              <ToolSearch
+                placeholder="Search tools..."
+                size="small"
+                client:load
+              />
             </div>
           </div>
         </div>
       </header>
+
+      <!-- Mobile Menu Overlay -->
+      <div id="mobile-menu-overlay" class="mobile-menu-overlay"></div>
+
+      <!-- Mobile Menu -->
+      <nav id="mobile-menu" class="mobile-menu">
+        <div style="padding: var(--space-xl);">
+          <!-- Mobile Menu Header -->
+          <div class="flex justify-between items-center mb-8">
+            <LogoLink href="/" size="small" client:load />
+            <button
+              id="mobile-menu-close"
+              type="button"
+              class="btn btn-outline btn-icon-only"
+              aria-label="Close menu"
+            >
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Mobile Navigation Links -->
+          <div style="display: flex; flex-direction: column; gap: var(--space-lg);">
+            <a href="/" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+              Home
+            </a>
+            <a href="/tools" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+              </svg>
+              Tools
+            </a>
+            <a href="/formatters" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+              </svg>
+              Formatters
+            </a>
+            <a href="/converters" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+              </svg>
+              Converters
+            </a>
+            <a href="/encoders" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              Encoders
+            </a>
+          </div>
+        </div>
+      </nav>
 
       <!-- Main content -->
       <main id="main-content" class="flex-1">
@@ -618,6 +700,45 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-34Z7YVSEZ2';
     <script>
       import('../lib/init').then(({ initializeApp }) => {
         initializeApp();
+      });
+    </script>
+
+    <!-- Mobile Menu JavaScript -->
+    <script is:inline>
+      document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const mobileMenuClose = document.getElementById('mobile-menu-close');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+
+        function openMobileMenu() {
+          mobileMenu?.classList.add('open');
+          mobileMenuOverlay?.classList.add('open');
+          document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileMenu() {
+          mobileMenu?.classList.remove('open');
+          mobileMenuOverlay?.classList.remove('open');
+          document.body.style.overflow = '';
+        }
+
+        mobileMenuToggle?.addEventListener('click', openMobileMenu);
+        mobileMenuClose?.addEventListener('click', closeMobileMenu);
+        mobileMenuOverlay?.addEventListener('click', closeMobileMenu);
+
+        // Close menu when clicking navigation links
+        const mobileNavLinks = mobileMenu?.querySelectorAll('a');
+        mobileNavLinks?.forEach(link => {
+          link.addEventListener('click', closeMobileMenu);
+        });
+
+        // Close menu on escape key
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') {
+            closeMobileMenu();
+          }
+        });
       });
     </script>
 
