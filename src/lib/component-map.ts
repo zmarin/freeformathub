@@ -57,6 +57,9 @@ import { LoadTestingConfigGenerator } from '../components/tools/development/Load
 import { PerformanceBudgetCalculator } from '../components/tools/development/PerformanceBudgetCalculator';
 import { SqlQueryBuilder } from '../components/tools/development/SqlQueryBuilder';
 import { YamlValidator } from '../components/tools/development/YamlValidator';
+import CliCommandsReference from '../components/tools/development/CliCommandsReference';
+import AiCliAssistant from '../components/tools/development/AiCliAssistant';
+import EmojiReference from '../components/tools/development/EmojiReference';
 
 // Encoder components
 import Base32Encoder from '../components/tools/encoders/Base32Encoder';
@@ -201,6 +204,9 @@ export const TOOL_COMPONENTS: Record<string, ToolComponent> = {
   'performance-budget-calculator': PerformanceBudgetCalculator,
   'sql-query-builder': SqlQueryBuilder,
   'yaml-validator': YamlValidator,
+  'cli-commands-reference': CliCommandsReference,
+  'ai-cli-assistant': AiCliAssistant,
+  'emoji-reference': EmojiReference,
 
   // Encoder tools
   'base32-encoder': Base32Encoder,

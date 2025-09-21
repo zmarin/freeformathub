@@ -127,6 +127,9 @@ import { databaseQueryOptimizerTool } from '../../tools/development/database-que
 import { LOAD_TESTING_CONFIG_GENERATOR_TOOL } from '../../tools/development/load-testing-config-generator';
 import { PERFORMANCE_BUDGET_CALCULATOR_TOOL } from '../../tools/development/performance-budget-calculator';
 import { LOG_ANALYSIS_TOOL } from '../../tools/development/log-analysis-tool';
+import { CLI_COMMANDS_REFERENCE_TOOL } from '../../tools/development/cli-commands-reference';
+import { AI_CLI_ASSISTANT_TOOL } from '../../tools/development/ai-cli-assistant';
+import { EMOJI_REFERENCE_TOOL } from '../../tools/development/emoji-reference';
 
 // Data tools
 import { BINARY_HEX_VIEWER_TOOL } from '../../tools/data/binary-hex-viewer';
@@ -285,6 +288,9 @@ registerTool(databaseQueryOptimizerTool);
 registerTool(LOAD_TESTING_CONFIG_GENERATOR_TOOL);
 registerTool(PERFORMANCE_BUDGET_CALCULATOR_TOOL);
 registerTool(LOG_ANALYSIS_TOOL);
+registerTool(CLI_COMMANDS_REFERENCE_TOOL);
+registerTool(AI_CLI_ASSISTANT_TOOL);
+registerTool(EMOJI_REFERENCE_TOOL);
 
 // Data
 registerTool(BINARY_HEX_VIEWER_TOOL);

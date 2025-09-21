@@ -1,1196 +1,155 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import CommandSearch from '../components/cheatsheets/CommandSearch.tsx';
-
-type AiCliTool = {
-  id: string;
-  name: string;
-  icon: string;
-  vendor: string;
-  summary: string;
-  install: Array<{ label: string; command: string }>;
-  commands: Array<{ title: string; command: string; description: string }>;
-  tips: string[];
-  docs: { label: string; url: string };
-};
-
-type CrossPlatformTask = {
-  task: string;
-  linux: string;
-  windows: string;
-  powershell: string;
-};
-
-type PlatformHighlight = {
-  id: string;
-  name: string;
-  icon: string;
-  description: string;
-  scenarios: Array<{ title: string; steps: Array<{ command: string; detail: string }> }>;
-  callouts: string[];
-};
-
-type MacLinuxComparison = {
-  topic: string;
-  mac: string[];
-  linux: string[];
-  note: string;
-};
-
-type CommandVariation = {
-  name: string;
-  mac: string;
-  linux: string;
-  detail: string;
-};
-
-type DockerCommand = {
-  title: string;
-  command: string;
-  description: string;
-  tip?: string;
-};
-
-const pageTitle = 'CLI Cheat Sheets & AI Terminal Assistants';
-const pageDescription = 'Master Linux, Windows CMD, and PowerShell commands with a searchable cheat sheet, and learn how to bring Claude, Gemini, Qwen, and Codex AI models into your terminal workflow.';
-const keywords = [
-  'cli cheat sheet',
-  'linux commands',
-  'windows command prompt',
-  'powershell quick reference',
-  'Claude Code CLI',
-  'Gemini API curl',
-  'Qwen dashscope',
-  'OpenAI codex cli',
-  'terminal automation',
-  'devops operations cheat sheet',
-];
-
-const commandStats = {
-  linux: 52,
-  windows: 23,
-  powershell: 22,
-  total: 97,
-};
-
-const crossPlatformTasks: CrossPlatformTask[] = [
-  {
-    task: 'Print current directory',
-    linux: 'pwd',
-    windows: 'cd',
-    powershell: 'Get-Location',
-  },
-  {
-    task: 'List files with metadata',
-    linux: 'ls -al',
-    windows: 'dir',
-    powershell: 'Get-ChildItem -Force',
-  },
-  {
-    task: 'Search logs for errors',
-    linux: 'grep -R "ERROR" /var/log',
-    windows: 'findstr /S /I "ERROR" *.log',
-    powershell: 'Select-String -Pattern "ERROR" -Path *.log',
-  },
-  {
-    task: 'Stream live log output',
-    linux: 'tail -f /var/log/syslog',
-    windows: 'powershell -Command "Get-Content .\\logs\\app.log -Wait"',
-    powershell: 'Get-Content .\\logs\\app.log -Wait',
-  },
-  {
-    task: 'Copy project to backup',
-    linux: 'cp -r src/ backup/',
-    windows: 'robocopy C:\\Projects C:\\Backup /MIR',
-    powershell: 'Copy-Item -Path .\\src -Destination .\\backup -Recurse',
-  },
-  {
-    task: 'Clean build artefacts',
-    linux: 'rm -rf build/',
-    windows: 'del /S /Q build\\*',
-    powershell: 'Remove-Item -Path .\\build -Recurse -Force',
-  },
-  {
-    task: 'Inspect running processes',
-    linux: 'ps aux | grep node',
-    windows: 'tasklist /FI "IMAGENAME eq node.exe"',
-    powershell: 'Get-Process -Name node',
-  },
-  {
-    task: 'Check network listeners',
-    linux: 'ss -tulpn',
-    windows: 'netstat -ano',
-    powershell: 'Get-NetTCPConnection -State Listen',
-  },
-  {
-    task: 'Restart critical service',
-    linux: 'sudo systemctl restart nginx',
-    windows: 'powershell -Command "Restart-Service -Name Spooler"',
-    powershell: 'Restart-Service -Name Spooler',
-  },
-  {
-    task: 'Install or update software',
-    linux: 'sudo apt install nginx',
-    windows: 'winget install --id Nmap.Nmap',
-    powershell: 'Install-Module Pester -Scope CurrentUser',
-  },
-];
-
-const macVsLinuxComparisons: MacLinuxComparison[] = [
-  {
-    topic: 'Package management',
-    mac: ['brew install package', 'brew update && brew upgrade', 'brew services start nginx'],
-    linux: ['sudo apt install package', 'sudo dnf install package', 'sudo systemctl start nginx'],
-    note: 'Homebrew taps target /usr/local or /opt/homebrew and integrates with launchctl; Debian/Fedora flows lean on systemd units.',
-  },
-  {
-    topic: 'Service supervision',
-    mac: ['launchctl list', 'launchctl start my.service', 'sudo launchctl load /Library/LaunchDaemons/com.app.service.plist'],
-    linux: ['systemctl list-units --type=service', 'systemctl start my.service', 'sudo systemctl enable my.service'],
-    note: 'launchd expects property lists while systemd consumes unit files with different lifecycle verbs.',
-  },
-  {
-    topic: 'System information',
-    mac: ['system_profiler SPHardwareDataType', 'sw_vers', 'top -o cpu'],
-    linux: ['sudo lshw -short', 'lsb_release -a', 'top'],
-    note: 'macOS leans on BSD utilities; Linux distributions bundle GNU tooling with alternate flags.',
-  },
-  {
-    topic: 'Filesystem & metadata',
-    mac: ['open .', 'mdls file.txt', 'mdfind "design spec"', 'ls -la@', 'xattr -l file.txt'],
-    linux: ['xdg-open .', 'stat file.txt', 'find . -name "design spec"', 'ls -lha', 'getfattr -d file.txt'],
-    note: 'Spotlight metadata and extended attributes are surfaced differently across the ecosystems.',
-  },
-  {
-    topic: 'Networking & Wi-Fi',
-    mac: ['ifconfig', 'networksetup -listallhardwareports', 'airport -s'],
-    linux: ['ip addr show', 'nmcli device status', 'iwlist scan'],
-    note: 'macOS retains BSD-style networking tools whereas modern Linux favors the iproute2/nmcli stack.',
-  },
-];
-
-const commandVariations: CommandVariation[] = [
-  {
-    name: 'Date parsing',
-    mac: 'date -j -f "%Y-%m-%d" "2024-01-01" "+%s"',
-    linux: 'date -d "2024-01-01" +%s',
-    detail: 'BSD date uses -j/-f to parse without mutating the system clock; GNU date relies on -d.',
-  },
-  {
-    name: 'sed in-place edit',
-    mac: "sed -i '' 's/old/new/g' file.txt",
-    linux: "sed -i 's/old/new/g' file.txt",
-    detail: 'macOS sed expects an explicit (even empty) backup suffix after -i.',
-  },
-  {
-    name: 'find exec behavior',
-    mac: 'find . -name "*.txt" -exec rm {} \\;',
-    linux: 'find . -name "*.txt" -exec rm {} +',
-    detail: 'GNU find supports the + terminator to batch executions; BSD find sticks to escaped semicolons.',
-  },
-];
-
-const macLinuxFilePaths = {
-  mac: ['/Applications/', '/Users/username/', '/System/Library/', '/usr/local/bin/ (Intel Homebrew)', '/opt/homebrew/bin/ (Apple Silicon)'],
-  linux: ['/usr/bin/', '/home/username/', '/etc/', '/var/', '/usr/local/bin/'],
-};
-
-const universalCliCommands = [
-  'cd',
-  'ls',
-  'pwd',
-  'mkdir',
-  'rm',
-  'cp',
-  'mv',
-  'grep',
-  'cat',
-  'less',
-  'head',
-  'tail',
-  'ssh',
-  'scp',
-  'curl',
-  'wget',
-  'git',
-  'npm',
-  'node',
-  'python',
-];
-
-const dockerCheats: DockerCommand[] = [
-  {
-    title: 'List running containers',
-    description: 'Formatted table showing container name, status, and exposed ports.',
-    command: 'docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"',
-  },
-  {
-    title: 'Tail container logs',
-    description: 'Follow logs for a single container while limiting backlog.',
-    command: 'docker logs -f web --tail 200',
-  },
-  {
-    title: 'Open an interactive shell',
-    description: 'Drop into a running container to debug or inspect the filesystem.',
-    command: 'docker exec -it web /bin/bash',
-  },
-  {
-    title: 'Bring up a compose stack',
-    description: 'Start services defined in docker-compose.yml in detached mode.',
-    command: 'docker compose up -d',
-  },
-  {
-    title: 'Stream compose logs',
-    description: 'Watch multi-service output to verify startup health.',
-    command: 'docker compose logs -f api',
-  },
-  {
-    title: 'Prune build artifacts',
-    description: 'Reclaim disk space reclaimed by dangling images and caches.',
-    command: 'docker system prune -af',
-    tip: 'Great for CI agents—avoid running on hosts that keep historical images intentionally.',
-  },
-];
-
-const platformHighlights: PlatformHighlight[] = [
-  {
-    id: 'linux',
-    name: 'Linux & macOS terminals',
-    icon: '🐧',
-    description:
-      'Production servers, CI runners, and container shells frequently rely on GNU coreutils and systemd tooling. Combine composable commands to investigate quickly.',
-    scenarios: [
-      {
-        title: 'Validate a rolling deployment',
-        steps: [
-          {
-            command: 'sudo systemctl status app',
-            detail: 'Confirm the service is running and review the last few log lines.',
-          },
-          {
-            command: 'journalctl -u app --since "10 minutes ago"',
-            detail: 'Stream deployment logs with time slicing to catch regressions.',
-          },
-          {
-            command: 'curl -I https://api.example.com/health',
-            detail: 'Hit the health endpoint directly from the server to confirm readiness.',
-          },
-        ],
-      },
-      {
-        title: 'Free disk space before a release',
-        steps: [
-          {
-            command: 'df -h',
-            detail: 'Identify partitions close to capacity.',
-          },
-          {
-            command: 'du -sh /var/log/* | sort -hr | head',
-            detail: 'Rank log directories that can be archived or rotated.',
-          },
-          {
-            command: 'tar -czvf logs-$(date +%Y%m%d).tar.gz /var/log/app',
-            detail: 'Archive historical logs before purging to S3 or cold storage.',
-          },
-        ],
-      },
-    ],
-    callouts: [
-      'Keep `~/.ssh/config` organised so `scp` and `rsync` pick up host aliases automatically.',
-      'Alias long `journalctl` invocations (for example `alias japp="journalctl -u app -f"`).',
-    ],
-  },
-  {
-    id: 'macos',
-    name: 'macOS terminal workflows',
-    icon: '🍎',
-    description:
-      'macOS ships a BSD userland with Spotlight, launchd, and Homebrew shaping everyday automation. Understanding the deltas keeps shell scripts portable across Ubuntu, Fedora, and macOS laptops.',
-    scenarios: [
-      {
-        title: 'Audit a workstation baseline',
-        steps: [
-          {
-            command: 'system_profiler SPHardwareDataType',
-            detail: 'Capture serial numbers, CPU models, and RAM totals for inventory.',
-          },
-          {
-            command: 'sw_vers',
-            detail: 'Record macOS release and build when triaging environment-specific bugs.',
-          },
-          {
-            command: 'top -o cpu',
-            detail: 'Sort by CPU usage to spot runaway user processes on developer laptops.',
-          },
-        ],
-      },
-      {
-        title: 'Bridge Finder & Spotlight from the shell',
-        steps: [
-          {
-            command: 'open .',
-            detail: 'Jump from Terminal to Finder when sharing log bundles or UI assets.',
-          },
-          {
-            command: 'mdfind "design doc"',
-            detail: 'Leverage Spotlight indexes to locate docs faster than recursive find.',
-          },
-          {
-            command: 'mdls report.pdf',
-            detail: 'Inspect metadata (authors, keywords, last opened) without leaving the CLI.',
-          },
-        ],
-      },
-    ],
-    callouts: [
-      'Homebrew installs under `/usr/local` (Intel) or `/opt/homebrew` (Apple Silicon)—add both to PATH for shared scripts.',
-      'BSD variants of `date`, `sed`, and `find` require different flags than GNU tooling; wrap cross-platform scripts in CI jobs for both environments.',
-    ],
-  },
-  {
-    id: 'windows',
-    name: 'Windows Command Prompt',
-    icon: '🪟',
-    description:
-      'Legacy automation, build agents, and quick troubleshooting often still happen in CMD. These commands stay compatible on Server Core and minimal images.',
-    scenarios: [
-      {
-        title: 'Trace a failing outbound connection',
-        steps: [
-          {
-            command: 'ipconfig /all',
-            detail: 'Verify DNS servers and interfaces are configured correctly.',
-          },
-          {
-            command: 'tracert api.example.com',
-            detail: 'Identify hops that introduce latency or packet loss.',
-          },
-          {
-            command: 'netstat -ano | findstr 443',
-            detail: 'Check whether the port is already bound locally by another process.',
-          },
-        ],
-      },
-      {
-        title: 'Prepare a workstation for development',
-        steps: [
-          {
-            command: 'winget install --id Git.Git -e',
-            detail: 'Install Git from the Microsoft Store source in one step.',
-          },
-          {
-            command: 'winget install --id Microsoft.VisualStudioCode',
-            detail: 'Pull the latest VS Code build with automatic updates.',
-          },
-          {
-            command: 'setx NODE_ENV development',
-            detail: 'Persist environment variables for new shells.',
-          },
-        ],
-      },
-    ],
-    callouts: [
-      'Use `robocopy` for resilient copies—its exit codes signal partial success, so script defensively.',
-      'Combine CMD with inline PowerShell (e.g. `powershell -Command "Get-Content log -Wait"`) when you need richer tooling without leaving the session.',
-    ],
-  },
-  {
-    id: 'powershell',
-    name: 'PowerShell 7+ shells',
-    icon: '⚡',
-    description:
-      'PowerShell treats data as structured objects, making it perfect for scripting, cross-platform automation, and remote management.',
-    scenarios: [
-      {
-        title: 'Audit recent production incidents',
-        steps: [
-          {
-            command: 'Get-WinEvent -LogName System -MaxEvents 100',
-            detail: 'Pull recent events with timestamps and correlated IDs.',
-          },
-          {
-            command: 'Select-String -Pattern "Exception" -Path .\\logs\\*.log',
-            detail: 'Search structured logs with regex support.',
-          },
-          {
-            command: 'Start-Transcript -Path incident-session.log',
-            detail: 'Record troubleshooting steps for handover or RCA.',
-          },
-        ],
-      },
-      {
-        title: 'Remote troubleshoot a fleet',
-        steps: [
-          {
-            command: 'Enter-PSSession -ComputerName server01',
-            detail: 'Open an interactive remote shell (requires remoting enabled).',
-          },
-          {
-            command: 'Get-Service -Name wuauserv',
-            detail: 'Check Windows Update service status remotely.',
-          },
-          {
-            command: 'Invoke-WebRequest https://intranet/status -UseBasicParsing',
-            detail: 'Test internal endpoints from the target server context.',
-          },
-        ],
-      },
-    ],
-    callouts: [
-      'Create reusable functions in your `$PROFILE` to wrap repetitive pipelines.',
-      'Modules from the PowerShell Gallery install per user—store required versions in source control to pin automation.',
-    ],
-  },
-];
-
-const aiCliTools: AiCliTool[] = [
-  {
-    id: 'claude',
-    name: 'Claude Code CLI',
-    icon: '🤖',
-    vendor: 'Anthropic',
-    summary:
-      'Chat with Claude 3.5 models, review diffs, and generate code suggestions directly from your terminal.',
-    install: [
-      {
-        label: 'Authenticate',
-        command: 'export ANTHROPIC_API_KEY="sk-ant-..."',
-      },
-      {
-        label: 'Install CLI (beta)',
-        command: 'npm install -g @anthropic-ai/claude-code',
-      },
-    ],
-    commands: [
-      {
-        title: 'Quick prompt',
-        description: 'Send an ad-hoc request to Claude with streaming output.',
-        command: 'claude chat --model claude-3-5-sonnet --prompt "Summarise deploy.sh"',
-      },
-      {
-        title: 'Review staged diff',
-        description: 'Pipe git diffs for contextual code review suggestions.',
-        command: 'git diff --staged | claude code review --stdin --model claude-3-5-sonnet',
-      },
-      {
-        title: 'Fallback cURL call',
-        description: 'Interact with the Messages API when CLI is unavailable.',
-        command: `curl https://api.anthropic.com/v1/messages \\
-  -H "x-api-key: $ANTHROPIC_API_KEY" \\
-  -H "anthropic-version: 2023-06-01" \\
-  -H "content-type: application/json" \\
-  -d '{"model":"claude-3-5-sonnet-20241022","messages":[{"role":"user","content":"Outline a deployment checklist"}]}'`,
-      },
-    ],
-    tips: [
-      'Store repo-specific snippets in `.claude/context` so the CLI auto-loads architecture notes.',
-      'Use `--structured` when you need JSON-safe responses for automation.',
-    ],
-    docs: {
-      label: 'Claude CLI docs',
-      url: 'https://docs.anthropic.com/claude/docs/claude-code',
-    },
-  },
-  {
-    id: 'gemini',
-    name: 'Gemini via CLI',
-    icon: '🌐',
-    vendor: 'Google',
-    summary:
-      'Run Gemini 1.5 models for summarisation, content generation, and data extraction using simple shell commands.',
-    install: [
-      {
-        label: 'Set API key',
-        command: 'export GOOGLE_API_KEY="AIza..."',
-      },
-      {
-        label: 'Install gcloud (optional)',
-        command: 'curl https://sdk.cloud.google.com | bash',
-      },
-    ],
-    commands: [
-      {
-        title: 'Minimal cURL request',
-        description: 'Call Gemini directly from bash with JSON payloads.',
-        command: `curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GOOGLE_API_KEY" \\
-  -H "content-type: application/json" \\
-  -d '{"contents":[{"role":"user","parts":[{"text":"Summarise README.md"}]}]}'`,
-      },
-      {
-        title: 'Stream with gcloud preview',
-        description: 'Use the Vertex AI preview command for SSE streaming.',
-        command: 'gcloud alpha ai responses stream generate --model=projects/generative-language/models/gemini-1.5-pro --text-prompt "Draft an incident update"',
-      },
-      {
-        title: 'Batch prompts via heredoc',
-        description: 'Leverage here-documents for longer prompts without escaping.',
-        command: `cat <<'EOF' | curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$GOOGLE_API_KEY" \\
-  -H "content-type: application/json" \\
-  -d @-
-{
-  "contents": [
-    {
-      "role": "user",
-      "parts": [{ "text": "Create release notes for version 2.1" }]
-    }
-  ]
-}
-EOF`,
-      },
-    ],
-    tips: [
-      'Use shorter models such as `gemini-1.5-flash` for CLI speed; switch to Pro for higher fidelity outputs.',
-      'Store prompts as JSON templates and pipe them into cURL to avoid shell escaping issues.',
-    ],
-    docs: {
-      label: 'Gemini API quickstart',
-      url: 'https://ai.google.dev/gemini-api/docs/quickstart',
-    },
-  },
-  {
-    id: 'qwen',
-    name: 'Qwen & DashScope',
-    icon: '🐉',
-    vendor: 'Alibaba Cloud',
-    summary:
-      'Query cloud-hosted Qwen models or run Qwen2 locally with Ollama for offline experimentation.',
-    install: [
-      {
-        label: 'DashScope key',
-        command: 'export DASHSCOPE_API_KEY="sk-dashscope-..."',
-      },
-      {
-        label: 'Install Ollama (local)',
-        command: 'curl https://ollama.ai/install.sh | sh',
-      },
-    ],
-    commands: [
-      {
-        title: 'DashScope text generation',
-        description: 'Call Qwen-Max via the DashScope REST endpoint.',
-        command: `curl https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation \\
-  -H "Authorization: Bearer $DASHSCOPE_API_KEY" \\
-  -H "Content-Type: application/json" \\
-  -d '{"model":"qwen-max","input":{"messages":[{"role":"user","content":"Explain the backup rotation policy"}]}}'`,
-      },
-      {
-        title: 'Ollama local inference',
-        description: 'Run lightweight Qwen2 models on your workstation.',
-        command: 'ollama run qwen2:0.5b "Summarise the database schema"',
-      },
-      {
-        title: 'Fine-tuned prompt file',
-        description: 'Maintain reusable prompts and feed them to DashScope.',
-        command: `curl https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation \
-  -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d @prompts/incident-review.json`,
-      },
-    ],
-    tips: [
-      'DashScope throttles large payloads—compress context or upload files to Object Storage Service and share URLs.',
-      'Keep Ollama models updated (`ollama pull qwen2:7b`) before benchmarking latency.',
-    ],
-    docs: {
-      label: 'Qwen developer docs',
-      url: 'https://dashscope.aliyuncs.com/api-reference',
-    },
-  },
-  {
-    id: 'codex',
-    name: 'OpenAI CLI (Codex successor)',
-    icon: '🧠',
-    vendor: 'OpenAI',
-    summary:
-      'Use the OpenAI CLI to trigger code completions, run function-calling workflows, or manage structured Responses API calls.',
-    install: [
-      {
-        label: 'Install CLI',
-        command: 'pip install --upgrade openai',
-      },
-      {
-        label: 'Set API key',
-        command: 'export OPENAI_API_KEY="sk-proj-..."',
-      },
-    ],
-    commands: [
-      {
-        title: 'Structured response',
-        description: 'Request JSON-safe output for automation.',
-        command: `openai api responses.create \\
-  -m gpt-4o-mini \\
-  -f '{"type":"json_schema","json_schema":{"name":"refactor","schema":{"type":"object","properties":{"summary":{"type":"string"}},"required":["summary"]}}}' \\
-  -p "Summarise src/lib/tools/registry.ts"`,
-      },
-      {
-        title: 'Generate tests from diff',
-        description: 'Pipe git diff output into the CLI for targeted suggestions.',
-        command: 'git diff main...HEAD | openai api completions.create -m gpt-4o-mini -p "Write vitest cases for the changed code"',
-      },
-      {
-        title: 'Monitor usage',
-        description: 'Review current billing and request limits directly in the terminal.',
-        command: 'openai api subscriptions.retrieve',
-      },
-    ],
-    tips: [
-      'Prefer `--format json` to parse responses reliably within shell scripts.',
-      'Store `OPENAI_ORG` and `OPENAI_PROJECT` variables when working with multi-team accounts.',
-    ],
-    docs: {
-      label: 'OpenAI CLI guide',
-      url: 'https://platform.openai.com/docs/guides/cli',
-    },
-  },
-];
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription} keywords={keywords}>
-  <main class="bg-surface">
-    <header class="bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-500 text-white">
-      <div class="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-16 sm:px-6 lg:px-8">
-        <div class="max-w-3xl">
-          <p class="text-sm font-semibold uppercase tracking-wide text-blue-100">
-            Command reference · New category
-          </p>
-          <h1 class="mt-2 text-4xl font-bold sm:text-5xl">
-            Command-Line Cheat Sheets & AI Terminal Assistants
-          </h1>
-          <p class="mt-4 text-lg text-blue-50">
-            One searchable home for Linux, Windows CMD, and PowerShell commands—plus
-            practical recipes for integrating Claude, Gemini, Qwen, and OpenAI models
-            into your shell workflows.
-          </p>
-        </div>
-        <div class="grid gap-4 sm:grid-cols-4">
-          <div class="rounded-2xl bg-white/10 p-4">
-            <p class="text-sm uppercase tracking-wide text-blue-100">Catalog</p>
-            <p class="mt-2 text-3xl font-semibold">{commandStats.total}</p>
-            <p class="text-sm text-blue-100">Commands across all platforms</p>
-          </div>
-          <div class="rounded-2xl bg-white/10 p-4">
-            <p class="text-sm uppercase tracking-wide text-blue-100">Linux & macOS</p>
-            <p class="mt-2 text-3xl font-semibold">{commandStats.linux}</p>
-            <p class="text-sm text-blue-100">Operations-tested utilities</p>
-          </div>
-          <div class="rounded-2xl bg-white/10 p-4">
-            <p class="text-sm uppercase tracking-wide text-blue-100">Windows CMD</p>
-            <p class="mt-2 text-3xl font-semibold">{commandStats.windows}</p>
-            <p class="text-sm text-blue-100">Legacy friendly coverage</p>
-          </div>
-          <div class="rounded-2xl bg-white/10 p-4">
-            <p class="text-sm uppercase tracking-wide text-blue-100">PowerShell</p>
-            <p class="mt-2 text-3xl font-semibold">{commandStats.powershell}</p>
-            <p class="text-sm text-blue-100">Object-first automation</p>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-      <div class="grid gap-8 lg:grid-cols-[2fr,1fr]">
-        <div class="space-y-6">
-          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">
-            Why this cheat sheet?
-          </h2>
-          <p class="text-base text-gray-600 dark:text-gray-300">
-            Teams often juggle disparate runbooks, wiki pages, and tribal knowledge.
-            This curated category keeps everyday CLI answers close—organised by
-            intent, searchable by keywords, and annotated with risk-aware tips.
-          </p>
-          <ul class="grid gap-4 sm:grid-cols-2">
-            <li class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-              <h3 class="text-base font-semibold text-gray-900 dark:text-white">
-                Operations ready
-              </h3>
-              <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                Every command emphasises safe flags, time filters, and live monitoring
-                for incident response.
-              </p>
-            </li>
-            <li class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-              <h3 class="text-base font-semibold text-gray-900 dark:text-white">
-                Cross-platform parity
-              </h3>
-              <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                Compare Linux, CMD, and PowerShell equivalents side by side to save
-                context switching time.
-              </p>
-            </li>
-            <li class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-              <h3 class="text-base font-semibold text-gray-900 dark:text-white">
-                AI-assisted workflows
-              </h3>
-              <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                Bring large language models into the terminal for reviews, summaries,
-                and quick automation scaffolding.
-              </p>
-            </li>
-            <li class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-              <h3 class="text-base font-semibold text-gray-900 dark:text-white">
-                Ready for scripts
-              </h3>
-              <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                Copy-paste friendly snippets with environment variables and streaming
-                examples already wired.
-              </p>
-            </li>
-          </ul>
-        </div>
-        <aside class="rounded-2xl border border-dashed border-blue-300 bg-blue-50 p-6 text-blue-900 dark:border-blue-600/70 dark:bg-blue-900/20 dark:text-blue-100">
-          <h2 class="text-lg font-semibold">How to use it</h2>
-          <ol class="mt-4 space-y-3 text-sm">
-            <li>
-              <span class="font-semibold">1. Search</span> — locate commands instantly with the
-              explorer below.
-            </li>
-            <li>
-              <span class="font-semibold">2. Compare</span> — use the cross-platform table to mirror
-              tasks on mixed estates.
-            </li>
-            <li>
-              <span class="font-semibold">3. Automate</span> — feed commands to AI CLIs to draft scripts,
-              scaffolds, or runbooks.
-            </li>
-          </ol>
-        </aside>
-      </div>
-    </section>
-
-    <section class="mx-auto max-w-6xl px-4 pb-12 sm:px-6 lg:px-8">
-      <CommandSearch client:load />
-    </section>
-
-    <section class="mx-auto max-w-6xl px-4 pb-12 sm:px-6 lg:px-8">
-      <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-        <div class="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">
-              Cross-platform quick reference
-            </h2>
-            <p class="text-sm text-gray-600 dark:text-gray-300">
-              Mirror common operational tasks regardless of the shell you land in.
-            </p>
-          </div>
-          <span class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
-            {crossPlatformTasks.length} playbook tasks
-          </span>
-        </div>
-        <div class="overflow-x-auto">
-          <table class="min-w-full border-collapse text-left text-sm text-gray-700 dark:text-gray-200">
-            <thead>
-              <tr class="border-b border-gray-200 bg-gray-50 text-xs uppercase tracking-wide text-gray-500 dark:border-slate-700 dark:bg-slate-800 dark:text-gray-300">
-                <th class="px-4 py-3 font-semibold">Task</th>
-                <th class="px-4 py-3 font-semibold">Linux & macOS</th>
-                <th class="px-4 py-3 font-semibold">Windows CMD</th>
-                <th class="px-4 py-3 font-semibold">PowerShell</th>
-              </tr>
-            </thead>
-            <tbody>
-              {crossPlatformTasks.map((item, index) => (
-                <tr
-                  class={[
-                    'border-b border-gray-100 dark:border-slate-800',
-                    index % 2 === 0 ? 'bg-white dark:bg-slate-900/60' : '',
-                  ].join(' ')}
-                >
-                  <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">
-                    {item.task}
-                  </td>
-                  <td class="px-4 py-3 font-mono text-xs text-gray-700 dark:text-gray-200">
-                    {item.linux}
-                  </td>
-                  <td class="px-4 py-3 font-mono text-xs text-gray-700 dark:text-gray-200">
-                    {item.windows}
-                  </td>
-                  <td class="px-4 py-3 font-mono text-xs text-gray-700 dark:text-gray-200">
-                    {item.powershell}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <section class="mx-auto max-w-6xl px-4 pb-12 sm:px-6 lg:px-8">
-      <div class="space-y-10">
-        {platformHighlights.map((highlight) => (
-          <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-            <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-              <div>
-                <div class="flex items-center gap-3">
-                  <span class="text-3xl" aria-hidden="true">{highlight.icon}</span>
-                  <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">
-                    {highlight.name}
-                  </h2>
-                </div>
-                <p class="mt-2 max-w-3xl text-sm text-gray-600 dark:text-gray-300">
-                  {highlight.description}
-                </p>
-              </div>
-            </div>
-            <div class="mt-6 grid gap-6 md:grid-cols-2">
-              {highlight.scenarios.map((scenario) => (
-                <article class="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-slate-700 dark:bg-slate-800">
-                  <h3 class="text-base font-semibold text-gray-900 dark:text-white">
-                    {scenario.title}
-                  </h3>
-                  <ol class="mt-3 space-y-3 text-sm text-gray-600 dark:text-gray-300">
-                    {scenario.steps.map((step) => (
-                      <li>
-                        <p class="font-mono text-xs text-gray-800 dark:text-gray-100">
-                          {step.command}
-                        </p>
-                        <p class="mt-1 text-xs">{step.detail}</p>
-                      </li>
-                    ))}
-                  </ol>
-                </article>
-              ))}
-            </div>
-            <ul class="mt-6 list-disc pl-5 text-xs text-blue-700 dark:text-blue-300">
-              {highlight.callouts.map((callout) => (
-                <li>{callout}</li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-    </section>
-
-    <section class="mx-auto max-w-6xl px-4 pb-12 sm:px-6 lg:px-8">
-      <div class="space-y-8">
-        <div class="rounded-2xl border border-amber-200 bg-amber-50 p-6 shadow-sm dark:border-amber-500/40 dark:bg-amber-900/20">
-          <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div class="max-w-3xl">
-              <h2 class="text-2xl font-semibold text-amber-900 dark:text-amber-100">
-                macOS vs Ubuntu/Fedora quick reference
-              </h2>
-              <p class="mt-2 text-sm text-amber-900/90 dark:text-amber-100/80">
-                macOS inherits BSD defaults while Ubuntu and Fedora lean on GNU tooling. Use this side-by-side guide when porting shell snippets across platforms.
-              </p>
-            </div>
-            <p class="text-xs uppercase tracking-wide text-amber-800 dark:text-amber-200">
-              Spotlight · launchd · BSD userland
-            </p>
-          </div>
-          <div class="mt-6 grid gap-6 lg:grid-cols-2">
-            {macVsLinuxComparisons.map((item) => (
-              <article class="rounded-xl border border-amber-200 bg-white/80 p-5 dark:border-amber-500/40 dark:bg-amber-900/30">
-                <h3 class="text-lg font-semibold text-amber-900 dark:text-amber-100">
-                  {item.topic}
-                </h3>
-                <div class="mt-3 grid gap-4 md:grid-cols-2">
-                  <div>
-                    <p class="text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-200">
-                      macOS (Homebrew/BSD)
-                    </p>
-                    <ul class="mt-2 space-y-1 text-xs text-amber-900 dark:text-amber-100">
-                      {item.mac.map((command) => (
-                        <li class="rounded bg-amber-100/70 px-2 py-1 font-mono dark:bg-amber-800/50">
-                          {command}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <p class="text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-200">
-                      Ubuntu/Fedora (GNU)
-                    </p>
-                    <ul class="mt-2 space-y-1 text-xs text-amber-900 dark:text-amber-100">
-                      {item.linux.map((command) => (
-                        <li class="rounded bg-amber-100/70 px-2 py-1 font-mono dark:bg-amber-800/50">
-                          {command}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-                <p class="mt-3 text-xs text-amber-800 dark:text-amber-200">
-                  {item.note}
-                </p>
-              </article>
-            ))}
-          </div>
-        </div>
-
-        <div class="grid gap-6 lg:grid-cols-2">
-          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-              Command flag variations
-            </h3>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              Same command, different syntax. Account for these when writing install scripts or migration guides.
-            </p>
-            <table class="mt-4 w-full border-collapse text-left text-xs text-gray-700 dark:text-gray-200">
-              <thead>
-                <tr class="border-b border-gray-200 dark:border-slate-700">
-                  <th class="px-2 py-2 font-semibold">Command</th>
-                  <th class="px-2 py-2 font-semibold">macOS</th>
-                  <th class="px-2 py-2 font-semibold">Ubuntu/Fedora</th>
-                </tr>
-              </thead>
-              <tbody>
-                {commandVariations.map((variation) => (
-                  <tr class="border-b border-gray-100 last:border-b-0 dark:border-slate-800">
-                    <td class="px-2 py-2 font-medium text-gray-900 dark:text-white">{variation.name}</td>
-                    <td class="px-2 py-2 font-mono">{variation.mac}</td>
-                    <td class="px-2 py-2 font-mono">{variation.linux}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
-              {commandVariations.map((variation) => variation.detail).join(' ')}
-            </p>
-          </div>
-
-          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-              File paths & universal commands
-            </h3>
-            <div class="mt-4 grid gap-4 md:grid-cols-2">
-              <div>
-                <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                  macOS paths
-                </p>
-                <ul class="mt-2 space-y-1 text-xs text-gray-700 dark:text-gray-200">
-                  {macLinuxFilePaths.mac.map((path) => (
-                    <li class="rounded bg-gray-100 px-2 py-1 font-mono dark:bg-slate-800">{path}</li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                  Linux paths
-                </p>
-                <ul class="mt-2 space-y-1 text-xs text-gray-700 dark:text-gray-200">
-                  {macLinuxFilePaths.linux.map((path) => (
-                    <li class="rounded bg-gray-100 px-2 py-1 font-mono dark:bg-slate-800">{path}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-            <div class="mt-4">
-              <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                Universal CLI staples
-              </p>
-              <div class="mt-2 flex flex-wrap gap-2 text-xs text-gray-600 dark:text-gray-300">
-                {universalCliCommands.map((cmd) => (
-                  <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 font-mono dark:bg-slate-800">
-                    {cmd}
-                  </span>
-                ))}
-              </div>
-              <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
-                For portable scripts, run CI on both macOS and Linux or containerise workflows with Docker to eliminate environment drift.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="mx-auto max-w-6xl px-4 pb-12 sm:px-6 lg:px-8">
-      <div class="rounded-2xl border border-sky-200 bg-sky-50 p-6 shadow-sm dark:border-sky-500/40 dark:bg-sky-900/20">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div class="max-w-3xl">
-            <h2 class="text-2xl font-semibold text-sky-900 dark:text-sky-100">
-              Docker & container quick commands
-            </h2>
-            <p class="mt-2 text-sm text-sky-900/90 dark:text-sky-100/80">
-              Containers are a lightweight way to normalise environments when shell tooling diverges between macOS and Linux. Keep these commands close for day-to-day operations.
-            </p>
-          </div>
-          <p class="text-xs uppercase tracking-wide text-sky-800 dark:text-sky-200">
-            Docker · Compose · Cleanup
-          </p>
-        </div>
-        <div class="mt-6 grid gap-4 md:grid-cols-2">
-          {dockerCheats.map((entry) => (
-            <article class="flex h-full flex-col gap-3 rounded-xl border border-sky-200 bg-white p-4 shadow-sm dark:border-sky-500/40 dark:bg-sky-900/30">
-              <div>
-                <h3 class="text-base font-semibold text-sky-900 dark:text-sky-100">
-                  {entry.title}
-                </h3>
-                <p class="mt-1 text-sm text-sky-900/90 dark:text-sky-100/80">
-                  {entry.description}
-                </p>
-              </div>
-              <pre class="overflow-x-auto rounded bg-sky-950/80 px-3 py-2 font-mono text-xs text-sky-100">
-                <code>{entry.command}</code>
-              </pre>
-              {entry.tip && (
-                <p class="text-xs text-sky-800 dark:text-sky-200">Tip: {entry.tip}</p>
-              )}
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <section class="mx-auto max-w-6xl px-4 pb-12 sm:px-6 lg:px-8">
-      <div class="mb-8 text-center">
-        <h2 class="text-3xl font-semibold text-gray-900 dark:text-white">
-          AI CLI toolkits
-        </h2>
-        <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-          Blend deterministic commands with model-assisted workflows for faster
-          incident response, documentation, and code remediation.
+<BaseLayout
+  title="CLI & Developer Reference Hub - Free Developer Tools"
+  description="Comprehensive CLI commands, AI assistant tools, and emoji references for developers. Search through thousands of commands, AI CLI tools, and emojis with copy-to-clipboard functionality."
+  keywords={[
+    "CLI cheatsheet",
+    "command line reference",
+    "AI CLI tools",
+    "emoji reference",
+    "developer tools",
+    "claude code",
+    "ollama",
+    "openai cli",
+    "unicode emojis",
+    "terminal commands"
+  ]}
+>
+  <main class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+          CLI & Developer Reference Hub
+        </h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          Your comprehensive reference for CLI commands, AI developer tools, and emojis.
+          Search through thousands of commands, AI assistants, and Unicode characters with instant copy-to-clipboard functionality.
         </p>
       </div>
-      <div class="grid gap-6 md:grid-cols-2">
-        {aiCliTools.map((tool) => (
-          <article class="flex h-full flex-col rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-            <div class="flex items-start justify-between gap-3">
-              <div>
-                <h3 class="flex items-center gap-2 text-xl font-semibold text-gray-900 dark:text-white">
-                  <span class="text-2xl" aria-hidden="true">{tool.icon}</span>
-                  {tool.name}
-                </h3>
-                <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                  {tool.vendor}
-                </p>
-              </div>
-              <a
-                href={tool.docs.url}
-                class="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 hover:border-blue-300 hover:bg-blue-100 dark:border-blue-700/40 dark:bg-blue-900/20 dark:text-blue-200"
-              >
-                Docs
-              </a>
+
+      <div class="grid md:grid-cols-3 gap-8 mb-12">
+        <!-- CLI Commands Reference -->
+        <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+          <div class="flex items-center mb-4">
+            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+              <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
             </div>
-            <p class="mt-3 text-sm text-gray-600 dark:text-gray-300">
-              {tool.summary}
-            </p>
-            <section class="mt-4">
-              <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                Set-up
-              </h4>
-              <ul class="mt-2 space-y-2 text-xs text-gray-700 dark:text-gray-200">
-                {tool.install.map((step) => (
-                  <li class="rounded-lg bg-gray-50 p-3 font-mono dark:bg-slate-800">
-                    <span class="block text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                      {step.label}
-                    </span>
-                    <span class="block mt-1">{step.command}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-            <section class="mt-4 space-y-3">
-              <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                Go-to commands
-              </h4>
-              {tool.commands.map((cmd) => (
-                <div class="rounded-lg border border-gray-200 bg-white p-3 text-xs shadow-sm dark:border-slate-700 dark:bg-slate-800">
-                  <p class="font-semibold text-gray-900 dark:text-white">{cmd.title}</p>
-                  <p class="mt-1 text-gray-600 dark:text-gray-300">{cmd.description}</p>
-                  <pre class="mt-2 overflow-x-auto rounded bg-gray-900/90 px-3 py-2 font-mono text-[11px] text-green-100">
-                    <code>{cmd.command}</code>
-                  </pre>
-                </div>
-              ))}
-            </section>
-            <section class="mt-4 border-t border-dashed border-gray-200 pt-4 dark:border-slate-700">
-              <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                Best practice notes
-              </h4>
-              <ul class="mt-2 space-y-2 text-xs text-gray-600 dark:text-gray-300">
-                {tool.tips.map((tip) => (
-                  <li class="rounded-lg bg-gray-50 p-2 dark:bg-slate-800">{tip}</li>
-                ))}
-              </ul>
-            </section>
-          </article>
-        ))}
-      </div>
-    </section>
-
-    <section class="mx-auto max-w-6xl px-4 pb-12 sm:px-6 lg:px-8">
-      <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 shadow-sm dark:border-emerald-500/40 dark:bg-emerald-900/20">
-        <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-          <div class="max-w-3xl">
-            <h2 class="text-2xl font-semibold text-emerald-900 dark:text-emerald-200">
-              Emoji cheatsheet? Fully permitted and in demand
-            </h2>
-            <p class="mt-2 text-sm text-emerald-800 dark:text-emerald-200/80">
-              Emoji references make great developer utilities. Unicode emoji characters are free to use, and many teams rely on quick copy helpers during docs and UI work.
-            </p>
-            <ul class="mt-4 space-y-2 text-sm text-emerald-900 dark:text-emerald-100 list-disc pl-5">
-              <li><strong>✅ Unicode compliant:</strong> Emojis are standard code points—copying or redistributing them is unrestricted.</li>
-              <li><strong>✅ Reference friendly:</strong> Cheatsheets with search, categories, or copy buttons are common (see <a class="text-emerald-700 underline dark:text-emerald-200" href="https://emojipedia.org/">Emojipedia</a>, <a class="text-emerald-700 underline dark:text-emerald-200" href="https://github.com/ikatyang/emoji-cheat-sheet">GitHub emoji sheet</a>, and <a class="text-emerald-700 underline dark:text-emerald-200" href="https://unicode.org/emoji/charts/">Unicode charts</a>).</li>
-              <li>
-                <strong>✅ Copy workflows:</strong> Developers expect one-click access to raw emoji
-                <span aria-hidden="true"> (🚀)</span>, HTML entities <code>&amp;#x1F680;</code>, Unicode
-                <code>U+1F680</code>, CSS <code>{String.raw`\\1F680`}</code>, and JavaScript
-                <code>{String.raw`\\u{1F680}`}</code>
-                escapes.
-              </li>
-              <li><strong>✅ Education & fair use:</strong> Categorised listings (smileys, objects, symbols) help with UI authoring, localisation, and accessibility guidance.</li>
-            </ul>
+            <h2 class="text-xl font-semibold text-gray-900">CLI Commands Reference</h2>
           </div>
-          <div class="max-w-sm rounded-xl border border-emerald-200 bg-white/70 p-5 text-sm text-emerald-900 dark:border-emerald-500/40 dark:bg-emerald-800/40 dark:text-emerald-100">
-            <h3 class="text-lg font-semibold">How it could fit FreeFormatHub</h3>
-            <ul class="mt-3 space-y-2 list-disc pl-5">
-              <li>Ship an <span class="font-semibold">Emoji Reference Tool</span> under generators or development.</li>
-              <li>Provide instant search, filters, and copy buttons for every emoji format.</li>
-              <li>Highlight accessibility tips (e.g. when to pair emoji with text labels).</li>
-            </ul>
+          <p class="text-gray-600 mb-4">
+            Comprehensive database of CLI commands for Linux, macOS, Windows, Docker, and Git.
+            Includes examples, flags, and risk indicators for safe usage.
+          </p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">500+ Commands</span>
+            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">Cross-Platform</span>
+            <span class="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded">Risk Levels</span>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="mx-auto max-w-6xl px-4 pb-16 sm:px-6 lg:px-8">
-      <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">
-              Operational hygiene checklist
-            </h2>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              Keep your CLI environments predictable and auditable.
-            </p>
-          </div>
-          <a
-            href="https://freeformathub.com/tools"
-            class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700 hover:border-blue-300 hover:bg-blue-100 dark:border-blue-700/40 dark:bg-blue-900/20 dark:text-blue-100"
-          >
-            Browse all tools
+          <a href="/development/cli-commands-reference" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
+            Open CLI Commands →
           </a>
         </div>
-        <div class="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <div class="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-slate-700 dark:bg-slate-800">
-            <h3 class="text-base font-semibold text-gray-900 dark:text-white">
-              Version pinning
-            </h3>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              Record CLI versions (`--version`) in onboarding docs so automation stays
-              reproducible across laptops and CI.
-            </p>
+
+        <!-- AI CLI Assistant -->
+        <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+          <div class="flex items-center mb-4">
+            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+              <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+              </svg>
+            </div>
+            <h2 class="text-xl font-semibold text-gray-900">AI CLI Assistant</h2>
           </div>
-          <div class="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-slate-700 dark:bg-slate-800">
-            <h3 class="text-base font-semibold text-gray-900 dark:text-white">
-              Secrets hygiene
-            </h3>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              Prefer one secret manager per estate—export credentials only for the
-              lifespan of the terminal session.
-            </p>
+          <p class="text-gray-600 mb-4">
+            Complete reference for AI-powered CLI tools including Claude Code, Ollama, OpenAI CLI,
+            GitHub Copilot, and more. Includes dangerous flag warnings and official documentation links.
+          </p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded">Claude Code</span>
+            <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">Ollama</span>
+            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">OpenAI</span>
           </div>
-          <div class="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-slate-700 dark:bg-slate-800">
-            <h3 class="text-base font-semibold text-gray-900 dark:text-white">
-              Logging discipline
-            </h3>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              Pipe long-running commands to tee (e.g. `... |& tee session.log`) so
-              you can share transcripts during post-incident reviews.
-            </p>
+          <a href="/development/ai-cli-assistant" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
+            Open AI Tools →
+          </a>
+        </div>
+
+        <!-- Emoji Reference -->
+        <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+          <div class="flex items-center mb-4">
+            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mr-4">
+              <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <h2 class="text-xl font-semibold text-gray-900">Emoji Reference</h2>
+          </div>
+          <p class="text-gray-600 mb-4">
+            Complete emoji database with Unicode values, HTML codes, CSS codes, and shortcodes.
+            Perfect for developers, content creators, and anyone working with emojis programmatically.
+          </p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded">Unicode</span>
+            <span class="px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded">HTML Codes</span>
+            <span class="px-2 py-1 text-xs bg-red-100 text-red-800 rounded">Shortcodes</span>
+          </div>
+          <a href="/development/emoji-reference" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
+            Open Emoji Reference →
+          </a>
+        </div>
+      </div>
+
+      <!-- Features Section -->
+      <div class="bg-white rounded-lg shadow-lg p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Why Use Our Reference Hub?</h2>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="text-center">
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Fast Search</h3>
+            <p class="text-gray-600 text-sm">Instantly search through thousands of commands, tools, and emojis with real-time filtering.</p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Copy to Clipboard</h3>
+            <p class="text-gray-600 text-sm">One-click copying for commands, codes, and emojis. No typing required.</p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Official Docs</h3>
+            <p class="text-gray-600 text-sm">Direct links to official documentation for deeper learning and reference.</p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Safety First</h3>
+            <p class="text-gray-600 text-sm">Risk indicators and warnings for potentially dangerous commands to keep your system safe.</p>
           </div>
         </div>
       </div>
-    </section>
+    </div>
   </main>
 </BaseLayout>
