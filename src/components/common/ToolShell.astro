@@ -272,13 +272,13 @@ const websiteSchema = {
 };
 
 // Combine all schemas into a comprehensive JSON-LD graph
+// Note: softwareApplicationSchema is already included as mainEntity of websiteSchema
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     organizationSchema,
     localBusinessSchema,
     websiteSchema,
-    softwareApplicationSchema,
     breadcrumbSchema,
     ...(howToSchema ? [howToSchema] : []),
     ...(faqSchema ? [faqSchema] : []),
