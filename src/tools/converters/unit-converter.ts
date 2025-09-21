@@ -422,10 +422,10 @@ export const UNIT_CONVERTER_TOOL: Tool = {
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'converters')!.subcategories!.find(sub => sub.id === 'numbers-units')!,
   slug: 'unit-converter',
   icon: '📏',
-  keywords: ['unit', 'converter', 'measurement', 'length', 'weight', 'temperature', 'volume', 'area', 'time', 'digital'],
-  seoTitle: 'Unit Converter - Length, Weight, Temperature, Volume & More | FreeFormatHub',
-  seoDescription: 'Convert between units of measurement including length, weight, temperature, volume, area, time, and digital storage. Supports metric and imperial systems.',
-  description: 'Comprehensive unit converter supporting length, weight, temperature, volume, area, time, and digital storage conversions between metric, imperial, and other measurement systems.',
+  keywords: ['unit converter', 'measurement converter', 'length converter', 'weight converter', 'mass converter', 'distance converter', 'height converter', 'temperature converter', 'volume converter', 'area converter', 'time converter', 'digital storage converter', 'metric to imperial', 'imperial to metric', 'meters to feet', 'kg to pounds', 'celsius to fahrenheit', 'inches to cm', 'miles to km', 'liters to gallons', 'pounds to kg', 'feet to meters', 'cm to inches', 'fahrenheit to celsius', 'kg to lbs', 'meter', 'foot', 'inch', 'yard', 'mile', 'kilometer', 'centimeter', 'millimeter', 'kilogram', 'gram', 'pound', 'ounce', 'stone', 'ton', 'celsius', 'fahrenheit', 'kelvin', 'liter', 'gallon', 'cup', 'measurement', 'conversion', 'calculator', 'metric system', 'imperial system', 'scientific units', 'engineering units'],
+  seoTitle: 'Unit Converter - Length, Weight, Temperature, Volume & Area Calculator | Metric & Imperial',
+  seoDescription: 'Free unit converter for length (meters, feet, inches), weight (kg, pounds, ounces), temperature (°C, °F, K), volume, area, time & digital storage. Convert between metric and imperial systems instantly.',
+  description: 'Professional unit converter and measurement calculator supporting length (meters, feet, inches, miles, km), weight/mass (kg, pounds, ounces, grams), temperature (Celsius, Fahrenheit, Kelvin), volume (liters, gallons, cups), area, time, and digital storage conversions. Convert between metric, imperial, and scientific measurement systems with precision formulas.',
   
   examples: [
     {
@@ -476,26 +476,46 @@ export const UNIT_CONVERTER_TOOL: Tool = {
   ],
   
   useCases: [
-    'Engineering and construction measurements',
-    'Cooking and recipe conversions',
-    'International shipping and logistics',
-    'Scientific calculations and research',
-    'Digital storage capacity planning',
-    'Travel and distance planning'
+    'Engineering and construction project measurements',
+    'Cooking and recipe conversions (cups to ml, oz to grams)',
+    'International shipping and logistics (kg to lbs, cm to inches)',
+    'Scientific calculations and research (Celsius to Kelvin)',
+    'Digital storage capacity planning (GB to TB, MB to KB)',
+    'Travel and distance planning (miles to km, feet to meters)',
+    'Fitness and health tracking (weight conversion, height conversion)',
+    'Real estate and property measurements (sq ft to sq meters)',
+    'Academic homework and educational projects',
+    'DIY home improvement and crafting projects',
+    'Weather and climate data analysis',
+    'Sports and athletics measurements',
+    'Medical and pharmaceutical dosage calculations',
+    'Automotive specifications and repairs'
   ],
   
   faq: [
     {
+      question: 'How do I convert meters to feet and inches?',
+      answer: 'Enter your meter value, select "meter" as from unit and "foot" as to unit. The converter shows: 1 meter = 3.28084 feet or 1 meter = 39.3701 inches using precise conversion formulas.'
+    },
+    {
+      question: 'How do I convert kg to pounds and ounces?',
+      answer: 'Select weight category, enter kg value, choose "pound" or "ounce" as target unit. 1 kg = 2.20462 pounds or 1 kg = 35.274 ounces. Perfect for cooking, fitness, and shipping calculations.'
+    },
+    {
+      question: 'How do I convert Celsius to Fahrenheit?',
+      answer: 'Use the temperature category: °F = (°C × 9/5) + 32. For example: 20°C = 68°F. Also supports Kelvin and Rankine for scientific applications.'
+    },
+    {
       question: 'What measurement categories are supported?',
-      answer: 'The converter supports length, weight/mass, temperature, volume, area, time, and digital storage measurements with both metric and imperial units.'
+      answer: 'Length (meters, feet, inches, miles, km), Weight (kg, pounds, ounces, grams), Temperature (°C, °F, K), Volume (liters, gallons, cups), Area (sq meters, sq feet), Time, and Digital Storage (GB, MB, TB).'
     },
     {
-      question: 'How are temperature conversions calculated?',
-      answer: 'Temperature conversions use precise formulas: Celsius ↔ Fahrenheit uses (C×9/5)+32 and (F-32)×5/9. Kelvin adds/subtracts 273.15 from Celsius.'
+      question: 'Can I convert between metric and imperial systems?',
+      answer: 'Yes! The converter seamlessly handles metric ↔ imperial conversions: meters ↔ feet, kg ↔ pounds, Celsius ↔ Fahrenheit, liters ↔ gallons, and more with high precision.'
     },
     {
-      question: 'What\'s the difference between binary and decimal digital units?',
-      answer: 'Binary uses base-2 (1024): KB, MB, GB. Decimal uses base-10 (1000): Kbit, Mbit, Gbit. This tool uses binary for storage units and decimal for bit rates.'
+      question: 'Is this converter accurate for engineering and scientific use?',
+      answer: 'Yes, uses internationally recognized conversion factors with configurable precision. Suitable for engineering, construction, scientific research, and professional applications.'
     },
     {
       question: 'Can I convert multiple values at once?',
