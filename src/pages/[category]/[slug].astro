@@ -16,6 +16,11 @@ export async function getStaticPaths() {
 const { category, slug } = Astro.params;
 const { tool } = Astro.props;
 
+// Handle undefined URLs - redirect to category page
+if (slug === 'undefined' && category) {
+  return Astro.redirect(`/${category}`, 301);
+}
+
 if (!tool) {
   return Astro.redirect('/404');
 }

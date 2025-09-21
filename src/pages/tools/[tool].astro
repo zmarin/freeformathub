@@ -1,0 +1,73 @@
+---
+// Legacy tool redirects
+export function getStaticPaths() {
+  // Generate paths for known legacy tool URLs
+  const legacyTools = [
+    'base64-encoder', 'json-formatter', 'json-minifier', 'json-validator',
+    'ip-subnet-calculator', 'css-beautifier', 'html-formatter', 'sql-formatter',
+    'yaml-formatter', 'xml-formatter', 'url-encoder', 'html-entities',
+    'text-escaper', 'character-counter', 'lorem-ipsum-generator', 'regex-tester',
+    'cron-generator', 'timestamp-converter', 'qr-code-generator', 'uuid-generator',
+    'hash-generator', 'password-generator', 'jwt-decoder', 'csv-to-json',
+    'json-to-csv', 'xml-to-json', 'json-to-xml', 'markdown-converter',
+    'image-converter', 'unit-converter', 'color-converter', 'dns-lookup',
+    'whois-lookup', 'port-scanner', 'mock-data-generator', 'diff-checker',
+    'word-counter', 'text-statistics'
+  ];
+
+  return legacyTools.map(tool => ({
+    params: { tool }
+  }));
+}
+
+const { tool } = Astro.params;
+
+// Map legacy tool URLs to new structure
+const toolRedirects: Record<string, string> = {
+  'base64-encoder': '/encoders/base64-encoder',
+  'json-formatter': '/formatters/json-formatter',
+  'json-minifier': '/formatters/json-formatter',
+  'json-validator': '/validators/json-schema-validator',
+  'ip-subnet-calculator': '/network/ip-subnet-calculator',
+  'css-beautifier': '/formatters/css-beautifier',
+  'html-formatter': '/formatters/html-beautifier',
+  'sql-formatter': '/formatters/sql-formatter',
+  'yaml-formatter': '/formatters/yaml-formatter',
+  'xml-formatter': '/formatters/xml-formatter',
+  'url-encoder': '/encoders/url-encoder',
+  'html-entities': '/encoders/html-entity-encoder',
+  'text-escaper': '/encoders/string-escape',
+  'character-counter': '/text/word-counter',
+  'lorem-ipsum-generator': '/text/lorem-ipsum-generator',
+  'regex-tester': '/text/regex-tester',
+  'cron-generator': '/datetime/cron-generator',
+  'timestamp-converter': '/datetime/timestamp-converter',
+  'qr-code-generator': '/generators/qr-code-generator',
+  'uuid-generator': '/generators/uuid-generator',
+  'hash-generator': '/crypto/hash-generator',
+  'password-generator': '/crypto/password-generator',
+  'jwt-decoder': '/encoders/jwt-decoder',
+  'csv-to-json': '/converters/csv-to-json',
+  'json-to-csv': '/converters/json-to-csv',
+  'xml-to-json': '/converters/xml-to-json-converter',
+  'json-to-xml': '/converters/json-to-xml-converter',
+  'markdown-converter': '/converters/markdown-converter',
+  'image-converter': '/converters/image-format-converter',
+  'unit-converter': '/converters/unit-converter',
+  'color-converter': '/converters/color-converter',
+  'dns-lookup': '/network/dns-lookup',
+  'whois-lookup': '/network/whois-lookup',
+  'port-scanner': '/network/port-scanner',
+  'mock-data-generator': '/generators/mock-data-generator',
+  'diff-checker': '/text/diff-checker',
+  'word-counter': '/text/word-counter',
+  'text-statistics': '/text/text-statistics'
+};
+
+if (tool && toolRedirects[tool]) {
+  return Astro.redirect(toolRedirects[tool], 301);
+}
+
+// If not found, redirect to home
+return Astro.redirect('/', 301);
+---

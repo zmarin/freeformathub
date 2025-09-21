@@ -1,0 +1,43 @@
+---
+// Legacy category redirects
+export function getStaticPaths() {
+  // Generate paths for known legacy categories
+  const legacyCategories = [
+    'web', 'formatters', 'crypto', 'security', 'math', 'converters',
+    'encoders', 'text', 'network', 'generators', 'validators',
+    'development', 'data', 'color', 'datetime'
+  ];
+
+  return legacyCategories.map(cat => ({
+    params: { category: cat }
+  }));
+}
+
+const { category } = Astro.params;
+
+// Map legacy category URLs to new structure
+const categoryRedirects: Record<string, string> = {
+  'web': '/web',
+  'formatters': '/formatters',
+  'crypto': '/crypto',
+  'security': '/crypto',
+  'math': '/math',
+  'converters': '/converters',
+  'encoders': '/encoders',
+  'text': '/text',
+  'network': '/network',
+  'generators': '/generators',
+  'validators': '/validators',
+  'development': '/development',
+  'data': '/data',
+  'color': '/color',
+  'datetime': '/datetime'
+};
+
+if (category && categoryRedirects[category]) {
+  return Astro.redirect(categoryRedirects[category], 301);
+}
+
+// If not found, redirect to home
+return Astro.redirect('/', 301);
+---
