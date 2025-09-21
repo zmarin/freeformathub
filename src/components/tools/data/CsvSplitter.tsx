@@ -1,17 +1,17 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Scissors, Play } from 'lucide-react';
-import { processCsvSplitter, type CsvSplitterConfig, type CsvSplitResult } from '../../../tools/data/csv-splitter';
+import { processCsvSplitter, type CsvSplitterConfig as CsvSplitterConfigType, type CsvSplitResult } from '../../../tools/data/csv-splitter';
 import { useToolStore } from '../../../lib/store';
 import { debounce } from '../../../lib/utils';
 import { InputPanel } from '../../ui/InputPanel';
-import { CsvSplitterConfig } from './CsvSplitterConfig';
+import { CsvSplitterConfig as CsvSplitterConfigPanel } from './CsvSplitterConfig';
 import { CsvSplitterResults } from './CsvSplitterResults';
 
 interface CsvSplitterProps {
   className?: string;
 }
 
-const DEFAULT_CONFIG: CsvSplitterConfig = {
+const DEFAULT_CONFIG: CsvSplitterConfigType = {
   splitMode: 'rows',
   rowsPerFile: 1000,
   maxFileSize: 1024,
@@ -67,7 +67,7 @@ export function CsvSplitter({ className = '' }: CsvSplitterProps) {
   const [splits, setSplits] = useState<CsvSplitResult[]>([]);
   const [error, setError] = useState<string | undefined>();
   const [isLoading, setIsLoading] = useState(false);
-  const [config, setConfig] = useState<CsvSplitterConfig>(DEFAULT_CONFIG);
+  const [config, setConfig] = useState<CsvSplitterConfigType>(DEFAULT_CONFIG);
   const [metadata, setMetadata] = useState<Record<string, any> | undefined>();
   const [availableColumns, setAvailableColumns] = useState<string[]>([]);
   const [showPreview, setShowPreview] = useState(true);
@@ -77,7 +77,7 @@ export function CsvSplitter({ className = '' }: CsvSplitterProps) {
   // Load saved config once on mount
   useEffect(() => {
     try {
-      const saved = (getSavedConfig?.('csv-splitter') as Partial<CsvSplitterConfig>) || {};
+      const saved = (getSavedConfig?.('csv-splitter') as Partial<CsvSplitterConfigType>) || {};
       if (saved && Object.keys(saved).length > 0) {
         setConfig((prev) => ({ ...prev, ...saved }));
       }
@@ -85,7 +85,7 @@ export function CsvSplitter({ className = '' }: CsvSplitterProps) {
   }, [getSavedConfig]);
 
   // Process CSV function
-  const processCsv = useCallback((inputText: string = input, cfg: CsvSplitterConfig = config) => {
+  const processCsv = useCallback((inputText: string = input, cfg: CsvSplitterConfigType = config) => {
     if (!inputText.trim()) {
       setSplits([]);
       setError(undefined);
@@ -180,7 +180,7 @@ export function CsvSplitter({ className = '' }: CsvSplitterProps) {
 
 
   // Handle config changes
-  const handleConfigChange = useCallback((key: keyof CsvSplitterConfig, value: any) => {
+  const handleConfigChange = useCallback((key: keyof CsvSplitterConfigType, value: any) => {
     const newConfig = { ...config, [key]: value };
     setConfig(newConfig);
     updateSavedConfig?.('csv-splitter', newConfig);
@@ -208,7 +208,7 @@ export function CsvSplitter({ className = '' }: CsvSplitterProps) {
 
       {/* Configuration Section */}
       <div className="space-y-4">
-        <CsvSplitterConfig
+        <CsvSplitterConfigPanel
           config={config}
           onChange={handleConfigChange}
           availableColumns={availableColumns}

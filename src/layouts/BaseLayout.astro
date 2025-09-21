@@ -48,11 +48,14 @@ interface NavLink {
 
 const secondaryNavLinks: NavLink[] = [
   { href: '/', label: 'Home' },
-  { href: '/tools', label: 'All Tools' },
-  { href: '/json-tools', label: 'JSON' },
-  { href: '/data-converters', label: 'Converters' },
-  { href: '/text-tools', label: 'Text' },
-  { href: '/password-tools', label: 'Security' }
+  { href: '/tools', label: 'Tools' },
+  { href: '/formatters', label: 'Formatters' },
+  { href: '/converters', label: 'Converters' },
+  { href: '/encoders', label: 'Encoders' },
+  { href: '/json-tools', label: 'JSON Tools' },
+  { href: '/data-converters', label: 'Data Converters' },
+  { href: '/text-tools', label: 'Text Tools' },
+  { href: '/password-tools', label: 'Security Tools' }
 ];
 
 const currentPath = Astro.url.pathname;
