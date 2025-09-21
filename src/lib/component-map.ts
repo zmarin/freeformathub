@@ -46,6 +46,7 @@ import { CronGenerator } from '../components/tools/datetime/CronGenerator';
 import { TimeDecimalConverter } from '../components/tools/datetime/TimeDecimalConverter';
 import { TimestampConverter } from '../components/tools/datetime/TimestampConverter';
 import { TimestampFormatter } from '../components/tools/datetime/TimestampFormatter';
+import { TimezoneConverter } from '../components/tools/datetime/TimezoneConverter';
 
 // Development components
 import { DatabaseQueryOptimizer } from '../components/tools/development/DatabaseQueryOptimizer';
@@ -188,6 +189,7 @@ export const TOOL_COMPONENTS: Record<string, ToolComponent> = {
   'timestamp-formatter': TimestampFormatter,
   'cron-generator': CronGenerator,
   'time-decimal-converter': TimeDecimalConverter,
+  'timezone-converter': TimezoneConverter,
 
   // Development tools
   'database-query-optimizer': DatabaseQueryOptimizer,

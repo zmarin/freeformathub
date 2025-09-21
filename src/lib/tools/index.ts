@@ -92,6 +92,7 @@ import { TIMESTAMP_CONVERTER_TOOL } from '../../tools/datetime/timestamp-convert
 import { TIMESTAMP_FORMATTER_TOOL } from '../../tools/datetime/timestamp-formatter';
 import { CRON_GENERATOR_TOOL } from '../../tools/datetime/cron-generator';
 import { TIME_DECIMAL_CONVERTER_TOOL } from '../../tools/datetime/time-decimal-converter';
+import { TIMEZONE_CONVERTER_TOOL } from '../../tools/datetime/timezone-converter';
 
 // Math tools
 import { MATH_EXPRESSION_EVALUATOR_TOOL } from '../../tools/math/math-expression-evaluator';
@@ -248,6 +249,7 @@ registerTool(TIMESTAMP_CONVERTER_TOOL);
 registerTool(TIMESTAMP_FORMATTER_TOOL);
 registerTool(CRON_GENERATOR_TOOL);
 registerTool(TIME_DECIMAL_CONVERTER_TOOL);
+registerTool(TIMEZONE_CONVERTER_TOOL);
 
 // Math
 registerTool(MATH_EXPRESSION_EVALUATOR_TOOL);
