@@ -15,6 +15,7 @@ FreeFormatHub is a comprehensive collection of free online business and develope
 - **💾 Smart Caching** - Client-side history and favorites with localStorage
 - **🔧 Extensible** - Modular architecture for easy tool addition
 - **♿ Accessible** - WCAG 2.1 AA compliant with keyboard navigation
+- **🧭 CLI Playbooks** - Searchable cross-platform cheat sheets with AI-assisted workflows
 
 ## 🛠 Tech Stack
 
@@ -44,6 +45,10 @@ FreeFormatHub is a comprehensive collection of free online business and develope
 - 🎲 Random Generator Tools (Coming Soon)
 
 *50+ more tools planned - see roadmap below*
+
+## 📚 Documentation & Cheat Sheets
+
+- [CLI Cheat Sheets & AI Terminal Assistants](src/pages/cli-cheatsheets.astro) — side-by-side Linux, Windows CMD, and PowerShell commands with Claude, Gemini, Qwen, and OpenAI CLI workflows.
 
 ## 🚀 Getting Started
 
