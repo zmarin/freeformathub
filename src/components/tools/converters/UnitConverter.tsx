@@ -77,6 +77,28 @@ const UNIT_OPTIONS = {
     { value: 'megabit', label: 'Megabit (Mbit)' },
     { value: 'gigabit', label: 'Gigabit (Gbit)' },
   ],
+  speed: [
+    { value: 'meter_per_second', label: 'Meter per Second (m/s)' },
+    { value: 'kilometer_per_hour', label: 'Kilometer per Hour (km/h)' },
+    { value: 'mile_per_hour', label: 'Mile per Hour (mph)' },
+    { value: 'foot_per_second', label: 'Foot per Second (ft/s)' },
+    { value: 'knot', label: 'Knot' },
+  ],
+  pressure: [
+    { value: 'pascal', label: 'Pascal (Pa)' },
+    { value: 'kilopascal', label: 'Kilopascal (kPa)' },
+    { value: 'bar', label: 'Bar' },
+    { value: 'atmosphere', label: 'Atmosphere (atm)' },
+    { value: 'psi', label: 'PSI' },
+  ],
+  energy: [
+    { value: 'joule', label: 'Joule (J)' },
+    { value: 'kilojoule', label: 'Kilojoule (kJ)' },
+    { value: 'calorie', label: 'Calorie (cal)' },
+    { value: 'kilocalorie', label: 'Kilocalorie (kcal)' },
+    { value: 'watt_hour', label: 'Watt Hour (Wh)' },
+    { value: 'kilowatt_hour', label: 'Kilowatt Hour (kWh)' },
+  ],
 } as const;
 
 const DEFAULT_CONFIG: UnitConverterConfig = {
@@ -274,7 +296,7 @@ export function UnitConverter({ className = '' }: UnitConverterProps) {
     return examples[config.category] || [];
   };
 
-  const currentUnits = UNIT_OPTIONS[config.category];
+  const currentUnits = UNIT_OPTIONS[config.category as keyof typeof UNIT_OPTIONS] || [];
   
   // Create unit selection options
   const unitOptions = [
@@ -298,40 +320,175 @@ export function UnitConverter({ className = '' }: UnitConverterProps) {
 
   const examples = getExamples();
 
-  return (
-    <div className={`grid gap-6 lg:grid-cols-12 ${className}`}>
-      <div className="lg:col-span-4 space-y-6">
-        <InputPanel
-          title="Value to Convert"
-          value={input}
-          onChange={setInput}
-          placeholder={config.bulkMode ? "100, 200, 300" : "100"}
-          description={
-            config.bulkMode 
-              ? "Enter multiple values separated by commas or newlines"
-              : "Enter a numeric value to convert"
-          }
-          examples={examples}
-          onExampleClick={handleExample}
-        />
-        
-        <OptionsPanel
-          title="Conversion Settings"
-          options={[...OPTIONS, ...unitOptions]}
-          values={config}
-          onChange={handleConfigChange}
-        />
-      </div>
+  // Category definitions with icons
+  const categories = [
+    { id: 'length', name: 'Length', icon: '📏' },
+    { id: 'weight', name: 'Weight', icon: '⚖️' },
+    { id: 'temperature', name: 'Temperature', icon: '🌡️' },
+    { id: 'volume', name: 'Volume', icon: '🧪' },
+    { id: 'area', name: 'Area', icon: '⬜' },
+    { id: 'time', name: 'Time', icon: '⏱️' },
+    { id: 'digital', name: 'Digital', icon: '💾' },
+  ];
 
-      <div className="lg:col-span-8">
-        <OutputPanel
-          title="Conversion Results"
-          value={output}
-          error={error}
-          isProcessing={isProcessing}
-          language="markdown"
-          placeholder="Enter a value to see the conversion results..."
-        />
+  const swapUnits = () => {
+    const tempFrom = config.fromUnit;
+    const tempTo = config.toUnit;
+    setConfig(prev => ({
+      ...prev,
+      fromUnit: tempTo,
+      toUnit: tempFrom
+    }));
+  };
+
+  return (
+    <div className={`w-full h-full ${className}`}>
+      {/* Stylish Unit Converter Container */}
+      <div className="bg-gradient-to-br from-blue-500 via-purple-600 to-purple-700 p-6 rounded-2xl shadow-xl h-full">
+        <div className="bg-white/95 backdrop-blur-sm rounded-xl p-6 shadow-lg h-full overflow-y-auto">
+
+          {/* Header */}
+          <div className="text-center mb-6">
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">🔄 Universal Unit Converter</h1>
+            <p className="text-gray-600">Convert between metric, imperial, and other measurement systems</p>
+          </div>
+
+          {/* Category Tabs */}
+          <div className="flex flex-wrap gap-1 mb-6 bg-gray-100 rounded-lg p-1 overflow-x-auto">
+            {categories.map(category => (
+              <button
+                key={category.id}
+                onClick={() => handleConfigChange('category', category.id)}
+                className={`flex-1 min-w-[120px] px-4 py-3 text-sm font-medium rounded-md transition-all duration-200 whitespace-nowrap ${
+                  config.category === category.id
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-blue-500 hover:bg-gray-50'
+                }`}
+              >
+                {category.icon} {category.name}
+              </button>
+            ))}
+          </div>
+
+          {/* Precision Control */}
+          <div className="flex justify-center items-center gap-4 mb-6 p-3 bg-gray-50 rounded-lg">
+            <span className="text-gray-700 font-medium">Decimal Places:</span>
+            <select
+              value={config.precision}
+              onChange={(e) => handleConfigChange('precision', parseInt(e.target.value))}
+              className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+            >
+              {[0, 1, 2, 3, 4, 6].map(num => (
+                <option key={num} value={num}>{num}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Input Section */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 align-items-center">
+            {/* From Unit */}
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-wide">From</div>
+              <input
+                type="number"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Enter value"
+                className="w-full p-3 text-lg border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors mb-3 bg-white"
+              />
+              <select
+                value={config.fromUnit}
+                onChange={(e) => handleConfigChange('fromUnit', e.target.value)}
+                className="w-full p-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors bg-white"
+              >
+                {currentUnits.map(unit => (
+                  <option key={unit.value} value={unit.value}>{unit.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Swap Button */}
+            <div className="flex justify-center items-center">
+              <button
+                onClick={swapUnits}
+                className="w-12 h-12 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors flex items-center justify-center text-xl shadow-lg hover:shadow-xl"
+              >
+                ⇄
+              </button>
+            </div>
+
+            {/* To Unit */}
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-wide">To</div>
+              <div className="relative">
+                <input
+                  type="number"
+                  value={output ? parseFloat(output.split('\n')[0].split(/[*^]/)[1]?.trim()) || '' : ''}
+                  readOnly
+                  placeholder="Result"
+                  className="w-full p-3 text-lg border-2 border-gray-200 rounded-lg bg-white mb-3"
+                />
+                <button
+                  onClick={() => navigator.clipboard.writeText(output ? parseFloat(output.split('\n')[0].split(/[*^]/)[1]?.trim())?.toString() || '' : '')}
+                  className="absolute right-2 top-2 px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors"
+                >
+                  Copy
+                </button>
+              </div>
+              <select
+                value={config.toUnit}
+                onChange={(e) => handleConfigChange('toUnit', e.target.value)}
+                className="w-full p-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors bg-white"
+              >
+                {currentUnits.map(unit => (
+                  <option key={unit.value} value={unit.value}>{unit.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Result Display */}
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg mb-6 text-center">
+            <div className="text-3xl font-bold text-blue-600 mb-2">
+              {output ? output.split('\n')[0] : '-'}
+            </div>
+            <div className="text-gray-600 text-sm">
+              {output ? `1 ${config.fromUnit.replace('-', ' ')} × ${(output.includes('×') ? output.split('×')[1]?.split(')')[0]?.trim() : 'Conversion formula')}` : 'Select units and enter a value to convert'}
+            </div>
+          </div>
+
+          {/* Quick Conversions */}
+          <div className="mb-6">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">Common Conversions</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {examples.slice(0, 8).map((example, index) => (
+                <button
+                  key={index}
+                  onClick={() => setInput(example.value)}
+                  className="bg-white p-3 rounded-lg hover:bg-blue-50 hover:border-blue-200 border border-gray-200 transition-colors text-left"
+                >
+                  <div className="font-semibold text-blue-600">{example.label}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Processing Indicator */}
+          {isProcessing && (
+            <div className="text-center py-4">
+              <div className="inline-block w-6 h-6 border-3 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <span className="ml-2 text-gray-600">Converting...</span>
+            </div>
+          )}
+
+          {/* Error Display */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+              <p className="text-red-700 text-center">{error}</p>
+            </div>
+          )}
+
+        </div>
       </div>
     </div>
   );
