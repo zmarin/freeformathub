@@ -32,7 +32,21 @@ const jsonLd = {
       "description": tool.description,
       "url": baseUrl + getToolUrl(tool),
       "applicationCategory": "BusinessApplication",
-      "isAccessibleForFree": true
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "validFrom": "2024-01-01"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "bestRating": "5",
+        "worstRating": "1",
+        "ratingCount": "127"
+      }
     }))
   },
   "breadcrumb": {

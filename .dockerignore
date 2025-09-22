@@ -76,10 +76,17 @@ temp/
 .git
 .gitignore
 
-# Docker
-Dockerfile
+# Docker (keep these out of build context to prevent infinite recursion)
 docker-compose*.yml
-.dockerignore
+
+# Development scripts
+scripts/generate-icons.js
+scripts/create-ico.js
+
+# Development environment files
+.env.local
+.env.development
+.env.test
 
 # Don't ignore .env - we need it for the build!
 # .env files are already in .gitignore but we need them for Docker build

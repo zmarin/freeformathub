@@ -1,0 +1,14 @@
+<svg width="512" height="512" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <!-- 2x2 dot pattern favicon - centered and optimized -->
+  <!-- Top row -->
+  <!-- Red dot -->
+  <circle cx="10" cy="10" r="4" fill="#ef4444"/>
+  <!-- Orange dot -->
+  <circle cx="22" cy="10" r="4" fill="#f97316"/>
+
+  <!-- Bottom row -->
+  <!-- Green dot -->
+  <circle cx="10" cy="22" r="4" fill="#22c55e"/>
+  <!-- Blue dot -->
+  <circle cx="22" cy="22" r="4" fill="#3b82f6"/>
+</svg>

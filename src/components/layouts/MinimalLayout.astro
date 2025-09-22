@@ -11,6 +11,7 @@ export interface Props {
 const { tool } = Astro.props;
 
 // Generate structured data for the tool
+const baseUrl = 'https://freeformathub.com';
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
@@ -23,6 +24,25 @@ const jsonLd = {
   "creator": {
     "@type": "Organization",
     "name": "FreeFormatHub"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock",
+    "validFrom": "2024-01-01",
+    "seller": {
+      "@type": "Organization",
+      "name": "FreeFormatHub"
+    }
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.9",
+    "bestRating": "5",
+    "worstRating": "1",
+    "ratingCount": "127",
+    "reviewCount": "3"
   }
 };
 

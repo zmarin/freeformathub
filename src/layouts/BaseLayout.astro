@@ -91,8 +91,15 @@ const getNavLinkClasses = (active: boolean) => [
     <link rel="canonical" href={canonicalURL} />
     
     <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
     <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- PWA Icons -->
+    <meta name="theme-color" content="#3b82f6" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -118,7 +125,14 @@ const getNavLinkClasses = (active: boolean) => [
     <meta name="theme-color" content="#3b82f6" />
     <meta name="color-scheme" content="light dark" />
     
-    <!-- Preload critical resources (restore when asset exists) -->
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+    <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+    <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+
+    <!-- Preload critical fonts (if any) -->
+    <!-- <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin> -->
     
     <!-- JSON-LD Structured Data -->
     {jsonLd && (
@@ -207,7 +221,7 @@ const getNavLinkClasses = (active: boolean) => [
       console.log('📋 Google Consent Mode initialized - all consent denied by default');
     </script>
 
-    <!-- Google tag (gtag.js) -->
+    <!-- Google tag (gtag.js) - Load with high priority but async -->
     <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}></script>
     <script define:vars={{GA_ID}}>
       // GA ID injected at build time

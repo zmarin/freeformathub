@@ -129,23 +129,25 @@ const webApplicationSchema = {
     "seller": organizationSchema
   },
   "featureList": [
-    "JSON Formatter & Validator",
-    "Base64 Encoder/Decoder",
-    "URL Encoder/Decoder",
-    "JWT Token Decoder",
-    "XML Formatter",
-    "YAML Formatter",
-    "CSS Beautifier",
-    "HTML Formatter",
-    "SQL Formatter",
-    "Text Case Converter",
-    "Color Converter",
-    "Hash Generator",
-    "Password Generator",
-    "QR Code Generator",
-    "Image Converter",
-    "CSV Tools",
-    "And 100+ more tools"
+    "JSON Data Formatter & Validator Tools",
+    "Base64 Encoding & Decoding Tools",
+    "URL Encoding & Decoding for Developers",
+    "JWT Token Decoder & Validator",
+    "XML Data Formatting Tools",
+    "YAML Configuration Formatter",
+    "CSS Code Beautifier & Minifier",
+    "HTML Markup Formatter",
+    "SQL Query Formatter & Validator",
+    "Text Case Conversion Tools",
+    "Color Code Converter & Generator",
+    "Cryptographic Hash Generator",
+    "Secure Password Generation Tools",
+    "QR Code & Barcode Generator",
+    "Image Format Converter",
+    "CSV Data Processing Tools",
+    "Data Validation & Encoding Tools",
+    "Developer Productivity Utilities",
+    "And 100+ more free data formatting tools"
   ],
   "screenshot": [
     `${baseUrl}/screenshots/homepage.png`,
@@ -182,34 +184,50 @@ const faqSchema = {
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "Are these tools really free to use?",
+      "name": "Are these JSON formatter and data conversion tools really free?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes, all tools on FreeFormatHub are completely free to use with no registration required. There are no hidden fees or premium tiers."
+        "text": "Yes, all JSON formatters, Base64 encoders, XML validators, and other data formatting tools on FreeFormatHub are completely free to use with no registration required. There are no hidden fees or premium tiers for any developer tools."
       }
     },
     {
       "@type": "Question",
-      "name": "Is my data secure when using these tools?",
+      "name": "Is my data secure when using these online formatting tools?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Absolutely. All processing happens locally in your browser. No data is sent to our servers or stored anywhere. Your information remains completely private."
+        "text": "Absolutely. All JSON formatting, data encoding, and validation processing happens locally in your browser. No sensitive data is sent to our servers or stored anywhere. Your code and data remain completely private and secure."
       }
     },
     {
       "@type": "Question",
-      "name": "What types of tools are available?",
+      "name": "What types of data formatting and developer tools are available?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "We offer 100+ tools including JSON formatters, Base64 encoders, URL decoders, text converters, image tools, validators, generators, and much more for developers and businesses."
+        "text": "We offer 119+ free developer tools including JSON formatters, XML validators, Base64 encoders/decoders, URL encoding tools, YAML formatters, CSV converters, SQL formatters, hash generators, password tools, QR code generators, and many more data processing utilities for developers and businesses."
       }
     },
     {
       "@type": "Question",
-      "name": "Do I need to install anything to use these tools?",
+      "name": "Do I need to install software to use these data formatting tools?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "No installation required. All tools work directly in your web browser on any device - desktop, tablet, or mobile."
+        "text": "No installation required. All JSON formatters, data converters, and developer tools work directly in your web browser on any device - desktop, tablet, or mobile. Just paste your data and get instant formatted results."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use these tools for batch data processing and validation?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, many of our data formatting tools support batch processing. You can format multiple JSON files, validate multiple URLs, convert multiple data formats, and process large datasets efficiently using our developer productivity tools."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What data formats do these online tools support?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Our tools support all major data formats including JSON, XML, YAML, CSV, SQL, HTML, CSS, JavaScript, Base64, URL encoding, JWT tokens, and many other formats commonly used by developers and data professionals."
       }
     }
   ]
@@ -219,17 +237,17 @@ const faqSchema = {
 const serviceSchema = {
   "@type": "Service",
   "@id": `${baseUrl}#service`,
-  "name": "Online Developer Tools Service",
-  "description": "Free online tools for developers and businesses to format, convert, encode, and validate data",
+  "name": "Free Data Formatting & Developer Tools Service",
+  "description": "Free online JSON formatters, Base64 encoders, XML validators, and 119+ data processing tools for developers and businesses to format, convert, encode, validate, and transform data",
   "provider": organizationSchema,
   "areaServed": "Worldwide",
   "availableChannel": {
     "@type": "ServiceChannel",
     "serviceUrl": baseUrl,
-    "serviceType": "Online Platform"
+    "serviceType": "Online Data Formatting Platform"
   },
-  "category": "Software Development Tools",
-  "serviceType": "Data Processing and Formatting Tools",
+  "category": "Developer Tools & Data Formatting Services",
+  "serviceType": "JSON Formatting, Data Conversion & Validation Tools",
   "hasOfferCatalog": {
     "@type": "OfferCatalog",
     "name": "Developer Tools Catalog",
@@ -261,26 +279,26 @@ const jsonLd = {
 };
 ---
 
-<BaseLayout 
-  title="FreeFormatHub - Free Online Business & Developer Tools"
-  description="Free online business and developer tools for formatting, converting, encoding, and validating data. JSON formatter, Base64 encoder, URL decoder, and more. Zero friction business and developer tools that just work."
-  keywords={['business tools', 'developer tools', 'json formatter', 'base64 encoder', 'url decoder', 'online tools', 'free tools', 'productivity tools', 'data management']}
+<BaseLayout
+  title="Free Business & Developer Tools - FreeFormatHub"
+  description="Free online JSON formatter, XML validator, Base64 encoder, URL decoder, and 119+ data formatting tools for developers. Convert, validate, and format JSON, XML, YAML, CSV data instantly. Zero friction developer tools that just work."
+  keywords={['json formatter online', 'xml validator free', 'base64 encoder decoder', 'url encoding tool', 'yaml formatter', 'csv converter', 'data formatting tools', 'developer tools free', 'online validators', 'code formatters', 'data converters', 'encoding decoding tools', 'json prettifier', 'xml beautifier', 'free developer utilities']}
   jsonLd={jsonLd}
 >
   <!-- Hero Section -->
   <section class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <h1 class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-        Free Business & Developer Tools
+        Free JSON Formatter & Data Tools for Developers
       </h1>
       <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-        Format, convert, encode, and validate your data instantly. <span class="text-blue-600 dark:text-blue-400 font-semibold">Zero friction</span> business and developer tools that just work.
+        Format JSON, validate XML, encode Base64, and process 119+ data formats instantly. <span class="text-blue-600 dark:text-blue-400 font-semibold">Zero friction</span> data formatting and developer productivity tools that just work.
       </p>
 
       <!-- Search Bar -->
       <div class="max-w-2xl mx-auto">
         <ToolSearch
-          placeholder="Search for tools... (e.g., JSON formatter, Base64 encoder)"
+          placeholder="Search data formatting tools... (JSON formatter, XML validator, Base64 encoder, URL decoder)"
           size="large"
           client:visible
         />
@@ -292,8 +310,8 @@ const jsonLd = {
     <section class="py-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between mb-8">
-          <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Trending Now</h2>
-          <a href="/search" class="text-blue-600 dark:text-blue-400 hover:underline">Search all tools</a>
+          <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Trending Data Formatters & Developer Tools</h2>
+          <a href="/search" class="text-blue-600 dark:text-blue-400 hover:underline" aria-label="Search all developer tools">Search all tools</a>
         </div>
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {trendingTools.map(tool => (
@@ -432,7 +450,7 @@ const jsonLd = {
   <section class="py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h2 class="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">
-        Popular Tools
+        Most Popular JSON Formatters & Data Conversion Tools
       </h2>
       
       <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -506,9 +524,9 @@ const jsonLd = {
       </div>
 
       <div class="text-center mt-8">
-        <a href="/search" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
-          View All Tools
-          <svg class="ml-2 -mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <a href="/search" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" aria-label="View all data formatting and developer tools">
+          View All Developer Tools
+          <svg class="ml-2 -mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
           </svg>
         </a>
@@ -520,7 +538,7 @@ const jsonLd = {
   <section class="py-16 bg-gray-50 dark:bg-gray-900">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h2 class="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">
-        Tool Categories
+        Developer Tool Categories - Formatters, Converters & Validators
       </h2>
 
       <ToolCategories categories={TOOL_CATEGORIES} client:load />
@@ -531,7 +549,7 @@ const jsonLd = {
   <section class="py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h2 class="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">
-        Why Choose FreeFormatHub?
+        Why Choose Our Free Data Formatting & Development Tools?
       </h2>
       
       <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -541,8 +559,8 @@ const jsonLd = {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Instant Results</h3>
-          <p class="text-gray-600 dark:text-gray-400">No loading screens, no sign-ups. Paste your data and get results instantly.</p>
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Instant Data Formatting Results</h3>
+          <p class="text-gray-600 dark:text-gray-400">No loading screens, no sign-ups. Paste your JSON, XML, or CSV data and get formatted results instantly.</p>
         </div>
 
         <div class="text-center">
@@ -551,8 +569,8 @@ const jsonLd = {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
             </svg>
           </div>
-          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Smart Detection</h3>
-          <p class="text-gray-600 dark:text-gray-400">Auto-detects your data format and suggests the perfect tool for the job.</p>
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Smart Data Format Detection</h3>
+          <p class="text-gray-600 dark:text-gray-400">Auto-detects JSON, XML, YAML, and other data formats to suggest the perfect formatting tool for your needs.</p>
         </div>
 
         <div class="text-center">
@@ -571,8 +589,8 @@ const jsonLd = {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
             </svg>
           </div>
-          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Batch Processing</h3>
-          <p class="text-gray-600 dark:text-gray-400">Handle multiple files and formats simultaneously for maximum efficiency.</p>
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Batch Data Processing Tools</h3>
+          <p class="text-gray-600 dark:text-gray-400">Handle multiple JSON, XML, CSV files and data formats simultaneously for maximum developer productivity.</p>
         </div>
 
         <div class="text-center">

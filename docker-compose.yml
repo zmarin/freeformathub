@@ -1,0 +1,72 @@
+# FreeFormatHub Docker Compose Configuration
+# For development and production deployment
+
+version: '3.8'
+
+services:
+  freeformathub:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: freeformathub:latest
+    container_name: freeformathub
+    restart: unless-stopped
+
+    ports:
+      - "80:80"
+
+    # Security and resource limits
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=100m
+      - /var/run:noexec,nosuid,size=100m
+      - /var/cache/nginx:noexec,nosuid,size=50m
+
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.5'
+        reservations:
+          memory: 64M
+          cpus: '0.25'
+
+    # Environment variables
+    environment:
+      - NODE_ENV=production
+      - TZ=UTC
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # Labels for monitoring and management
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.freeformathub.rule=Host(`freeformathub.com`)"
+      - "traefik.http.routers.freeformathub.entrypoints=websecure"
+      - "traefik.http.routers.freeformathub.tls.certresolver=letsencrypt"
+      - "traefik.http.middlewares.freeformathub-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.freeformathub-redirect.redirectscheme.permanent=true"
+      - "com.docker.compose.project=freeformathub"
+      - "com.docker.compose.service=web"
+
+networks:
+  default:
+    name: freeformathub_network
+    driver: bridge

@@ -28,9 +28,9 @@ export const JSON_FORMATTER_TOOL: Tool = {
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!.subcategories!.find(sub => sub.id === 'json-formatting')!,
   slug: 'json-formatter',
   icon: '{}',
-  keywords: ['json', 'format', 'beautify', 'validate', 'pretty print', 'minify', 'parser'],
+  keywords: ['json formatter online', 'json validator', 'json beautifier', 'json minifier', 'jsonc formatter', 'json pretty print', 'validate json online', 'json parser', 'json viewer', 'json editor', 'format json free'],
   seoTitle: 'Free JSON Formatter & Validator Online - Format, Validate & Beautify JSON',
-  seoDescription: 'Format & validate JSON instantly! Free online JSON formatter with JSONC support, error detection, tree view & one-click copy. No uploads, 100% private & secure.',
+  seoDescription: 'Free online JSON formatter and validator with JSONC support. Format, validate, beautify, and minify JSON data instantly. Advanced features include error detection, tree view, key sorting, and one-click copy. 100% private - all processing happens locally in your browser.',
   examples: [
     {
       title: 'Basic JSON Formatting',

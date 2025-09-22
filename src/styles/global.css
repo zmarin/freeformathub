@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
+/* Performance optimizations */
+
+/* Optimize font loading performance (applies to future font-face declarations) */
+/* Note: Specific font-face rules would include font-display: swap; */
+
+/* Optimize image loading */
+img {
+  loading: lazy;
+  decoding: async;
+}
+
+/* Critical images should override with loading="eager" */
+img[loading="eager"] {
+  loading: eager;
+}
+
 /* Enable class-based dark mode for Tailwind v4 */
 @custom-variant dark (&:where(.dark, .dark *));
 

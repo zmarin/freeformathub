@@ -15,9 +15,9 @@ export const BASE64_ENCODER_TOOL: Tool = {
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'encoders')!.subcategories!.find(sub => sub.id === 'base-encoding')!,
   slug: 'base64-encoder',
   icon: '🔒',
-  keywords: ['base64', 'encode', 'decode', 'encoding', 'decoding', 'binary', 'text'],
+  keywords: ['base64 encoder online', 'base64 decoder free', 'base64 encode decode', 'url safe base64', 'binary to base64', 'text to base64', 'base64 converter', 'base64 tool', 'encode decode online'],
   seoTitle: 'Free Base64 Encoder & Decoder Online - Encode & Decode Base64',
-  seoDescription: 'Convert text, JSON, or binary data with the Base64 encoder & decoder. Supports URL-safe mode, line breaks, drag & drop files, and real-time validation — private, client-side processing.',
+  seoDescription: 'Free online Base64 encoder and decoder tool. Convert text, JSON, or binary data to Base64 encoding and back. Features URL-safe mode, drag & drop file support, line break control, and real-time validation. 100% private processing in your browser.',
   examples: [
     {
       title: 'Basic Text Encoding',

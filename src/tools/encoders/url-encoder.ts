@@ -16,9 +16,9 @@ export const URL_ENCODER_TOOL: Tool = {
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'encoders')!.subcategories!.find(sub => sub.id === 'url-encoding')!,
   slug: 'url-encoder',
   icon: '🔗',
-  keywords: ['url', 'uri', 'encode', 'decode', 'percent', 'encoding', 'web', 'query', 'parameters'],
+  keywords: ['url encoder online', 'url decoder free', 'percent encoding tool', 'uri encoder', 'url encode decode', 'query string encoder', 'web url tool', 'encode url parameters', 'decode percent encoding'],
   seoTitle: 'Free URL Encoder & Decoder Online - Encode & Decode URLs',
-  seoDescription: 'Clean up query strings, encode parameters, or decode percent-encoded URLs instantly. Supports component vs. full-URL modes, space (+/%20) control, and reserved character handling — all offline.',
+  seoDescription: 'Free online URL encoder and decoder tool. Encode or decode URLs, query strings, and URI components with percent encoding. Features full URL and component modes, space handling options (+/%20), and reserved character control. Perfect for web developers working with APIs and query parameters.',
   examples: [
     {
       title: 'Basic URL Encoding',
