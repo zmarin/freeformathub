@@ -53,6 +53,7 @@ import { TimezoneConverter } from '../components/tools/datetime/TimezoneConverte
 // Development components
 import { DatabaseQueryOptimizer } from '../components/tools/development/DatabaseQueryOptimizer';
 import { DatabaseSchemaVisualizer } from '../components/tools/development/DatabaseSchemaVisualizer';
+import { GitDiffVisualizer } from '../components/tools/development/GitDiffVisualizer';
 import { JsonPathExtractor } from '../components/tools/development/JsonPathExtractor';
 import { LoadTestingConfigGenerator } from '../components/tools/development/LoadTestingConfigGenerator';
 import { PerformanceBudgetCalculator } from '../components/tools/development/PerformanceBudgetCalculator';
@@ -201,6 +202,7 @@ export const TOOL_COMPONENTS: Record<string, ToolComponent> = {
   // Development tools
   'database-query-optimizer': DatabaseQueryOptimizer,
   'database-schema-visualizer': DatabaseSchemaVisualizer,
+  'git-diff-visualizer': GitDiffVisualizer,
   'json-path-extractor': JsonPathExtractor,
   'load-testing-config-generator': LoadTestingConfigGenerator,
   'performance-budget-calculator': PerformanceBudgetCalculator,
