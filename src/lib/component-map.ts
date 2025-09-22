@@ -27,6 +27,7 @@ import JsonToExcelConverter from '../components/tools/converters/JsonToExcelConv
 
 // Crypto components
 import { EncryptionTool } from '../components/tools/crypto/EncryptionTool';
+import { EncryptionKeyGenerator } from '../components/tools/crypto/EncryptionKeyGenerator';
 import { FileHashIntegrityChecker } from '../components/tools/crypto/FileHashIntegrityChecker';
 import { HashGenerator } from '../components/tools/crypto/HashGenerator';
 import JWTGenerator from '../components/tools/crypto/JWTGenerator';
@@ -175,6 +176,7 @@ export const TOOL_COMPONENTS: Record<string, ToolComponent> = {
   // Crypto tools
   'hash-generator': HashGenerator,
   'encryption-tool': EncryptionTool,
+  'encryption-key-generator': EncryptionKeyGenerator,
   'password-generator': PasswordGenerator,
   'password-policy-generator': PasswordPolicyGenerator,
   'password-strength-checker': PasswordStrengthChecker,

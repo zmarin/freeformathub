@@ -66,6 +66,7 @@ import { PASSWORD_STRENGTH_CHECKER_TOOL } from '../../tools/crypto/password-stre
 import { PASSWORD_POLICY_GENERATOR_TOOL } from '../../tools/crypto/password-policy-generator';
 import { FILE_HASH_INTEGRITY_CHECKER_TOOL } from '../../tools/crypto/file-hash-integrity-checker';
 import { JWT_GENERATOR_TOOL } from '../../tools/crypto/jwt-generator';
+import { ENCRYPTION_KEY_GENERATOR_TOOL } from '../../tools/crypto/encryption-key-generator';
 
 // Web development tools
 import { CSS_MINIFIER_TOOL } from '../../tools/web/css-minifier';
@@ -225,6 +226,7 @@ registerTool(PASSWORD_STRENGTH_CHECKER_TOOL);
 registerTool(PASSWORD_POLICY_GENERATOR_TOOL);
 registerTool(FILE_HASH_INTEGRITY_CHECKER_TOOL);
 registerTool(JWT_GENERATOR_TOOL);
+registerTool(ENCRYPTION_KEY_GENERATOR_TOOL);
 
 // Web
 registerTool(CSS_MINIFIER_TOOL);
