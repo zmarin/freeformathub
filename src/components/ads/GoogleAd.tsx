@@ -75,42 +75,30 @@ export function GoogleAd({
 
     const loadAd = async () => {
       try {
-        // Ensure AdSense script is loaded
+        // AdSense script is now loaded globally from BaseLayout
+        // Just ensure adsbygoogle array exists and push the ad
         if (typeof window !== 'undefined') {
-          if (!window.adsbygoogle) {
-            // Load AdSense script if not already loaded
-            const script = document.createElement('script');
-            script.async = true;
-            script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${import.meta.env.PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-PLACEHOLDER'}`;
-            script.crossOrigin = 'anonymous';
-            document.head.appendChild(script);
-
-            // Initialize adsbygoogle array
-            window.adsbygoogle = window.adsbygoogle || [];
-
-            // Wait for script to load
-            await new Promise((resolve) => {
-              script.onload = resolve;
-            });
-          }
+          // Initialize adsbygoogle array if not already done
+          window.adsbygoogle = window.adsbygoogle || [];
 
           // Push ad to Google AdSense
           try {
             (window.adsbygoogle = window.adsbygoogle || []).push({});
             setAdLoaded(true);
+            console.log('📢 AdSense ad slot pushed:', adSlot);
           } catch (adError) {
             console.warn('AdSense push error:', adError);
           }
         }
       } catch (error) {
-        console.warn('Failed to load Google AdSense:', error);
+        console.warn('Failed to load Google AdSense ad:', error);
       }
     };
 
     // Small delay to ensure DOM is ready
     const timeoutId = setTimeout(loadAd, 100);
     return () => clearTimeout(timeoutId);
-  }, [hasConsent, isVisible, adLoaded]);
+  }, [hasConsent, isVisible, adLoaded, adSlot]);
 
   // Don't render anything if no consent
   if (!hasConsent) {

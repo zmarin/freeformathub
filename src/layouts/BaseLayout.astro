@@ -418,62 +418,71 @@ const getNavLinkClasses = (active: boolean) => [
       }
     </script>
 
-    <!-- Google AdSense Auto ads - Consent-aware loading -->
+    <!-- Google AdSense Auto ads - Required on every page -->
+    <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${import.meta.env.PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-5745115058807126'}`}
+         crossorigin="anonymous"></script>
+
+    <!-- AdSense initialization and consent handling -->
     <script>
-      (function() {
-        // Function to load AdSense when consent is granted
-        function loadAdSense() {
-          if (document.getElementById('adsense-script')) return; // Already loaded
+      // Initialize adsbygoogle array immediately
+      window.adsbygoogle = window.adsbygoogle || [];
 
-          const clientId = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID;
-          if (!clientId || clientId === 'ca-pub-placeholder') {
-            console.warn('AdSense client ID not properly configured');
-            return;
+      // Function to handle AdSense consent state
+      function handleAdSenseConsent() {
+        try {
+          const consentData = localStorage.getItem('freeformathub_consent');
+          let hasMarketingConsent = false;
+
+          if (consentData) {
+            const consent = JSON.parse(consentData);
+            hasMarketingConsent = consent.state && consent.state.marketing;
           }
 
-          const script = document.createElement('script');
-          script.id = 'adsense-script';
-          script.async = true;
-          script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${clientId}`;
-          script.crossOrigin = 'anonymous';
-          document.head.appendChild(script);
+          console.log('🍪 AdSense consent status:', hasMarketingConsent);
 
-          // Initialize adsbygoogle array
-          window.adsbygoogle = window.adsbygoogle || [];
+          // Update Google consent mode for ads
+          if (typeof gtag === 'function') {
+            gtag('consent', 'update', {
+              'ad_storage': hasMarketingConsent ? 'granted' : 'denied',
+              'ad_user_data': hasMarketingConsent ? 'granted' : 'denied',
+              'ad_personalization': hasMarketingConsent ? 'granted' : 'denied'
+            });
+          }
+
+          // Enable/disable AdSense ads based on consent
+          if (hasMarketingConsent) {
+            console.log('✅ AdSense ads enabled with user consent');
+            // Auto ads will automatically start showing when consent is granted
+          } else {
+            console.log('❌ AdSense ads disabled - no marketing consent');
+          }
+        } catch (error) {
+          console.warn('⚠️ Error handling AdSense consent:', error);
         }
+      }
 
-        // Check consent on page load
-        function checkConsent() {
-          try {
-            const consentData = localStorage.getItem('freeformathub_consent');
-            if (consentData) {
-              const consent = JSON.parse(consentData);
-              if (consent.state && consent.state.marketing) {
-                loadAdSense();
-              }
-            }
-          } catch (error) {
-            console.warn('Error checking consent:', error);
-          }
+      // Check consent after DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', handleAdSenseConsent);
+      } else {
+        setTimeout(handleAdSenseConsent, 100);
+      }
+
+      // Listen for consent changes
+      window.addEventListener('storage', function(e) {
+        if (e.key === 'freeformathub_consent') {
+          handleAdSenseConsent();
         }
+      });
 
-        // Check consent immediately
-        checkConsent();
+      // Listen for custom consent events
+      window.addEventListener('consentChanged', function(e) {
+        if (e.detail && (e.detail.marketing !== undefined)) {
+          handleAdSenseConsent();
+        }
+      });
 
-        // Listen for consent changes
-        window.addEventListener('storage', function(e) {
-          if (e.key === 'freeformathub_consent') {
-            checkConsent();
-          }
-        });
-
-        // Also listen for custom consent events
-        window.addEventListener('consentChanged', function(e) {
-          if (e.detail && e.detail.marketing) {
-            loadAdSense();
-          }
-        });
-      })();
+      console.log('🚀 AdSense Auto ads script loaded with consent-aware handling');
     </script>
 
     <!-- Early theme init to prevent FOUC -->
