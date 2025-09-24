@@ -401,7 +401,7 @@ export function YamlFormatter({ className = '' }: YamlFormatterProps) {
   return (
     <div className={`${className}`}>
       {/* Sticky Controls Bar */}
-      <div className="sticky-top" className="grid-responsive" style={{
+      <div className="sticky-top grid-responsive" style={{
         backgroundColor: 'var(--color-surface-secondary)',
         borderBottom: '1px solid var(--color-border)',
         padding: 'var(--space-xl)',
@@ -475,11 +475,11 @@ export function YamlFormatter({ className = '' }: YamlFormatterProps) {
       </div>
 
       {/* Editor Layout */}
-      <div className="grid-responsive" style={{
+      <div className="grid-responsive md:grid-cols-1" style={{
         // Responsive grid handled by CSS class
-        
+
         minHeight: '500px'
-      }} className="md:grid-cols-1">
+      }}>
         {/* Input Panel */}
         <div style={{ position: 'relative', borderRight: '1px solid var(--color-border)' }} className="md:border-r-0 md:border-b md:border-b-gray-200">
           {/* Input Header */}
@@ -527,8 +527,7 @@ export function YamlFormatter({ className = '' }: YamlFormatterProps) {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={labels.placeholder || "Paste your YAML here or drag & drop a file..."}
-              className="form-textarea"
-              className="grid-responsive" style={{
+              className="form-textarea grid-responsive" style={{
                 width: '100%',
                 height: '100%',
                 border: 'none',
@@ -622,8 +621,7 @@ export function YamlFormatter({ className = '' }: YamlFormatterProps) {
                 value={output}
                 readOnly
                 placeholder={`${labels.output.split(' ')[1] || 'Formatted'} output will appear here...`}
-                className="form-textarea"
-                className="grid-responsive" style={{
+                className="form-textarea grid-responsive" style={{
                   width: '100%',
                   height: '100%',
                   border: 'none',

@@ -194,7 +194,7 @@ export function Base64ImageDecoder({ className = '' }: Base64ImageDecoderProps) 
   return (
     <div className={`base64-image-decoder-tool ${className}`}>
       {/* Sticky Controls Bar */}
-      <div className="sticky-top" className="grid-responsive" style={{
+      <div className="sticky-top grid-responsive" style={{
         backgroundColor: 'var(--color-surface-secondary)',
         borderBottom: '1px solid var(--color-border)',
         padding: 'var(--space-xl)',
@@ -246,11 +246,11 @@ export function Base64ImageDecoder({ className = '' }: Base64ImageDecoderProps) 
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid-responsive" style={{
+      <div className="grid-responsive md:grid-cols-1" style={{
         // Responsive grid handled by CSS class
-        
+
         minHeight: '500px'
-      }} className="md:grid-cols-1">
+      }}>
         {/* Input Panel */}
         <div className="card border-r md:border-r-0 md:border-b">
           <InputPanel
@@ -290,8 +290,7 @@ export function Base64ImageDecoder({ className = '' }: Base64ImageDecoderProps) 
                 <img
                   src={imageData.dataUrl}
                   alt="Decoded image preview"
-                  className="max-w-full h-auto border rounded shadow-sm object-contain"
-                  className="grid-responsive" style={{
+                  className="max-w-full h-auto border rounded shadow-sm object-contain grid-responsive" style={{
                     borderColor: 'var(--color-border)',
                     maxWidth: config.resizePreview ? `${config.maxPreviewSize}px` : 'none',
                     maxHeight: config.resizePreview ? `${config.maxPreviewSize}px` : '400px'
