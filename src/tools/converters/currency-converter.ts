@@ -307,7 +307,7 @@ export { CURRENCY_DATABASE };
 export const CURRENCY_CONVERTER_TOOL: Tool = {
   id: 'currency-converter',
   name: 'Currency Converter',
-  description: 'Convert between world currencies with live exchange rates from the European Central Bank. Features visual currency cards, historical charts, and comparison tools for 31+ major currencies.',
+  description: 'USD currency converter and dollar currency exchange with live ECB rates. Convert USD to EUR and 30+ currencies, euro convert calculator with historical charts, and comparison tools for international money conversion.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'converters')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'converters')!.subcategories!.find(sub => sub.id === 'currency-tools') ||
                 TOOL_CATEGORIES.find(cat => cat.id === 'converters')!.subcategories![0],
@@ -315,7 +315,7 @@ export const CURRENCY_CONVERTER_TOOL: Tool = {
   icon: 'DollarSign',
   tags: ['currency', 'exchange', 'rates', 'money', 'conversion', 'forex', 'international'],
   complexity: 'beginner',
-  keywords: ['currency', 'exchange rate', 'money converter', 'forex', 'EUR', 'USD', 'GBP', 'JPY', 'international currency', 'ECB rates'],
+  keywords: ['currency', 'exchange rate', 'money converter', 'forex', 'EUR', 'USD', 'GBP', 'JPY', 'international currency', 'ECB rates', 'usd currency', 'dollar currency', 'euro convert', 'usd convert', 'dolar convert'],
 
   examples: [
     {
@@ -348,6 +348,14 @@ export const CURRENCY_CONVERTER_TOOL: Tool = {
 
   faq: [
     {
+      question: 'How to convert USD currency to EUR and other currencies?',
+      answer: 'To convert USD currency, simply enter your dollar amount, select USD as the source currency, and choose EUR (or any target currency) as the destination. Our USD convert tool provides real-time exchange rates from the European Central Bank for accurate dollar currency conversion.'
+    },
+    {
+      question: 'What\'s the current dollar currency exchange rate for EUR?',
+      answer: 'The current dollar currency rate varies daily. Our USD currency converter shows live exchange rates updated daily at 16:00 CET. You can also view historical charts to track how the USD convert rate has changed over time for better currency planning.'
+    },
+    {
       question: 'How often are exchange rates updated?',
       answer: 'Exchange rates are updated daily around 16:00 CET by the European Central Bank. Our tool fetches the latest available rates directly from the ECB via the Frankfurter API.'
     },
@@ -375,7 +383,7 @@ export const CURRENCY_CONVERTER_TOOL: Tool = {
     'Invalid amount (must be greater than 0)'
   ],
 
-  relatedTools: ['unit-converter', 'number-base-converter', 'color-converter'],
-  seoTitle: 'Currency Converter - Live Exchange Rates & Money Converter',
-  seoDescription: 'Convert between world currencies with live ECB exchange rates. Features 31+ currencies, historical charts, visual currency cards, and comparison tools for international money conversion.'
+  relatedTools: ['unit-converter', 'number-base-converter', 'color-converter', 'json-formatter', 'csv-formatter'],
+  seoTitle: 'USD Currency Converter - Dollar Currency Exchange & USD Convert to EUR',
+  seoDescription: 'Convert USD currency to EUR and 30+ currencies. Real-time dollar currency exchange rates, USD convert tools, euro convert calculator with live ECB rates. Free currency converter with historical charts.'
 };

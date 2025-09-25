@@ -18,20 +18,20 @@ const curatedEncodersTools = getToolsByCategory('encoders').slice(0, 6);
 const curatedConverters = getCategory('converters');
 const curatedConvertersTools = getToolsByCategory('converters').slice(0, 6);
 
-// Hand-picked trending tools (by id)
+// Hand-picked trending tools (by id) - featuring high-volume search terms
 const trendingIds = [
+  'currency-converter',
   'json-formatter',
+  'xml-formatter',
   'base64-encoder',
+  'xml-to-json-converter',
   'url-encoder',
   'jwt-decoder',
   'csv-formatter',
-  'xml-formatter',
   'yaml-formatter',
   'js-beautifier',
   'html-beautifier',
-  'sql-formatter',
-  'text-case-converter',
-  'color-converter'
+  'sql-formatter'
 ];
 const trendingTools = trendingIds
   .map((id) => getTool(id))
@@ -281,9 +281,10 @@ const jsonLd = {
 ---
 
 <BaseLayout
-  title="🎯 FREE JSON Formatter & 119+ Pro Developer Tools 2025 | No-Sign-Up Required!"
-  description="💥 INSTANT results with 119+ professional developer tools! 🚀 JSON formatter, Base64 encoder, XML validator & more. ✅ 100% privacy-first ✅ Zero setup ✅ Works offline. Trusted by 75,000+ developers monthly. Get professional results in under 3 seconds - Try now!"
+  title="🎯 Free Tools Hub - 119+ Free Developer & Business Tools Online | No-Sign-Up"
+  description="💥 Free Tools Hub with 119+ free developer and business tools! 🚀 USD currency converter, JSON formatter, Base64 encoder, XML validator & more. ✅ 100% privacy-first ✅ Zero setup ✅ Works offline. Trusted by 75,000+ developers monthly - Try free tools now!"
   keywords={[
+    'free tools', 'usd currency converter', 'xml get', 'xml search', 'xml extract', 'dollar currency',
     'json formatter free 2025', 'instant base64 encoder', 'professional xml validator', 'jwt decoder no signup',
     'fastest url encoder', 'yaml formatter instant results', 'csv converter professional', 'developer tools 2025',
     'json prettifier privacy first', 'xml beautifier offline', 'ai powered data tools', 'zero latency formatter',
@@ -308,10 +309,10 @@ const jsonLd = {
     <header class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-20" role="banner">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h1 class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6" id="page-title">
-          Free JSON Formatter, Base64 Encoder & 119+ Developer Tools Online
+          Free Tools Hub: JSON Formatter, Currency Converter & 119+ Developer Tools
         </h1>
         <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto" role="doc-subtitle" aria-describedby="page-title">
-          <strong>Instant results, privacy-first, no registration required.</strong> Format JSON, validate XML, encode Base64, decode JWT tokens, convert CSV to JSON and process 119+ data formats. Trusted by <span class="text-blue-600 dark:text-blue-400 font-semibold" aria-label="Trusted by over fifty thousand developers monthly">50,000+ developers monthly</span> for fast, secure data processing.
+          <strong>Free tools with instant results, privacy-first, no registration required.</strong> USD currency converter, XML formatter with xml get/search, JSON beautifier, Base64 encoder, and 119+ free developer tools. Trusted by <span class="text-blue-600 dark:text-blue-400 font-semibold" aria-label="Trusted by over fifty thousand developers monthly">50,000+ developers monthly</span> for fast, secure data processing.
         </p>
 
         <!-- Tool Search Region -->
@@ -336,7 +337,7 @@ const jsonLd = {
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <header class="flex items-center justify-between mb-8">
             <h2 id="trending-tools-heading" class="text-3xl font-bold text-gray-900 dark:text-white">
-              Trending Data Formatters & Developer Tools
+              Trending Free Tools & Developer Utilities
             </h2>
             <nav aria-label="Tool navigation">
               <a href="/search" class="text-blue-600 dark:text-blue-400 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded" aria-label="Search all 119+ developer tools">

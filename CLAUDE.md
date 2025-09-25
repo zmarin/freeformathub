@@ -26,8 +26,6 @@ npm run preview      # Preview production build
 # Type-checking and Linting
 npx astro check      # TypeScript type-checking for Astro files
 npx tsc --noEmit     # TypeScript compilation check only
-npx eslint .         # Run ESLint linting
-npx prettier --write . # Format code with Prettier
 
 # Testing
 npm run test         # Run unit tests with Vitest (watch mode)

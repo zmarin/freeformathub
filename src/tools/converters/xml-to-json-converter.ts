@@ -419,10 +419,10 @@ export const XML_TO_JSON_CONVERTER_TOOL: Tool = {
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'converters')!.subcategories!.find(sub => sub.id === 'data-formats')!,
   slug: 'xml-to-json-converter',
   icon: '🔃',
-  keywords: ['xml', 'json', 'convert', 'transform', 'parse', 'data', 'format', 'structure'],
-  seoTitle: 'XML to JSON Converter - Transform XML Data to JSON Format | FreeFormatHub',
-  seoDescription: 'Convert XML data to JSON format with customizable parsing, attribute handling, and structure options. Fast, accurate XML to JSON transformation.',
-  description: 'Convert XML data to JSON format with customizable parsing options, attribute handling, namespace support, and intelligent structure conversion.',
+  keywords: ['xml', 'json', 'convert', 'transform', 'parse', 'data', 'format', 'structure', 'xml get', 'xml extract', 'xml search', 'xml parsing', 'xml file format'],
+  seoTitle: 'XML to JSON Converter - XML Extract, XML Get & XML Search Tools',
+  seoDescription: 'Convert XML to JSON with xml extract, xml get, and xml search capabilities. Parse any XML file format, xml parsing with attribute handling and namespace support. Free XML converter.',
+  description: 'Convert XML to JSON format with xml extract and xml get functionality. Parse any XML file format, xml search elements, with customizable parsing options and namespace support.',
 
   examples: [
     {

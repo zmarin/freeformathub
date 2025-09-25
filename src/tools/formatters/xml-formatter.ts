@@ -18,9 +18,9 @@ export const XML_FORMATTER_TOOL: Tool = {
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!.subcategories!.find(sub => sub.id === 'xml-formatting')!,
   slug: 'xml-formatter',
   icon: '📋',
-  keywords: ['xml', 'format', 'validate', 'beautify', 'minify', 'convert', 'json', 'parser', 'soap', 'rss'],
-  seoTitle: 'Free XML Formatter & Validator Online - Format & Validate XML',
-  seoDescription: 'Beautify, validate, minify, and convert XML in seconds. Attribute sorting, namespace checks, JSON conversion, and SOAP-aware diagnostics — all processed locally for privacy.',
+  keywords: ['xml', 'format', 'validate', 'beautify', 'minify', 'convert', 'json', 'parser', 'soap', 'rss', 'xml get', 'xml search', 'xml extract', 'xml file format', 'xml parsing'],
+  seoTitle: 'XML Formatter - XML Get, XML Search & Extract Tools | Free XML Parser',
+  seoDescription: 'XML formatter with xml get, xml search, and xml extract capabilities. Parse XML file format, validate and beautify XML data instantly. Free xml parsing tools with namespace support.',
   examples: [
     {
       title: 'Basic XML Formatting',
@@ -59,6 +59,14 @@ export const XML_FORMATTER_TOOL: Tool = {
   ],
   faq: [
     {
+      question: 'How to get XML data and search XML elements?',
+      answer: 'Our XML get and xml search tools help you extract specific data from XML files. Use our parser to xml get node values, xml search for specific elements, and xml extract content from complex XML file format structures with instant results.'
+    },
+    {
+      question: 'Can I extract data from XML file format structures?',
+      answer: 'Yes! Our xml extract functionality allows you to parse any XML file format, xml get specific values, and xml search through elements. Perfect for xml parsing tasks like extracting data from config files, RSS feeds, or API responses.'
+    },
+    {
       question: 'What is XML?',
       answer: 'XML (eXtensible Markup Language) is a markup language that defines rules for encoding documents in a format that is both human-readable and machine-readable.'
     },
@@ -80,17 +88,18 @@ export const XML_FORMATTER_TOOL: Tool = {
     }
   ],
   relatedTools: [
+    'xml-to-json-converter',
+    'json-to-xml-converter',
     'json-formatter',
     'yaml-formatter',
-    'html-beautifier',
-    'base64-encoder'
+    'html-beautifier'
   ],
   howItWorks: [
     {
       title: "Input XML Data",
       icon: "📄",
-      description: "Paste XML content, upload XML files, or drag and drop your XML data into our online XML formatter. Support for large XML files, SOAP envelopes, RSS feeds, configuration files, and all XML-based formats. Our XML parser instantly validates syntax and detects common XML errors.",
-      keywords: ["paste XML", "upload XML file", "XML input", "SOAP formatter", "RSS formatter", "XML validator"]
+      description: "Paste XML content, upload XML files, or drag and drop your XML data into our online XML formatter. Support for large XML files, SOAP envelopes, RSS feeds, configuration files, and all XML file format types. Our XML parser instantly validates syntax, helps you xml get data, xml search elements, and xml extract content.",
+      keywords: ["paste XML", "upload XML file", "XML input", "SOAP formatter", "RSS formatter", "XML validator", "xml get", "xml search", "xml extract", "xml file format"]
     },
     {
       title: "Configure XML Formatting Options",
