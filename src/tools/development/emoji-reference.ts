@@ -1,4 +1,4 @@
-import { Tool, ToolExample } from '../../types/tool';
+import type { Tool, ToolExample } from '../../types/tool';
 import { TOOL_CATEGORIES } from '../../lib/tools/registry';
 
 export interface EmojiData {

@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { Type, Palette, AlignLeft, AlignCenter, AlignRight, Settings, Copy, Download, Sparkles, Eye } from 'lucide-react';
-import { processASCIIArtGenerator, ASCIIArtConfig } from '../../../tools/text/ascii-art-generator';
+import { processASCIIArtGenerator } from '../../../tools/text/ascii-art-generator';
+import type { ASCIIArtConfig } from '../../../tools/text/ascii-art-generator';
 import { InputPanel, OutputPanel, OptionsPanel } from '../../ui';
 import { debounce } from '../../../lib/utils';
 

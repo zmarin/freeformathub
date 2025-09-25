@@ -148,7 +148,7 @@ export default function CliCommandsReference({ className = '' }: { className?: s
       }}>
         <InputPanel
           title="Search CLI Commands"
-          subtitle="Search across 500+ commands for Linux, macOS, Windows, PowerShell, Docker, and Git"
+          subtitle="Explore 90+ curated commands for Linux, macOS, Windows, PowerShell, Docker, and Git"
         >
           <div className="space-y-4">
             <div>

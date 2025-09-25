@@ -50,14 +50,14 @@ const secondaryNavLinks: NavLink[] = [
   { href: '/', label: 'Home' },
   { href: '/tools', label: 'Tools' },
   { href: '/blog', label: '🛠️ Blog' },
-  { href: '/cli-cheatsheets', label: 'CLI Cheat Sheets' },
   { href: '/formatters', label: 'Formatters' },
   { href: '/converters', label: 'Converters' },
   { href: '/encoders', label: 'Encoders' },
   { href: '/json-tools', label: 'JSON Tools' },
   { href: '/data-converters', label: 'Data Converters' },
   { href: '/text-tools', label: 'Text Tools' },
-  { href: '/password-tools', label: 'Security Tools' }
+  { href: '/password-tools', label: 'Security Tools' },
+  { href: '/cli-cheatsheets', label: 'CLI Cheat Sheets' }
 ];
 
 const currentPath = Astro.url.pathname;
@@ -149,14 +149,18 @@ const getNavLinkClasses = (active: boolean) => [
       <meta name="google-site-verification" content={import.meta.env.PUBLIC_ADSENSE_VERIFICATION} />
     )}
 
+    <!-- Google AdSense Account Verification -->
+    <meta name="google-adsense-account" content="ca-pub-5745115058807126">
+
     <!-- Google Search Console Verification (separate from AdSense) -->
     {import.meta.env.PUBLIC_GOOGLE_SEARCH_CONSOLE_VERIFICATION && (
       <meta name="google-site-verification" content={import.meta.env.PUBLIC_GOOGLE_SEARCH_CONSOLE_VERIFICATION} />
     )}
 
     <!-- Enhanced SEO Meta Tags -->
-    <meta name="author" content="FreeFormatHub" />
+    <meta name="author" content="zmarin.zmcor" />
     <meta name="publisher" content="FreeFormatHub" />
+    <meta name="copyright" content="© 2024 zmarin.zmcor. All rights reserved." />
     <meta name="application-name" content="FreeFormatHub" />
     <meta name="apple-mobile-web-app-title" content="FreeFormatHub" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -775,7 +779,7 @@ const getNavLinkClasses = (active: boolean) => [
           </div>
           <div class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
             <p class="text-sm text-gray-600 dark:text-gray-400 text-center">
-              © 2024 FreeFormatHub. All rights reserved. | Z MARIN, obrt za usluge, Kijevska 5, Split, Croatia, EU, MBS 98472739
+              © 2024 zmarin.zmcor. All rights reserved. | Z MARIN, obrt za usluge, Kijevska 5, Split, Croatia, EU, MBS 98472739
             </p>
           </div>
         </div>

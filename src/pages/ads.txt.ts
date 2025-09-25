@@ -3,7 +3,7 @@
 
 export async function GET() {
   // AdSense Publisher ID for FreeFormatHub
-  const adsensePublisherId = 'pub-5745115058807126';
+  const adsensePublisherId = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID || 'pub-5745115058807126';
 
   // Generate ads.txt content
   const content = `google.com, ${adsensePublisherId}, DIRECT, f08c47fec0942fa0`;

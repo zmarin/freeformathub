@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { Shield, Key, Clock, User, Settings, Copy, Download, Eye, EyeOff, Info, AlertTriangle } from 'lucide-react';
-import { processJWTGenerator, JWTGeneratorConfig } from '../../../tools/crypto/jwt-generator';
+import { processJWTGenerator } from '../../../tools/crypto/jwt-generator';
+import type { JWTGeneratorConfig } from '../../../tools/crypto/jwt-generator';
 import { InputPanel, OutputPanel, OptionsPanel } from '../../ui';
 import { debounce } from '../../../lib/utils';
 
