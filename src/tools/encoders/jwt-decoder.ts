@@ -19,14 +19,14 @@ export interface JwtParts {
 export const JWT_DECODER_TOOL: Tool = {
   id: 'jwt-decoder',
   name: 'JWT Decoder & Validator',
-  description: 'Inspect JSON Web Tokens with instant header/payload decoding, signature awareness, claim validation, and security warnings — all in-browser.',
+  description: 'Decode JSON Web Token (JWT) with instant jwt token analysis, jwt get functionality for extracting claims, headers, and payloads. Validate JWT tokens with signature verification — secure in-browser processing.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'encoders')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'encoders')!.subcategories!.find(sub => sub.id === 'crypto-encoding')!,
   slug: 'jwt-decoder',
   icon: '🎫',
-  keywords: ['jwt', 'json web token', 'decode', 'validate', 'auth', 'authorization', 'security', 'token'],
-  seoTitle: 'Free JWT Decoder & Validator Online - Decode JSON Web Tokens',
-  seoDescription: 'Decode JWTs in seconds. View headers, payload claims, expiry status, Base64 segments, and signature insights. Private, client-side token analysis.',
+  keywords: ['JSON Web Token', 'jwt token', 'jwt decode', 'jwt get', 'json web token decoder', 'jwt validator', 'decode token', 'auth token', 'jwt parser', 'token analyzer'],
+  seoTitle: 'JSON Web Token Decoder - Decode JWT Token Online | Free JWT Decoder',
+  seoDescription: 'Decode JSON Web Token (JWT) instantly. Extract jwt token headers, payload claims, and signatures. Free JWT decoder with jwt get functionality and token validation. Analyze JWT tokens securely.',
   examples: [
     {
       title: 'Standard JWT Token',
@@ -80,11 +80,11 @@ export const JWT_DECODER_TOOL: Tool = {
     }
   ],
   relatedTools: [
+    'jwt-generator',
     'base64-encoder',
     'json-formatter',
-    'url-encoder',
     'hash-generator',
-    'uuid-generator'
+    'encryption-tool'
   ],
   howItWorks: [
     {

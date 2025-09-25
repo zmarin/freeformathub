@@ -364,15 +364,26 @@ Token includes:
 export const JWT_GENERATOR_TOOL: Tool = {
   id: 'jwt-generator',
   name: 'JWT Generator',
-  description: 'Generate JSON Web Tokens (JWT) with custom claims, standard fields, and multiple signing algorithms including HMAC and RSA',
+  description: 'Generate JSON Web Token (JWT) with custom claims, authentication tokens, and jwt token creation using HMAC, RSA, and ECDSA signing algorithms for secure oauth and API authentication.',
   icon: '🔐',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'crypto')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'crypto')!.subcategories!.find(sub => sub.id === 'encryption')!,
   slug: 'jwt-generator',
   tags: ['jwt', 'token', 'authentication', 'oauth', 'security', 'auth', 'json', 'signing'],
+  keywords: ['JSON Web Token', 'jwt token', 'jwt generator', 'jwt create', 'jwt encode', 'jwt get', 'token generator', 'authentication token', 'oauth token', 'security token'],
+  seoTitle: 'JSON Web Token Generator - Create JWT Tokens Online | Free JWT Generator',
+  seoDescription: 'Generate JSON Web Token (JWT) with custom claims and signing algorithms. Free JWT token generator with HMAC, RSA, ECDSA support. Create secure authentication tokens instantly.',
   complexity: 'advanced',
   examples,
   faqs: [
+    {
+      question: 'How to generate a JSON Web Token with this tool?',
+      answer: 'Our JSON Web Token generator creates jwt tokens in three steps: 1) Choose your signing algorithm (HMAC/RSA/ECDSA), 2) Add payload claims and expiration, 3) Provide your secret/private key. The tool generates a complete JWT token ready for authentication.'
+    },
+    {
+      question: 'What is a JSON Web Token and jwt token structure?',
+      answer: 'A JSON Web Token (JWT) consists of three base64url-encoded parts: header (algorithm), payload (claims), and signature. Our JWT token generator creates standards-compliant tokens with proper encoding and signing for secure authentication workflows.'
+    },
     {
       question: 'What JWT signing algorithms are supported?',
       answer: 'The tool supports HMAC (HS256, HS384, HS512), RSA (RS256, RS384, RS512), and ECDSA (ES256, ES384, ES512) algorithms. HMAC requires a secret key, while RSA/ECDSA require private keys.'

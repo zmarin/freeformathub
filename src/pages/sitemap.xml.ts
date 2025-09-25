@@ -104,6 +104,9 @@ export const GET: APIRoute = ({ site }) => {
   ];
 
   // Combine all entries with proper ordering (highest priority first)
+  // Exclude first 70 tool entries as they're now in sitemap-0.xml
+  const remainingToolEntries = entries.slice(70);
+
   const allEntries = [
     homepageEntry,
     ...highPerformingPages,
@@ -111,7 +114,7 @@ export const GET: APIRoute = ({ site }) => {
     ...topicPages,
     ...programmaticPages,
     ...utilityPages,
-    ...entries // Individual tool pages from registry
+    ...remainingToolEntries // Remaining tool pages (71+) from registry
   ];
 
   // Enhanced sitemap with additional namespaces and metadata
