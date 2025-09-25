@@ -527,10 +527,10 @@ const jsonLd = {
 >
   <!-- Tool Header Section -->
   <section style="background-color: var(--color-surface); border-bottom: 1px solid var(--color-border);">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
       <!-- Breadcrumb Navigation -->
-      <nav class="mb-8" aria-label="Breadcrumb">
+      <nav class="mb-4" aria-label="Breadcrumb">
         <ol class="flex items-center space-x-2 text-sm">
           <li>
             <a href="/" style="color: var(--color-text-secondary);" class="hover:text-blue-600 transition-colors">
@@ -559,18 +559,18 @@ const jsonLd = {
       </nav>
 
       <!-- Tool Title & Description -->
-      <header class="mb-8">
-        <div class="flex items-start gap-6">
+      <header class="mb-4">
+        <div class="flex items-start gap-4">
           <!-- Tool Icon -->
           <div class="card" style="
-            width: 64px;
-            height: 64px;
+            width: 48px;
+            height: 48px;
             background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
             border: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             color: white;
             flex-shrink: 0;
           ">
@@ -580,10 +580,10 @@ const jsonLd = {
           <div class="flex-1">
             <!-- Tool Title -->
             <h1 style="
-              font-size: 2.5rem;
+              font-size: 1.875rem;
               font-weight: 700;
               color: var(--color-text-primary);
-              margin-bottom: var(--space-lg);
+              margin-bottom: var(--space-sm);
               line-height: 1.2;
             ">
               {tool.name}
@@ -591,11 +591,11 @@ const jsonLd = {
 
             <!-- Tool Description -->
             <p style="
-              font-size: 1.125rem;
+              font-size: 1rem;
               color: var(--color-text-secondary);
-              line-height: 1.6;
+              line-height: 1.5;
               max-width: 800px;
-              margin-bottom: var(--space-xl);
+              margin-bottom: 0;
             ">
               {tool.description}
             </p>
@@ -607,35 +607,49 @@ const jsonLd = {
   </section>
 
   <!-- Main Content Area -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Tool Interface Container -->
-    <div class="card" style="margin-bottom: var(--space-3xl); overflow: hidden;">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <!-- Tool Interface Container - MOST IMPORTANT SECTION -->
+    <div class="card" style="
+      margin-bottom: var(--space-xl);
+      overflow: hidden;
+      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.1);
+      border: 2px solid var(--color-primary-light);
+      position: relative;
+    ">
+      <div style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+      "></div>
       <slot />
     </div>
 
     <!-- How It Works Section - Collapsible -->
-    <div class="card" style="margin-bottom: var(--space-3xl);">
+    <div class="card" style="margin-bottom: var(--space-lg);">
       <details class="group">
         <summary style="
           display: flex;
           justify-content: space-between;
           align-items: center;
           cursor: pointer;
-          padding: var(--space-2xl);
+          padding: var(--space-lg);
           border-bottom: 1px solid var(--color-border);
           background-color: var(--color-surface-secondary);
           border-radius: var(--radius-xl) var(--radius-xl) 0 0;
         ">
-          <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--color-text-primary);">
+          <h2 style="font-size: 1.125rem; font-weight: 600; color: var(--color-text-primary);">
             How It Works
           </h2>
           <svg class="w-6 h-6 group-open:rotate-180 transition-transform" style="color: var(--color-text-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </summary>
-        <div style="padding: var(--space-2xl);">
+        <div style="padding: var(--space-lg);">
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-2xl);">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-lg);">
           {tool.howItWorks && tool.howItWorks.length > 0 ? (
             tool.howItWorks.map((step: any, index: number) => (
               <div style="display: flex; align-items: flex-start; gap: var(--space-lg);">
@@ -780,28 +794,28 @@ const jsonLd = {
 
     <!-- Problems It Solves Section - Collapsible -->
     {tool.problemsSolved && tool.problemsSolved.length > 0 && (
-      <div class="card" style="margin-bottom: var(--space-3xl);">
+      <div class="card" style="margin-bottom: var(--space-lg);">
         <details class="group">
           <summary style="
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            padding: var(--space-2xl);
+            padding: var(--space-lg);
             border-bottom: 1px solid var(--color-border);
             background-color: var(--color-surface-secondary);
             border-radius: var(--radius-xl) var(--radius-xl) 0 0;
           ">
-            <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--color-text-primary);">
+            <h2 style="font-size: 1.125rem; font-weight: 600; color: var(--color-text-primary);">
               Problems It Solves
             </h2>
             <svg class="w-6 h-6 group-open:rotate-180 transition-transform" style="color: var(--color-text-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </summary>
-          <div style="padding: var(--space-2xl);">
+          <div style="padding: var(--space-lg);">
 
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-2xl);">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-lg);">
             {tool.problemsSolved.map((item: any, index: number) => (
               <div style="display: flex; flex-direction: column; gap: var(--space-lg); padding: var(--space-lg); border-radius: var(--radius-lg); background-color: var(--color-surface-secondary);">
                 <div style="display: flex; align-items: center; gap: var(--space-md);">
@@ -858,28 +872,28 @@ const jsonLd = {
 
     <!-- Why Choose This Tool Section - Collapsible -->
     {tool.whyChoose && tool.whyChoose.length > 0 && (
-      <div class="card" style="margin-bottom: var(--space-3xl);">
+      <div class="card" style="margin-bottom: var(--space-lg);">
         <details class="group" open>
           <summary style="
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            padding: var(--space-2xl);
+            padding: var(--space-lg);
             border-bottom: 1px solid var(--color-border);
             background-color: var(--color-surface-secondary);
             border-radius: var(--radius-xl) var(--radius-xl) 0 0;
           ">
-            <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--color-text-primary);">
+            <h2 style="font-size: 1.125rem; font-weight: 600; color: var(--color-text-primary);">
               Why Choose This Tool
             </h2>
             <svg class="w-6 h-6 group-open:rotate-180 transition-transform" style="color: var(--color-text-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </summary>
-          <div style="padding: var(--space-2xl);">
+          <div style="padding: var(--space-lg);">
 
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-2xl);">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-lg);">
             {tool.whyChoose.map((benefit: any, index: number) => (
               <div style="display: flex; align-items: flex-start; gap: var(--space-lg);">
                 <div style="
@@ -912,33 +926,33 @@ const jsonLd = {
     )}
 
     <!-- In-Content Ad -->
-    <div class="card" style="background-color: var(--color-surface-secondary); border: 2px dashed var(--color-border); text-align: center; padding: var(--space-2xl); margin-bottom: var(--space-3xl);">
+    <div class="card" style="background-color: var(--color-surface-secondary); border: 2px dashed var(--color-border); text-align: center; padding: var(--space-lg); margin-bottom: var(--space-lg);">
       <AdPlacement type="content" lazy={true} />
     </div>
 
     <!-- FAQ Section - Collapsible -->
     {(tool.faq?.length ?? 0) > 0 && (
-      <div class="card" style="margin-bottom: var(--space-3xl);">
+      <div class="card" style="margin-bottom: var(--space-lg);">
         <details class="group">
           <summary style="
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            padding: var(--space-2xl);
+            padding: var(--space-lg);
             border-bottom: 1px solid var(--color-border);
             background-color: var(--color-surface-secondary);
             border-radius: var(--radius-xl) var(--radius-xl) 0 0;
           ">
-            <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--color-text-primary);">
+            <h2 style="font-size: 1.125rem; font-weight: 600; color: var(--color-text-primary);">
               Frequently Asked Questions
             </h2>
             <svg class="w-6 h-6 group-open:rotate-180 transition-transform" style="color: var(--color-text-secondary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </summary>
-          <div style="padding: var(--space-2xl);">
-            <div style="display: grid; gap: var(--space-lg);">
+          <div style="padding: var(--space-lg);">
+            <div style="display: grid; gap: var(--space-md);">
               {tool.faq?.map((faqItem: any, index: number) => (
                 <details class="group">
                   <summary style="
@@ -971,9 +985,9 @@ const jsonLd = {
 
     <!-- Related Tools -->
     {(tool.relatedTools?.length ?? 0) > 0 && (
-      <div class="card" style="margin-bottom: var(--space-3xl);">
+      <div class="card" style="margin-bottom: var(--space-lg);">
         <div class="card-body">
-          <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--color-text-primary); margin-bottom: var(--space-2xl);">
+          <h2 style="font-size: 1.125rem; font-weight: 600; color: var(--color-text-primary); margin-bottom: var(--space-lg);">
             Related Tools
           </h2>
           <div style="display: flex; gap: var(--space-lg); overflow-x: auto; padding-bottom: var(--space-lg);">
@@ -1025,7 +1039,7 @@ const jsonLd = {
     <InternalLinksCluster currentTool={tool} />
 
     <!-- Footer Ad -->
-    <div class="card" style="background-color: var(--color-surface-secondary); border: 2px dashed var(--color-border); text-align: center; padding: var(--space-2xl);">
+    <div class="card" style="background-color: var(--color-surface-secondary); border: 2px dashed var(--color-border); text-align: center; padding: var(--space-lg);">
       <AdPlacement type="footer" lazy={true} />
     </div>
   </div>
