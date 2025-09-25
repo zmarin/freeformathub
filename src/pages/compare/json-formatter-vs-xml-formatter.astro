@@ -1,0 +1,285 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const baseUrl = 'https://freeformathub.com';
+
+// Enhanced structured data for comparison page
+const comparisonSchema = {
+  "@context": "https://schema.org",
+  "@type": "ComparisonPage",
+  "name": "JSON Formatter vs XML Formatter - Complete Comparison 2025",
+  "description": "Detailed comparison between JSON and XML formatters. Compare features, performance, use cases, and choose the best data formatting tool for your needs.",
+  "url": `${baseUrl}/compare/json-formatter-vs-xml-formatter`,
+  "author": {
+    "@type": "Organization",
+    "name": "FreeFormatHub",
+    "url": baseUrl
+  },
+  "datePublished": "2024-01-01",
+  "dateModified": new Date().toISOString().split('T')[0],
+  "mainEntity": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "JSON Formatter",
+      "description": "Format, validate, and beautify JSON data with syntax highlighting",
+      "url": `${baseUrl}/formatters/json-formatter`,
+      "applicationCategory": "DeveloperApplication"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "XML Formatter",
+      "description": "Format, validate, and beautify XML markup with error detection",
+      "url": `${baseUrl}/formatters/xml-formatter`,
+      "applicationCategory": "DeveloperApplication"
+    }
+  ]
+};
+
+const faqSchema = {
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "When should I use JSON formatter vs XML formatter?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Use JSON formatter for APIs, configuration files, and modern web applications. Use XML formatter for legacy systems, SOAP services, and document markup. JSON is simpler and more lightweight, while XML offers more features like attributes and namespaces."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which is better for web APIs - JSON or XML?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "JSON is generally better for web APIs due to smaller payload size, faster parsing, and native JavaScript support. Most modern REST APIs use JSON. XML is still used in enterprise SOAP services and when you need advanced features like schema validation."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are JSON and XML formatters free to use?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, both JSON and XML formatters on FreeFormatHub are completely free with no registration required. All processing happens locally in your browser for maximum privacy and security."
+      }
+    }
+  ]
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [comparisonSchema, faqSchema]
+};
+---
+
+<BaseLayout
+  title="JSON Formatter vs XML Formatter - Complete Comparison 2025"
+  description="🔥 JSON vs XML Formatter comparison. ✅ Features ✅ Performance ✅ Use cases ✅ Free tools. Which data formatter is best for your project? Compare JSON and XML formatting tools side-by-side."
+  keywords={['json vs xml formatter', 'json formatter comparison', 'xml formatter vs json', 'best data formatter', 'json xml comparison 2025', 'format json vs xml', 'data formatting tools comparison']}
+  jsonLd={jsonLd}
+>
+  <!-- Hero Section -->
+  <section class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+        JSON Formatter vs XML Formatter
+      </h1>
+      <p class="text-lg text-gray-600 dark:text-gray-300 mb-8">
+        Complete comparison of JSON and XML formatters. Features, performance, use cases, and recommendations to choose the best formatting tool for your project.
+      </p>
+    </div>
+  </section>
+
+  <!-- Comparison Table -->
+  <section class="py-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Feature Comparison</h2>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Feature</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">JSON Formatter</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">XML Formatter</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-600">
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">Syntax Highlighting</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">✅ Full support</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">✅ Full support</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">Validation</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">✅ JSON Schema</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">✅ XSD/DTD</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">File Size</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">✅ Smaller</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-orange-600">⚠️ Larger</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">Parsing Speed</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">✅ Faster</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-orange-600">⚠️ Slower</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">Human Readable</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">✅ Simple</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">✅ Descriptive</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">Attributes Support</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">❌ No</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">✅ Yes</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Use Cases -->
+  <section class="py-16 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">When to Use Each Formatter</h2>
+
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+          <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <span class="text-3xl">📄</span>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Use JSON Formatter For:</h3>
+          </div>
+          <ul class="space-y-3 text-gray-600 dark:text-gray-300">
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2">✅</span>
+              REST API responses and requests
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2">✅</span>
+              Configuration files (package.json, tsconfig.json)
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2">✅</span>
+              Modern web applications and SPAs
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2">✅</span>
+              NoSQL database documents
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2">✅</span>
+              JavaScript applications (native support)
+            </li>
+          </ul>
+          <div class="mt-6 text-center">
+            <a href="/formatters/json-formatter" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+              Try JSON Formatter
+            </a>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+          <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <span class="text-3xl">🏷️</span>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Use XML Formatter For:</h3>
+          </div>
+          <ul class="space-y-3 text-gray-600 dark:text-gray-300">
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2">✅</span>
+              SOAP web services and enterprise APIs
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2">✅</span>
+              Document markup and content management
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2">✅</span>
+              Legacy system integration
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2">✅</span>
+              Configuration with attributes and namespaces
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2">✅</span>
+              Complex data with metadata requirements
+            </li>
+          </ul>
+          <div class="mt-6 text-center">
+            <a href="/formatters/xml-formatter" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700">
+              Try XML Formatter
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">Frequently Asked Questions</h2>
+
+      <div class="space-y-6">
+        <details class="bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+          <summary class="px-6 py-4 cursor-pointer font-semibold text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
+            When should I use JSON formatter vs XML formatter?
+          </summary>
+          <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-600">
+            <p class="text-gray-600 dark:text-gray-300">
+              Use JSON formatter for APIs, configuration files, and modern web applications. Use XML formatter for legacy systems, SOAP services, and document markup. JSON is simpler and more lightweight, while XML offers more features like attributes and namespaces.
+            </p>
+          </div>
+        </details>
+
+        <details class="bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+          <summary class="px-6 py-4 cursor-pointer font-semibold text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
+            Which is better for web APIs - JSON or XML?
+          </summary>
+          <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-600">
+            <p class="text-gray-600 dark:text-gray-300">
+              JSON is generally better for web APIs due to smaller payload size, faster parsing, and native JavaScript support. Most modern REST APIs use JSON. XML is still used in enterprise SOAP services and when you need advanced features like schema validation.
+            </p>
+          </div>
+        </details>
+
+        <details class="bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+          <summary class="px-6 py-4 cursor-pointer font-semibold text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
+            Are JSON and XML formatters free to use?
+          </summary>
+          <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-600">
+            <p class="text-gray-600 dark:text-gray-300">
+              Yes, both JSON and XML formatters on FreeFormatHub are completely free with no registration required. All processing happens locally in your browser for maximum privacy and security.
+            </p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-16 bg-blue-600">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl font-bold text-white mb-4">Ready to Format Your Data?</h2>
+      <p class="text-xl text-blue-100 mb-8">Choose the best formatter for your needs and start processing your data instantly.</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/formatters/json-formatter" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-blue-600 bg-white hover:bg-gray-50">
+          Use JSON Formatter
+        </a>
+        <a href="/formatters/xml-formatter" class="inline-flex items-center px-6 py-3 border-2 border-white text-base font-medium rounded-md text-white hover:bg-blue-700">
+          Use XML Formatter
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

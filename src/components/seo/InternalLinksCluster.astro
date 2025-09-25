@@ -1,0 +1,224 @@
+---
+import { getTool, getToolsByCategory, getAllTools } from '../../lib/tools/registry';
+import type { Tool } from '../../types';
+
+export interface Props {
+  currentTool?: Tool;
+  category?: string;
+  theme?: 'light' | 'dark';
+  maxLinks?: number;
+}
+
+const { currentTool, category, theme = 'light', maxLinks = 8 } = Astro.props;
+
+// Generate related links based on context
+let relatedLinks: Array<{
+  href: string;
+  title: string;
+  description: string;
+  category: string;
+  icon?: string;
+  priority: number;
+}> = [];
+
+// If we have a current tool, find related tools
+if (currentTool && currentTool.category && currentTool.category.id) {
+  // Same category tools
+  const categoryTools = getToolsByCategory(currentTool.category.id) || [];
+  const filteredCategoryTools = categoryTools
+    .filter(tool => tool.id !== currentTool.id)
+    .slice(0, 3);
+
+  filteredCategoryTools.forEach(tool => {
+    if (tool.category && tool.category.id && tool.category.name) {
+      relatedLinks.push({
+        href: `/${tool.category.id}/${tool.slug}`,
+        title: tool.name,
+        description: tool.description,
+        category: tool.category.name,
+        icon: tool.icon,
+        priority: 8
+      });
+    }
+  });
+
+  // Related tools based on keywords
+  if (currentTool.keywords && Array.isArray(currentTool.keywords)) {
+    const allTools = getAllTools();
+    const keywordMatches = allTools
+      .filter(tool =>
+        tool.id !== currentTool.id &&
+        tool.category && tool.category.id &&
+        tool.category.id !== currentTool.category.id &&
+        tool.keywords && Array.isArray(tool.keywords)
+      )
+      .map(tool => ({
+        tool,
+        matches: tool.keywords.filter(k => currentTool.keywords.includes(k)).length
+      }))
+      .filter(({ matches }) => matches > 0)
+      .sort((a, b) => b.matches - a.matches)
+      .slice(0, 2);
+
+    keywordMatches.forEach(({ tool }) => {
+      if (tool.category && tool.category.id && tool.category.name) {
+        relatedLinks.push({
+          href: `/${tool.category.id}/${tool.slug}`,
+          title: tool.name,
+          description: tool.description,
+          category: tool.category.name,
+          icon: tool.icon,
+          priority: 6
+        });
+      }
+    });
+  }
+
+  // Add relevant guides and comparisons
+  if (currentTool.id === 'json-formatter') {
+    relatedLinks.push(
+      {
+        href: '/guides/format-json-for-api-testing',
+        title: 'Format JSON for API Testing Guide',
+        description: 'Complete guide on formatting JSON for REST API development and testing',
+        category: 'Guides',
+        icon: '📚',
+        priority: 7
+      },
+      {
+        href: '/compare/json-formatter-vs-xml-formatter',
+        title: 'JSON vs XML Formatter Comparison',
+        description: 'Compare JSON and XML formatters to choose the best tool for your project',
+        category: 'Comparisons',
+        icon: '⚖️',
+        priority: 6
+      },
+      {
+        href: '/alternatives/jsonlint-alternative',
+        title: 'Best JSONLint Alternative',
+        description: 'Superior JSON formatting with privacy-first architecture and advanced features',
+        category: 'Alternatives',
+        icon: '🚀',
+        priority: 8
+      }
+    );
+  }
+}
+
+// Add high-value tool links if we don't have enough related links
+const highValueTools = [
+  'json-formatter', 'base64-encoder', 'jwt-decoder', 'port-scanner',
+  'url-encoder', 'password-generator', 'hash-generator', 'uuid-generator'
+];
+
+if (relatedLinks.length < maxLinks) {
+  const needed = maxLinks - relatedLinks.length;
+  const existingHrefs = new Set(relatedLinks.map(link => link.href));
+
+  for (const toolId of highValueTools) {
+    if (relatedLinks.length >= maxLinks) break;
+
+    const tool = getTool(toolId);
+    if (tool && tool.category && tool.category.id && tool.category.name && !existingHrefs.has(`/${tool.category.id}/${tool.slug}`)) {
+      relatedLinks.push({
+        href: `/${tool.category.id}/${tool.slug}`,
+        title: tool.name,
+        description: tool.description,
+        category: tool.category.name,
+        icon: tool.icon,
+        priority: 5
+      });
+    }
+  }
+}
+
+// Sort by priority and limit
+relatedLinks = relatedLinks
+  .sort((a, b) => b.priority - a.priority)
+  .slice(0, maxLinks);
+
+// Add category landing pages for broader linking
+if (currentTool && relatedLinks.length < maxLinks) {
+  const categoryLandingPages = [
+    { href: '/formatters', title: 'All Formatters', description: 'JSON, XML, YAML, CSS, HTML, and more formatting tools', category: 'Categories', icon: '📝' },
+    { href: '/encoders', title: 'All Encoders', description: 'Base64, URL, JWT, and other encoding/decoding tools', category: 'Categories', icon: '🔒' },
+    { href: '/converters', title: 'All Converters', description: 'Convert between JSON, XML, CSV, YAML, and more formats', category: 'Categories', icon: '🔄' },
+    { href: '/network', title: 'Network Tools', description: 'Port scanner, IP calculator, DNS lookup, and network utilities', category: 'Categories', icon: '🌐' }
+  ];
+
+  const needed = maxLinks - relatedLinks.length;
+  categoryLandingPages.slice(0, needed).forEach(page => {
+    if (!relatedLinks.find(link => link.href === page.href)) {
+      relatedLinks.push({ ...page, priority: 4 });
+    }
+  });
+}
+---
+
+{relatedLinks.length > 0 && (
+  <section class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          {currentTool ? 'Related Tools & Resources' : 'Popular Developer Tools'}
+        </h2>
+        <p class="text-gray-600 dark:text-gray-300">
+          Discover more tools to streamline your development workflow
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {relatedLinks.map((link, index) => (
+          <a
+            href={link.href}
+            class="group block p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-lg transition-all duration-200"
+            rel={link.href.startsWith('/') ? undefined : 'noopener noreferrer'}
+          >
+            <div class="flex items-start space-x-3">
+              <div class="flex-shrink-0">
+                <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+                  <span class="text-lg">{link.icon || '🔧'}</span>
+                </div>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-sm font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">
+                  {link.title}
+                </h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-1 truncate">
+                  {link.category}
+                </p>
+                <p class="text-xs text-gray-600 dark:text-gray-300 line-clamp-2">
+                  {link.description}
+                </p>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      {/* SEO-friendly text links for crawlers */}
+      <div class="mt-8 text-center">
+        <div class="text-sm text-gray-500 dark:text-gray-400">
+          <span class="sr-only">Related links: </span>
+          {relatedLinks.map((link, index) => (
+            <span key={link.href}>
+              <a href={link.href} class="text-blue-600 dark:text-blue-400 hover:underline">
+                {link.title}
+              </a>
+              {index < relatedLinks.length - 1 && <span class="mx-1">•</span>}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

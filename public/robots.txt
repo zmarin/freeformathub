@@ -1,36 +1,132 @@
 User-agent: *
 Allow: /
 
-# Sitemap
+# === SITEMAPS ===
 Sitemap: https://freeformathub.com/sitemap.xml
+Sitemap: https://freeformathub.com/sitemap-images.xml
+Sitemap: https://freeformathub.com/sitemap-news.xml
 
-# Encourage crawling of important business tool categories
-Allow: /json-tools
-Allow: /text-tools
-Allow: /data-converters
-Allow: /password-tools
+# === HIGH-PRIORITY PAGES (Prioritize crawling for better rankings) ===
+# JSON tools - massive search volume
+Allow: /formatters/json-formatter
+Allow: /encoders/base64-encoder
+Allow: /encoders/jwt-decoder
+Allow: /encoders/url-encoder
 
-# Encourage crawling of popular tool categories
+# Popular developer tools
+Allow: /crypto/password-generator
+Allow: /crypto/hash-generator
+Allow: /generators/uuid-generator
+Allow: /generators/qr-code-generator
+
+# Data conversion tools
+Allow: /converters/json-to-csv
+Allow: /converters/csv-to-json
+Allow: /converters/xml-to-json-converter
+Allow: /converters/json-to-xml-converter
+
+# Network tools (port-scanner performing well)
+Allow: /network/port-scanner
+Allow: /network/ip-subnet-calculator
+Allow: /network/dns-lookup
+
+# === CATEGORY PAGES (High SEO value) ===
 Allow: /formatters/
 Allow: /converters/
 Allow: /encoders/
 Allow: /crypto/
+Allow: /network/
+Allow: /text/
+Allow: /development/
+Allow: /validators/
+Allow: /generators/
+Allow: /web/
+Allow: /datetime/
+Allow: /data/
+Allow: /color/
+Allow: /math/
 
-# Allow Astro static assets (CSS, JS needed for proper page rendering)
+# === PROGRAMMATIC SEO PAGES ===
+Allow: /compare/
+Allow: /alternatives/
+Allow: /guides/
+Allow: /use-cases/
+Allow: /glossary/
+
+# === STATIC ASSETS (Required for proper page rendering) ===
 Allow: /_astro/*.css
 Allow: /_astro/*.js
+Allow: /_astro/client*.js
+Allow: /favicon.ico
+Allow: /robots.txt
+Allow: /sitemap*.xml
 
-# Disallow admin and private areas
+# === BLOCK UNWANTED PATHS ===
+# Admin and monitoring
 Disallow: /admin/
 Disallow: /private/
 Disallow: /grafana/
 Disallow: /prometheus/
+Disallow: /api/admin/
+Disallow: /dashboard/
 
-# Block legacy Next.js paths that might still be cached/linked
+# Development and testing
+Disallow: /test/
+Disallow: /dev/
+Disallow: /staging/
+Disallow: /__test__/
+
+# Legacy framework paths
 Disallow: /_next/
+Disallow: /_nuxt/
+Disallow: /node_modules/
 
-# Crawl-delay for respectful crawling
+# Duplicate content prevention
+Disallow: /*?*
+Disallow: /*#*
+Disallow: /search?*
+Disallow: /*&*
+
+# Block low-value utility pages
+Disallow: /404
+Disallow: /500
+Disallow: /offline
+
+# === SPECIFIC BOT INSTRUCTIONS ===
+
+# Google optimizations
+User-agent: Googlebot
 Crawl-delay: 1
+Allow: /
+# Prioritize high-value pages
+Allow: /formatters/json-formatter$
+Allow: /encoders/base64-encoder$
+Allow: /network/port-scanner$
 
-# Host for canonical domain
+# Bing optimizations
+User-agent: Bingbot
+Crawl-delay: 2
+Allow: /
+
+# Social media crawlers
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+# Block aggressive crawlers to preserve server resources
+User-agent: SemrushBot
+Crawl-delay: 10
+
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: MJ12bot
+Disallow: /
+
+# === HOST & CANONICAL ===
 Host: https://freeformathub.com

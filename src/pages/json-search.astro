@@ -1,0 +1,196 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getAllTools } from '../lib/tools';
+import InternalLinksCluster from '../components/seo/InternalLinksCluster.astro';
+
+const jsonTools = getAllTools().filter(tool =>
+  tool.keywords?.some(keyword =>
+    keyword.toLowerCase().includes('json')
+  )
+);
+
+const pageTitle = 'JSON Search - Find, Query & Locate Data in JSON Files Online';
+const pageDescription = 'Search JSON data effortlessly with our powerful JSON search tools. Find values, query nested objects, locate properties, and search through complex JSON structures online. Free JSON search utilities.';
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  keywords="json search, search json data, json query, find json values, json locate properties, search nested json"
+>
+  <div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="text-center mb-12">
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+        🔎 JSON Search - Find & Query JSON Data
+      </h1>
+      <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+        Search through JSON data with precision using our advanced JSON search and query tools.
+        Find values, locate properties, query nested structures, and discover data patterns instantly.
+      </p>
+
+      <div class="bg-green-50 p-6 rounded-lg mb-8">
+        <h2 class="text-2xl font-semibold text-green-900 mb-4">🎯 Advanced JSON Search Features</h2>
+        <div class="grid md:grid-cols-2 gap-4 text-left">
+          <div class="flex items-start space-x-3">
+            <span class="text-green-500 text-xl">✓</span>
+            <span class="text-green-800"><strong>Deep Search:</strong> Find data in nested JSON structures</span>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-green-500 text-xl">✓</span>
+            <span class="text-green-800"><strong>Path Queries:</strong> Use JSON Path to locate specific values</span>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-green-500 text-xl">✓</span>
+            <span class="text-green-800"><strong>Pattern Matching:</strong> Search with regex and wildcards</span>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-green-500 text-xl">✓</span>
+            <span class="text-green-800"><strong>Real-time Results:</strong> Instant search as you type</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">🛠️ JSON Search & Query Tools</h2>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {jsonTools.slice(0, 9).map(tool => (
+          <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+            <div class="flex items-center mb-3">
+              <span class="text-2xl mr-3">{tool.icon}</span>
+              <h3 class="font-semibold text-gray-900 text-lg">{tool.name}</h3>
+            </div>
+            <p class="text-gray-600 text-sm mb-4">{tool.description}</p>
+            <a
+              href={`/${tool.category.id}/${tool.slug}`}
+              class="inline-block bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors"
+            >
+              Search JSON →
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div class="mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-6">🎯 JSON Search Use Cases</h2>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-blue-50 p-6 rounded-lg">
+          <h3 class="text-xl font-semibold text-blue-800 mb-4">🔍 Find Specific Values</h3>
+          <ul class="space-y-2 text-blue-700 text-sm">
+            <li>• Search for user IDs in large datasets</li>
+            <li>• Find product prices in e-commerce data</li>
+            <li>• Locate email addresses in customer records</li>
+            <li>• Search for error codes in log files</li>
+          </ul>
+        </div>
+        <div class="bg-purple-50 p-6 rounded-lg">
+          <h3 class="text-xl font-semibold text-purple-800 mb-4">🎯 Query Nested Data</h3>
+          <ul class="space-y-2 text-purple-700 text-sm">
+            <li>• Navigate deep object hierarchies</li>
+            <li>• Search within arrays of objects</li>
+            <li>• Find properties in complex structures</li>
+            <li>• Query API response data efficiently</li>
+          </ul>
+        </div>
+        <div class="bg-green-50 p-6 rounded-lg">
+          <h3 class="text-xl font-semibold text-green-800 mb-4">📊 Data Analysis</h3>
+          <ul class="space-y-2 text-green-700 text-sm">
+            <li>• Search for patterns in JSON data</li>
+            <li>• Find duplicate entries across objects</li>
+            <li>• Locate missing or null values</li>
+            <li>• Search configuration parameters</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">💡 JSON Search Techniques</h2>
+      <div class="bg-gray-50 p-8 rounded-lg">
+        <div class="grid md:grid-cols-2 gap-8">
+          <div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">Basic Search Methods</h3>
+            <div class="space-y-3">
+              <div class="bg-white p-4 rounded border">
+                <h4 class="font-semibold text-gray-700">Key Search</h4>
+                <p class="text-sm text-gray-600">Find objects containing specific property names</p>
+                <code class="text-xs bg-gray-100 p-1 rounded">$.users[*].name</code>
+              </div>
+              <div class="bg-white p-4 rounded border">
+                <h4 class="font-semibold text-gray-700">Value Search</h4>
+                <p class="text-sm text-gray-600">Locate objects with specific values</p>
+                <code class="text-xs bg-gray-100 p-1 rounded">$.products[?(@.price > 100)]</code>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">Advanced Search</h3>
+            <div class="space-y-3">
+              <div class="bg-white p-4 rounded border">
+                <h4 class="font-semibold text-gray-700">Wildcard Search</h4>
+                <p class="text-sm text-gray-600">Use patterns to find multiple matches</p>
+                <code class="text-xs bg-gray-100 p-1 rounded">$.data.*.email</code>
+              </div>
+              <div class="bg-white p-4 rounded border">
+                <h4 class="font-semibold text-gray-700">Conditional Search</h4>
+                <p class="text-sm text-gray-600">Filter results based on conditions</p>
+                <code class="text-xs bg-gray-100 p-1 rounded">$..book[?(@.price < 10)]</code>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">🚀 JSON Search Examples</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="bg-white border border-gray-200 p-6 rounded-lg">
+          <h3 class="font-semibold text-gray-800 mb-3">Search API Response</h3>
+          <div class="bg-gray-100 p-3 rounded text-xs mb-3">
+            <pre>{`{
+  "users": [
+    {"id": 1, "name": "John", "active": true},
+    {"id": 2, "name": "Jane", "active": false}
+  ]
+}`}</pre>
+          </div>
+          <p class="text-sm text-gray-600">
+            <strong>Search Query:</strong> <code class="bg-gray-100 p-1 rounded">$.users[?(@.active == true)]</code><br/>
+            <strong>Result:</strong> Finds all active users
+          </p>
+        </div>
+        <div class="bg-white border border-gray-200 p-6 rounded-lg">
+          <h3 class="font-semibold text-gray-800 mb-3">Search Nested Objects</h3>
+          <div class="bg-gray-100 p-3 rounded text-xs mb-3">
+            <pre>{`{
+  "data": {
+    "products": {
+      "electronics": [{"name": "Phone", "price": 599}]
+    }
+  }
+}`}</pre>
+          </div>
+          <p class="text-sm text-gray-600">
+            <strong>Search Query:</strong> <code class="bg-gray-100 p-1 rounded">$..products.electronics[*].name</code><br/>
+            <strong>Result:</strong> Gets all electronics product names
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <InternalLinksCluster currentTool={null} />
+
+    <div class="mt-12 bg-green-600 text-white p-8 rounded-lg text-center">
+      <h2 class="text-2xl font-bold mb-4">🔎 Start Searching JSON Data!</h2>
+      <p class="text-xl mb-6">Use our powerful JSON search tools to find exactly what you're looking for.</p>
+      <a
+        href="/development/json-path-extractor"
+        class="inline-block bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+      >
+        Start JSON Search →
+      </a>
+    </div>
+  </div>
+</BaseLayout>

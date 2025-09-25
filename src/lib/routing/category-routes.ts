@@ -157,7 +157,12 @@ export function getRelatedTools(tool: Tool, limit: number = 6): Tool[] {
   // Get tools with similar keywords
   const allTools = getAllTools();
   const keywordMatches = allTools
-    .filter(t => t.id !== tool.id && t.category.id !== tool.category.id)
+    .filter(t =>
+      t.id !== tool.id &&
+      t.category.id !== tool.category.id &&
+      t.keywords && Array.isArray(t.keywords) &&
+      tool.keywords && Array.isArray(tool.keywords)
+    )
     .map(t => ({
       tool: t,
       matches: t.keywords.filter(k => tool.keywords.includes(k)).length

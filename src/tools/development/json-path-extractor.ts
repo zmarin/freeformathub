@@ -604,50 +604,52 @@ export function runJsonPath(json: any, pathExpression: string): JsonPathResult[]
 
 export const JSON_PATH_EXTRACTOR_TOOL: Tool = {
   id: 'json-path-extractor',
-  name: 'JSON Path Extractor',
-  description: 'Extract specific values from JSON data using JSONPath expressions. Supports complex queries, filtering, and multiple output formats for data analysis and processing.',
+  name: 'JSON Path Extractor - Get, Search & Extract Values from JSON',
+  description: 'Get specific values from JSON data instantly! Search through nested objects, extract array elements, and retrieve data using powerful JSONPath expressions. Perfect for getting exactly what you need from complex JSON structures.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'development')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'development')!.subcategories!.find(sub => sub.id === 'json-tools')!,
   slug: 'json-path-extractor',
   icon: '🔍',
-  keywords: ['json', 'jsonpath', 'query', 'extract', 'data', 'json query', 'json filter'],
-  seoTitle: 'JSON Path Extractor - Query JSON Data Online | FreeFormatHub',
-  seoDescription: 'Extract and query JSON data using JSONPath expressions. Free online tool with support for filters, recursive search, array slicing, and multiple output formats.',
+  keywords: ['json get value by path', 'json search nested objects', 'json get array elements', 'json extract specific data', 'json get values from api', 'json search through data', 'json path query', 'json value extractor', 'json', 'jsonpath', 'query', 'extract', 'data', 'json query', 'json filter', 'get json data', 'search json keys', 'extract nested json'],
+  seoTitle: 'JSON Path Extractor - Get, Search & Extract Values from JSON Data Online',
+  seoDescription: 'Get specific values from JSON data using JSONPath expressions. Search through nested objects, extract array elements, and retrieve exactly what you need from complex JSON structures. Free online tool with filters, recursive search, and multiple output formats.',
   
   examples: [
     {
-      title: 'Basic Property Access',
+      title: 'Get Specific Property Value',
       input: `{"name": "John", "age": 30, "city": "New York"}
 $.name`,
-      description: 'Extract a simple property value from JSON object'
+      description: 'Get a specific property value from JSON object instantly'
     },
     {
-      title: 'Array Element Access',
+      title: 'Get Array Element Data',
       input: `{"users": [{"name": "Alice", "role": "admin"}, {"name": "Bob", "role": "user"}]}
 $.users[0].name`,
-      description: 'Access specific array elements and their properties'
+      description: 'Get specific array elements and extract their properties'
     },
     {
-      title: 'Wildcard and Filtering',
+      title: 'Search and Filter JSON Data',
       input: `{"products": [{"name": "laptop", "price": 999}, {"name": "mouse", "price": 25}]}
 $.products[?(@.price > 50)].name`,
-      description: 'Use filters to find items matching conditions'
+      description: 'Search through arrays and get items matching specific conditions'
     },
     {
-      title: 'Recursive Search',
+      title: 'Extract All Matching Values',
       input: `{"data": {"users": {"active": [{"id": 1, "name": "John"}]}}}
 $..name`,
-      description: 'Recursively find all occurrences of a property'
+      description: 'Get all occurrences of a property from nested JSON structures'
     }
   ],
   
   useCases: [
-    'API response data extraction and transformation',
-    'Configuration file value retrieval',
-    'Log file analysis and data mining',
-    'Database query result processing',
-    'JSON document validation and testing',
-    'Data pipeline filtering and mapping'
+    'Get specific values from API responses quickly',
+    'Extract configuration settings from JSON files',
+    'Search through JSON logs to find error data',
+    'Get database query results in the exact format needed',
+    'Extract user data from complex authentication responses',
+    'Search large JSON datasets for specific information',
+    'Get product details from e-commerce API responses',
+    'Extract metrics and analytics data from JSON reports'
   ],
   
   faq: [

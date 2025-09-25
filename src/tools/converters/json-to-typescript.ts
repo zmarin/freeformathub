@@ -306,15 +306,15 @@ function formatTypeScriptCode(code: string): string {
 
 export const JSON_TO_TYPESCRIPT_TOOL: Tool = {
   id: 'json-to-typescript',
-  name: 'JSON to TypeScript Interface',
+  name: 'JSON to TypeScript Interface - Get Types from JSON Data',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'converters')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'converters')!.subcategories!.find(sub => sub.id === 'code-development')!,
   slug: 'json-to-typescript',
-  icon: '=�',
-  keywords: ['json', 'typescript', 'interface', 'type', 'definition', 'convert', 'generate', 'ts'],
-  seoTitle: 'JSON to TypeScript Interface Generator - Convert JSON to TS Types | FreeFormatHub',
-  seoDescription: 'Convert JSON data to TypeScript interfaces automatically. Generate type definitions with optional properties, union types, and proper formatting.',
-  description: 'Convert JSON data to TypeScript interfaces and type definitions. Automatically infer types, handle nested objects, and generate clean TypeScript code.',
+  icon: '🔷',
+  keywords: ['json get types', 'json parsing typescript', 'json extract interfaces', 'json get type definitions', 'json search properties types', 'json', 'typescript', 'interface', 'type', 'definition', 'convert', 'generate', 'ts', 'get json schema types', 'extract typescript types'],
+  seoTitle: 'JSON to TypeScript Interface Generator - Get Types from JSON Data Online',
+  seoDescription: 'Get TypeScript interfaces from JSON data instantly. Extract type definitions, parse JSON structures, and generate clean TypeScript code with optional properties, union types, and proper formatting.',
+  description: 'Get TypeScript interfaces from JSON data instantly! Extract type definitions, parse nested objects, and generate clean TypeScript code. Perfect for getting strongly-typed interfaces from API responses and JSON files.',
 
   examples: [
     {

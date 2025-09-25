@@ -1,0 +1,200 @@
+---
+import type { Tool } from '../../tools/types';
+
+interface Props {
+  tool: Tool;
+  currentUrl: string;
+}
+
+const { tool, currentUrl } = Astro.props;
+
+// Generate JSON-specific structured data for better SERP features
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": ["SoftwareApplication", "WebApplication"],
+  "name": tool.name,
+  "applicationCategory": "DeveloperApplication",
+  "description": tool.description,
+  "url": currentUrl,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "description": "Free JSON processing tool"
+  },
+  "operatingSystem": "Any",
+  "permissions": "No data collection - all processing happens locally",
+  "softwareRequirements": "Web browser with JavaScript support",
+  "featureList": [
+    "Process JSON data locally in browser",
+    "No data sent to servers",
+    "Real-time JSON processing",
+    "Multiple output formats supported",
+    "JSON validation and error detection",
+    "Advanced formatting options"
+  ],
+  "screenshot": `https://freeformathub.com/images/tools/${tool.slug}-screenshot.png`,
+  "author": {
+    "@type": "Organization",
+    "name": "FreeFormatHub",
+    "url": "https://freeformathub.com"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "FreeFormatHub",
+    "url": "https://freeformathub.com"
+  },
+  "datePublished": "2024-01-01",
+  "dateModified": new Date().toISOString().split('T')[0],
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "keywords": (tool.keywords || []).join(', '),
+  "mainEntity": {
+    "@type": "Thing",
+    "name": "JSON Data Processing",
+    "description": "Tools and utilities for processing JSON data format"
+  }
+};
+
+// Add JSON-specific HowTo structured data
+const howToData = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": `How to ${tool.name.replace(/^JSON\s+/i, '').split(' - ')[0]} JSON Data`,
+  "description": `Step-by-step guide to ${tool.name.toLowerCase()} using our free online tool.`,
+  "image": `https://freeformathub.com/images/tools/${tool.slug}-howto.png`,
+  "totalTime": "PT2M",
+  "estimatedCost": {
+    "@type": "MonetaryAmount",
+    "currency": "USD",
+    "value": "0"
+  },
+  "supply": [
+    {
+      "@type": "HowToSupply",
+      "name": "JSON data to process"
+    }
+  ],
+  "tool": [
+    {
+      "@type": "HowToTool",
+      "name": tool.name
+    }
+  ],
+  "step": [
+    {
+      "@type": "HowToStep",
+      "position": 1,
+      "name": "Paste JSON Data",
+      "text": "Copy your JSON data and paste it into the input panel of the tool.",
+      "image": `https://freeformathub.com/images/howto/${tool.slug}-step1.png`
+    },
+    {
+      "@type": "HowToStep",
+      "position": 2,
+      "name": "Configure Options",
+      "text": "Select your preferred formatting options, validation settings, or output format.",
+      "image": `https://freeformathub.com/images/howto/${tool.slug}-step2.png`
+    },
+    {
+      "@type": "HowToStep",
+      "position": 3,
+      "name": "Process & Get Results",
+      "text": "The tool will instantly process your JSON data and display the results. Copy or download as needed.",
+      "image": `https://freeformathub.com/images/howto/${tool.slug}-step3.png`
+    }
+  ]
+};
+
+// JSON-specific FAQ structured data
+const faqData = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I get specific values from JSON data?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Use JSON Path expressions or our JSON extraction tools to get specific values from nested JSON objects. You can search for keys, filter arrays, and extract properties using dot notation or bracket notation."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I search through large JSON files?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes! Our JSON tools can handle large JSON files efficiently. All processing happens in your browser, so there's no file size limit from server uploads. Use our search and filter tools to find specific data quickly."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I extract JSON data to CSV format?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Use our JSON to CSV converter to extract tabular data from JSON arrays. The tool automatically detects object properties and converts them to CSV columns, handling nested objects by flattening them."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is my JSON data safe when using these tools?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Absolutely! All JSON processing happens locally in your browser. No data is sent to our servers, ensuring complete privacy and security of your JSON files and sensitive information."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What JSON parsing errors can these tools detect?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Our JSON tools detect syntax errors like missing quotes, trailing commas, unclosed brackets, invalid escape sequences, and duplicate keys. You'll get detailed error messages with line numbers to fix issues quickly."
+      }
+    }
+  ]
+};
+
+// Breadcrumb structured data for JSON tools
+const breadcrumbData = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://freeformathub.com"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "JSON Tools",
+      "item": "https://freeformathub.com/json-tools"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": tool.category.name,
+      "item": `https://freeformathub.com/categories/${tool.category.id}`
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": tool.name,
+      "item": currentUrl
+    }
+  ]
+};
+---
+
+<!-- JSON Tool Software Application -->
+<script type="application/ld+json" set:html={JSON.stringify(structuredData, null, 2)}></script>
+
+<!-- JSON Processing How-To Guide -->
+<script type="application/ld+json" set:html={JSON.stringify(howToData, null, 2)}></script>
+
+<!-- JSON Tools FAQ -->
+<script type="application/ld+json" set:html={JSON.stringify(faqData, null, 2)}></script>
+
+<!-- JSON Tools Breadcrumb Navigation -->
+<script type="application/ld+json" set:html={JSON.stringify(breadcrumbData, null, 2)}></script>

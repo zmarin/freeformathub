@@ -1,0 +1,218 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getAllTools } from '../lib/tools';
+import InternalLinksCluster from '../components/seo/InternalLinksCluster.astro';
+
+const jsonTools = getAllTools().filter(tool =>
+  tool.keywords?.some(keyword =>
+    keyword.toLowerCase().includes('json')
+  )
+);
+
+const pageTitle = 'JSON Extract - Pull Data, Values & Properties from JSON Online';
+const pageDescription = 'Extract JSON data with precision using our comprehensive JSON extraction tools. Pull values, extract properties, get array elements, and isolate specific data from JSON files instantly. Free JSON extraction utilities.';
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  keywords="json extract, extract json data, json pull values, extract json properties, json data extraction tools"
+>
+  <div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="text-center mb-12">
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+        📦 JSON Extract - Pull & Isolate JSON Data
+      </h1>
+      <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+        Extract JSON data with surgical precision using our powerful JSON extraction suite.
+        Pull specific values, extract nested properties, isolate array elements, and transform JSON data formats.
+      </p>
+
+      <div class="bg-orange-50 p-6 rounded-lg mb-8">
+        <h2 class="text-2xl font-semibold text-orange-900 mb-4">⚡ JSON Extraction Capabilities</h2>
+        <div class="grid md:grid-cols-2 gap-4 text-left">
+          <div class="flex items-start space-x-3">
+            <span class="text-orange-500 text-xl">✓</span>
+            <span class="text-orange-800"><strong>Precise Extraction:</strong> Pull exact values you need</span>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-orange-500 text-xl">✓</span>
+            <span class="text-orange-800"><strong>Bulk Operations:</strong> Extract multiple values at once</span>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-orange-500 text-xl">✓</span>
+            <span class="text-orange-800"><strong>Format Conversion:</strong> Extract to CSV, TypeScript, XML</span>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-orange-500 text-xl">✓</span>
+            <span class="text-orange-800"><strong>Data Isolation:</strong> Extract clean, formatted data</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">🛠️ JSON Data Extraction Tools</h2>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {jsonTools.slice(0, 9).map(tool => (
+          <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+            <div class="flex items-center mb-3">
+              <span class="text-2xl mr-3">{tool.icon}</span>
+              <h3 class="font-semibold text-gray-900 text-lg">{tool.name}</h3>
+            </div>
+            <p class="text-gray-600 text-sm mb-4">{tool.description}</p>
+            <a
+              href={`/${tool.category.id}/${tool.slug}`}
+              class="inline-block bg-orange-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-orange-700 transition-colors"
+            >
+              Extract Data →
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div class="mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-6">🎯 JSON Extraction Methods</h2>
+      <div class="grid md:grid-cols-2 gap-8">
+        <div>
+          <h3 class="text-xl font-semibold text-gray-800 mb-4">🔧 Direct Extraction</h3>
+          <div class="space-y-3">
+            <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+              <h4 class="font-semibold text-blue-800">Value Extraction</h4>
+              <p class="text-sm text-blue-700 mt-1">Pull specific values from JSON objects using key paths</p>
+            </div>
+            <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+              <h4 class="font-semibold text-green-800">Array Extraction</h4>
+              <p class="text-sm text-green-700 mt-1">Extract elements from JSON arrays with filtering</p>
+            </div>
+            <div class="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-500">
+              <h4 class="font-semibold text-purple-800">Property Extraction</h4>
+              <p class="text-sm text-purple-700 mt-1">Isolate object properties and create clean datasets</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-xl font-semibold text-gray-800 mb-4">🔄 Transform & Extract</h3>
+          <div class="space-y-3">
+            <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-500">
+              <h4 class="font-semibold text-red-800">CSV Extraction</h4>
+              <p class="text-sm text-red-700 mt-1">Extract JSON data as structured CSV/Excel format</p>
+            </div>
+            <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500">
+              <h4 class="font-semibold text-yellow-800">Type Extraction</h4>
+              <p class="text-sm text-yellow-700 mt-1">Extract TypeScript interfaces from JSON structures</p>
+            </div>
+            <div class="bg-indigo-50 p-4 rounded-lg border-l-4 border-indigo-500">
+              <h4 class="font-semibold text-indigo-800">Schema Extraction</h4>
+              <p class="text-sm text-indigo-700 mt-1">Pull validation rules and data schemas from JSON</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">📋 JSON Extraction Examples</h2>
+      <div class="space-y-6">
+        <div class="bg-gray-50 p-6 rounded-lg">
+          <h3 class="text-xl font-semibold text-gray-800 mb-4">Extract User Information</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <h4 class="font-medium text-gray-700 mb-2">Source JSON:</h4>
+              <div class="bg-gray-100 p-3 rounded text-xs">
+                <pre>{`{
+  "users": [
+    {
+      "id": 1,
+      "profile": {
+        "name": "John Doe",
+        "email": "john@example.com",
+        "settings": {
+          "theme": "dark",
+          "notifications": true
+        }
+      }
+    }
+  ]
+}`}</pre>
+              </div>
+            </div>
+            <div>
+              <h4 class="font-medium text-gray-700 mb-2">Extracted Data:</h4>
+              <div class="bg-white p-3 rounded text-xs border">
+                <pre>{`Extract emails: john@example.com
+Extract names: John Doe
+Extract settings: {"theme": "dark"}
+Extract IDs: 1`}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 p-6 rounded-lg">
+          <h3 class="text-xl font-semibold text-gray-800 mb-4">Extract to CSV Format</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <h4 class="font-medium text-gray-700 mb-2">JSON Data:</h4>
+              <div class="bg-gray-100 p-3 rounded text-xs">
+                <pre>{`[
+  {"name": "Product A", "price": 100, "category": "Electronics"},
+  {"name": "Product B", "price": 200, "category": "Books"}
+]`}</pre>
+              </div>
+            </div>
+            <div>
+              <h4 class="font-medium text-gray-700 mb-2">Extracted CSV:</h4>
+              <div class="bg-white p-3 rounded text-xs border">
+                <pre>{`name,price,category
+Product A,100,Electronics
+Product B,200,Books`}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">💼 Business Applications</h2>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="text-center">
+          <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="text-2xl">📊</span>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-800 mb-3">Data Analysis</h3>
+          <p class="text-sm text-gray-600">Extract specific metrics from API responses for business intelligence and reporting dashboards.</p>
+        </div>
+        <div class="text-center">
+          <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="text-2xl">🔄</span>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-800 mb-3">Data Migration</h3>
+          <p class="text-sm text-gray-600">Extract and transform JSON data for migration between different systems and platforms.</p>
+        </div>
+        <div class="text-center">
+          <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="text-2xl">⚡</span>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-800 mb-3">Integration</h3>
+          <p class="text-sm text-gray-600">Extract relevant data from third-party APIs for integration with internal systems.</p>
+        </div>
+      </div>
+    </div>
+
+    <InternalLinksCluster currentTool={null} />
+
+    <div class="mt-12 bg-orange-600 text-white p-8 rounded-lg text-center">
+      <h2 class="text-2xl font-bold mb-4">📦 Start Extracting JSON Data!</h2>
+      <p class="text-xl mb-6">Choose your extraction method and pull the exact data you need from your JSON files.</p>
+      <a
+        href="/converters/json-to-csv"
+        class="inline-block bg-white text-orange-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+      >
+        Extract to CSV →
+      </a>
+    </div>
+  </div>
+</BaseLayout>

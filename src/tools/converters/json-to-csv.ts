@@ -12,15 +12,15 @@ export interface JsonToCsvConfig extends ToolConfig {
 
 export const JSON_TO_CSV_TOOL: Tool = {
   id: 'json-to-csv',
-  name: 'JSON to CSV Converter',
-  description: 'Convert JSON arrays and objects to CSV format with customizable delimiters, headers, and data handling options.',
+  name: 'JSON to CSV Converter - Get Table Data from JSON',
+  description: 'Get structured table data from JSON instantly! Extract JSON array elements and convert to CSV/Excel format. Perfect for getting spreadsheet data from API responses, databases, and JSON files.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'converters')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'converters')!.subcategories!.find(sub => sub.id === 'data-formats')!,
   slug: 'json-to-csv',
   icon: '📊',
-  keywords: ['json', 'csv', 'convert', 'excel', 'spreadsheet', 'table', 'data', 'export'],
-  seoTitle: 'Free JSON to CSV Converter - Convert JSON Arrays to CSV Online',
-  seoDescription: 'Convert JSON data to CSV format instantly. Support for nested objects, arrays, custom delimiters, and Excel compatibility. No upload required.',
+  keywords: ['json get table data', 'json extract to csv', 'json parsing to spreadsheet', 'json get array data', 'json search and export', 'json', 'csv', 'convert', 'excel', 'spreadsheet', 'table', 'data', 'export', 'json to excel data', 'get json data as table'],
+  seoTitle: 'Free JSON to CSV Converter - Get Table Data from JSON Arrays Online',
+  seoDescription: 'Get structured table data from JSON arrays instantly. Extract and convert JSON data to CSV/Excel format. Search through JSON objects and get exactly the spreadsheet data you need. Works with nested objects, custom delimiters, and Excel compatibility.',
   examples: [
     {
       title: 'Simple Array Conversion',

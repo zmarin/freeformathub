@@ -1,0 +1,155 @@
+---
+import { getAllTools } from '../../lib/tools';
+import type { Tool } from '../../tools/types';
+
+interface Props {
+  currentTool?: Tool;
+  maxTools?: number;
+}
+
+const { currentTool, maxTools = 8 } = Astro.props;
+
+// Get all JSON-related tools
+const jsonTools = getAllTools().filter(tool =>
+  tool.keywords?.some(keyword =>
+    keyword.toLowerCase().includes('json')
+  ) && tool.id !== currentTool?.id
+);
+
+// Prioritize tools by relevance to current tool
+const prioritizedTools = jsonTools.sort((a, b) => {
+  if (!currentTool) return 0;
+
+  // Higher priority for same category
+  if (a.category.id === currentTool.category.id && b.category.id !== currentTool.category.id) return -1;
+  if (b.category.id === currentTool.category.id && a.category.id !== currentTool.category.id) return 1;
+
+  // Higher priority for complementary tools
+  const aScore = getRelevanceScore(a, currentTool);
+  const bScore = getRelevanceScore(b, currentTool);
+
+  return bScore - aScore;
+}).slice(0, maxTools);
+
+function getRelevanceScore(tool: Tool, current: Tool): number {
+  let score = 0;
+
+  // Boost score for related operations
+  const relatedPairs: { [key: string]: string[] } = {
+    'json-formatter': ['json-validator', 'json-minifier', 'json-path-extractor'],
+    'json-to-csv': ['csv-to-json', 'json-formatter', 'json-flattener'],
+    'json-to-typescript': ['json-formatter', 'json-schema-validator', 'json-path-extractor'],
+    'json-path-extractor': ['json-formatter', 'json-flattener', 'json-to-csv'],
+    'json-schema-validator': ['json-formatter', 'json-to-typescript', 'config-file-validator']
+  };
+
+  if (relatedPairs[current.id]?.includes(tool.id)) {
+    score += 10;
+  }
+
+  // Boost for shared keywords
+  const currentKeywords = new Set(current.keywords?.map(k => k.toLowerCase()) || []);
+  const toolKeywords = tool.keywords?.map(k => k.toLowerCase()) || [];
+  const sharedKeywords = toolKeywords.filter(k => currentKeywords.has(k)).length;
+  score += sharedKeywords * 2;
+
+  return score;
+}
+---
+
+{prioritizedTools.length > 0 && (
+  <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-xl mt-12 border border-blue-100">
+    <div class="text-center mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-3">
+        🔗 Related JSON Tools & Utilities
+      </h2>
+      <p class="text-gray-600 max-w-2xl mx-auto">
+        Explore our complete suite of JSON processing tools. Each tool works seamlessly together for comprehensive JSON data manipulation and analysis.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {prioritizedTools.map(tool => (
+        <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md hover:border-blue-200 transition-all duration-200 group">
+          <div class="flex items-center mb-4">
+            <span class="text-2xl mr-3">{tool.icon}</span>
+            <div>
+              <h3 class="font-semibold text-gray-900 text-sm leading-tight group-hover:text-blue-700 transition-colors">
+                {tool.name.replace(/^JSON\s+/i, '').replace(/\s*-\s*.+$/, '')}
+              </h3>
+              <span class="text-xs text-blue-600 font-medium">{tool.category.name}</span>
+            </div>
+          </div>
+
+          <p class="text-gray-600 text-sm mb-4 leading-relaxed">
+            {tool.description.substring(0, 90)}...
+          </p>
+
+          <div class="flex flex-wrap gap-1 mb-4">
+            {(tool.keywords || []).slice(0, 3).map(keyword => (
+              keyword.toLowerCase().includes('json') && (
+                <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full">
+                  {keyword.replace(/json\s*/gi, '').trim() || keyword}
+                </span>
+              )
+            ))}
+          </div>
+
+          <a
+            href={`/${tool.category.id}/${tool.slug}`}
+            class="inline-flex items-center text-blue-600 text-sm font-medium hover:text-blue-800 transition-colors group"
+          >
+            Try {tool.name.includes('JSON') ? tool.name.replace(/^JSON\s+/i, '').split(' - ')[0] : tool.name.split(' - ')[0]}
+            <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+        </div>
+      ))}
+    </div>
+
+    <div class="text-center mt-8">
+      <a
+        href="/json-tools"
+        class="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+      >
+        View All JSON Tools
+        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+)}
+
+<!-- JSON Tools Navigation Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SiteNavigationElement",
+  "name": "JSON Tools Navigation",
+  "url": "https://freeformathub.com/json-tools",
+  "hasPart": [
+    {
+      "@type": "SiteNavigationElement",
+      "name": "JSON Get Data Tools",
+      "url": "https://freeformathub.com/json-get"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "name": "JSON Search Tools",
+      "url": "https://freeformathub.com/json-search"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "name": "JSON Extract Tools",
+      "url": "https://freeformathub.com/json-extract"
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "name": "JSON Parsing Tools",
+      "url": "https://freeformathub.com/json-parsing"
+    }
+  ]
+}
+</script>

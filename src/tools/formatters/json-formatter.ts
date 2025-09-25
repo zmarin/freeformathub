@@ -22,33 +22,33 @@ export interface JsonFormatterConfig extends ToolConfig {
 
 export const JSON_FORMATTER_TOOL: Tool = {
   id: 'json-formatter',
-  name: 'JSON Formatter & Validator',
-  description: 'Format, validate, and beautify JSON/JSONC with key sorting, inline arrays, duplicate key detection, and rich error details—all locally.',
+  name: 'JSON Formatter, Parser & Validator - Get, Search & Extract JSON Data',
+  description: 'Get instant results from JSON data! Search through nested objects, extract specific values, and parse any JSON format. Advanced formatter with key sorting, inline arrays, duplicate key detection, and rich error details—all processed locally.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!.subcategories!.find(sub => sub.id === 'json-formatting')!,
   slug: 'json-formatter',
   icon: '{}',
-  keywords: ['json formatter online', 'json validator', 'json beautifier', 'json minifier', 'jsonc formatter', 'json pretty print', 'validate json online', 'json parser', 'json viewer', 'json editor', 'format json free'],
-  seoTitle: 'Free JSON Formatter & Validator Online - Format, Validate & Beautify JSON',
-  seoDescription: 'Free online JSON formatter and validator with JSONC support. Format, validate, beautify, and minify JSON data instantly. Advanced features include error detection, tree view, key sorting, and one-click copy. 100% private - all processing happens locally in your browser.',
+  keywords: ['json get values', 'json get data', 'json search keys', 'json search nested objects', 'json extract data', 'json parsing online', 'JSON file format validator', 'json get array elements', 'json formatter online', 'json validator', 'json beautifier', 'json minifier', 'jsonc formatter', 'json pretty print', 'validate json online', 'json parser', 'json viewer', 'json editor', 'format json free', 'json get specific values', 'json search through data', 'json extract nested values'],
+  seoTitle: 'Free JSON Formatter, Parser & Validator - Get, Search & Extract JSON Data Online',
+  seoDescription: 'Quickly get JSON values, search through nested objects, extract specific data, and parse JSON files with our advanced formatter. Get instant results from complex JSON structures. Format, validate, beautify, and extract data from JSON/JSONC files. 100% private - all processing happens locally in your browser.',
   examples: [
     {
-      title: 'Basic JSON Formatting',
+      title: 'Get Clean JSON Output from Raw Data',
       input: '{"name":"John","age":30,"city":"New York"}',
       output: '{\n  "name": "John",\n  "age": 30,\n  "city": "New York"\n}',
-      description: 'Format compact JSON into readable structure'
+      description: 'Get perfectly formatted JSON from compact raw data'
     },
     {
-      title: 'Nested Object Formatting',
+      title: 'Search Through Nested JSON Objects',
       input: '{"user":{"profile":{"name":"Jane","settings":{"theme":"dark","notifications":true}}}}',
       output: '{\n  "user": {\n    "profile": {\n      "name": "Jane",\n      "settings": {\n        "theme": "dark",\n        "notifications": true\n      }\n    }\n  }\n}',
-      description: 'Handle complex nested structures'
+      description: 'Get readable format to easily search through complex nested structures'
     },
     {
-      title: 'Array Formatting',
+      title: 'Extract and Format JSON Array Elements',
       input: '[{"id":1,"name":"Item 1"},{"id":2,"name":"Item 2"}]',
       output: '[\n  {\n    "id": 1,\n    "name": "Item 1"\n  },\n  {\n    "id": 2,\n    "name": "Item 2"\n  }\n]',
-      description: 'Format arrays with proper indentation'
+      description: 'Get individual array elements formatted for easy data extraction'
     },
     {
       title: 'JSONC with Comments & Single Quotes',
@@ -64,13 +64,15 @@ export const JSON_FORMATTER_TOOL: Tool = {
     }
   ],
   useCases: [
-    'Format API responses for better readability',
-    'Validate JSON syntax before using in applications',
-    'Debug JSON structure and find syntax errors',
-    'Beautify minified JSON configuration files',
-    'Compare JSON objects by normalizing format',
-    'Prepare JSON for documentation or presentations',
-    'Accept JSONC-like input (comments, trailing commas) and output strict JSON'
+    'Get API response data quickly and parse complex structures',
+    'Search large JSON files for specific values or keys',
+    'Extract configuration settings from JSON files',
+    'Parse JSON logs for debugging and error analysis',
+    'Get clean JSON output from minified configuration files',
+    'Search through nested objects to find specific data points',
+    'Extract data from JSONC files (comments, trailing commas) for processing',
+    'Get readable format to compare JSON objects and identify differences',
+    'Parse and extract data for documentation or presentations'
   ],
   commonErrors: [
     'Missing quotes around property names - use double quotes',
@@ -83,8 +85,24 @@ export const JSON_FORMATTER_TOOL: Tool = {
   ],
   faq: [
     {
-      question: 'What is the difference between JSON formatting and validation?',
-      answer: 'JSON formatting makes the structure readable with proper indentation, while validation checks if the syntax follows JSON standards. This tool does both simultaneously.'
+      question: 'How to get specific values from JSON?',
+      answer: 'Use our JSON formatter to make your data readable, then easily locate and extract the values you need. The formatted structure makes it simple to navigate through nested objects and arrays to get exactly what you\'re looking for.'
+    },
+    {
+      question: 'How to search through JSON data?',
+      answer: 'Format your JSON first to create a readable structure. This makes it easy to search for specific keys, values, or patterns in your data. Use browser search (Ctrl+F) on the formatted output to quickly find what you need.'
+    },
+    {
+      question: 'How to extract nested JSON objects?',
+      answer: 'Our formatter reveals the complete structure of nested JSON objects with proper indentation. This makes it easy to identify and extract specific nested data, whether it\'s user profiles, configuration settings, or API response data.'
+    },
+    {
+      question: 'What is JSON parsing and how does it work?',
+      answer: 'JSON parsing converts JSON text into a structured format your applications can understand. Our tool parses JSON/JSONC input, validates the syntax, and outputs clean, properly formatted JSON that\'s ready for use in any application.'
+    },
+    {
+      question: 'Understanding JSON file format structure',
+      answer: 'JSON (JavaScript Object Notation) uses key-value pairs, arrays, and nested objects. Our formatter shows the exact structure with proper indentation, making it easy to understand the hierarchy and relationships in your JSON data.'
     },
     {
       question: 'Is my JSON data secure when using this tool?',
@@ -93,10 +111,6 @@ export const JSON_FORMATTER_TOOL: Tool = {
     {
       question: 'Can I format large JSON files?',
       answer: 'Yes, but very large files (>10MB) might slow down your browser. Consider breaking them into smaller chunks if needed.'
-    },
-    {
-      question: 'What JSON features are supported?',
-      answer: 'Standard JSON plus JSONC-style input conveniences: comments and trailing commas are safely removed. Optional support for single-quoted strings and coercion of NaN/Infinity.'
     },
     {
       question: 'Can I minify JSON as well as format it?',

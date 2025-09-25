@@ -15,15 +15,18 @@ export interface Props {
   robotsContent?: string;
 }
 
-const { 
-  title, 
-  description, 
+const {
+  title,
+  description,
   keywords = [],
   canonical,
   ogImage,
   jsonLd,
   robotsContent
 } = Astro.props;
+
+// Ensure keywords is always an array
+const keywordsArray = Array.isArray(keywords) ? keywords : (typeof keywords === 'string' ? keywords.split(',').map(k => k.trim()) : []);
 
 // Prefer configured site from astro.config, fall back to production domain
 const siteUrl = Astro.site?.href || 'https://freeformathub.com';
@@ -87,7 +90,7 @@ const getNavLinkClasses = (active: boolean) => [
     <title>{fullTitle}</title>
     <meta name="title" content={fullTitle} />
     <meta name="description" content={description} />
-    {keywords.length > 0 && <meta name="keywords" content={keywords.join(', ')} />}
+    {keywordsArray.length > 0 && <meta name="keywords" content={keywordsArray.join(', ')} />}
     <link rel="canonical" href={canonicalURL} />
     
     <!-- Favicon -->
@@ -125,14 +128,43 @@ const getNavLinkClasses = (active: boolean) => [
     <meta name="theme-color" content="#3b82f6" />
     <meta name="color-scheme" content="light dark" />
     
-    <!-- Preload critical resources -->
-    <link rel="preconnect" href="https://www.googletagmanager.com" />
-    <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-    <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+    <!-- Core Web Vitals 2025 Optimizations -->
+    <!-- Critical Resource Preloads (LCP optimization) -->
+    <link rel="preload" href="/og-image.png" as="image" type="image/png" />
+    <link rel="preload" href="/favicon.svg" as="image" type="image/svg+xml" />
+    <link rel="preload" href="/_astro/client.js" as="script" crossorigin />
 
-    <!-- Preload critical fonts (if any) -->
-    <!-- <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin> -->
+    <!-- Critical Network Preconnects (reduce connection time) -->
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
+    <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin />
+    <link rel="preconnect" href="https://www.google-analytics.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net" />
+    <link rel="dns-prefetch" href="https://tpc.googlesyndication.com" />
+
+    <!-- Font Loading Optimization (CLS prevention) -->
+    <link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" /></noscript>
+
+    <!-- Performance Hints for Modern Browsers -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval' https: blob: data:; object-src 'none'; base-uri 'none';" />
+
+    <!-- Critical CSS Inline (implement separately) -->
+    <!-- Font Display Swap for Better CLS -->
+    <style>
+      @font-face {
+        font-family: 'Inter';
+        font-display: swap;
+        src: local('Inter');
+      }
+      /* Critical above-the-fold styles */
+      html { font-family: system-ui, -apple-system, sans-serif; }
+      body { margin: 0; padding: 0; min-height: 100vh; }
+      .hero-section { min-height: 60vh; }
+      img { max-width: 100%; height: auto; }
+    </style>
     
     <!-- JSON-LD Structured Data -->
     {jsonLd && (
@@ -529,6 +561,149 @@ const getNavLinkClasses = (active: boolean) => [
         systemDarkQuery.addEventListener('change', () => {
           if (getSaved() === 'auto') applyTheme('auto');
         });
+      })();
+    </script>
+
+    <!-- Core Web Vitals 2025 Performance Monitoring -->
+    <script>
+      // Core Web Vitals Monitoring with web-vitals library fallback
+      (function() {
+        'use strict';
+
+        // Metrics tracking object
+        const metrics = { lcp: 0, fid: 0, cls: 0, inp: 0 };
+
+        // Enhanced LCP tracking with element identification
+        function trackLCP() {
+          if (!window.PerformanceObserver) return;
+
+          const observer = new PerformanceObserver((list) => {
+            const entries = list.getEntries();
+            const lastEntry = entries[entries.length - 1];
+            metrics.lcp = Math.round(lastEntry.startTime);
+
+            // Send to GA4 if available
+            if (typeof gtag === 'function') {
+              gtag('event', 'web_vitals', {
+                event_category: 'Core Web Vitals',
+                event_label: 'LCP',
+                value: metrics.lcp,
+                custom_parameter_1: lastEntry.element ? lastEntry.element.tagName : 'unknown'
+              });
+            }
+
+            console.log(`🎯 LCP: ${metrics.lcp}ms`, lastEntry.element);
+          });
+
+          observer.observe({entryTypes: ['largest-contentful-paint']});
+        }
+
+        // Enhanced FID/INP tracking
+        function trackInteraction() {
+          if (!window.PerformanceObserver) return;
+
+          // Track First Input Delay
+          const fidObserver = new PerformanceObserver((list) => {
+            const entry = list.getEntries()[0];
+            metrics.fid = Math.round(entry.processingStart - entry.startTime);
+
+            if (typeof gtag === 'function') {
+              gtag('event', 'web_vitals', {
+                event_category: 'Core Web Vitals',
+                event_label: 'FID',
+                value: metrics.fid
+              });
+            }
+
+            console.log(`⚡ FID: ${metrics.fid}ms`);
+          });
+
+          fidObserver.observe({entryTypes: ['first-input']});
+
+          // Track Interaction to Next Paint (INP) - 2025 metric
+          let interactions = [];
+          const inpObserver = new PerformanceObserver((list) => {
+            list.getEntries().forEach((entry) => {
+              interactions.push(entry.duration);
+              if (interactions.length > 10) interactions.shift();
+
+              const inp = Math.max(...interactions);
+              metrics.inp = Math.round(inp);
+
+              if (typeof gtag === 'function' && inp > 200) { // Only report slow INP
+                gtag('event', 'web_vitals', {
+                  event_category: 'Core Web Vitals',
+                  event_label: 'INP',
+                  value: metrics.inp
+                });
+              }
+            });
+          });
+
+          inpObserver.observe({entryTypes: ['event']});
+        }
+
+        // Enhanced CLS tracking with element identification
+        function trackCLS() {
+          if (!window.PerformanceObserver) return;
+
+          let clsValue = 0;
+          const observer = new PerformanceObserver((list) => {
+            list.getEntries().forEach((entry) => {
+              if (!entry.hadRecentInput) {
+                clsValue += entry.value;
+                metrics.cls = Math.round(clsValue * 1000) / 1000;
+              }
+            });
+
+            if (typeof gtag === 'function' && clsValue > 0.1) { // Only report poor CLS
+              gtag('event', 'web_vitals', {
+                event_category: 'Core Web Vitals',
+                event_label: 'CLS',
+                value: Math.round(clsValue * 1000)
+              });
+            }
+
+            console.log(`📐 CLS: ${metrics.cls}`);
+          });
+
+          observer.observe({entryTypes: ['layout-shift']});
+        }
+
+        // Performance budget alerts
+        function checkPerformanceBudget() {
+          setTimeout(() => {
+            const budgetViolations = [];
+
+            if (metrics.lcp > 2500) budgetViolations.push(`LCP: ${metrics.lcp}ms (target: <2500ms)`);
+            if (metrics.fid > 100) budgetViolations.push(`FID: ${metrics.fid}ms (target: <100ms)`);
+            if (metrics.cls > 0.1) budgetViolations.push(`CLS: ${metrics.cls} (target: <0.1)`);
+
+            if (budgetViolations.length > 0) {
+              console.warn('⚠️ Performance Budget Violations:', budgetViolations);
+            } else {
+              console.log('✅ Performance Budget: All metrics within targets');
+            }
+          }, 5000);
+        }
+
+        // Initialize monitoring on page load
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', () => {
+            trackLCP();
+            trackInteraction();
+            trackCLS();
+            checkPerformanceBudget();
+          });
+        } else {
+          trackLCP();
+          trackInteraction();
+          trackCLS();
+          checkPerformanceBudget();
+        }
+
+        // Expose metrics for debugging
+        window.getWebVitals = () => metrics;
       })();
     </script>
   </head>

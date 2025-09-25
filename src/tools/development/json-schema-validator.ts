@@ -717,15 +717,15 @@ export function processJsonSchemaValidator(dataInput: string, schemaInput: strin
 
 export const JSON_SCHEMA_VALIDATOR_TOOL: Tool = {
   id: 'json-schema-validator',
-  name: 'JSON Schema Validator',
+  name: 'JSON Schema Validator - Parse JSON File Format & Structure',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'development')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'development')!.subcategories!.find(sub => sub.id === 'json-tools')!,
   slug: 'json-schema-validator',
   icon: '✅',
-  keywords: ['json', 'schema', 'validation', 'validate', 'draft', 'jsonschema', 'structure'],
-  seoTitle: 'JSON Schema Validator - Validate JSON Against Schema | FreeFormatHub',
-  seoDescription: 'Validate JSON data against JSON Schema specifications. Generate schemas from data, detailed error reporting, and support for all draft versions.',
-  description: 'Validate JSON data against JSON Schema specifications with detailed error reporting and schema generation capabilities.',
+  keywords: ['json file format validation', 'json parsing rules', 'json search schema', 'json get structure validation', 'json', 'schema', 'validation', 'validate', 'draft', 'jsonschema', 'structure', 'json file format checker', 'json parsing validation'],
+  seoTitle: 'JSON Schema Validator - Parse JSON File Format & Structure Online',
+  seoDescription: 'Parse and validate JSON file format structure against schema specifications. Get detailed validation results, understand JSON parsing rules, and ensure your JSON data follows proper format standards.',
+  description: 'Parse JSON file format and validate structure against schema specifications. Get detailed parsing rules validation, understand JSON format standards, and ensure your data follows proper JSON structure.',
 
   examples: [
     {

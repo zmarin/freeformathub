@@ -1,0 +1,266 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getAllTools } from '../lib/tools';
+import InternalLinksCluster from '../components/seo/InternalLinksCluster.astro';
+
+const jsonTools = getAllTools().filter(tool =>
+  tool.keywords?.some(keyword =>
+    keyword.toLowerCase().includes('json')
+  )
+);
+
+const pageTitle = 'JSON Parsing - Validate, Format & Parse JSON Data Online';
+const pageDescription = 'Parse JSON data with our comprehensive JSON parsing tools. Validate syntax, format structure, parse nested objects, and convert JSON to multiple formats. Free online JSON parsing utilities.';
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  keywords="json parsing, parse json online, json validation, json parser, json syntax checker, parse json data"
+>
+  <div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="text-center mb-12">
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+        ⚡ JSON Parsing - Validate & Process JSON Data
+      </h1>
+      <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+        Parse JSON data with confidence using our robust JSON parsing and validation tools.
+        Check syntax, format structure, validate schemas, and convert to other formats instantly.
+      </p>
+
+      <div class="bg-purple-50 p-6 rounded-lg mb-8">
+        <h2 class="text-2xl font-semibold text-purple-900 mb-4">🔧 JSON Parsing Features</h2>
+        <div class="grid md:grid-cols-2 gap-4 text-left">
+          <div class="flex items-start space-x-3">
+            <span class="text-purple-500 text-xl">✓</span>
+            <span class="text-purple-800"><strong>Syntax Validation:</strong> Detect and fix JSON errors</span>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-purple-500 text-xl">✓</span>
+            <span class="text-purple-800"><strong>Structure Analysis:</strong> Parse and visualize JSON hierarchy</span>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-purple-500 text-xl">✓</span>
+            <span class="text-purple-800"><strong>Schema Validation:</strong> Validate against JSON schemas</span>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-purple-500 text-xl">✓</span>
+            <span class="text-purple-800"><strong>Format Conversion:</strong> Parse and convert to any format</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">🛠️ JSON Parsing & Validation Tools</h2>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {jsonTools.slice(0, 9).map(tool => (
+          <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+            <div class="flex items-center mb-3">
+              <span class="text-2xl mr-3">{tool.icon}</span>
+              <h3 class="font-semibold text-gray-900 text-lg">{tool.name}</h3>
+            </div>
+            <p class="text-gray-600 text-sm mb-4">{tool.description}</p>
+            <a
+              href={`/${tool.category.id}/${tool.slug}`}
+              class="inline-block bg-purple-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-purple-700 transition-colors"
+            >
+              Parse JSON →
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div class="mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-6">🎯 JSON Parsing Operations</h2>
+      <div class="grid md:grid-cols-2 gap-8">
+        <div>
+          <h3 class="text-xl font-semibold text-gray-800 mb-4">✅ Validation & Parsing</h3>
+          <ul class="space-y-3">
+            <li class="flex items-start space-x-3">
+              <span class="text-green-500 text-lg">•</span>
+              <div>
+                <span class="font-medium">Syntax Checking</span>
+                <p class="text-sm text-gray-600">Validate JSON syntax and detect errors</p>
+              </div>
+            </li>
+            <li class="flex items-start space-x-3">
+              <span class="text-blue-500 text-lg">•</span>
+              <div>
+                <span class="font-medium">Structure Analysis</span>
+                <p class="text-sm text-gray-600">Parse and analyze JSON object structure</p>
+              </div>
+            </li>
+            <li class="flex items-start space-x-3">
+              <span class="text-purple-500 text-lg">•</span>
+              <div>
+                <span class="font-medium">Schema Validation</span>
+                <p class="text-sm text-gray-600">Validate against JSON Schema definitions</p>
+              </div>
+            </li>
+            <li class="flex items-start space-x-3">
+              <span class="text-orange-500 text-lg">•</span>
+              <div>
+                <span class="font-medium">Format Beautification</span>
+                <p class="text-sm text-gray-600">Parse and format JSON for readability</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xl font-semibold text-gray-800 mb-4">🔄 Parsing & Conversion</h3>
+          <ul class="space-y-3">
+            <li class="flex items-start space-x-3">
+              <span class="text-red-500 text-lg">•</span>
+              <div>
+                <span class="font-medium">Parse to CSV</span>
+                <p class="text-sm text-gray-600">Convert JSON objects to spreadsheet format</p>
+              </div>
+            </li>
+            <li class="flex items-start space-x-3">
+              <span class="text-yellow-500 text-lg">•</span>
+              <div>
+                <span class="font-medium">Parse to TypeScript</span>
+                <p class="text-sm text-gray-600">Generate type definitions from JSON</p>
+              </div>
+            </li>
+            <li class="flex items-start space-x-3">
+              <span class="text-indigo-500 text-lg">•</span>
+              <div>
+                <span class="font-medium">Parse to XML</span>
+                <p class="text-sm text-gray-600">Convert JSON structure to XML format</p>
+              </div>
+            </li>
+            <li class="flex items-start space-x-3">
+              <span class="text-teal-500 text-lg">•</span>
+              <div>
+                <span class="font-medium">Data Extraction</span>
+                <p class="text-sm text-gray-600">Parse and extract specific data points</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">🚨 Common JSON Parsing Errors</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="bg-red-50 p-6 rounded-lg border-l-4 border-red-500">
+          <h3 class="text-lg font-semibold text-red-800 mb-3">❌ Syntax Errors</h3>
+          <div class="space-y-2 text-sm">
+            <div class="bg-red-100 p-2 rounded">
+              <span class="font-mono text-red-700">Missing quotes around keys</span>
+              <p class="text-red-600 text-xs mt-1">❌ {`{name: "value"}`} → ✅ {`{"name": "value"}`}</p>
+            </div>
+            <div class="bg-red-100 p-2 rounded">
+              <span class="font-mono text-red-700">Trailing commas</span>
+              <p class="text-red-600 text-xs mt-1">❌ {`{"a": 1,}`} → ✅ {`{"a": 1}`}</p>
+            </div>
+            <div class="bg-red-100 p-2 rounded">
+              <span class="font-mono text-red-700">Single quotes</span>
+              <p class="text-red-600 text-xs mt-1">❌ {`{'name': 'value'}`} → ✅ {`{"name": "value"}`}</p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-500">
+          <h3 class="text-lg font-semibold text-blue-800 mb-3">🔧 Structure Issues</h3>
+          <div class="space-y-2 text-sm">
+            <div class="bg-blue-100 p-2 rounded">
+              <span class="font-mono text-blue-700">Unclosed brackets</span>
+              <p class="text-blue-600 text-xs mt-1">❌ {`{"data": [1, 2}`} → ✅ {`{"data": [1, 2]}`}</p>
+            </div>
+            <div class="bg-blue-100 p-2 rounded">
+              <span class="font-mono text-blue-700">Invalid escape sequences</span>
+              <p class="text-blue-600 text-xs mt-1">❌ {`{"path": "C:\\user"}`} → ✅ {`{"path": "C:\\\\user"}`}</p>
+            </div>
+            <div class="bg-blue-100 p-2 rounded">
+              <span class="font-mono text-blue-700">Duplicate keys</span>
+              <p class="text-blue-600 text-xs mt-1">❌ {`{"id": 1, "id": 2}`} → ✅ {`{"id": 2}`}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">📊 JSON Parsing Examples</h2>
+      <div class="space-y-6">
+        <div class="bg-gray-50 p-6 rounded-lg">
+          <h3 class="text-xl font-semibold text-gray-800 mb-4">Parse & Validate JSON Structure</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <h4 class="font-medium text-gray-700 mb-2">Raw JSON Input:</h4>
+              <div class="bg-gray-100 p-3 rounded text-xs">
+                <pre>{`{"users":[{"id":1,"name":"John","email":"john@test.com","active":true}],"total":1}`}</pre>
+              </div>
+            </div>
+            <div>
+              <h4 class="font-medium text-gray-700 mb-2">Parsed & Formatted:</h4>
+              <div class="bg-white p-3 rounded text-xs border">
+                <pre>{`{
+  "users": [
+    {
+      "id": 1,
+      "name": "John",
+      "email": "john@test.com",
+      "active": true
+    }
+  ],
+  "total": 1
+}`}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 p-6 rounded-lg">
+          <h3 class="text-xl font-semibold text-gray-800 mb-4">Parse JSON to Multiple Formats</h3>
+          <div class="grid md:grid-cols-3 gap-4">
+            <div>
+              <h4 class="font-medium text-gray-700 mb-2">Source JSON:</h4>
+              <div class="bg-gray-100 p-2 rounded text-xs">
+                <pre>{`{
+  "product": "Laptop",
+  "price": 999,
+  "inStock": true
+}`}</pre>
+              </div>
+            </div>
+            <div>
+              <h4 class="font-medium text-gray-700 mb-2">Parsed to CSV:</h4>
+              <div class="bg-white p-2 rounded text-xs border">
+                <pre>{`product,price,inStock
+Laptop,999,true`}</pre>
+              </div>
+            </div>
+            <div>
+              <h4 class="font-medium text-gray-700 mb-2">Parsed to TypeScript:</h4>
+              <div class="bg-white p-2 rounded text-xs border">
+                <pre>{`interface Product {
+  product: string;
+  price: number;
+  inStock: boolean;
+}`}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <InternalLinksCluster currentTool={null} />
+
+    <div class="mt-12 bg-purple-600 text-white p-8 rounded-lg text-center">
+      <h2 class="text-2xl font-bold mb-4">⚡ Start Parsing JSON Now!</h2>
+      <p class="text-xl mb-6">Validate, parse, and convert your JSON data with our comprehensive parsing tools.</p>
+      <a
+        href="/formatters/json-formatter"
+        class="inline-block bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+      >
+        Parse & Validate JSON →
+      </a>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,172 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getAllTools } from '../lib/tools';
+import InternalLinksCluster from '../components/seo/InternalLinksCluster.astro';
+
+const jsonTools = getAllTools().filter(tool =>
+  tool.keywords?.some(keyword =>
+    keyword.toLowerCase().includes('json')
+  )
+);
+
+const pageTitle = 'Get JSON Data - Extract, Parse & Retrieve JSON Values Online';
+const pageDescription = 'Get JSON data instantly with our comprehensive collection of JSON tools. Extract values, parse objects, retrieve arrays, and get nested properties from JSON files online. Free JSON data extraction tools.';
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  keywords="json get, get json data, json extract values, json parse data, json retrieve properties, get json values online"
+>
+  <div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="text-center mb-12">
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+        🔍 Get JSON Data - Extract & Parse JSON Values
+      </h1>
+      <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+        Get JSON data from any source with our powerful collection of JSON extraction and parsing tools.
+        Extract values, retrieve nested properties, parse objects, and get array elements instantly.
+      </p>
+
+      <div class="bg-blue-50 p-6 rounded-lg mb-8">
+        <h2 class="text-2xl font-semibold text-blue-900 mb-4">🚀 Why Get JSON Data Here?</h2>
+        <div class="grid md:grid-cols-2 gap-4 text-left">
+          <div class="flex items-start space-x-3">
+            <span class="text-green-500 text-xl">✓</span>
+            <span class="text-blue-800"><strong>Instant Extraction:</strong> Get JSON values in seconds</span>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-green-500 text-xl">✓</span>
+            <span class="text-blue-800"><strong>Deep Parsing:</strong> Navigate nested JSON structures</span>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-green-500 text-xl">✓</span>
+            <span class="text-blue-800"><strong>Multiple Formats:</strong> Get data in CSV, TypeScript, XML</span>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-green-500 text-xl">✓</span>
+            <span class="text-blue-800"><strong>Privacy First:</strong> All processing happens in your browser</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">🛠️ JSON Data Extraction Tools</h2>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {jsonTools.slice(0, 9).map(tool => (
+          <div class="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+            <div class="flex items-center mb-3">
+              <span class="text-2xl mr-3">{tool.icon}</span>
+              <h3 class="font-semibold text-gray-900 text-lg">{tool.name}</h3>
+            </div>
+            <p class="text-gray-600 text-sm mb-4">{tool.description}</p>
+            <a
+              href={`/${tool.category.id}/${tool.slug}`}
+              class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+            >
+              Get JSON Data →
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div class="mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-6">🎯 Popular JSON Data Extraction Tasks</h2>
+      <div class="grid md:grid-cols-2 gap-8">
+        <div>
+          <h3 class="text-xl font-semibold text-gray-800 mb-4">Get JSON Values & Properties</h3>
+          <ul class="space-y-2 text-gray-600">
+            <li class="flex items-start">
+              <span class="text-blue-500 mr-2">•</span>
+              Extract specific values from JSON objects
+            </li>
+            <li class="flex items-start">
+              <span class="text-blue-500 mr-2">•</span>
+              Get nested property values using JSON Path
+            </li>
+            <li class="flex items-start">
+              <span class="text-blue-500 mr-2">•</span>
+              Retrieve array elements and iterate through lists
+            </li>
+            <li class="flex items-start">
+              <span class="text-blue-500 mr-2">•</span>
+              Parse API responses and extract relevant data
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xl font-semibold text-gray-800 mb-4">Convert & Transform JSON</h3>
+          <ul class="space-y-2 text-gray-600">
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2">•</span>
+              Get JSON data as CSV for Excel analysis
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2">•</span>
+              Extract TypeScript interfaces from JSON
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2">•</span>
+              Convert JSON to XML or other formats
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-500 mr-2">•</span>
+              Flatten nested structures for easier access
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">💡 How to Get JSON Data</h2>
+      <div class="bg-gray-50 p-8 rounded-lg">
+        <div class="grid md:grid-cols-4 gap-6">
+          <div class="text-center">
+            <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl">📋</span>
+            </div>
+            <h4 class="font-semibold text-gray-800 mb-2">1. Paste JSON</h4>
+            <p class="text-sm text-gray-600">Copy your JSON data and paste it into our tools</p>
+          </div>
+          <div class="text-center">
+            <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl">⚙️</span>
+            </div>
+            <h4 class="font-semibold text-gray-800 mb-2">2. Choose Method</h4>
+            <p class="text-sm text-gray-600">Select how you want to extract or get your data</p>
+          </div>
+          <div class="text-center">
+            <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl">🔄</span>
+            </div>
+            <h4 class="font-semibold text-gray-800 mb-2">3. Process</h4>
+            <p class="text-sm text-gray-600">Our tools instantly parse and extract your JSON data</p>
+          </div>
+          <div class="text-center">
+            <div class="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl">📥</span>
+            </div>
+            <h4 class="font-semibold text-gray-800 mb-2">4. Get Results</h4>
+            <p class="text-sm text-gray-600">Copy, download, or use your extracted JSON data</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <InternalLinksCluster currentTool={null} />
+
+    <div class="mt-12 bg-blue-600 text-white p-8 rounded-lg text-center">
+      <h2 class="text-2xl font-bold mb-4">🎉 Start Getting JSON Data Now!</h2>
+      <p class="text-xl mb-6">Choose your preferred JSON extraction tool and get your data in seconds.</p>
+      <a
+        href="/formatters/json-formatter"
+        class="inline-block bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+      >
+        Get Started with JSON Formatter →
+      </a>
+    </div>
+  </div>
+</BaseLayout>
