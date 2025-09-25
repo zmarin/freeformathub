@@ -89,7 +89,7 @@ export default function ToolSearch({
     debounceRef.current = window.setTimeout(async () => {
       try {
         // Use client-side search first for instant results
-        const clientResults = searchClientTools(q, 8);
+        const clientResults = searchClientTools(q, 25);
         setResults(clientResults);
         setLoading(false);
         setSelectedIndex(0);
@@ -100,7 +100,7 @@ export default function ToolSearch({
         fetchAbortRef.current = controller;
 
         try {
-          const res = await fetch(`/api/search.json?q=${encodeURIComponent(q)}&limit=8`, {
+          const res = await fetch(`/api/search.json?q=${encodeURIComponent(q)}&limit=25`, {
             signal: controller.signal,
             headers: { 'Accept': 'application/json' }
           });
@@ -136,7 +136,7 @@ export default function ToolSearch({
       } catch (err) {
         // Fallback to legacy search if new search fails
         const fallback = searchClientToolsLegacy(q);
-        const mappedFallback = fallback.slice(0, 8).map(tool => ({
+        const mappedFallback = fallback.slice(0, 25).map(tool => ({
           tool,
           score: 30,
           matchType: 'description' as const,
@@ -293,15 +293,18 @@ export default function ToolSearch({
       </div>
 
       {isOpen && (
-        <div  role="listbox">
+        <div className="absolute z-50 mt-1 w-full max-h-[500px] overflow-y-auto bg-white rounded-lg shadow-xl border border-gray-200" role="listbox">
           {!query.trim() && (
-            <div >
+            <div className="px-4 py-3 text-sm font-medium text-gray-700 border-b border-gray-100 bg-gray-50">
               Popular Tools
             </div>
           )}
           {loading && (
-            <div >
-              Searching...
+            <div className="px-4 py-3 text-sm text-gray-500 text-center">
+              <div className="flex items-center justify-center gap-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                Searching...
+              </div>
             </div>
           )}
           {results.length > 0 && results.map((result, index) => {
@@ -336,7 +339,7 @@ export default function ToolSearch({
                   <div className="ml-3 flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <p
-                        
+                        className="text-sm font-medium text-gray-900 truncate"
                         dangerouslySetInnerHTML={{
                           __html: highlightMatches(tool.name, matchedTerms)
                         }}
@@ -353,7 +356,7 @@ export default function ToolSearch({
                       )}
                     </div>
                     <p
-                      
+                      className="text-xs text-gray-500 line-clamp-2"
                       dangerouslySetInnerHTML={{
                         __html: highlightMatches(tool.description, matchedTerms)
                       }}
@@ -361,7 +364,7 @@ export default function ToolSearch({
                     {matchedTerms.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-1">
                         {matchedTerms.slice(0, 3).map((term, i) => (
-                          <span key={i} >
+                          <span key={i} className="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
                             {term}
                           </span>
                         ))}
@@ -369,7 +372,7 @@ export default function ToolSearch({
                     )}
                   </div>
                   <div className="flex-shrink-0 ml-2">
-                    <div >
+                    <div className="text-xs text-gray-400 font-mono">
                       {Math.round(score)}%
                     </div>
                   </div>
@@ -377,16 +380,16 @@ export default function ToolSearch({
               </button>
             );
           })}
-          {query.trim() && !loading && (
+          {query.trim() && !loading && results.length > 0 && (
             <button
-              
+              className="w-full px-4 py-3 text-left hover:bg-gray-50 border-t border-gray-100 transition-colors"
               onClick={() => {
                 const q = query.trim();
                 if (q) window.location.href = `/search?q=${encodeURIComponent(q)}`;
               }}
             >
-              <div className="text-sm">
-                Search for "{query}"
+              <div className="text-sm text-center text-blue-600 font-medium">
+                View all results for "{query}"
               </div>
             </button>
           )}
