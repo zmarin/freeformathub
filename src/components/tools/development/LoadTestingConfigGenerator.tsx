@@ -275,9 +275,9 @@ export function LoadTestingConfigGenerator({ className = '' }: LoadTestingConfig
       <div className="lg:col-span-4 space-y-6">
         {/* Test Overview */}
         <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Test Overview</h3>
-          <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
-            <div className="text-sm text-blue-800 dark:text-blue-200">
+          <h3 >Test Overview</h3>
+          <div >
+            <div >
               <div><strong>{config.testType.charAt(0).toUpperCase() + config.testType.slice(1)}</strong> test using <strong>{config.framework.toUpperCase()}</strong></div>
               <div className="mt-1">
                 {config.virtualUsers} users over {Math.floor(config.duration / 60)}min {config.duration % 60}s
@@ -289,25 +289,25 @@ export function LoadTestingConfigGenerator({ className = '' }: LoadTestingConfig
 
         {/* Quick Actions */}
         <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Quick Configurations</h3>
+          <h3 >Quick Configurations</h3>
           <div className="grid grid-cols-1 gap-2">
             <button
               onClick={() => setConfig({...DEFAULT_CONFIG, testType: 'load', virtualUsers: 10, duration: 60})}
-              className="p-2 text-left text-xs bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded border"
+              
             >
               🧪 <strong>Smoke Test</strong><br/>
               10 users, 1 minute
             </button>
             <button
               onClick={() => setConfig({...DEFAULT_CONFIG, testType: 'load', virtualUsers: 100, duration: 600})}
-              className="p-2 text-left text-xs bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded border"
+              
             >
               📈 <strong>Load Test</strong><br/>
               100 users, 10 minutes
             </button>
             <button
               onClick={() => setConfig({...DEFAULT_CONFIG, testType: 'stress', virtualUsers: 500, duration: 900})}
-              className="p-2 text-left text-xs bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded border"
+              
             >
               🚀 <strong>Stress Test</strong><br/>
               500 users, 15 minutes
@@ -317,25 +317,25 @@ export function LoadTestingConfigGenerator({ className = '' }: LoadTestingConfig
 
         {/* Framework Features */}
         <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Framework Features</h3>
-          <div className="text-xs text-gray-600 dark:text-gray-400 space-y-2">
+          <h3 >Framework Features</h3>
+          <div >
             {config.framework === 'k6' && (
-              <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
+              <div >
                 <strong>K6:</strong> JavaScript-based, CI/CD friendly, cloud integrations, extensive metrics
               </div>
             )}
             {config.framework === 'jmeter' && (
-              <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded">
+              <div >
                 <strong>JMeter:</strong> GUI interface, enterprise features, distributed testing, extensive protocols
               </div>
             )}
             {config.framework === 'artillery' && (
-              <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded">
+              <div >
                 <strong>Artillery:</strong> YAML config, microservices focused, AWS Lambda support, plugin ecosystem
               </div>
             )}
             {config.framework === 'locust' && (
-              <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded">
+              <div >
                 <strong>Locust:</strong> Python scripts, web UI, distributed testing, complex user behaviors
               </div>
             )}

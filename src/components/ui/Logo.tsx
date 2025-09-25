@@ -63,7 +63,7 @@ export default function Logo({
 
       {/* Text */}
       {showText && (
-        <div className={`font-semibold ${classes.text} tracking-tight text-gray-900 dark:text-gray-100`}>
+        <div className={`font-semibold ${classes.text} tracking-tight text-gray-900`}>
           FreeFormatHub
         </div>
       )}

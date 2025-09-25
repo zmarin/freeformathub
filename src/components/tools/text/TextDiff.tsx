@@ -151,7 +151,7 @@ export function TextDiff({ className = '' }: TextDiffProps) {
   return (
     <div className={`grid grid-cols-1 lg:grid-cols-2 gap-0 ${className}`}>
       {/* Input Panel */}
-      <div className="border-r border-gray-200 dark:border-gray-700">
+      <div >
         <InputPanel
           value={input}
           onChange={handleInputChange}
@@ -212,24 +212,24 @@ ssl.enabled=true`,
 
         {/* Split Preview */}
         {(leftText || rightText) && (
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          <div >
+            <h3 >
               Preview Split:
             </h3>
             <div className="grid grid-cols-2 gap-4 text-xs">
               <div>
-                <div className="font-medium text-gray-600 dark:text-gray-400 mb-1">
+                <div >
                   LEFT ({leftText.split(/\r?\n/).length} lines)
                 </div>
-                <div className="bg-red-50 dark:bg-red-900/20 p-2 rounded border max-h-20 overflow-y-auto text-gray-700 dark:text-gray-300">
+                <div >
                   {leftText.substring(0, 100)}{leftText.length > 100 ? '...' : ''}
                 </div>
               </div>
               <div>
-                <div className="font-medium text-gray-600 dark:text-gray-400 mb-1">
+                <div >
                   RIGHT ({rightText.split(/\r?\n/).length} lines)
                 </div>
-                <div className="bg-green-50 dark:bg-green-900/20 p-2 rounded border max-h-20 overflow-y-auto text-gray-700 dark:text-gray-300">
+                <div >
                   {rightText.substring(0, 100)}{rightText.length > 100 ? '...' : ''}
                 </div>
               </div>
@@ -239,28 +239,28 @@ ssl.enabled=true`,
 
         {/* Statistics */}
         {stats && (
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          <div >
+            <h3 >
               Comparison Statistics:
             </h3>
             <div className="grid grid-cols-2 gap-4 text-xs">
               <div className="space-y-1">
                 <div className="flex justify-between">
-                  <span className="text-green-600 dark:text-green-400">Additions:</span>
+                  <span >Additions:</span>
                   <span className="font-mono">{stats.additions}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-red-600 dark:text-red-400">Deletions:</span>
+                  <span >Deletions:</span>
                   <span className="font-mono">{stats.deletions}</span>
                 </div>
               </div>
               <div className="space-y-1">
                 <div className="flex justify-between">
-                  <span className="text-blue-600 dark:text-blue-400">Modifications:</span>
+                  <span >Modifications:</span>
                   <span className="font-mono">{stats.modifications}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Unchanged:</span>
+                  <span >Unchanged:</span>
                   <span className="font-mono">{stats.unchanged}</span>
                 </div>
               </div>

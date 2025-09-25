@@ -262,7 +262,7 @@ export function ImageFormatConverter({ className = '' }: ImageFormatConverterPro
   return (
     <div className={`grid grid-cols-1 lg:grid-cols-2 gap-0 ${className}`}>
       {/* Input Panel */}
-      <div className="border-r border-gray-200 dark:border-gray-700">
+      <div >
         <InputPanel
           value={input}
           onChange={handleInputChange}
@@ -291,29 +291,29 @@ Supported formats:
         />
 
         {/* File Upload Section */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+        <div >
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label >
               Upload Image File:
             </label>
             <input
               type="file"
               accept="image/*"
               onChange={handleFileUpload}
-              className="block w-full text-sm text-gray-500 dark:text-gray-400
+              className="block w-full text-sm text-gray-500
                 file:mr-4 file:py-2 file:px-4
                 file:rounded-md file:border-0
                 file:text-sm file:font-medium
                 file:bg-blue-50 file:text-blue-700
                 hover:file:bg-blue-100
-                dark:file:bg-blue-900/20 dark:file:text-blue-400
-                dark:hover:file:bg-blue-900/30"
+/20
+/30"
             />
           </div>
 
           {/* Quick Sample Generation */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label >
               Generate Sample Images:
             </label>
             <div className="flex flex-wrap gap-2">
@@ -336,11 +336,11 @@ Supported formats:
           </div>
 
           {/* Current Configuration */}
-          <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <div >
+            <div >
               Conversion Settings:
             </div>
-            <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+            <div >
               <div>Output: {config.outputFormat}</div>
               {(config.outputFormat === 'JPEG' || config.outputFormat === 'WEBP') && (
                 <div>Quality: {config.quality}%</div>
@@ -363,33 +363,33 @@ Supported formats:
 
           {/* Processing Statistics */}
           {metadata && (
-            <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div >
+              <div >
                 Conversion Results:
               </div>
               <div className="text-xs space-y-1">
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Format:</span>
+                  <span >Format:</span>
                   <span className="font-mono">{metadata.originalFormat} → {config.outputFormat}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Dimensions:</span>
+                  <span >Dimensions:</span>
                   <span className="font-mono">
                     {metadata.originalSize.width}×{metadata.originalSize.height} → {metadata.newSize.width}×{metadata.newSize.height}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Size Change:</span>
+                  <span >Size Change:</span>
                   <span className={`font-mono ${
                     metadata.fileSizeReduction > 0 
-                      ? 'text-green-600 dark:text-green-400' 
-                      : 'text-red-600 dark:text-red-400'
+                      ? 'text-green-600' 
+                      : 'text-red-600'
                   }`}>
                     {metadata.fileSizeReduction > 0 ? '-' : '+'}{Math.abs(metadata.fileSizeReduction).toFixed(1)}%
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Processing Time:</span>
+                  <span >Processing Time:</span>
                   <span className="font-mono">{metadata.processingTime}ms</span>
                 </div>
               </div>
@@ -419,11 +419,11 @@ Supported formats:
         
         {/* Image Preview */}
         {output && (
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <div >
+            <div >
               Preview:
             </div>
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 text-center">
+            <div >
               <img
                 src={output}
                 alt="Converted image"

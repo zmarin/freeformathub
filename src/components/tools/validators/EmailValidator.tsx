@@ -278,7 +278,7 @@ export function EmailValidator({ className = '' }: EmailValidatorProps) {
   return (
     <div className={`flex flex-col ${className}`}>
       {/* Tool Header with Quick Actions */}
-      <div className="flex flex-col sm:flex-row gap-4 p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+      <div >
         {/* Quick Actions */}
         <div className="flex flex-wrap items-center gap-2">
           <button
@@ -316,7 +316,7 @@ export function EmailValidator({ className = '' }: EmailValidatorProps) {
 
         {/* Auto-format toggle */}
         <div className="flex items-center gap-2 ml-auto">
-          <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+          <label >
             <input
               type="checkbox"
               checked={autoFormat}
@@ -331,14 +331,14 @@ export function EmailValidator({ className = '' }: EmailValidatorProps) {
       {/* Main Content */}
       <div className="flex flex-col lg:flex-row flex-1 min-h-[600px]">
         {/* Input Section */}
-        <div className="flex-1 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700">
+        <div >
           {/* Input Header */}
-          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+          <div >
+            <h3 >
               {bulkMode ? 'Email List (One per line)' : 'Email Address'}
             </h3>
             <div className="flex items-center gap-2">
-              <label className="cursor-pointer text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded border transition-colors">
+              <label >
                 📁 Upload
                 <input
                   type="file"
@@ -350,7 +350,7 @@ export function EmailValidator({ className = '' }: EmailValidatorProps) {
               {input && (
                 <button
                   onClick={() => setInput('')}
-                  className="text-xs px-3 py-1 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                  
                   title="Clear input"
                 >
                   🗑️ Clear
@@ -361,7 +361,7 @@ export function EmailValidator({ className = '' }: EmailValidatorProps) {
 
           {/* Input Textarea */}
           <div 
-            className={`flex-1 relative ${dragActive ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+            className={`flex-1 relative ${dragActive ? 'bg-blue-50/20' : ''}`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
@@ -373,12 +373,12 @@ export function EmailValidator({ className = '' }: EmailValidatorProps) {
                 ? "Enter multiple email addresses (one per line)...\n\nuser@example.com\ntest@domain.org\nanother@company.com"
                 : "Enter email address to validate...\n\nuser@example.com"
               }
-              className="w-full h-full p-4 resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-mono text-sm border-none focus:outline-none focus:ring-0"
+              
               spellCheck={false}
             />
             {dragActive && (
-              <div className="absolute inset-0 flex items-center justify-center bg-blue-50/80 dark:bg-blue-900/40 backdrop-blur-sm">
-                <div className="text-blue-600 dark:text-blue-400 text-lg font-medium">
+              <div >
+                <div >
                   Drop email file here (.txt, .csv)
                 </div>
               </div>
@@ -386,9 +386,9 @@ export function EmailValidator({ className = '' }: EmailValidatorProps) {
           </div>
 
           {/* Example buttons */}
-          <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+          <div >
             <div className="flex flex-wrap gap-2">
-              <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">Examples:</span>
+              <span >Examples:</span>
               {EXAMPLES.map((example, idx) => (
                 <button
                   key={idx}
@@ -398,7 +398,7 @@ export function EmailValidator({ className = '' }: EmailValidatorProps) {
                     }
                     setInput(example.value);
                   }}
-                  className="text-xs px-2 py-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-colors"
+                  
                   title={example.title}
                 >
                   {example.title}
@@ -411,12 +411,12 @@ export function EmailValidator({ className = '' }: EmailValidatorProps) {
         {/* Output Section */}
         <div className="flex-1 flex flex-col">
           {/* Output Header */}
-          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+          <div >
+            <h3 >
               Validation Results
-              {isLoading && <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">Validating...</span>}
-              {!error && output && !bulkMode && <span className="ml-2 text-xs text-green-600 dark:text-green-400">✓ Complete</span>}
-              {error && <span className="ml-2 text-xs text-red-600 dark:text-red-400">✗ Error</span>}
+              {isLoading && <span >Validating...</span>}
+              {!error && output && !bulkMode && <span >✓ Complete</span>}
+              {error && <span >✗ Error</span>}
             </h3>
             <div className="flex items-center gap-2">
               {output && (
@@ -425,15 +425,15 @@ export function EmailValidator({ className = '' }: EmailValidatorProps) {
                     onClick={handleCopy}
                     className={`text-xs px-3 py-1 rounded border transition-colors ${
                       copied 
-                        ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border-green-300 dark:border-green-600'
-                        : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
+                        ? 'bg-green-100 text-green-700 border-green-300'
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300'
                     }`}
                   >
                     {copied ? '✓ Copied' : '📋 Copy'}
                   </button>
                   <button
                     onClick={handleExport}
-                    className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded border border-gray-300 dark:border-gray-600 transition-colors"
+                    
                   >
                     💾 Export
                   </button>
@@ -443,12 +443,12 @@ export function EmailValidator({ className = '' }: EmailValidatorProps) {
           </div>
 
           {/* Output Content */}
-          <div className="flex-1 bg-white dark:bg-gray-800">
+          <div >
             {error ? (
               <div className="p-4 h-full">
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-                  <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">Validation Error</h4>
-                  <pre className="text-xs text-red-700 dark:text-red-300 whitespace-pre-wrap font-mono">
+                <div >
+                  <h4 >Validation Error</h4>
+                  <pre >
                     {error}
                   </pre>
                 </div>
@@ -462,7 +462,7 @@ export function EmailValidator({ className = '' }: EmailValidatorProps) {
                     ? "Bulk validation results will appear here..."
                     : "Email validation result will appear here..."
                   }
-                  className="flex-1 p-4 resize-none bg-transparent text-gray-900 dark:text-gray-100 font-mono text-sm border-none focus:outline-none"
+                  
                   spellCheck={false}
                 />
               </div>
@@ -471,15 +471,15 @@ export function EmailValidator({ className = '' }: EmailValidatorProps) {
 
           {/* Metadata */}
           {metadata && !error && output && (
-            <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-              <div className="flex flex-wrap gap-4 text-xs text-gray-600 dark:text-gray-400">
+            <div >
+              <div >
                 {bulkMode ? (
                   <>
                     <span><strong>Total:</strong> {metadata.totalEmails}</span>
-                    <span className="text-green-600 dark:text-green-400">
+                    <span >
                       <strong>Valid:</strong> {metadata.validEmails}
                     </span>
-                    <span className="text-red-600 dark:text-red-400">
+                    <span >
                       <strong>Invalid:</strong> {metadata.invalidEmails}
                     </span>
                     <span><strong>Success Rate:</strong> {metadata.validPercentage}%</span>
@@ -489,12 +489,12 @@ export function EmailValidator({ className = '' }: EmailValidatorProps) {
                     <span><strong>Status:</strong> {metadata.valid ? '✅ Valid' : '❌ Invalid'}</span>
                     {metadata.length && <span><strong>Length:</strong> {metadata.length} chars</span>}
                     {metadata.issues > 0 && (
-                      <span className="text-red-600 dark:text-red-400">
+                      <span >
                         <strong>Issues:</strong> {metadata.issues}
                       </span>
                     )}
                     {metadata.warnings > 0 && (
-                      <span className="text-yellow-600 dark:text-yellow-400">
+                      <span >
                         <strong>Warnings:</strong> {metadata.warnings}
                       </span>
                     )}
@@ -510,13 +510,13 @@ export function EmailValidator({ className = '' }: EmailValidatorProps) {
       </div>
 
       {/* Essential Options Panel */}
-      <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+      <div >
         <div className="p-4">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">Options</h4>
+            <h4 >Options</h4>
             <button
               onClick={() => setShowAdvanced(!showAdvanced)}
-              className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+              
             >
               {showAdvanced ? '△ Less' : '▽ More'}
             </button>
@@ -526,7 +526,7 @@ export function EmailValidator({ className = '' }: EmailValidatorProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {ESSENTIAL_OPTIONS.map((option) => (
               <div key={option.key} className="space-y-1">
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                <label >
                   {option.label}
                 </label>
                 {option.type === 'boolean' ? (
@@ -537,7 +537,7 @@ export function EmailValidator({ className = '' }: EmailValidatorProps) {
                       onChange={(e) => handleEssentialConfigChange(option.key, e.target.checked)}
                       className="rounded"
                     />
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                    <span >
                       {option.description}
                     </span>
                   </label>
@@ -545,7 +545,7 @@ export function EmailValidator({ className = '' }: EmailValidatorProps) {
                   <select
                     value={String(config[option.key as keyof EmailValidatorConfig] ?? option.default)}
                     onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
-                    className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    
                   >
                     {option.options?.map((opt) => (
                       <option key={opt.value} value={opt.value}>
@@ -560,12 +560,12 @@ export function EmailValidator({ className = '' }: EmailValidatorProps) {
 
           {/* Advanced options */}
           {showAdvanced && (
-            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <h5 className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">Advanced Options</h5>
+            <div >
+              <h5 >Advanced Options</h5>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {ADVANCED_OPTIONS.map((option) => (
                   <div key={option.key} className="space-y-1">
-                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                    <label >
                       {option.label}
                     </label>
                     <label className="flex items-center space-x-2">
@@ -575,7 +575,7 @@ export function EmailValidator({ className = '' }: EmailValidatorProps) {
                         onChange={(e) => handleEssentialConfigChange(option.key, e.target.checked)}
                         className="rounded"
                       />
-                      <span className="text-xs text-gray-600 dark:text-gray-400">
+                      <span >
                         {option.description}
                       </span>
                     </label>
@@ -586,10 +586,10 @@ export function EmailValidator({ className = '' }: EmailValidatorProps) {
           )}
 
           {/* Tips */}
-          <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
-              <h5 className="text-xs font-medium text-blue-900 dark:text-blue-100 mb-2">💡 Validation Tips</h5>
-              <ul className="text-xs text-blue-800 dark:text-blue-200 space-y-1">
+          <div >
+            <div >
+              <h5 >💡 Validation Tips</h5>
+              <ul >
                 <li>• Valid emails need exactly one @ symbol</li>
                 <li>• Domain must have at least one dot</li>
                 <li>• Local part can't start/end with dots</li>

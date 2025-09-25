@@ -205,7 +205,7 @@ export function LoremIpsum({ className = '' }: LoremIpsumProps) {
   return (
     <div className={`grid grid-cols-1 lg:grid-cols-2 gap-0 ${className}`}>
       {/* Input Panel */}
-      <div className="border-r border-gray-200 dark:border-gray-700">
+      <div >
         <InputPanel
           value={input}
           onChange={handleInputChange}
@@ -222,7 +222,7 @@ export function LoremIpsum({ className = '' }: LoremIpsumProps) {
         />
         
         {/* Generate Button & Presets */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+        <div >
           <button
             onClick={handleGenerate}
             className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mb-4"
@@ -232,16 +232,16 @@ export function LoremIpsum({ className = '' }: LoremIpsumProps) {
           </button>
           
           {/* Output Preview */}
-          <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+          <div >
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <span >
                 Output Preview:
               </span>
-              <span className="text-sm text-blue-600 dark:text-blue-400">
+              <span >
                 {getEstimatedOutput()}
               </span>
             </div>
-            <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+            <div >
               Style: {config.type.charAt(0).toUpperCase() + config.type.slice(1)} • 
               Format: {config.format.charAt(0).toUpperCase() + config.format.slice(1)} • 
               {config.includeHtml ? `HTML: ${config.htmlTags.join(', ')}` : 'Plain Text'}
@@ -250,7 +250,7 @@ export function LoremIpsum({ className = '' }: LoremIpsumProps) {
 
           {/* Quick Presets */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label >
               Quick Presets:
             </label>
             <div className="grid grid-cols-1 gap-2">
@@ -258,7 +258,7 @@ export function LoremIpsum({ className = '' }: LoremIpsumProps) {
                 <button
                   key={preset.name}
                   onClick={() => handlePresetSelect(preset.config)}
-                  className="px-3 py-2 text-sm text-left bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 rounded border transition-colors"
+                  
                 >
                   {preset.name}
                 </button>
@@ -268,28 +268,28 @@ export function LoremIpsum({ className = '' }: LoremIpsumProps) {
           
           {/* Statistics */}
           {stats && (
-            <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div >
+              <div >
                 Generated Statistics:
               </div>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div className="space-y-1">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Words:</span>
+                    <span >Words:</span>
                     <span className="font-mono">{stats.wordCount.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Sentences:</span>
+                    <span >Sentences:</span>
                     <span className="font-mono">{stats.sentenceCount.toLocaleString()}</span>
                   </div>
                 </div>
                 <div className="space-y-1">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Paragraphs:</span>
+                    <span >Paragraphs:</span>
                     <span className="font-mono">{stats.paragraphCount.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Characters:</span>
+                    <span >Characters:</span>
                     <span className="font-mono">{stats.characterCount.toLocaleString()}</span>
                   </div>
                 </div>

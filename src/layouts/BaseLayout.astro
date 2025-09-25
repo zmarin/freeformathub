@@ -939,22 +939,26 @@ const getNavLinkClasses = (active: boolean) => [
 
       function showFallbackCookieBanner() {
         const banner = document.createElement('div');
-        banner.className = 'fixed inset-x-0 bottom-0 z-50 bg-white dark:bg-gray-900 border-t border-gray-200 shadow-lg p-4';
+        banner.style.cssText = 'position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; background-color: var(--color-surface); border-top: 1px solid var(--color-border); box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1); padding: 1rem;';
         banner.innerHTML = `
-          <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
-            <div class="flex-1">
-              <p class="text-sm text-gray-600 dark:text-gray-400">
+          <div style="max-width: 80rem; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 200px;">
+              <p style="font-size: 0.875rem; color: var(--color-text-secondary); margin: 0;">
                 🍪 We use cookies to improve your experience and analytics.
-                <a href="/privacy" class="text-blue-600 underline">Learn more</a>
+                <a href="/privacy" style="color: var(--color-primary); text-decoration: underline;">Learn more</a>
               </p>
             </div>
-            <div class="flex gap-2">
+            <div style="display: flex; gap: 0.5rem;">
               <button onclick="handleFallbackConsent(false)"
-                      class="px-4 py-2 text-sm bg-gray-200 hover:bg-gray-300 rounded">
+                      style="padding: 0.5rem 1rem; font-size: 0.875rem; background-color: var(--color-surface-secondary); color: var(--color-text-secondary); border: 1px solid var(--color-border); border-radius: 0.375rem; cursor: pointer; transition: all 0.2s ease;"
+                      onmouseover="this.style.backgroundColor='var(--color-border)'"
+                      onmouseout="this.style.backgroundColor='var(--color-surface-secondary)'">
                 Necessary only
               </button>
               <button onclick="handleFallbackConsent(true)"
-                      class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded">
+                      style="padding: 0.5rem 1rem; font-size: 0.875rem; background-color: var(--color-primary); color: var(--color-text-inverse); border: none; border-radius: 0.375rem; cursor: pointer; transition: all 0.2s ease;"
+                      onmouseover="this.style.backgroundColor='var(--color-primary-hover)'"
+                      onmouseout="this.style.backgroundColor='var(--color-primary)'">
                 Accept all
               </button>
             </div>

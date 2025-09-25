@@ -312,13 +312,13 @@ export function JsonSchemaValidator({ className = '' }: JsonSchemaValidatorProps
       </div>
 
       <div className="mt-6 grid gap-4 md:grid-cols-2">
-        <div className="flex items-center gap-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-3">
-          <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+        <div >
+          <label >
             <input
               type="checkbox"
               checked={autoValidate}
               onChange={handleToggleAuto}
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded dark:border-gray-600 dark:bg-gray-700"
+              
             />
             Auto-validate
           </label>
@@ -334,7 +334,7 @@ export function JsonSchemaValidator({ className = '' }: JsonSchemaValidatorProps
           options={ESSENTIAL_OPTIONS as any}
           config={config}
           onChange={newConfig => handleConfigChange(newConfig as JsonSchemaValidatorConfig)}
-          className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
+          
         />
       </div>
 
@@ -350,19 +350,19 @@ export function JsonSchemaValidator({ className = '' }: JsonSchemaValidatorProps
       </div>
 
       {metadata && (
-        <div className="mt-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+        <div >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Summary</h3>
+            <h3 >Summary</h3>
             <div className="flex items-center gap-2">
               <button
                 onClick={handleCopyMetadata}
-                className="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded border text-gray-700 dark:text-gray-300 transition-colors"
+                
               >
                 Copy JSON
               </button>
               <button
                 onClick={handleDownloadMetadata}
-                className="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded border text-gray-700 dark:text-gray-300 transition-colors"
+                
               >
                 Download JSON
               </button>
@@ -370,21 +370,21 @@ export function JsonSchemaValidator({ className = '' }: JsonSchemaValidatorProps
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20">
-              <p className="text-xs uppercase text-blue-600 dark:text-blue-300 tracking-wide mb-1">Status</p>
-              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+            <div >
+              <p >Status</p>
+              <p >
                 {metadata.valid ? 'Valid' : 'Invalid'}
               </p>
             </div>
-            <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-900/40">
-              <p className="text-xs uppercase text-gray-500 dark:text-gray-400 tracking-wide mb-1">Errors</p>
-              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+            <div >
+              <p >Errors</p>
+              <p >
                 {metadata.errorCount}
               </p>
             </div>
-            <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-900/40">
-              <p className="text-xs uppercase text-gray-500 dark:text-gray-400 tracking-wide mb-1">Strict Mode</p>
-              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+            <div >
+              <p >Strict Mode</p>
+              <p >
                 {metadata.configuration?.strictMode ? 'Enabled' : 'Disabled'}
               </p>
             </div>
@@ -392,29 +392,29 @@ export function JsonSchemaValidator({ className = '' }: JsonSchemaValidatorProps
 
           {Array.isArray(metadata.errors) && metadata.errors.length > 0 && (
             <div className="mt-6">
-              <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              <h4 >
                 Detailed Errors
               </h4>
               <div className="space-y-3">
                 {metadata.errors.map((err: any, index: number) => (
                   <div
                     key={`${err.instancePath}-${index}`}
-                    className="border border-red-200 dark:border-red-800 rounded-md px-4 py-3 bg-red-50/60 dark:bg-red-900/20"
+                    
                   >
-                    <p className="text-xs text-red-600 dark:text-red-300 uppercase tracking-wide">Error #{index + 1}</p>
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mt-1">
+                    <p >Error #{index + 1}</p>
+                    <p >
                       Path: <code className="font-mono">{err.instancePath || '/'}</code>
                     </p>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
+                    <p >
                       {err.message}
                     </p>
                     {err.schemaPath && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <p >
                         Schema path: <code className="font-mono">{err.schemaPath}</code>
                       </p>
                     )}
                     {err.params && (
-                      <pre className="mt-2 text-xs bg-white/70 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700 rounded px-3 py-2 overflow-auto">
+                      <pre >
 {JSON.stringify(err.params, null, 2)}
                       </pre>
                     )}

@@ -122,14 +122,14 @@ const ColorBlindnessSimulator: React.FC = () => {
       {/* Header */}
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-3">
-          <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
-            <Eye className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+          <div >
+            <Eye  />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1 >
             Color Blindness Simulator
           </h1>
         </div>
-        <p className="text-gray-600 dark:text-gray-300">
+        <p >
           Simulate how colors appear to people with different types of color vision deficiencies
         </p>
       </div>
@@ -137,9 +137,9 @@ const ColorBlindnessSimulator: React.FC = () => {
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
         {/* Input Panel */}
         <div className="xl:col-span-1">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+          <div >
+            <div >
+              <h2 >
                 <Palette className="w-5 h-5" />
                 Input Colors
               </h2>
@@ -148,13 +148,13 @@ const ColorBlindnessSimulator: React.FC = () => {
             <div className="p-4 space-y-4">
               {/* Input Type */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label >
                   Input Type
                 </label>
                 <select
                   value={config.inputType}
                   onChange={(e) => setConfig({...config, inputType: e.target.value as any})}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  
                 >
                   <option value="single-color">Single Color</option>
                   <option value="color-palette">Color Palette</option>
@@ -164,7 +164,7 @@ const ColorBlindnessSimulator: React.FC = () => {
 
               {/* Color Input */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label >
                   Colors
                 </label>
                 <textarea
@@ -177,7 +177,7 @@ const ColorBlindnessSimulator: React.FC = () => {
                       ? '.primary { color: #3B82F6; }'
                       : '#FF0000 #00FF00 #0000FF'
                   }
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm"
+                  
                   rows={4}
                 />
                 <p className="text-xs text-gray-500 mt-1">
@@ -189,31 +189,31 @@ const ColorBlindnessSimulator: React.FC = () => {
 
               {/* Presets */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label >
                   Quick Presets
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     onClick={() => getPresetColors('traffic-lights')}
-                    className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
+                    
                   >
                     Traffic Lights
                   </button>
                   <button
                     onClick={() => getPresetColors('website-palette')}
-                    className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
+                    
                   >
                     Website
                   </button>
                   <button
                     onClick={() => getPresetColors('rainbow')}
-                    className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
+                    
                   >
                     Rainbow
                   </button>
                   <button
                     onClick={() => getPresetColors('accessible')}
-                    className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
+                    
                   >
                     Accessible
                   </button>
@@ -223,9 +223,9 @@ const ColorBlindnessSimulator: React.FC = () => {
           </div>
 
           {/* Configuration Panel */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mt-4">
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+          <div >
+            <div >
+              <h2 >
                 <Settings className="w-5 h-5" />
                 Configuration
               </h2>
@@ -234,13 +234,13 @@ const ColorBlindnessSimulator: React.FC = () => {
             <div className="p-4 space-y-4">
               {/* Color Blindness Type */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label >
                   Color Vision Deficiency
                 </label>
                 <select
                   value={config.colorBlindnessType}
                   onChange={(e) => setConfig({...config, colorBlindnessType: e.target.value as any})}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  
                 >
                   {colorBlindnessTypes.map(type => (
                     <option key={type.value} value={type.value}>
@@ -256,7 +256,7 @@ const ColorBlindnessSimulator: React.FC = () => {
               {/* Severity (for partial deficiencies) */}
               {config.colorBlindnessType.includes('anomaly') && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label >
                     Severity: {config.severity}%
                   </label>
                   <input
@@ -283,7 +283,7 @@ const ColorBlindnessSimulator: React.FC = () => {
                     onChange={(e) => setConfig({...config, generateReport: e.target.checked})}
                     className="rounded border-gray-300 text-purple-600"
                   />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
+                  <span >
                     Generate Accessibility Report
                   </span>
                 </label>
@@ -295,7 +295,7 @@ const ColorBlindnessSimulator: React.FC = () => {
                     onChange={(e) => setConfig({...config, accessibilityCheck: e.target.checked})}
                     className="rounded border-gray-300 text-purple-600"
                   />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
+                  <span >
                     Check Accessibility Issues
                   </span>
                 </label>
@@ -307,7 +307,7 @@ const ColorBlindnessSimulator: React.FC = () => {
                     onChange={(e) => setConfig({...config, contrastRatios: e.target.checked})}
                     className="rounded border-gray-300 text-purple-600"
                   />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
+                  <span >
                     Calculate Contrast Ratios
                   </span>
                 </label>
@@ -319,7 +319,7 @@ const ColorBlindnessSimulator: React.FC = () => {
                     onChange={(e) => setConfig({...config, recommendAlternatives: e.target.checked})}
                     className="rounded border-gray-300 text-purple-600"
                   />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
+                  <span >
                     Recommend Alternative Colors
                   </span>
                 </label>
@@ -330,16 +330,16 @@ const ColorBlindnessSimulator: React.FC = () => {
 
         {/* Results Panel */}
         <div className="xl:col-span-3">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+          <div >
             {/* Tabs */}
-            <div className="border-b border-gray-200 dark:border-gray-700">
+            <div >
               <nav className="flex">
                 <button
                   onClick={() => setActiveTab('simulate')}
                   className={`px-4 py-2 text-sm font-medium border-b-2 ${
                     activeTab === 'simulate'
-                      ? 'border-purple-500 text-purple-600 dark:text-purple-400'
-                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                      ? 'border-purple-500 text-purple-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
                 >
                   <Eye className="w-4 h-4 mr-2 inline" />
@@ -349,8 +349,8 @@ const ColorBlindnessSimulator: React.FC = () => {
                   onClick={() => setActiveTab('analysis')}
                   className={`px-4 py-2 text-sm font-medium border-b-2 ${
                     activeTab === 'analysis'
-                      ? 'border-purple-500 text-purple-600 dark:text-purple-400'
-                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                      ? 'border-purple-500 text-purple-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
                 >
                   <BarChart3 className="w-4 h-4 mr-2 inline" />
@@ -360,8 +360,8 @@ const ColorBlindnessSimulator: React.FC = () => {
                   onClick={() => setActiveTab('report')}
                   className={`px-4 py-2 text-sm font-medium border-b-2 ${
                     activeTab === 'report'
-                      ? 'border-purple-500 text-purple-600 dark:text-purple-400'
-                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                      ? 'border-purple-500 text-purple-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
                 >
                   <Info className="w-4 h-4 mr-2 inline" />
@@ -378,20 +378,20 @@ const ColorBlindnessSimulator: React.FC = () => {
               )}
 
               {result?.error && (
-                <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
-                  <p className="text-sm text-red-600 dark:text-red-400">{result.error}</p>
+                <div >
+                  <p >{result.error}</p>
                 </div>
               )}
 
               {activeTab === 'simulate' && result?.data && !loading && (
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    <h3 >
                       Color Simulation: {colorBlindnessTypes.find(t => t.value === config.colorBlindnessType)?.label}
                     </h3>
                     <button
                       onClick={() => copyToClipboard(result.data.simulatedColors[config.colorBlindnessType]?.join(' ') || '')}
-                      className="px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded flex items-center gap-2 text-sm"
+                      
                     >
                       <Copy className="w-4 h-4" />
                       Copy Simulated Colors
@@ -401,16 +401,16 @@ const ColorBlindnessSimulator: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Original Colors */}
                     <div>
-                      <h4 className="font-medium text-gray-900 dark:text-white mb-3">Original Colors</h4>
+                      <h4 >Original Colors</h4>
                       <div className="space-y-2">
                         {result.data.originalColors.map((color: string, index: number) => (
                           <div key={`original-${index}`} className="flex items-center gap-3">
                             <div
-                              className="w-12 h-12 rounded-md border border-gray-200 dark:border-gray-600"
+                              
                               style={{ backgroundColor: color }}
                             />
                             <div className="flex-1">
-                              <div className="font-mono text-sm font-medium text-gray-900 dark:text-white">
+                              <div >
                                 {color}
                               </div>
                             </div>
@@ -421,22 +421,22 @@ const ColorBlindnessSimulator: React.FC = () => {
 
                     {/* Simulated Colors */}
                     <div>
-                      <h4 className="font-medium text-gray-900 dark:text-white mb-3">
+                      <h4 >
                         Simulated Colors ({config.colorBlindnessType})
                       </h4>
                       <div className="space-y-2">
                         {result.data.simulatedColors[config.colorBlindnessType]?.map((color: string, index: number) => (
                           <div key={`simulated-${index}`} className="flex items-center gap-3">
                             <div
-                              className="w-12 h-12 rounded-md border border-gray-200 dark:border-gray-600"
+                              
                               style={{ backgroundColor: color }}
                             />
                             <div className="flex-1">
-                              <div className="font-mono text-sm font-medium text-gray-900 dark:text-white">
+                              <div >
                                 {color}
                               </div>
                               {result.data.originalColors[index] !== color && (
-                                <div className="text-xs text-orange-600 dark:text-orange-400">
+                                <div >
                                   Changed from {result.data.originalColors[index]}
                                 </div>
                               )}
@@ -451,21 +451,21 @@ const ColorBlindnessSimulator: React.FC = () => {
 
               {activeTab === 'analysis' && result?.data && !loading && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Color Analysis</h3>
+                  <h3 >Color Analysis</h3>
 
                   {/* Color Classification */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Problematic Colors */}
-                    <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg border border-red-200 dark:border-red-800">
+                    <div >
                       <div className="flex items-center gap-2 mb-3">
-                        <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
-                        <h4 className="font-medium text-red-900 dark:text-red-100">
+                        <AlertTriangle  />
+                        <h4 >
                           Problematic Colors ({result.data.colorAnalysis.problematicColors.length})
                         </h4>
                       </div>
                       <div className="space-y-2">
                         {result.data.colorAnalysis.problematicColors.length === 0 ? (
-                          <p className="text-sm text-red-700 dark:text-red-300">No problematic colors found!</p>
+                          <p >No problematic colors found!</p>
                         ) : (
                           result.data.colorAnalysis.problematicColors.map((color: string, index: number) => (
                             <div key={index} className="flex items-center gap-2">
@@ -473,7 +473,7 @@ const ColorBlindnessSimulator: React.FC = () => {
                                 className="w-6 h-6 rounded border border-red-300"
                                 style={{ backgroundColor: color }}
                               />
-                              <span className="font-mono text-sm text-red-900 dark:text-red-100">{color}</span>
+                              <span >{color}</span>
                             </div>
                           ))
                         )}
@@ -481,10 +481,10 @@ const ColorBlindnessSimulator: React.FC = () => {
                     </div>
 
                     {/* Safe Colors */}
-                    <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
+                    <div >
                       <div className="flex items-center gap-2 mb-3">
-                        <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
-                        <h4 className="font-medium text-green-900 dark:text-green-100">
+                        <CheckCircle  />
+                        <h4 >
                           Safe Colors ({result.data.colorAnalysis.safeColors.length})
                         </h4>
                       </div>
@@ -495,7 +495,7 @@ const ColorBlindnessSimulator: React.FC = () => {
                               className="w-6 h-6 rounded border border-green-300"
                               style={{ backgroundColor: color }}
                             />
-                            <span className="font-mono text-sm text-green-900 dark:text-green-100">{color}</span>
+                            <span >{color}</span>
                           </div>
                         ))}
                       </div>
@@ -505,20 +505,20 @@ const ColorBlindnessSimulator: React.FC = () => {
                   {/* Contrast Issues */}
                   {result.data.colorAnalysis.contrastIssues.length > 0 && (
                     <div>
-                      <h4 className="font-medium text-gray-900 dark:text-white mb-3">Contrast Analysis</h4>
+                      <h4 >Contrast Analysis</h4>
                       <div className="overflow-x-auto">
-                        <table className="min-w-full border border-gray-200 dark:border-gray-700 rounded-lg">
-                          <thead className="bg-gray-50 dark:bg-gray-700">
+                        <table >
+                          <thead >
                             <tr>
-                              <th className="px-4 py-2 text-left text-sm font-medium text-gray-900 dark:text-white">Color Pair</th>
-                              <th className="px-4 py-2 text-left text-sm font-medium text-gray-900 dark:text-white">Original</th>
-                              <th className="px-4 py-2 text-left text-sm font-medium text-gray-900 dark:text-white">Simulated</th>
-                              <th className="px-4 py-2 text-left text-sm font-medium text-gray-900 dark:text-white">WCAG</th>
+                              <th >Color Pair</th>
+                              <th >Original</th>
+                              <th >Simulated</th>
+                              <th >WCAG</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                          <tbody >
                             {result.data.colorAnalysis.contrastIssues.map((issue: any, index: number) => (
-                              <tr key={index} className="bg-white dark:bg-gray-800">
+                              <tr key={index} >
                                 <td className="px-4 py-2">
                                   <div className="flex items-center gap-2">
                                     <div
@@ -531,10 +531,10 @@ const ColorBlindnessSimulator: React.FC = () => {
                                     />
                                   </div>
                                 </td>
-                                <td className="px-4 py-2 text-sm text-gray-900 dark:text-white">
+                                <td >
                                   {issue.originalContrast}:1
                                 </td>
-                                <td className="px-4 py-2 text-sm text-gray-900 dark:text-white">
+                                <td >
                                   {issue.simulatedContrast}:1
                                 </td>
                                 <td className="px-4 py-2">
@@ -559,7 +559,7 @@ const ColorBlindnessSimulator: React.FC = () => {
               {activeTab === 'report' && result?.data?.accessibilityReport && !loading && (
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Accessibility Report</h3>
+                    <h3 >Accessibility Report</h3>
                     <button
                       onClick={downloadReport}
                       className="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded flex items-center gap-2 text-sm"
@@ -570,15 +570,15 @@ const ColorBlindnessSimulator: React.FC = () => {
                   </div>
 
                   {/* Overall Score */}
-                  <div className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 p-6 rounded-lg border border-purple-200 dark:border-purple-800">
+                  <div >
                     <div className="text-center">
-                      <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">
+                      <div >
                         {result.data.accessibilityReport.overallScore}/100
                       </div>
-                      <div className="text-lg font-medium text-purple-900 dark:text-purple-100">
+                      <div >
                         Accessibility Score
                       </div>
-                      <div className="w-full bg-purple-200 dark:bg-purple-800 rounded-full h-3 mt-3">
+                      <div >
                         <div
                           className="bg-purple-600 h-3 rounded-full transition-all duration-300"
                           style={{ width: `${result.data.accessibilityReport.overallScore}%` }}
@@ -589,12 +589,12 @@ const ColorBlindnessSimulator: React.FC = () => {
 
                   {/* Recommendations */}
                   <div>
-                    <h4 className="font-medium text-gray-900 dark:text-white mb-3">Recommendations</h4>
+                    <h4 >Recommendations</h4>
                     <div className="space-y-3">
                       {result.data.accessibilityReport.recommendations.map((rec: string, index: number) => (
-                        <div key={index} className="flex items-start gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                          <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-                          <p className="text-sm text-blue-900 dark:text-blue-100">{rec}</p>
+                        <div key={index} >
+                          <Info  />
+                          <p >{rec}</p>
                         </div>
                       ))}
                     </div>
@@ -603,16 +603,16 @@ const ColorBlindnessSimulator: React.FC = () => {
                   {/* Alternative Colors */}
                   {Object.keys(result.data.accessibilityReport.alternativeColors).length > 0 && (
                     <div>
-                      <h4 className="font-medium text-gray-900 dark:text-white mb-3">Suggested Alternative Colors</h4>
+                      <h4 >Suggested Alternative Colors</h4>
                       <div className="space-y-3">
                         {Object.entries(result.data.accessibilityReport.alternativeColors).map(([original, alternative], index) => (
-                          <div key={index} className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                          <div key={index} >
                             <div className="flex items-center gap-2">
                               <div
                                 className="w-8 h-8 rounded border border-gray-300"
                                 style={{ backgroundColor: original }}
                               />
-                              <span className="font-mono text-sm text-gray-900 dark:text-white">{original}</span>
+                              <span >{original}</span>
                             </div>
                             <div className="text-gray-500">→</div>
                             <div className="flex items-center gap-2">
@@ -620,7 +620,7 @@ const ColorBlindnessSimulator: React.FC = () => {
                                 className="w-8 h-8 rounded border border-gray-300"
                                 style={{ backgroundColor: alternative }}
                               />
-                              <span className="font-mono text-sm text-gray-900 dark:text-white">{alternative}</span>
+                              <span >{alternative}</span>
                             </div>
                           </div>
                         ))}
@@ -633,7 +633,7 @@ const ColorBlindnessSimulator: React.FC = () => {
               {!result && !loading && (
                 <div className="text-center py-12">
                   <Eye className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                  <p className="text-gray-500 dark:text-gray-400">
+                  <p >
                     Enter colors above to simulate color blindness
                   </p>
                 </div>
@@ -644,14 +644,14 @@ const ColorBlindnessSimulator: React.FC = () => {
       </div>
 
       {/* Info Panel */}
-      <div className="bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-lg p-6 border border-purple-200 dark:border-purple-800">
+      <div >
         <div className="flex items-start gap-3">
-          <Info className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-0.5 flex-shrink-0" />
+          <Info  />
           <div>
-            <h3 className="font-semibold text-purple-900 dark:text-purple-100 mb-2">
+            <h3 >
               Understanding Color Vision Deficiencies
             </h3>
-            <div className="text-sm text-purple-800 dark:text-purple-200 space-y-1">
+            <div >
               <p>• <strong>Protanopia/Protanomaly:</strong> Difficulty distinguishing red colors (~1% of men)</p>
               <p>• <strong>Deuteranopia/Deuteranomaly:</strong> Difficulty distinguishing green colors (~1% of men)</p>
               <p>• <strong>Tritanopia/Tritanomaly:</strong> Difficulty distinguishing blue colors (very rare)</p>

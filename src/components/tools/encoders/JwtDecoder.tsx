@@ -129,7 +129,7 @@ export function JwtDecoder({ className = '' }: JwtDecoderProps) {
   return (
     <div className={`grid grid-cols-1 lg:grid-cols-2 gap-0 ${className}`}>
       {/* Input Panel */}
-      <div className="border-r border-gray-200 dark:border-gray-700">
+      <div >
         <InputPanel
           value={input}
           onChange={handleInputChange}

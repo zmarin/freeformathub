@@ -281,24 +281,24 @@ export function PasswordGenerator({ className = '' }: PasswordGeneratorProps) {
     ].filter(Boolean).length;
 
     let strength = 'Very Weak';
-    let color = 'text-red-600 dark:text-red-400';
+    let color = 'text-red-600';
     let score = 0;
 
     if (processedConfig.length >= 16 && hasMultipleTypes >= 4) {
       strength = 'Very Strong';
-      color = 'text-green-600 dark:text-green-400';
+      color = 'text-green-600';
       score = 90;
     } else if (processedConfig.length >= 12 && hasMultipleTypes >= 3) {
       strength = 'Strong';
-      color = 'text-blue-600 dark:text-blue-400';
+      color = 'text-blue-600';
       score = 75;
     } else if (processedConfig.length >= 8 && hasMultipleTypes >= 2) {
       strength = 'Fair';
-      color = 'text-yellow-600 dark:text-yellow-400';
+      color = 'text-yellow-600';
       score = 50;
     } else {
       strength = 'Weak';
-      color = 'text-orange-600 dark:text-orange-400';
+      color = 'text-orange-600';
       score = 25;
     }
 
@@ -310,7 +310,7 @@ export function PasswordGenerator({ className = '' }: PasswordGeneratorProps) {
   return (
     <div className={`flex flex-col ${className}`}>
       {/* Tool Header with Quick Actions */}
-      <div className="flex flex-col sm:flex-row gap-4 p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+      <div >
         {/* Quick Actions */}
         <div className="flex flex-wrap items-center gap-2">
           <button
@@ -349,7 +349,7 @@ export function PasswordGenerator({ className = '' }: PasswordGeneratorProps) {
         {/* Auto-format toggle and presets */}
         <div className="flex items-center gap-4 ml-auto">
           <div className="flex items-center gap-2">
-            <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <label >
               <input
                 type="checkbox"
                 checked={autoFormat}
@@ -365,10 +365,10 @@ export function PasswordGenerator({ className = '' }: PasswordGeneratorProps) {
       {/* Main Content */}
       <div className="flex flex-col lg:flex-row flex-1 min-h-[600px]">
         {/* Input/Settings Section */}
-        <div className="flex-1 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700">
+        <div >
           {/* Settings Header */}
-          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+          <div >
+            <h3 >
               Password Settings
             </h3>
             <div className="flex items-center gap-2">
@@ -378,7 +378,7 @@ export function PasswordGenerator({ className = '' }: PasswordGeneratorProps) {
                   <button
                     key={preset.name}
                     onClick={() => setConfig(preset.config)}
-                    className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded border transition-colors"
+                    
                     title={preset.description}
                   >
                     {preset.name}
@@ -389,10 +389,10 @@ export function PasswordGenerator({ className = '' }: PasswordGeneratorProps) {
           </div>
 
           {/* Password Strength Visualization */}
-          <div className="p-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <div >
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                <span >
                   Password Strength
                 </span>
                 <span className={`text-sm font-semibold ${strengthInfo.color}`}>
@@ -401,7 +401,7 @@ export function PasswordGenerator({ className = '' }: PasswordGeneratorProps) {
               </div>
               
               {/* Strength Bar */}
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div >
                 <div 
                   className={`h-2 rounded-full transition-all duration-300 ${
                     strengthInfo.score >= 90 ? 'bg-green-600' :
@@ -415,7 +415,7 @@ export function PasswordGenerator({ className = '' }: PasswordGeneratorProps) {
               
               {/* Metadata */}
               {metadata && (
-                <div className="flex flex-wrap gap-4 text-xs text-gray-600 dark:text-gray-400">
+                <div >
                   <span><strong>Length:</strong> {processedConfig.length} chars</span>
                   <span><strong>Count:</strong> {processedConfig.count}</span>
                   {metadata.totalCombinations && (
@@ -430,29 +430,29 @@ export function PasswordGenerator({ className = '' }: PasswordGeneratorProps) {
           </div>
 
           {/* Security recommendations */}
-          <div className="flex-1 p-4 bg-gray-50 dark:bg-gray-900">
-            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
+          <div >
+            <h4 >
               Security Recommendations
             </h4>
-            <div className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
+            <div >
               <div className="flex items-start gap-2">
-                <span className="text-green-600 dark:text-green-400">✓</span>
+                <span >✓</span>
                 <span>Use unique passwords for each account</span>
               </div>
               <div className="flex items-start gap-2">
-                <span className="text-green-600 dark:text-green-400">✓</span>
+                <span >✓</span>
                 <span>Store passwords in a password manager</span>
               </div>
               <div className="flex items-start gap-2">
-                <span className="text-green-600 dark:text-green-400">✓</span>
+                <span >✓</span>
                 <span>Enable two-factor authentication</span>
               </div>
               <div className="flex items-start gap-2">
-                <span className="text-orange-600 dark:text-orange-400">!</span>
+                <span >!</span>
                 <span>Use 12+ characters for most accounts</span>
               </div>
               <div className="flex items-start gap-2">
-                <span className="text-orange-600 dark:text-orange-400">!</span>
+                <span >!</span>
                 <span>Use 16+ characters for sensitive accounts</span>
               </div>
             </div>
@@ -462,12 +462,12 @@ export function PasswordGenerator({ className = '' }: PasswordGeneratorProps) {
         {/* Output Section */}
         <div className="flex-1 flex flex-col">
           {/* Output Header */}
-          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+          <div >
+            <h3 >
               Generated Passwords
-              {isLoading && <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">Generating...</span>}
-              {!error && output && <span className="ml-2 text-xs text-green-600 dark:text-green-400">✓ Ready</span>}
-              {error && <span className="ml-2 text-xs text-red-600 dark:text-red-400">✗ Error</span>}
+              {isLoading && <span >Generating...</span>}
+              {!error && output && <span >✓ Ready</span>}
+              {error && <span >✗ Error</span>}
             </h3>
             <div className="flex items-center gap-2">
               {output && (
@@ -476,15 +476,15 @@ export function PasswordGenerator({ className = '' }: PasswordGeneratorProps) {
                     onClick={handleCopy}
                     className={`text-xs px-3 py-1 rounded border transition-colors ${
                       copied 
-                        ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border-green-300 dark:border-green-600'
-                        : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
+                        ? 'bg-green-100 text-green-700 border-green-300'
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300'
                     }`}
                   >
                     {copied ? '✓ Copied' : '📋 Copy'}
                   </button>
                   <button
                     onClick={handleDownload}
-                    className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded border border-gray-300 dark:border-gray-600 transition-colors"
+                    
                   >
                     💾 Download
                   </button>
@@ -494,12 +494,12 @@ export function PasswordGenerator({ className = '' }: PasswordGeneratorProps) {
           </div>
 
           {/* Output Content */}
-          <div className="flex-1 bg-white dark:bg-gray-800">
+          <div >
             {error ? (
               <div className="p-4 h-full">
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-                  <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">Generation Error</h4>
-                  <pre className="text-xs text-red-700 dark:text-red-300 whitespace-pre-wrap font-mono">
+                <div >
+                  <h4 >Generation Error</h4>
+                  <pre >
                     {error}
                   </pre>
                 </div>
@@ -510,7 +510,7 @@ export function PasswordGenerator({ className = '' }: PasswordGeneratorProps) {
                   value={output}
                   readOnly
                   placeholder="Generated passwords will appear here..."
-                  className="flex-1 p-4 resize-none bg-transparent text-gray-900 dark:text-gray-100 font-mono text-sm border-none focus:outline-none"
+                  
                   spellCheck={false}
                 />
               </div>
@@ -520,13 +520,13 @@ export function PasswordGenerator({ className = '' }: PasswordGeneratorProps) {
       </div>
 
       {/* Essential Options Panel */}
-      <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+      <div >
         <div className="p-4">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">Options</h4>
+            <h4 >Options</h4>
             <button
               onClick={() => setShowAdvanced(!showAdvanced)}
-              className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+              
             >
               {showAdvanced ? '△ Less' : '▽ More'}
             </button>
@@ -536,7 +536,7 @@ export function PasswordGenerator({ className = '' }: PasswordGeneratorProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
             {ESSENTIAL_OPTIONS.map((option) => (
               <div key={option.key} className="space-y-1">
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                <label >
                   {option.label}
                 </label>
                 {option.type === 'boolean' ? (
@@ -547,7 +547,7 @@ export function PasswordGenerator({ className = '' }: PasswordGeneratorProps) {
                       onChange={(e) => handleEssentialConfigChange(option.key, e.target.checked)}
                       className="rounded"
                     />
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                    <span >
                       {option.description}
                     </span>
                   </label>
@@ -555,7 +555,7 @@ export function PasswordGenerator({ className = '' }: PasswordGeneratorProps) {
                   <select
                     value={String(config[option.key as keyof PasswordGeneratorConfig] ?? option.default)}
                     onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
-                    className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    
                   >
                     {option.options?.map((opt) => (
                       <option key={opt.value} value={opt.value}>
@@ -570,12 +570,12 @@ export function PasswordGenerator({ className = '' }: PasswordGeneratorProps) {
 
           {/* Advanced options */}
           {showAdvanced && (
-            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <h5 className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">Advanced Options</h5>
+            <div >
+              <h5 >Advanced Options</h5>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {ADVANCED_OPTIONS.map((option) => (
                   <div key={option.key} className="space-y-1">
-                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                    <label >
                       {option.label}
                     </label>
                     {option.type === 'boolean' ? (
@@ -586,7 +586,7 @@ export function PasswordGenerator({ className = '' }: PasswordGeneratorProps) {
                           onChange={(e) => handleEssentialConfigChange(option.key, e.target.checked)}
                           className="rounded"
                         />
-                        <span className="text-xs text-gray-600 dark:text-gray-400">
+                        <span >
                           {option.description}
                         </span>
                       </label>
@@ -596,7 +596,7 @@ export function PasswordGenerator({ className = '' }: PasswordGeneratorProps) {
                         value={String(config[option.key as keyof PasswordGeneratorConfig] ?? option.default)}
                         onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
                         placeholder={option.description}
-                        className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                        
                       />
                     ) : null}
                   </div>

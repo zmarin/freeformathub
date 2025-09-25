@@ -187,7 +187,7 @@ export function CsvFormatter({ className = '' }: CsvFormatterProps) {
   return (
     <div className={`${className}`}>
       {/* Controls */}
-      <div className="p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+      <div >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <button
@@ -198,7 +198,7 @@ export function CsvFormatter({ className = '' }: CsvFormatterProps) {
             </button>
             <button
               onClick={() => setInput('')}
-              className="px-3 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors text-sm"
+              
             >
               Clear
             </button>
@@ -206,7 +206,7 @@ export function CsvFormatter({ className = '' }: CsvFormatterProps) {
 
           {/* Auto-format toggle */}
           <div className="flex items-center gap-2">
-            <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <label >
               <input
                 type="checkbox"
                 checked={autoFormat}
@@ -222,14 +222,14 @@ export function CsvFormatter({ className = '' }: CsvFormatterProps) {
       {/* Main Content */}
       <div className="flex flex-col lg:flex-row flex-1 min-h-[600px]">
         {/* Input Section */}
-        <div className="flex-1 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700">
+        <div >
           {/* Input Header */}
-          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+          <div >
+            <h3 >
               CSV Input
             </h3>
             <div className="flex items-center gap-2">
-              <label className="cursor-pointer text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded border transition-colors">
+              <label >
                 Upload
                 <input
                   type="file"
@@ -241,7 +241,7 @@ export function CsvFormatter({ className = '' }: CsvFormatterProps) {
               {input && (
                 <button
                   onClick={() => setInput('')}
-                  className="text-xs px-3 py-1 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                  
                   title="Clear input"
                 >
                   Clear
@@ -252,7 +252,7 @@ export function CsvFormatter({ className = '' }: CsvFormatterProps) {
 
           {/* Input Textarea */}
           <div
-            className={`flex-1 relative ${dragActive ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+            className={`flex-1 relative ${dragActive ? 'bg-blue-50/20' : ''}`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
@@ -271,12 +271,12 @@ Supports various delimiters:
 - Semicolon separated values
 - Tab separated values (TSV)
 - Custom delimiters"
-              className="w-full h-full p-4 resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-mono text-sm border-none focus:outline-none focus:ring-0"
+              
               spellCheck={false}
             />
             {dragActive && (
-              <div className="absolute inset-0 flex items-center justify-center bg-blue-50/80 dark:bg-blue-900/40 backdrop-blur-sm">
-                <div className="text-blue-600 dark:text-blue-400 text-lg font-medium">
+              <div >
+                <div >
                   Drop CSV file here
                 </div>
               </div>
@@ -284,14 +284,14 @@ Supports various delimiters:
           </div>
 
           {/* Example buttons */}
-          <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+          <div >
             <div className="flex flex-wrap gap-2">
-              <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">Examples:</span>
+              <span >Examples:</span>
               {EXAMPLES.map((example, idx) => (
                 <button
                   key={idx}
                   onClick={() => setInput(example.value)}
-                  className="text-xs px-2 py-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-colors"
+                  
                   title={example.title}
                 >
                   {example.title}
@@ -304,15 +304,15 @@ Supports various delimiters:
         {/* Output Section */}
         <div className="flex-1 flex flex-col">
           {/* Output Header */}
-          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+          <div >
+            <h3 >
               {config.mode === 'validate' ? 'Validation Results' :
                config.outputFormat === 'json' ? 'JSON Output' :
                config.outputFormat === 'table' ? 'Table Format' :
                `${config.outputFormat.toUpperCase()} Output`}
-              {isLoading && <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">Processing...</span>}
-              {!error && output && <span className="ml-2 text-xs text-green-600 dark:text-green-400">✓ Processed</span>}
-              {error && <span className="ml-2 text-xs text-red-600 dark:text-red-400">✗ Error</span>}
+              {isLoading && <span >Processing...</span>}
+              {!error && output && <span >✓ Processed</span>}
+              {error && <span >✗ Error</span>}
             </h3>
             <div className="flex items-center gap-2">
               {output && (
@@ -321,15 +321,15 @@ Supports various delimiters:
                     onClick={handleCopy}
                     className={`text-xs px-3 py-1 rounded border transition-colors ${
                       copied
-                        ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border-green-300 dark:border-green-600'
-                        : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
+                        ? 'bg-green-100 text-green-700 border-green-300'
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300'
                     }`}
                   >
                     {copied ? '✓ Copied' : 'Copy'}
                   </button>
                   <button
                     onClick={handleDownload}
-                    className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded border border-gray-300 dark:border-gray-600 transition-colors"
+                    
                   >
                     📥 Download
                   </button>
@@ -339,12 +339,12 @@ Supports various delimiters:
           </div>
 
           {/* Output Content */}
-          <div className="flex-1 bg-white dark:bg-gray-800">
+          <div >
             {error ? (
               <div className="p-4 h-full">
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-                  <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">CSV Error</h4>
-                  <pre className="text-xs text-red-700 dark:text-red-300 whitespace-pre-wrap font-mono">
+                <div >
+                  <h4 >CSV Error</h4>
+                  <pre >
                     {error}
                   </pre>
                 </div>
@@ -355,7 +355,7 @@ Supports various delimiters:
                   value={output}
                   readOnly
                   placeholder="Processed CSV will appear here..."
-                  className="flex-1 p-4 resize-none bg-transparent text-gray-900 dark:text-gray-100 font-mono text-sm border-none focus:outline-none"
+                  
                   spellCheck={false}
                 />
               </div>
@@ -364,8 +364,8 @@ Supports various delimiters:
 
           {/* Simplified metadata */}
           {metadata && !error && output && (
-            <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-              <div className="flex flex-wrap gap-4 text-xs text-gray-600 dark:text-gray-400">
+            <div >
+              <div >
                 {typeof metadata.rowCount === 'number' && (
                   <span><strong>Rows:</strong> {metadata.rowCount}</span>
                 )}
@@ -382,13 +382,13 @@ Supports various delimiters:
       </div>
 
       {/* Essential Options Panel */}
-      <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+      <div >
         <div className="p-4">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">Options</h4>
+            <h4 >Options</h4>
             <button
               onClick={() => setShowAdvanced(!showAdvanced)}
-              className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+              
             >
               {showAdvanced ? '△ Less' : '▽ More'}
             </button>
@@ -397,13 +397,13 @@ Supports various delimiters:
           {/* Essential options */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-1">
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+              <label >
                 Mode
               </label>
               <select
                 value={config.mode}
                 onChange={(e) => handleEssentialConfigChange('mode', e.target.value)}
-                className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                
               >
                 <option value="format">Format CSV</option>
                 <option value="validate">Validate Only</option>
@@ -412,13 +412,13 @@ Supports various delimiters:
             </div>
 
             <div className="space-y-1">
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+              <label >
                 Delimiter
               </label>
               <select
                 value={config.delimiter}
                 onChange={(e) => handleEssentialConfigChange('delimiter', e.target.value)}
-                className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                
               >
                 <option value=",">Comma (,)</option>
                 <option value=";">Semicolon (;)</option>
@@ -435,19 +435,19 @@ Supports various delimiters:
                   onChange={(e) => handleEssentialConfigChange('hasHeader', e.target.checked)}
                   className="rounded"
                 />
-                <span className="text-xs text-gray-700 dark:text-gray-300">Has Headers</span>
+                <span >Has Headers</span>
               </label>
             </div>
 
             {config.mode !== 'validate' && (
               <div className="space-y-1">
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                <label >
                   Output Format
                 </label>
                 <select
                   value={config.outputFormat}
                   onChange={(e) => handleEssentialConfigChange('outputFormat', e.target.value)}
-                  className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  
                 >
                   <option value="csv">CSV</option>
                   <option value="tsv">TSV</option>
@@ -460,8 +460,8 @@ Supports various delimiters:
 
           {/* Advanced options */}
           {showAdvanced && (
-            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <h5 className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">Advanced Options</h5>
+            <div >
+              <h5 >Advanced Options</h5>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div className="space-y-1">
                   <label className="flex items-center space-x-2">
@@ -471,7 +471,7 @@ Supports various delimiters:
                       onChange={(e) => handleEssentialConfigChange('strictValidation', e.target.checked)}
                       className="rounded"
                     />
-                    <span className="text-xs text-gray-700 dark:text-gray-300">Strict Validation</span>
+                    <span >Strict Validation</span>
                   </label>
                 </div>
 
@@ -483,7 +483,7 @@ Supports various delimiters:
                       onChange={(e) => handleEssentialConfigChange('trimWhitespace', e.target.checked)}
                       className="rounded"
                     />
-                    <span className="text-xs text-gray-700 dark:text-gray-300">Trim Whitespace</span>
+                    <span >Trim Whitespace</span>
                   </label>
                 </div>
 
@@ -495,7 +495,7 @@ Supports various delimiters:
                       onChange={(e) => handleEssentialConfigChange('detectTypes', e.target.checked)}
                       className="rounded"
                     />
-                    <span className="text-xs text-gray-700 dark:text-gray-300">Detect Data Types</span>
+                    <span >Detect Data Types</span>
                   </label>
                 </div>
               </div>

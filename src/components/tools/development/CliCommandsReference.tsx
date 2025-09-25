@@ -15,18 +15,18 @@ interface FilterCounts {
 }
 
 const PLATFORM_COLORS: Record<string, string> = {
-  linux: 'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-200 border border-green-200 dark:border-green-500/40',
-  macos: 'bg-blue-100 text-blue-800 dark:bg-blue-500/20 dark:text-blue-200 border border-blue-200 dark:border-blue-500/40',
-  windows: 'bg-purple-100 text-purple-800 dark:bg-purple-500/20 dark:text-purple-200 border border-purple-200 dark:border-purple-500/40',
-  powershell: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-500/20 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-500/40',
-  docker: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-500/20 dark:text-cyan-200 border border-cyan-200 dark:border-cyan-500/40',
-  git: 'bg-orange-100 text-orange-800 dark:bg-orange-500/20 dark:text-orange-200 border border-orange-200 dark:border-orange-500/40'
+  linux: 'bg-green-100 text-green-800/20 border border-green-200/40',
+  macos: 'bg-blue-100 text-blue-800/20 border border-blue-200/40',
+  windows: 'bg-purple-100 text-purple-800/20 border border-purple-200/40',
+  powershell: 'bg-indigo-100 text-indigo-800/20 border border-indigo-200/40',
+  docker: 'bg-cyan-100 text-cyan-800/20 border border-cyan-200/40',
+  git: 'bg-orange-100 text-orange-800/20 border border-orange-200/40'
 };
 
 const RISK_COLORS: Record<string, string> = {
-  safe: 'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-200',
-  caution: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-500/20 dark:text-yellow-200',
-  dangerous: 'bg-red-100 text-red-800 dark:bg-red-500/20 dark:text-red-200'
+  safe: 'bg-green-100 text-green-800/20',
+  caution: 'bg-yellow-100 text-yellow-800/20',
+  dangerous: 'bg-red-100 text-red-800/20'
 };
 
 const RISK_ICONS: Record<string, string> = {
@@ -249,12 +249,12 @@ export default function CliCommandsReference({ className = '' }: { className?: s
       {/* Results */}
       <div ref={resultsRef} className="p-6 space-y-6">
         {/* Results Summary */}
-        <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-500/40">
+        <div >
           <div>
-            <h3 className="font-semibold text-blue-900 dark:text-blue-100">
+            <h3 >
               {filteredCommands.length} commands found
             </h3>
-            <p className="text-sm text-blue-700 dark:text-blue-200">
+            <p >
               Filtered from {CLI_COMMANDS_DATABASE.length} total commands
             </p>
           </div>
@@ -274,7 +274,7 @@ export default function CliCommandsReference({ className = '' }: { className?: s
         {/* Command Cards */}
         {filteredCommands.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500 dark:text-gray-400">
+            <p >
               No commands match your search criteria. Try adjusting your filters.
             </p>
           </div>
@@ -294,7 +294,7 @@ export default function CliCommandsReference({ className = '' }: { className?: s
                       <div className="flex items-center gap-3 mb-2">
                         <button
                           onClick={() => copyCommand(command.command)}
-                          className="text-lg font-mono bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded border hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                          
                           title="Click to copy command"
                         >
                           {command.command}
@@ -306,10 +306,10 @@ export default function CliCommandsReference({ className = '' }: { className?: s
                           {RISK_ICONS[command.riskLevel]} {command.riskLevel}
                         </span>
                       </div>
-                      <p className="text-gray-600 dark:text-gray-300 mb-2">
+                      <p >
                         {command.description}
                       </p>
-                      <p className="text-sm font-mono text-gray-500 dark:text-gray-400">
+                      <p >
                         <strong>Syntax:</strong> {command.syntax}
                       </p>
                     </div>
@@ -333,9 +333,9 @@ export default function CliCommandsReference({ className = '' }: { className?: s
                           </h4>
                           <div className="space-y-3">
                             {command.examples.map((example, idx) => (
-                              <div key={idx} className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                              <div key={idx} >
                                 <div className="flex items-center justify-between mb-2">
-                                  <code className="text-sm font-mono text-blue-600 dark:text-blue-400">
+                                  <code >
                                     {example.command}
                                   </code>
                                   <button
@@ -346,7 +346,7 @@ export default function CliCommandsReference({ className = '' }: { className?: s
                                     Copy
                                   </button>
                                 </div>
-                                <p className="text-sm text-gray-600 dark:text-gray-300">
+                                <p >
                                   {example.description}
                                 </p>
                                 {example.output && (
@@ -368,16 +368,16 @@ export default function CliCommandsReference({ className = '' }: { className?: s
                           </h4>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {command.flags.map((flag, idx) => (
-                              <div key={idx} className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded">
-                                <code className="text-sm font-mono text-purple-600 dark:text-purple-400 flex-shrink-0">
+                              <div key={idx} >
+                                <code >
                                   {flag.flag}
                                 </code>
                                 <div className="flex-1">
-                                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                                  <p >
                                     {flag.description}
                                   </p>
                                   {flag.example && (
-                                    <code className="text-xs text-gray-500 dark:text-gray-400 block mt-1">
+                                    <code >
                                       {flag.example}
                                     </code>
                                   )}
@@ -396,7 +396,7 @@ export default function CliCommandsReference({ className = '' }: { className?: s
                           </h4>
                           <ul className="space-y-2">
                             {command.notes.map((note, idx) => (
-                              <li key={idx} className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300">
+                              <li key={idx} >
                                 <span className="text-yellow-500 mt-0.5">•</span>
                                 {note}
                               </li>
@@ -416,7 +416,7 @@ export default function CliCommandsReference({ className = '' }: { className?: s
                               <button
                                 key={idx}
                                 onClick={() => setSearchQuery(relatedCmd)}
-                                className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
+                                
                               >
                                 {relatedCmd}
                               </button>
@@ -435,7 +435,7 @@ export default function CliCommandsReference({ className = '' }: { className?: s
                             {command.tags.map((tag, idx) => (
                               <span
                                 key={idx}
-                                className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded text-xs"
+                                
                               >
                                 #{tag}
                               </span>

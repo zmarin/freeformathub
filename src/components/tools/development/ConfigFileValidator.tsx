@@ -386,13 +386,13 @@ export function ConfigFileValidator() {
             </button>
           </div>
 
-          <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-            <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">File Type Info</h3>
-            <p className="text-xs text-blue-700 dark:text-blue-300">
+          <div >
+            <h3 >File Type Info</h3>
+            <p >
               {getFileTypeDescription(config.fileType)}
             </p>
             {result?.validation?.metadata.detectedFormat && result.validation.metadata.detectedFormat !== config.fileType && (
-              <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+              <p >
                 Detected format: {result.validation.metadata.detectedFormat}
               </p>
             )}
@@ -412,9 +412,9 @@ export function ConfigFileValidator() {
         />
         
         {result?.warnings && result.warnings.length > 0 && (
-          <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-            <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-2">Validation Warnings:</h4>
-            <ul className="text-sm text-yellow-700 dark:text-yellow-300 list-disc list-inside space-y-1">
+          <div >
+            <h4 >Validation Warnings:</h4>
+            <ul >
               {result.warnings.map((warning, index) => (
                 <li key={index}>{warning}</li>
               ))}
@@ -423,11 +423,11 @@ export function ConfigFileValidator() {
         )}
 
         {result?.validation?.securityAnalysis && (result.validation.securityAnalysis.vulnerabilities.length > 0 || result.validation.securityAnalysis.sensitiveDataExposed.length > 0) && (
-          <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-            <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">
+          <div >
+            <h4 >
               🔒 Security Issues Found
             </h4>
-            <div className="space-y-2 text-sm text-red-700 dark:text-red-300">
+            <div >
               {result.validation.securityAnalysis.vulnerabilities.length > 0 && (
                 <div>
                   <span className="font-medium">Vulnerabilities:</span> {result.validation.securityAnalysis.vulnerabilities.length}
@@ -443,19 +443,19 @@ export function ConfigFileValidator() {
         )}
 
         {!result?.success && result?.validation?.syntaxValidation.errors && result.validation.syntaxValidation.errors.length > 0 && (
-          <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-            <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">
+          <div >
+            <h4 >
               ❌ Syntax Errors ({result.validation.syntaxValidation.errors.length})
             </h4>
             <div className="space-y-2">
               {result.validation.syntaxValidation.errors.slice(0, 3).map((error, index) => (
-                <div key={index} className="text-sm text-red-700 dark:text-red-300">
+                <div key={index} >
                   <div className="font-medium">Line {error.line}, Column {error.column}</div>
                   <div>{error.message}</div>
                 </div>
               ))}
               {result.validation.syntaxValidation.errors.length > 3 && (
-                <div className="text-sm text-red-600 dark:text-red-400">
+                <div >
                   ... and {result.validation.syntaxValidation.errors.length - 3} more errors
                 </div>
               )}
@@ -472,9 +472,9 @@ export function ConfigFileValidator() {
         />
 
         {result?.validation?.metadata && (
-          <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Validation Summary</h3>
-            <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+          <div >
+            <h3 >Validation Summary</h3>
+            <div >
               <div className="flex justify-between">
                 <span>File Size:</span>
                 <span className="font-medium">{result.validation.metadata.fileSize} bytes</span>
@@ -510,9 +510,9 @@ export function ConfigFileValidator() {
         )}
 
         {result?.validation?.securityAnalysis && (
-          <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-            <h3 className="text-sm font-medium text-red-900 dark:text-red-100 mb-3">Security Analysis</h3>
-            <div className="space-y-2 text-sm text-red-700 dark:text-red-300">
+          <div >
+            <h3 >Security Analysis</h3>
+            <div >
               <div className="flex justify-between">
                 <span>Risk Level:</span>
                 <span className={`font-medium px-2 py-1 text-xs rounded ${
@@ -541,9 +541,9 @@ export function ConfigFileValidator() {
         )}
 
         {result?.validation?.performanceAnalysis && (
-          <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-            <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-3">Performance Analysis</h3>
-            <div className="space-y-2 text-sm text-blue-700 dark:text-blue-300">
+          <div >
+            <h3 >Performance Analysis</h3>
+            <div >
               <div className="flex justify-between">
                 <span>Performance Score:</span>
                 <span className="font-medium">{result.validation.performanceAnalysis.score}/100</span>
@@ -572,9 +572,9 @@ export function ConfigFileValidator() {
         )}
 
         {result?.validation?.bestPracticesCheck && (
-          <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-            <h3 className="text-sm font-medium text-green-900 dark:text-green-100 mb-3">Best Practices</h3>
-            <div className="space-y-2 text-sm text-green-700 dark:text-green-300">
+          <div >
+            <h3 >Best Practices</h3>
+            <div >
               <div className="flex justify-between">
                 <span>Overall Score:</span>
                 <span className="font-medium">{result.validation.bestPracticesCheck.score.toFixed(1)}/100</span>

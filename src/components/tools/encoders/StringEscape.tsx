@@ -184,7 +184,7 @@ export function StringEscape({ className = '' }: StringEscapeProps) {
   return (
     <div className={`grid grid-cols-1 lg:grid-cols-2 gap-0 ${className}`}>
       {/* Input Panel */}
-      <div className="border-r border-gray-200 dark:border-gray-700">
+      <div >
         <InputPanel
           value={input}
           onChange={handleInputChange}
@@ -214,7 +214,7 @@ Examples:
         />
 
         {/* Mode Toggle & Quick Examples */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+        <div >
           <div className="flex gap-2 mb-4">
             <button
               onClick={swapModes}
@@ -225,18 +225,18 @@ Examples:
           </div>
 
           {/* Type Description */}
-          <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <div >
+            <div >
               {config.type.charAt(0).toUpperCase() + config.type.slice(1)} {config.mode === 'escape' ? 'Escaping' : 'Unescaping'}:
             </div>
-            <div className="text-xs text-gray-600 dark:text-gray-400">
+            <div >
               {getTypeDescription()}
             </div>
           </div>
 
           {/* Quick Examples */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label >
               Quick Examples:
             </label>
             <div className="grid grid-cols-1 gap-2">
@@ -244,10 +244,10 @@ Examples:
                 <button
                   key={example.name}
                   onClick={() => insertExample(example)}
-                  className="px-3 py-2 text-sm text-left bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 rounded border transition-colors"
+                  
                 >
                   <div className="font-medium">{example.name}</div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                  <div >
                     {example.input.length > 40 ? example.input.substring(0, 40) + '...' : example.input}
                   </div>
                 </button>
@@ -257,28 +257,28 @@ Examples:
 
           {/* Statistics */}
           {stats && (
-            <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div >
+              <div >
                 Processing Statistics:
               </div>
               <div className="grid grid-cols-2 gap-4 text-xs">
                 <div className="space-y-1">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Original:</span>
+                    <span >Original:</span>
                     <span className="font-mono">{stats.originalLength}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Processed:</span>
+                    <span >Processed:</span>
                     <span className="font-mono">{stats.processedLength}</span>
                   </div>
                 </div>
                 <div className="space-y-1">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Escapes:</span>
+                    <span >Escapes:</span>
                     <span className="font-mono">{stats.escapeCount}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Ratio:</span>
+                    <span >Ratio:</span>
                     <span className="font-mono">
                       {stats.originalLength > 0 ? (stats.processedLength / stats.originalLength).toFixed(2) : '0.00'}x
                     </span>

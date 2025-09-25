@@ -173,14 +173,14 @@ const CSSGridGenerator: React.FC = () => {
       {/* Header */}
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-3">
-          <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
-            <Grid className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+          <div >
+            <Grid  />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1 >
             CSS Grid Generator
           </h1>
         </div>
-        <p className="text-gray-600 dark:text-gray-300">
+        <p >
           Create responsive CSS Grid layouts with visual editor and code generation
         </p>
       </div>
@@ -188,9 +188,9 @@ const CSSGridGenerator: React.FC = () => {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Configuration Panel */}
         <div className="xl:col-span-1">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+          <div >
+            <div >
+              <h2 >
                 <Settings className="w-5 h-5" />
                 Grid Configuration
               </h2>
@@ -199,17 +199,17 @@ const CSSGridGenerator: React.FC = () => {
             <div className="p-4 space-y-6 max-h-96 overflow-y-auto">
               {/* Grid Dimensions */}
               <div className="space-y-4">
-                <h3 className="font-medium text-gray-900 dark:text-white">Dimensions</h3>
+                <h3 >Dimensions</h3>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label >
                       Columns
                     </label>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => updateGridDimensions('columns', config.columns - 1)}
-                        className="p-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700"
+                        
                       >
                         <Minus className="w-4 h-4" />
                       </button>
@@ -219,11 +219,11 @@ const CSSGridGenerator: React.FC = () => {
                         max="12"
                         value={config.columns}
                         onChange={(e) => updateGridDimensions('columns', parseInt(e.target.value) || 1)}
-                        className="w-16 px-2 py-1 text-center border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        
                       />
                       <button
                         onClick={() => updateGridDimensions('columns', config.columns + 1)}
-                        className="p-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700"
+                        
                       >
                         <Plus className="w-4 h-4" />
                       </button>
@@ -231,13 +231,13 @@ const CSSGridGenerator: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label >
                       Rows
                     </label>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => updateGridDimensions('rows', config.rows - 1)}
-                        className="p-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700"
+                        
                       >
                         <Minus className="w-4 h-4" />
                       </button>
@@ -247,11 +247,11 @@ const CSSGridGenerator: React.FC = () => {
                         max="12"
                         value={config.rows}
                         onChange={(e) => updateGridDimensions('rows', parseInt(e.target.value) || 1)}
-                        className="w-16 px-2 py-1 text-center border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        
                       />
                       <button
                         onClick={() => updateGridDimensions('rows', config.rows + 1)}
-                        className="p-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700"
+                        
                       >
                         <Plus className="w-4 h-4" />
                       </button>
@@ -262,11 +262,11 @@ const CSSGridGenerator: React.FC = () => {
 
               {/* Gaps */}
               <div className="space-y-4">
-                <h3 className="font-medium text-gray-900 dark:text-white">Gaps</h3>
+                <h3 >Gaps</h3>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label >
                       Column Gap: {config.columnGap}px
                     </label>
                     <input
@@ -280,7 +280,7 @@ const CSSGridGenerator: React.FC = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label >
                       Row Gap: {config.rowGap}px
                     </label>
                     <input
@@ -297,16 +297,16 @@ const CSSGridGenerator: React.FC = () => {
 
               {/* Column Sizes */}
               <div className="space-y-3">
-                <h3 className="font-medium text-gray-900 dark:text-white">Column Sizes</h3>
+                <h3 >Column Sizes</h3>
                 {config.columnSizes.map((size, index) => (
                   <div key={index} className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600 dark:text-gray-400 w-8">
+                    <span >
                       {index + 1}:
                     </span>
                     <select
                       value={size}
                       onChange={(e) => updateTrackSize('columns', index, e.target.value)}
-                      className="flex-1 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      
                     >
                       <option value="fr">1fr</option>
                       <option value="auto">auto</option>
@@ -320,7 +320,7 @@ const CSSGridGenerator: React.FC = () => {
                         placeholder="200px"
                         value={config.customColumnValues[index]}
                         onChange={(e) => updateCustomValue('columns', index, e.target.value)}
-                        className="w-20 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        
                       />
                     )}
                   </div>
@@ -329,16 +329,16 @@ const CSSGridGenerator: React.FC = () => {
 
               {/* Row Sizes */}
               <div className="space-y-3">
-                <h3 className="font-medium text-gray-900 dark:text-white">Row Sizes</h3>
+                <h3 >Row Sizes</h3>
                 {config.rowSizes.map((size, index) => (
                   <div key={index} className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600 dark:text-gray-400 w-8">
+                    <span >
                       {index + 1}:
                     </span>
                     <select
                       value={size}
                       onChange={(e) => updateTrackSize('rows', index, e.target.value)}
-                      className="flex-1 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      
                     >
                       <option value="auto">auto</option>
                       <option value="fr">1fr</option>
@@ -352,7 +352,7 @@ const CSSGridGenerator: React.FC = () => {
                         placeholder="100px"
                         value={config.customRowValues[index]}
                         onChange={(e) => updateCustomValue('rows', index, e.target.value)}
-                        className="w-20 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        
                       />
                     )}
                   </div>
@@ -361,17 +361,17 @@ const CSSGridGenerator: React.FC = () => {
 
               {/* Alignment */}
               <div className="space-y-4">
-                <h3 className="font-medium text-gray-900 dark:text-white">Alignment</h3>
+                <h3 >Alignment</h3>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label >
                       Justify Items
                     </label>
                     <select
                       value={config.justifyItems}
                       onChange={(e) => setConfig({...config, justifyItems: e.target.value as any})}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      
                     >
                       <option value="start">start</option>
                       <option value="end">end</option>
@@ -381,13 +381,13 @@ const CSSGridGenerator: React.FC = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label >
                       Align Items
                     </label>
                     <select
                       value={config.alignItems}
                       onChange={(e) => setConfig({...config, alignItems: e.target.value as any})}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      
                     >
                       <option value="start">start</option>
                       <option value="end">end</option>
@@ -400,7 +400,7 @@ const CSSGridGenerator: React.FC = () => {
 
               {/* Options */}
               <div className="space-y-3">
-                <h3 className="font-medium text-gray-900 dark:text-white">Options</h3>
+                <h3 >Options</h3>
                 
                 <label className="flex items-center gap-2">
                   <input
@@ -409,7 +409,7 @@ const CSSGridGenerator: React.FC = () => {
                     onChange={(e) => setConfig({...config, useGridAreas: e.target.checked})}
                     className="rounded border-gray-300 text-blue-600"
                   />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
+                  <span >
                     Use Named Grid Areas
                   </span>
                 </label>
@@ -421,7 +421,7 @@ const CSSGridGenerator: React.FC = () => {
                     onChange={(e) => setConfig({...config, generateResponsive: e.target.checked})}
                     className="rounded border-gray-300 text-blue-600"
                   />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
+                  <span >
                     Generate Responsive CSS
                   </span>
                 </label>
@@ -433,7 +433,7 @@ const CSSGridGenerator: React.FC = () => {
                     onChange={(e) => setConfig({...config, includeComments: e.target.checked})}
                     className="rounded border-gray-300 text-blue-600"
                   />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
+                  <span >
                     Include CSS Comments
                   </span>
                 </label>
@@ -444,16 +444,16 @@ const CSSGridGenerator: React.FC = () => {
 
         {/* Main Content Area */}
         <div className="xl:col-span-2">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+          <div >
             {/* Tabs */}
-            <div className="border-b border-gray-200 dark:border-gray-700">
+            <div >
               <nav className="flex">
                 <button
                   onClick={() => setActiveTab('visual')}
                   className={`px-4 py-2 text-sm font-medium border-b-2 ${
                     activeTab === 'visual'
-                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
                 >
                   <Eye className="w-4 h-4 mr-2 inline" />
@@ -463,8 +463,8 @@ const CSSGridGenerator: React.FC = () => {
                   onClick={() => setActiveTab('code')}
                   className={`px-4 py-2 text-sm font-medium border-b-2 ${
                     activeTab === 'code'
-                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
                 >
                   <Code className="w-4 h-4 mr-2 inline" />
@@ -474,8 +474,8 @@ const CSSGridGenerator: React.FC = () => {
                   onClick={() => setActiveTab('html')}
                   className={`px-4 py-2 text-sm font-medium border-b-2 ${
                     activeTab === 'html'
-                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
                 >
                   <Monitor className="w-4 h-4 mr-2 inline" />
@@ -490,7 +490,7 @@ const CSSGridGenerator: React.FC = () => {
                   {result?.data && (
                     <>
                       {/* Grid Preview */}
-                      <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-900">
+                      <div >
                         <div
                           style={{
                             display: 'grid',
@@ -520,12 +520,12 @@ const CSSGridGenerator: React.FC = () => {
                             alignContent: config.alignContent,
                             minHeight: '300px'
                           }}
-                          className="border border-dashed border-gray-300 dark:border-gray-600"
+                          
                         >
                           {Array.from({ length: config.columns * config.rows }).map((_, index) => (
                             <div
                               key={index}
-                              className="bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded p-3 flex items-center justify-center text-sm font-medium text-blue-800 dark:text-blue-200 min-h-[60px]"
+                              
                             >
                               Item {index + 1}
                             </div>
@@ -536,7 +536,7 @@ const CSSGridGenerator: React.FC = () => {
                       {/* Grid Areas Editor */}
                       {config.useGridAreas && (
                         <div className="space-y-3">
-                          <h3 className="font-medium text-gray-900 dark:text-white">Grid Template Areas</h3>
+                          <h3 >Grid Template Areas</h3>
                           <div className="space-y-2">
                             {config.gridTemplateAreas.map((row, rowIndex) => (
                               <div key={rowIndex} className="flex gap-2">
@@ -547,13 +547,13 @@ const CSSGridGenerator: React.FC = () => {
                                     value={cell}
                                     onChange={(e) => updateGridArea(rowIndex, colIndex, e.target.value)}
                                     placeholder="."
-                                    className="w-16 px-2 py-1 text-center border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm"
+                                    
                                   />
                                 ))}
                               </div>
                             ))}
                           </div>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                          <p >
                             Use area names (e.g., "header", "main", "sidebar") or "." for empty cells
                           </p>
                         </div>
@@ -572,11 +572,11 @@ const CSSGridGenerator: React.FC = () => {
               {activeTab === 'code' && result?.data && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-medium text-gray-900 dark:text-white">Generated CSS</h3>
+                    <h3 >Generated CSS</h3>
                     <div className="flex gap-2">
                       <button
                         onClick={() => copyToClipboard(result.data.css)}
-                        className="px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded flex items-center gap-2 text-sm"
+                        
                       >
                         <Copy className="w-4 h-4" />
                         Copy
@@ -597,8 +597,8 @@ const CSSGridGenerator: React.FC = () => {
 
                   {config.outputFormat === 'tailwind' && result.data.tailwindClasses && (
                     <div className="space-y-2">
-                      <h3 className="font-medium text-gray-900 dark:text-white">Tailwind Classes</h3>
-                      <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+                      <h3 >Tailwind Classes</h3>
+                      <div >
                         <code className="text-sm">
                           {result.data.tailwindClasses.join(' ')}
                         </code>
@@ -611,11 +611,11 @@ const CSSGridGenerator: React.FC = () => {
               {activeTab === 'html' && result?.data && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-medium text-gray-900 dark:text-white">Sample HTML</h3>
+                    <h3 >Sample HTML</h3>
                     <div className="flex gap-2">
                       <button
                         onClick={() => copyToClipboard(result.data.html)}
-                        className="px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded flex items-center gap-2 text-sm"
+                        
                       >
                         <Copy className="w-4 h-4" />
                         Copy
@@ -640,32 +640,32 @@ const CSSGridGenerator: React.FC = () => {
 
           {/* Statistics */}
           {result?.data && (
-            <div className="mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
-              <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-3">Grid Statistics</h3>
+            <div >
+              <h3 >Grid Statistics</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <div className="text-center">
-                  <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                  <div >
                     {result.data.gridStats.totalCells}
                   </div>
-                  <div className="text-blue-800 dark:text-blue-200">Total Cells</div>
+                  <div >Total Cells</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                  <div >
                     {config.columns}×{config.rows}
                   </div>
-                  <div className="text-blue-800 dark:text-blue-200">Dimensions</div>
+                  <div >Dimensions</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                  <div >
                     {result.data.gridStats.namedAreas}
                   </div>
-                  <div className="text-blue-800 dark:text-blue-200">Named Areas</div>
+                  <div >Named Areas</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                  <div >
                     {result.data.gridStats.hasGaps ? 'Yes' : 'No'}
                   </div>
-                  <div className="text-blue-800 dark:text-blue-200">Has Gaps</div>
+                  <div >Has Gaps</div>
                 </div>
               </div>
             </div>

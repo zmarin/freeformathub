@@ -216,22 +216,22 @@ export function EncryptionKeyGenerator({ className = '' }: EncryptionKeyGenerato
 
     if (processedConfig.keySize >= 512) {
       level = 'Maximum';
-      color = 'text-purple-600 dark:text-purple-400';
+      color = 'text-purple-600';
       score = 100;
       description = 'Quantum-resistant security level';
     } else if (processedConfig.keySize >= 256) {
       level = 'High';
-      color = 'text-green-600 dark:text-green-400';
+      color = 'text-green-600';
       score = 90;
       description = 'Industry standard for production';
     } else if (processedConfig.keySize >= 192) {
       level = 'Medium';
-      color = 'text-blue-600 dark:text-blue-400';
+      color = 'text-blue-600';
       score = 70;
       description = 'Adequate for most applications';
     } else {
       level = 'Basic';
-      color = 'text-orange-600 dark:text-orange-400';
+      color = 'text-orange-600';
       score = 50;
       description = 'Consider upgrading to 256-bit';
     }
@@ -244,7 +244,7 @@ export function EncryptionKeyGenerator({ className = '' }: EncryptionKeyGenerato
   return (
     <div className={`flex flex-col ${className}`}>
       {/* Tool Header with Quick Actions */}
-      <div className="flex flex-col sm:flex-row gap-4 p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+      <div >
         {/* Quick Actions */}
         <div className="flex flex-wrap items-center gap-2">
           <button
@@ -281,7 +281,7 @@ export function EncryptionKeyGenerator({ className = '' }: EncryptionKeyGenerato
         {/* Auto-generate toggle */}
         <div className="flex items-center gap-4 ml-auto">
           <div className="flex items-center gap-2">
-            <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <label >
               <input
                 type="checkbox"
                 checked={autoGenerate}
@@ -297,10 +297,10 @@ export function EncryptionKeyGenerator({ className = '' }: EncryptionKeyGenerato
       {/* Main Content */}
       <div className="flex flex-col lg:flex-row flex-1 min-h-[600px]">
         {/* Settings Section */}
-        <div className="flex-1 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700">
+        <div >
           {/* Settings Header */}
-          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+          <div >
+            <h3 >
               Key Generation Settings
             </h3>
             <div className="flex items-center gap-2">
@@ -310,7 +310,7 @@ export function EncryptionKeyGenerator({ className = '' }: EncryptionKeyGenerato
                   <button
                     key={preset.name}
                     onClick={() => setConfig(preset.config)}
-                    className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded border transition-colors"
+                    
                     title={preset.description}
                   >
                     {preset.name}
@@ -321,10 +321,10 @@ export function EncryptionKeyGenerator({ className = '' }: EncryptionKeyGenerato
           </div>
 
           {/* Security Level Visualization */}
-          <div className="p-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <div >
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                <span >
                   Security Level
                 </span>
                 <span className={`text-sm font-semibold ${securityInfo.color}`}>
@@ -333,7 +333,7 @@ export function EncryptionKeyGenerator({ className = '' }: EncryptionKeyGenerato
               </div>
 
               {/* Security Bar */}
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div >
                 <div
                   className={`h-2 rounded-full transition-all duration-300 ${
                     securityInfo.score >= 90 ? 'bg-green-600' :
@@ -344,13 +344,13 @@ export function EncryptionKeyGenerator({ className = '' }: EncryptionKeyGenerato
                 />
               </div>
 
-              <p className="text-xs text-gray-600 dark:text-gray-400">
+              <p >
                 {securityInfo.description}
               </p>
 
               {/* Metadata */}
               {metadata && (
-                <div className="flex flex-wrap gap-4 text-xs text-gray-600 dark:text-gray-400">
+                <div >
                   <span><strong>Key Size:</strong> {processedConfig.keySize} bits</span>
                   <span><strong>Format:</strong> {processedConfig.format}</span>
                   <span><strong>Count:</strong> {processedConfig.count}</span>
@@ -364,11 +364,11 @@ export function EncryptionKeyGenerator({ className = '' }: EncryptionKeyGenerato
           </div>
 
           {/* Configuration Options */}
-          <div className="flex-1 p-4 bg-white dark:bg-gray-800">
+          <div >
             <div className="space-y-4">
               {ESSENTIAL_OPTIONS.map((option) => (
                 <div key={option.key} className="space-y-1">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <label >
                     {option.label}
                   </label>
                   {option.type === 'select' ? (
@@ -377,7 +377,7 @@ export function EncryptionKeyGenerator({ className = '' }: EncryptionKeyGenerato
                       onChange={(e) => updateConfig(option.key as keyof EncryptionKeyConfig,
                         option.key === 'keySize' || option.key === 'count' ? parseInt(e.target.value) : e.target.value
                       )}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm"
+                      
                     >
                       {option.options?.map((opt) => (
                         <option key={opt.value} value={opt.value}>
@@ -393,11 +393,11 @@ export function EncryptionKeyGenerator({ className = '' }: EncryptionKeyGenerato
                         onChange={(e) => updateConfig(option.key as keyof EncryptionKeyConfig, e.target.checked)}
                         className="rounded"
                       />
-                      <span className="text-gray-600 dark:text-gray-400">{option.description}</span>
+                      <span >{option.description}</span>
                     </label>
                   ) : null}
                   {option.description && option.type !== 'boolean' && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p >
                       {option.description}
                     </p>
                   )}
@@ -407,25 +407,25 @@ export function EncryptionKeyGenerator({ className = '' }: EncryptionKeyGenerato
           </div>
 
           {/* Usage Tips */}
-          <div className="p-4 bg-gray-50 dark:bg-gray-900">
-            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
+          <div >
+            <h4 >
               Usage Tips
             </h4>
-            <div className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
+            <div >
               <div className="flex items-start gap-2">
-                <span className="text-green-600 dark:text-green-400">✓</span>
+                <span >✓</span>
                 <span>Use 256-bit keys for production applications</span>
               </div>
               <div className="flex items-start gap-2">
-                <span className="text-green-600 dark:text-green-400">✓</span>
+                <span >✓</span>
                 <span>URL-safe Base64 is ideal for environment variables</span>
               </div>
               <div className="flex items-start gap-2">
-                <span className="text-green-600 dark:text-green-400">✓</span>
+                <span >✓</span>
                 <span>Store keys securely and never commit to version control</span>
               </div>
               <div className="flex items-start gap-2">
-                <span className="text-orange-600 dark:text-orange-400">!</span>
+                <span >!</span>
                 <span>Rotate keys regularly for enhanced security</span>
               </div>
             </div>
@@ -435,12 +435,12 @@ export function EncryptionKeyGenerator({ className = '' }: EncryptionKeyGenerato
         {/* Output Section */}
         <div className="flex-1 flex flex-col">
           {/* Output Header */}
-          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+          <div >
+            <h3 >
               Generated Keys
-              {isLoading && <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">Generating...</span>}
-              {!error && output && <span className="ml-2 text-xs text-green-600 dark:text-green-400">✓ Ready</span>}
-              {error && <span className="ml-2 text-xs text-red-600 dark:text-red-400">✗ Error</span>}
+              {isLoading && <span >Generating...</span>}
+              {!error && output && <span >✓ Ready</span>}
+              {error && <span >✗ Error</span>}
             </h3>
             <div className="flex items-center gap-2">
               {output && (
@@ -449,15 +449,15 @@ export function EncryptionKeyGenerator({ className = '' }: EncryptionKeyGenerato
                     onClick={handleCopy}
                     className={`text-xs px-3 py-1 rounded border transition-colors ${
                       copied
-                        ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border-green-300 dark:border-green-600'
-                        : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
+                        ? 'bg-green-100 text-green-700 border-green-300'
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300'
                     }`}
                   >
                     {copied ? '✓ Copied' : '📋 Copy'}
                   </button>
                   <button
                     onClick={handleDownload}
-                    className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded border border-gray-300 dark:border-gray-600 transition-colors"
+                    
                   >
                     💾 Download
                   </button>
@@ -467,24 +467,24 @@ export function EncryptionKeyGenerator({ className = '' }: EncryptionKeyGenerato
           </div>
 
           {/* Output Content */}
-          <div className="flex-1 bg-white dark:bg-gray-800">
+          <div >
             {error ? (
               <div className="p-4 h-full">
-                <div className="flex items-center gap-2 text-red-600 dark:text-red-400 mb-2">
+                <div >
                   <span>⚠️</span>
                   <span className="font-medium text-sm">Generation Error</span>
                 </div>
-                <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+                <p >{error}</p>
               </div>
             ) : output ? (
               <div className="h-full">
-                <pre className="p-4 h-full overflow-auto text-sm font-mono text-gray-900 dark:text-gray-100 whitespace-pre-wrap leading-relaxed">
+                <pre >
                   {output}
                 </pre>
               </div>
             ) : (
               <div className="p-4 h-full flex items-center justify-center">
-                <div className="text-center text-gray-500 dark:text-gray-400">
+                <div >
                   <div className="text-4xl mb-4">🔑</div>
                   <p className="text-sm font-medium">No keys generated yet</p>
                   <p className="text-xs mt-1">Click "Generate" or enable auto-generate</p>

@@ -215,7 +215,7 @@ export function CsvSplitter({ className = '' }: CsvSplitterProps) {
         />
 
         {/* Process Button and Preview Toggle */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+        <div >
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <button
@@ -239,13 +239,13 @@ export function CsvSplitter({ className = '' }: CsvSplitterProps) {
               </button>
 
               {splits.length > 0 && (
-                <label className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                <label >
                   <input
                     type="checkbox"
                     checked={showPreview}
                     onChange={(e) => setShowPreview(e.target.checked)}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded
-                              dark:border-gray-600 dark:bg-gray-700"
+"
                   />
                   <span>Show file previews</span>
                 </label>
@@ -253,7 +253,7 @@ export function CsvSplitter({ className = '' }: CsvSplitterProps) {
             </div>
 
             {availableColumns.length > 0 && (
-              <div className="text-sm text-gray-500 dark:text-gray-400">
+              <div >
                 <span className="font-medium">{availableColumns.length}</span> columns detected
               </div>
             )}
@@ -263,8 +263,8 @@ export function CsvSplitter({ className = '' }: CsvSplitterProps) {
 
       {/* Error Display */}
       {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-          <div className="flex items-start space-x-2 text-red-800 dark:text-red-200">
+        <div >
+          <div >
             <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
             </svg>

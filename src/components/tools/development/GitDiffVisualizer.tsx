@@ -469,12 +469,12 @@ export function GitDiffVisualizer() {
             </button>
           </div>
 
-          <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-            <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">Format Info</h3>
-            <p className="text-xs text-blue-700 dark:text-blue-300">
+          <div >
+            <h3 >Format Info</h3>
+            <p >
               {getDiffTypeDescription(config.diffFormat)}
             </p>
-            <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+            <p >
               Context lines: {config.contextLines} | Theme: {config.theme}
             </p>
           </div>
@@ -493,9 +493,9 @@ export function GitDiffVisualizer() {
         />
         
         {result?.warnings && result.warnings.length > 0 && (
-          <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-            <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-2">Analysis Warnings:</h4>
-            <ul className="text-sm text-yellow-700 dark:text-yellow-300 list-disc list-inside space-y-1">
+          <div >
+            <h4 >Analysis Warnings:</h4>
+            <ul >
               {result.warnings.map((warning, index) => (
                 <li key={index}>{warning}</li>
               ))}
@@ -504,13 +504,13 @@ export function GitDiffVisualizer() {
         )}
 
         {result?.diffAnalysis?.insights?.risks && result.diffAnalysis.insights.risks.length > 0 && (
-          <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-            <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">
+          <div >
+            <h4 >
               ⚠️ Identified Risks ({result.diffAnalysis.insights.risks.length})
             </h4>
             <div className="space-y-2">
               {result.diffAnalysis.insights.risks.slice(0, 3).map((risk, index) => (
-                <div key={index} className="text-sm text-red-700 dark:text-red-300">
+                <div key={index} >
                   <div className="flex items-center justify-between">
                     <span className="font-medium">{risk.type}</span>
                     <span className={`px-2 py-1 text-xs rounded ${
@@ -538,9 +538,9 @@ export function GitDiffVisualizer() {
         />
 
         {result?.diffAnalysis?.statistics && (
-          <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Change Statistics</h3>
-            <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+          <div >
+            <h3 >Change Statistics</h3>
+            <div >
               <div className="flex justify-between">
                 <span>Files Changed:</span>
                 <span className="font-medium">{result.diffAnalysis.metadata.totalFiles}</span>
@@ -570,9 +570,9 @@ export function GitDiffVisualizer() {
         )}
 
         {result?.diffAnalysis?.summary && (
-          <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-            <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-3">Change Summary</h3>
-            <div className="space-y-2 text-sm text-blue-700 dark:text-blue-300">
+          <div >
+            <h3 >Change Summary</h3>
+            <div >
               <div className="flex justify-between">
                 <span>Change Type:</span>
                 <span className="font-medium capitalize">{result.diffAnalysis.summary.changeType}</span>
@@ -611,9 +611,9 @@ export function GitDiffVisualizer() {
         )}
 
         {result?.diffAnalysis?.insights?.codeQuality && (
-          <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-            <h3 className="text-sm font-medium text-green-900 dark:text-green-100 mb-3">Code Quality</h3>
-            <div className="space-y-2 text-sm text-green-700 dark:text-green-300">
+          <div >
+            <h3 >Code Quality</h3>
+            <div >
               <div className="flex justify-between">
                 <span>Quality Score:</span>
                 <span className="font-medium">{result.diffAnalysis.insights.codeQuality.score}/100</span>
@@ -635,9 +635,9 @@ export function GitDiffVisualizer() {
         )}
 
         {result?.diffAnalysis?.insights?.testCoverage && (
-          <div className="mt-4 p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
-            <h3 className="text-sm font-medium text-purple-900 dark:text-purple-100 mb-3">Test Coverage</h3>
-            <div className="space-y-2 text-sm text-purple-700 dark:text-purple-300">
+          <div >
+            <h3 >Test Coverage</h3>
+            <div >
               <div className="flex justify-between">
                 <span>Test Files Changed:</span>
                 <span className="font-medium">{result.diffAnalysis.insights.testCoverage.testFilesChanged}</span>

@@ -134,15 +134,15 @@ function ImageInputPanel({ onFileSelect, selectedFile, className = '' }: ImageIn
   };
 
   return (
-    <div className={`bg-white dark:bg-gray-800 ${className}`}>
+    <div className={`bg-white ${className}`}>
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+      <div >
         <div className="flex items-center space-x-2">
-          <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+          <h3 >
             Image Input
           </h3>
           {selectedFile && (
-            <span className="text-xs text-gray-500 dark:text-gray-400">
+            <span >
               {selectedFile.name} ({formatFileSize(selectedFile.size)})
             </span>
           )}
@@ -157,9 +157,9 @@ function ImageInputPanel({ onFileSelect, selectedFile, className = '' }: ImageIn
               onChange={handleFileSelect}
               className="hidden"
             />
-            <div className="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 
+            <div className="text-xs bg-gray-100 hover:bg-gray-200 
                            px-3 py-1 rounded border transition-colors
-                           text-gray-700 dark:text-gray-300">
+                           text-gray-700">
               Upload
             </div>
           </label>
@@ -167,9 +167,9 @@ function ImageInputPanel({ onFileSelect, selectedFile, className = '' }: ImageIn
           {/* Paste button */}
           <button
             onClick={handlePaste}
-            className="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 
+            className="text-xs bg-gray-100 hover:bg-gray-200 
                       px-3 py-1 rounded border transition-colors
-                      text-gray-700 dark:text-gray-300"
+                      text-gray-700"
           >
             Paste
           </button>
@@ -178,7 +178,7 @@ function ImageInputPanel({ onFileSelect, selectedFile, className = '' }: ImageIn
           {selectedFile && (
             <button
               onClick={clear}
-              className="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 
+              className="text-xs text-red-600 hover:text-red-700 
                         px-2 py-1 rounded transition-colors"
             >
               Clear
@@ -191,8 +191,8 @@ function ImageInputPanel({ onFileSelect, selectedFile, className = '' }: ImageIn
       <div
         className={`relative min-h-[300px] ${
           dragActive 
-            ? 'bg-blue-50 dark:bg-blue-900/20 border-2 border-dashed border-blue-300 dark:border-blue-600' 
-            : 'border-2 border-dashed border-gray-300 dark:border-gray-600'
+            ? 'bg-blue-50/20 border-2 border-dashed border-blue-300' 
+            : 'border-2 border-dashed border-gray-300'
         }`}
         onDrop={handleDrop}
         onDragOver={handleDrag}
@@ -205,13 +205,13 @@ function ImageInputPanel({ onFileSelect, selectedFile, className = '' }: ImageIn
               <img 
                 src={preview} 
                 alt="Preview" 
-                className="max-w-full max-h-64 object-contain border border-gray-200 dark:border-gray-600 rounded"
+                
               />
               <div className="mt-4 text-center">
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                <p >
                   {selectedFile?.name}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <p >
                   {selectedFile?.type} • {selectedFile ? formatFileSize(selectedFile.size) : ''}
                 </p>
               </div>
@@ -220,13 +220,13 @@ function ImageInputPanel({ onFileSelect, selectedFile, className = '' }: ImageIn
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
-              <svg className="w-12 h-12 mx-auto mb-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg  fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+              <p >
                 Drop an image here, or click Upload
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-500">
+              <p >
                 Supports PNG, JPG, GIF, SVG, WebP, BMP, ICO
               </p>
             </div>
@@ -235,7 +235,7 @@ function ImageInputPanel({ onFileSelect, selectedFile, className = '' }: ImageIn
         
         {dragActive && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="text-blue-600 dark:text-blue-400 text-center">
+            <div >
               <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
@@ -345,7 +345,7 @@ export function Base64ImageEncoder({ className = '' }: Base64ImageEncoderProps) 
   return (
     <div className={`grid grid-cols-1 lg:grid-cols-2 gap-0 ${className}`}>
       {/* Input Panel */}
-      <div className="border-r border-gray-200 dark:border-gray-700">
+      <div >
         <ImageInputPanel
           onFileSelect={handleFileSelect}
           selectedFile={selectedFile}
@@ -360,11 +360,11 @@ export function Base64ImageEncoder({ className = '' }: Base64ImageEncoderProps) 
 
         {/* Image Info */}
         {imageInfo && (
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
+          <div >
+            <h4 >
               File Information
             </h4>
-            <div className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
+            <div >
               <div>Original: {(imageInfo.originalSize / 1024).toFixed(1)} KB</div>
               <div>Encoded: {(imageInfo.encodedSize / 1024).toFixed(1)} KB</div>
               <div>Size increase: {((imageInfo.compressionRatio - 1) * 100).toFixed(1)}%</div>

@@ -266,13 +266,13 @@ export function NetworkMonitoringTool() {
           singleLine
         />
         
-        <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+        <div >
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100">
+              <h3 >
                 {config.monitorType.replace('_', ' ').toUpperCase()}
               </h3>
-              <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+              <p >
                 {getMonitorTypeDescription(config.monitorType)}
               </p>
             </div>
@@ -289,7 +289,7 @@ export function NetworkMonitoringTool() {
           </div>
           
           {isMonitoring && (
-            <div className="mt-3 flex items-center text-xs text-blue-600 dark:text-blue-400">
+            <div >
               <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
               Monitoring active (simulated)
             </div>
@@ -309,9 +309,9 @@ export function NetworkMonitoringTool() {
         />
         
         {result?.warnings && result.warnings.length > 0 && (
-          <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-            <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-2">Warnings:</h4>
-            <ul className="text-sm text-yellow-700 dark:text-yellow-300 list-disc list-inside space-y-1">
+          <div >
+            <h4 >Warnings:</h4>
+            <ul >
               {result.warnings.map((warning, index) => (
                 <li key={index}>{warning}</li>
               ))}
@@ -320,13 +320,13 @@ export function NetworkMonitoringTool() {
         )}
 
         {result?.monitoring?.alerts && result.monitoring.alerts.length > 0 && (
-          <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-            <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">
+          <div >
+            <h4 >
               🚨 Alerts ({result.monitoring.alerts.length})
             </h4>
             <div className="space-y-2">
               {result.monitoring.alerts.map((alert, index) => (
-                <div key={index} className="text-sm text-red-700 dark:text-red-300">
+                <div key={index} >
                   <div className="flex items-center justify-between">
                     <span className="font-medium">{alert.type.replace('_', ' ').toUpperCase()}</span>
                     <span className={`px-2 py-1 text-xs rounded ${
@@ -354,9 +354,9 @@ export function NetworkMonitoringTool() {
         />
 
         {result?.monitoring?.summary && (
-          <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Performance Summary</h3>
-            <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+          <div >
+            <h3 >Performance Summary</h3>
+            <div >
               <div className="flex justify-between">
                 <span>Success Rate:</span>
                 <span className={`font-medium ${
@@ -402,11 +402,11 @@ export function NetworkMonitoringTool() {
         )}
 
         {result?.monitoring?.recommendations && result.monitoring.recommendations.length > 0 && (
-          <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-            <h4 className="text-sm font-medium text-green-800 dark:text-green-200 mb-2">
+          <div >
+            <h4 >
               💡 Recommendations
             </h4>
-            <ul className="text-sm text-green-700 dark:text-green-300 space-y-1">
+            <ul >
               {result.monitoring.recommendations.map((rec, index) => (
                 <li key={index} className="flex items-start">
                   <span className="mr-2">•</span>

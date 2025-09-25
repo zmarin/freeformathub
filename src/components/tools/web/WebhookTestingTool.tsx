@@ -312,20 +312,20 @@ export function WebhookTestingTool() {
         />
 
         <div className="space-y-3">
-          <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
+          <label >
             Test Payload (JSON)
           </label>
           <textarea
             value={config.payload || SAMPLE_PAYLOAD}
             onChange={(e) => handleConfigChange('payload', e.target.value)}
             placeholder="Enter JSON payload for webhook testing"
-            className="w-full h-32 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-mono"
+            
           />
         </div>
 
-        <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <div >
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Custom Headers</h3>
+            <h3 >Custom Headers</h3>
             <button
               onClick={handleAddHeader}
               className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -336,10 +336,10 @@ export function WebhookTestingTool() {
           {Object.entries(config.headers).length > 0 ? (
             <div className="space-y-2">
               {Object.entries(config.headers).map(([key, value]) => (
-                <div key={key} className="flex items-center justify-between p-2 bg-white dark:bg-gray-700 rounded">
+                <div key={key} >
                   <div className="flex-1">
-                    <span className="text-xs font-medium text-gray-600 dark:text-gray-400">{key}:</span>
-                    <span className="text-xs text-gray-900 dark:text-gray-100 ml-2">{value}</span>
+                    <span >{key}:</span>
+                    <span >{value}</span>
                   </div>
                   <button
                     onClick={() => handleRemoveHeader(key)}
@@ -351,7 +351,7 @@ export function WebhookTestingTool() {
               ))}
             </div>
           ) : (
-            <p className="text-xs text-gray-500 dark:text-gray-400">No custom headers</p>
+            <p >No custom headers</p>
           )}
         </div>
 
@@ -382,9 +382,9 @@ export function WebhookTestingTool() {
         />
         
         {result?.warnings && result.warnings.length > 0 && (
-          <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-            <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-2">Warnings:</h4>
-            <ul className="text-sm text-yellow-700 dark:text-yellow-300 list-disc list-inside space-y-1">
+          <div >
+            <h4 >Warnings:</h4>
+            <ul >
               {result.warnings.map((warning, index) => (
                 <li key={index}>{warning}</li>
               ))}
@@ -393,15 +393,15 @@ export function WebhookTestingTool() {
         )}
 
         {result?.testResults?.security?.vulnerabilities && result.testResults.security.vulnerabilities.length > 0 && (
-          <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-            <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">
+          <div >
+            <h4 >
               🔒 Security Issues ({result.testResults.security.vulnerabilities.length})
             </h4>
             <div className="space-y-2">
               {result.testResults.security.vulnerabilities.map((vuln, index) => (
                 <div key={index} className="text-sm">
                   <div className="flex items-center justify-between">
-                    <span className="font-medium text-red-700 dark:text-red-300">{vuln.type}</span>
+                    <span >{vuln.type}</span>
                     <span className={`px-2 py-1 text-xs rounded ${
                       vuln.severity === 'critical' ? 'bg-red-600 text-white' :
                       vuln.severity === 'high' ? 'bg-orange-500 text-white' :
@@ -411,7 +411,7 @@ export function WebhookTestingTool() {
                       {vuln.severity}
                     </span>
                   </div>
-                  <p className="mt-1 text-red-600 dark:text-red-400">{vuln.description}</p>
+                  <p >{vuln.description}</p>
                 </div>
               ))}
             </div>
@@ -427,9 +427,9 @@ export function WebhookTestingTool() {
         />
 
         {result?.testResults?.summary && (
-          <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Test Summary</h3>
-            <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+          <div >
+            <h3 >Test Summary</h3>
+            <div >
               <div className="flex justify-between">
                 <span>Success Rate:</span>
                 <span className={`font-medium ${
@@ -465,9 +465,9 @@ export function WebhookTestingTool() {
         )}
 
         {result?.testResults?.performance && (
-          <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-            <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-3">Performance Metrics</h3>
-            <div className="space-y-2 text-sm text-blue-700 dark:text-blue-300">
+          <div >
+            <h3 >Performance Metrics</h3>
+            <div >
               <div className="flex justify-between">
                 <span>Throughput:</span>
                 <span className="font-medium">{result.testResults.performance.throughput} req/s</span>
@@ -485,11 +485,11 @@ export function WebhookTestingTool() {
         )}
 
         {result?.testResults?.recommendations && result.testResults.recommendations.length > 0 && (
-          <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-            <h4 className="text-sm font-medium text-green-800 dark:text-green-200 mb-2">
+          <div >
+            <h4 >
               💡 Recommendations
             </h4>
-            <ul className="text-sm text-green-700 dark:text-green-300 space-y-1">
+            <ul >
               {result.testResults.recommendations.slice(0, 3).map((rec, index) => (
                 <li key={index} className="flex items-start">
                   <span className="mr-2">•</span>

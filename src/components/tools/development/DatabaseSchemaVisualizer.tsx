@@ -225,12 +225,12 @@ function getScoreColor(score?: number) {
     return 'text-gray-500';
   }
   if (score >= 80) {
-    return 'text-green-600 dark:text-green-400';
+    return 'text-green-600';
   }
   if (score >= 60) {
-    return 'text-yellow-600 dark:text-yellow-400';
+    return 'text-yellow-600';
   }
-  return 'text-red-600 dark:text-red-400';
+  return 'text-red-600';
 }
 
 export function DatabaseSchemaVisualizer() {
@@ -350,8 +350,8 @@ export function DatabaseSchemaVisualizer() {
           rows={18}
         />
 
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-3 text-xs text-gray-600 dark:text-gray-400">
-          <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Quick Tips</h3>
+        <div >
+          <h3 >Quick Tips</h3>
           <ul className="list-disc list-inside space-y-1">
             <li>Supports SQL DDL, JSON, YAML, Prisma, and Sequelize schema definitions.</li>
             <li>Toggle diagram options to focus on structure, constraints, or relationships.</li>
@@ -372,9 +372,9 @@ export function DatabaseSchemaVisualizer() {
         />
 
         {warnings.length > 0 && (
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
-            <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-2">Warnings</h4>
-            <ul className="space-y-1 text-xs text-yellow-700 dark:text-yellow-300">
+          <div >
+            <h4 >Warnings</h4>
+            <ul >
               {warnings.map((warning, index) => (
                 <li key={index}>{warning}</li>
               ))}
@@ -391,33 +391,33 @@ export function DatabaseSchemaVisualizer() {
         />
 
         {schema && (
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-4 text-xs">
+          <div >
             <div>
-              <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Schema Overview</h3>
-              <div className="space-y-2 text-gray-600 dark:text-gray-400">
+              <h3 >Schema Overview</h3>
+              <div >
                 <div className="flex justify-between">
                   <span>Name</span>
-                  <span className="font-medium text-gray-900 dark:text-gray-100">{metadata?.name ?? 'Unknown'}</span>
+                  <span >{metadata?.name ?? 'Unknown'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Engine</span>
-                  <span className="font-medium text-gray-900 dark:text-gray-100">{metadata?.engine ?? 'N/A'}</span>
+                  <span >{metadata?.engine ?? 'N/A'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Tables</span>
-                  <span className="font-medium text-gray-900 dark:text-gray-100">{schema.tables?.length ?? 0}</span>
+                  <span >{schema.tables?.length ?? 0}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Relationships</span>
-                  <span className="font-medium text-gray-900 dark:text-gray-100">{schema.relationships?.length ?? 0}</span>
+                  <span >{schema.relationships?.length ?? 0}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Constraints</span>
-                  <span className="font-medium text-gray-900 dark:text-gray-100">{schema.constraints?.length ?? 0}</span>
+                  <span >{schema.constraints?.length ?? 0}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Indexes</span>
-                  <span className="font-medium text-gray-900 dark:text-gray-100">{schema.indexes?.length ?? 0}</span>
+                  <span >{schema.indexes?.length ?? 0}</span>
                 </div>
               </div>
             </div>
@@ -425,8 +425,8 @@ export function DatabaseSchemaVisualizer() {
             {analysis && (
               <div className="space-y-4">
                 <div>
-                  <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Health Scores</h4>
-                  <div className="space-y-2 text-gray-600 dark:text-gray-400">
+                  <h4 >Health Scores</h4>
+                  <div >
                     <div className="flex items-center justify-between">
                       <span>Normalization</span>
                       <span className={`font-medium ${getScoreColor(analysis.normalization?.score)}`}>
@@ -451,17 +451,17 @@ export function DatabaseSchemaVisualizer() {
 
                 {statistics && (
                   <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">Key Stats</h4>
-                    <div className="space-y-1 text-gray-600 dark:text-gray-400">
+                    <h4 >Key Stats</h4>
+                    <div >
                       <div className="flex justify-between">
                         <span>Avg Columns / Table</span>
-                        <span className="font-medium text-gray-900 dark:text-gray-100">
+                        <span >
                           {statistics.avgColumnsPerTable?.toFixed?.(1) ?? '0.0'}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span>Relationships</span>
-                        <span className="font-medium text-gray-900 dark:text-gray-100">
+                        <span >
                           {statistics.relationshipCount ?? schema.relationships?.length ?? 0}
                         </span>
                       </div>
@@ -469,14 +469,14 @@ export function DatabaseSchemaVisualizer() {
 
                     {dataTypeDistribution.length > 0 && (
                       <div>
-                        <h5 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">
+                        <h5 >
                           Top Data Types
                         </h5>
-                        <ul className="space-y-1 text-gray-600 dark:text-gray-400">
+                        <ul >
                           {dataTypeDistribution.map(([type, count]) => (
                             <li key={type} className="flex justify-between">
                               <span>{type}</span>
-                              <span className="font-medium text-gray-900 dark:text-gray-100">{count}</span>
+                              <span >{count}</span>
                             </li>
                           ))}
                         </ul>
@@ -487,17 +487,17 @@ export function DatabaseSchemaVisualizer() {
 
                 {normalizationIssues.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">Normalization Issues</h4>
-                    <ul className="mt-2 space-y-2 text-gray-600 dark:text-gray-400">
+                    <h4 >Normalization Issues</h4>
+                    <ul >
                       {normalizationIssues.slice(0, 3).map((issue: any, index: number) => (
-                        <li key={index} className="border border-amber-200 dark:border-amber-900/40 rounded-md p-2">
-                          <div className="font-medium text-gray-900 dark:text-gray-100">{issue.table}</div>
-                          <div className="text-[11px] uppercase tracking-wide text-amber-600 dark:text-amber-300">
+                        <li key={index} >
+                          <div >{issue.table}</div>
+                          <div >
                             {issue.type?.replace(/-/g, ' ') ?? 'Violation'}
                           </div>
                           <p className="mt-1 text-xs">{issue.description}</p>
                           {issue.suggestion && (
-                            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                            <p >
                               Suggestion: {issue.suggestion}
                             </p>
                           )}
@@ -509,16 +509,16 @@ export function DatabaseSchemaVisualizer() {
 
                 {missingIndexes.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">Missing Indexes</h4>
-                    <ul className="mt-2 space-y-2 text-gray-600 dark:text-gray-400">
+                    <h4 >Missing Indexes</h4>
+                    <ul >
                       {missingIndexes.slice(0, 3).map((item: any, index: number) => (
-                        <li key={index} className="border border-blue-200 dark:border-blue-900/40 rounded-md p-2">
-                          <div className="flex justify-between text-xs font-medium text-gray-900 dark:text-gray-100">
+                        <li key={index} >
+                          <div >
                             <span>{item.table}</span>
-                            <span className="capitalize text-blue-600 dark:text-blue-300">{item.estimatedImpact}</span>
+                            <span >{item.estimatedImpact}</span>
                           </div>
                           <p className="mt-1 text-xs">Columns: {item.columns?.join(', ')}</p>
-                          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{item.reason}</p>
+                          <p >{item.reason}</p>
                         </li>
                       ))}
                     </ul>
@@ -527,14 +527,14 @@ export function DatabaseSchemaVisualizer() {
 
                 {securityIssues.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">Security Concerns</h4>
-                    <ul className="mt-2 space-y-2 text-gray-600 dark:text-gray-400">
+                    <h4 >Security Concerns</h4>
+                    <ul >
                       {securityIssues.slice(0, 3).map((issue: any, index: number) => (
-                        <li key={index} className="border border-red-200 dark:border-red-900/40 rounded-md p-2">
-                          <div className="font-medium text-gray-900 dark:text-gray-100">{issue.title}</div>
+                        <li key={index} >
+                          <div >{issue.title}</div>
                           <p className="mt-1 text-xs">{issue.description}</p>
                           {issue.recommendation && (
-                            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                            <p >
                               Recommendation: {issue.recommendation}
                             </p>
                           )}
@@ -546,17 +546,17 @@ export function DatabaseSchemaVisualizer() {
 
                 {optimizationSuggestions.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">Optimization Ideas</h4>
-                    <ul className="mt-2 space-y-2 text-gray-600 dark:text-gray-400">
+                    <h4 >Optimization Ideas</h4>
+                    <ul >
                       {optimizationSuggestions.slice(0, 3).map((suggestion: any, index: number) => (
-                        <li key={index} className="border border-emerald-200 dark:border-emerald-900/40 rounded-md p-2">
-                          <div className="flex justify-between text-xs font-medium text-gray-900 dark:text-gray-100">
+                        <li key={index} >
+                          <div >
                             <span>{suggestion.table}</span>
-                            <span className="capitalize text-emerald-600 dark:text-emerald-300">{suggestion.priority}</span>
+                            <span >{suggestion.priority}</span>
                           </div>
                           <p className="mt-1 text-xs">{suggestion.description}</p>
                           {suggestion.implementation && (
-                            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                            <p >
                               How: {suggestion.implementation}
                             </p>
                           )}

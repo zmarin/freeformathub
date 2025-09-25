@@ -306,13 +306,13 @@ const jsonLd = {
 
   <!-- Hero Section - Primary Landing Area -->
   <main role="main" id="main-content" tabindex="-1">
-    <header class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-20" role="banner">
+    <header style="background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%); padding: 5rem 0;" role="banner">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h1 class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6" id="page-title">
+        <h1 class="text-4xl md:text-6xl font-bold mb-6" style="color: var(--color-text-primary);" id="page-title">
           Free Tools Hub: JSON Formatter, Currency Converter & 119+ Developer Tools
         </h1>
-        <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto" role="doc-subtitle" aria-describedby="page-title">
-          <strong>Free tools with instant results, privacy-first, no registration required.</strong> USD currency converter, XML formatter with xml get/search, JSON beautifier, Base64 encoder, and 119+ free developer tools. Trusted by <span class="text-blue-600 dark:text-blue-400 font-semibold" aria-label="Trusted by over fifty thousand developers monthly">50,000+ developers monthly</span> for fast, secure data processing.
+        <p class="text-lg md:text-xl mb-8 max-w-3xl mx-auto" style="color: var(--color-text-secondary);" role="doc-subtitle" aria-describedby="page-title">
+          <strong>Free tools with instant results, privacy-first, no registration required.</strong> USD currency converter, XML formatter with xml get/search, JSON beautifier, Base64 encoder, and 119+ free developer tools. Trusted by <span class="text-blue-600 font-semibold" aria-label="Trusted by over fifty thousand developers monthly">50,000+ developers monthly</span> for fast, secure data processing.
         </p>
 
         <!-- Tool Search Region -->
@@ -336,11 +336,11 @@ const jsonLd = {
       <section class="py-16" aria-labelledby="trending-tools-heading" role="region">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <header class="flex items-center justify-between mb-8">
-            <h2 id="trending-tools-heading" class="text-3xl font-bold text-gray-900 dark:text-white">
+            <h2 id="trending-tools-heading" class="text-3xl font-bold text-gray-900">
               Trending Free Tools & Developer Utilities
             </h2>
             <nav aria-label="Tool navigation">
-              <a href="/search" class="text-blue-600 dark:text-blue-400 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded" aria-label="Search all 119+ developer tools">
+              <a href="/search" class="text-blue-600 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded" aria-label="Search all 119+ developer tools">
                 View all tools
               </a>
             </nav>
@@ -350,24 +350,24 @@ const jsonLd = {
               <article class="group" role="gridcell" aria-rowindex={Math.floor(index / 4) + 1} aria-colindex={(index % 4) + 1}>
                 <a
                   href={`/${tool.category.id}/${tool.slug}`}
-                  class="block p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  class="block p-6 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   aria-labelledby={`tool-${tool.id}-title`}
                   aria-describedby={`tool-${tool.id}-description`}
                 >
                   <header class="flex items-center mb-4">
-                    <div class={`w-12 h-12 bg-${tool.category.color}-100 dark:bg-${tool.category.color}-900 rounded-lg flex items-center justify-center transition-transform`} aria-hidden="true">
+                    <div class={`w-12 h-12 bg-${tool.category.color}-100 rounded-lg flex items-center justify-center transition-transform`} aria-hidden="true">
                       <span class="text-2xl" role="img" aria-label={`${tool.name} icon`}>{tool.icon}</span>
                     </div>
                     <div class="ml-4">
-                      <h3 id={`tool-${tool.id}-title`} class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                      <h3 id={`tool-${tool.id}-title`} class="text-lg font-semibold text-gray-900 group-hover:text-blue-600">
                         {tool.name}
                       </h3>
-                      <p class="text-xs text-gray-500 dark:text-gray-400" aria-label={`Category: ${tool.category.name}`}>
+                      <p class="text-xs text-gray-500" aria-label={`Category: ${tool.category.name}`}>
                         {tool.category.name}
                       </p>
                     </div>
                   </header>
-                  <p id={`tool-${tool.id}-description`} class="text-gray-600 dark:text-gray-400 text-sm">
+                  <p id={`tool-${tool.id}-description`} class="text-gray-600 text-sm">
                     {tool.description}
                   </p>
                 </a>
@@ -387,16 +387,16 @@ const jsonLd = {
 
     <!-- Curated Data Formatters Section -->
     {curatedCategory && curatedTools.length > 0 && (
-      <section class="py-16 bg-gray-50 dark:bg-gray-900" aria-labelledby="formatters-heading" role="region">
+      <section class="py-16 bg-gray-50" aria-labelledby="formatters-heading" role="region">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <header class="flex items-center justify-between mb-8">
-            <h2 id="formatters-heading" class="text-3xl font-bold text-gray-900 dark:text-white">
+            <h2 id="formatters-heading" class="text-3xl font-bold text-gray-900">
               Explore {curatedCategory.name}
             </h2>
             <nav aria-label="Formatters navigation">
               <a
                 href={`/${curatedCategory.id}`}
-                class="text-blue-600 dark:text-blue-400 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
+                class="text-blue-600 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
                 aria-label={`View all ${curatedCategory.name} tools`}
               >
                 View all {curatedCategory.name}
@@ -405,19 +405,19 @@ const jsonLd = {
           </header>
           <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" role="list" aria-label="Data formatting tools">
             {curatedTools.map((tool, index) => (
-            <a href={`/${tool.category.id}/${tool.slug}`} class="group block p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-lg transition-all duration-200">
+            <a href={`/${tool.category.id}/${tool.slug}`} class="group block p-6 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-200">
               <div class="flex items-center mb-4">
-                <div class={`w-12 h-12 bg-${tool.category.color}-100 dark:bg-${tool.category.color}-900 rounded-lg flex items-center justify-center transition-transform`}>
+                <div class={`w-12 h-12 bg-${tool.category.color}-100 rounded-lg flex items-center justify-center transition-transform`}>
                   <span class="text-2xl">{tool.icon}</span>
                 </div>
                 <div class="ml-4">
-                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                  <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600">
                     {tool.name}
                   </h3>
-                  <p class="text-xs text-gray-500 dark:text-gray-400">{tool.category.name}</p>
+                  <p class="text-xs text-gray-500">{tool.category.name}</p>
                 </div>
               </div>
-              <p class="text-gray-600 dark:text-gray-400 text-sm">
+              <p class="text-gray-600 text-sm">
                 {tool.description}
               </p>
             </a>
@@ -431,29 +431,29 @@ const jsonLd = {
     <section class="py-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between mb-8">
-          <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
+          <h2 class="text-3xl font-bold text-gray-900">
             Explore {curatedEncoders.name}
           </h2>
-          <a href={`/${curatedEncoders.id}`} class="text-blue-600 dark:text-blue-400 hover:underline">
+          <a href={`/${curatedEncoders.id}`} class="text-blue-600 hover:underline">
             View all {curatedEncoders.name}
           </a>
         </div>
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {curatedEncodersTools.map(tool => (
-            <a href={`/${tool.category.id}/${tool.slug}`} class="group block p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-lg transition-all duration-200">
+            <a href={`/${tool.category.id}/${tool.slug}`} class="group block p-6 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-200">
               <div class="flex items-center mb-4">
-                <div class={`w-12 h-12 bg-${tool.category.color}-100 dark:bg-${tool.category.color}-900 rounded-lg flex items-center justify-center transition-transform`}>
+                <div class={`w-12 h-12 bg-${tool.category.color}-100 rounded-lg flex items-center justify-center transition-transform`}>
                   <span class="text-2xl">{tool.icon}</span>
                 </div>
                 <div class="ml-4">
-                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                  <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600">
                     {tool.name}
                   </h3>
-                  <p class="text-xs text-gray-500 dark:text-gray-400">{tool.category.name}
+                  <p class="text-xs text-gray-500">{tool.category.name}
                   </p>
                 </div>
               </div>
-              <p class="text-gray-600 dark:text-gray-400 text-sm">{tool.description}</p>
+              <p class="text-gray-600 text-sm">{tool.description}</p>
             </a>
           ))}
         </div>
@@ -462,32 +462,32 @@ const jsonLd = {
   )}
 
   {curatedConverters && curatedConvertersTools.length > 0 && (
-    <section class="py-16 bg-gray-50 dark:bg-gray-900">
+    <section class="py-16 bg-gray-50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between mb-8">
-          <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
+          <h2 class="text-3xl font-bold text-gray-900">
             Explore {curatedConverters.name}
           </h2>
-          <a href={`/${curatedConverters.id}`} class="text-blue-600 dark:text-blue-400 hover:underline">
+          <a href={`/${curatedConverters.id}`} class="text-blue-600 hover:underline">
             View all {curatedConverters.name}
           </a>
         </div>
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {curatedConvertersTools.map(tool => (
-            <a href={`/${tool.category.id}/${tool.slug}`} class="group block p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-lg transition-all duration-200">
+            <a href={`/${tool.category.id}/${tool.slug}`} class="group block p-6 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-200">
               <div class="flex items-center mb-4">
-                <div class={`w-12 h-12 bg-${tool.category.color}-100 dark:bg-${tool.category.color}-900 rounded-lg flex items-center justify-center transition-transform`}>
+                <div class={`w-12 h-12 bg-${tool.category.color}-100 rounded-lg flex items-center justify-center transition-transform`}>
                   <span class="text-2xl">{tool.icon}</span>
                 </div>
                 <div class="ml-4">
-                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                  <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600">
                     {tool.name}
                   </h3>
-                  <p class="text-xs text-gray-500 dark:text-gray-400">{tool.category.name}
+                  <p class="text-xs text-gray-500">{tool.category.name}
                   </p>
                 </div>
               </div>
-              <p class="text-gray-600 dark:text-gray-400 text-sm">{tool.description}</p>
+              <p class="text-gray-600 text-sm">{tool.description}</p>
             </a>
           ))}
         </div>
@@ -498,75 +498,75 @@ const jsonLd = {
   <!-- Featured Tools -->
   <section class="py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">
         Most Popular JSON Formatters & Data Conversion Tools
       </h2>
       
       <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <!-- JSON Formatter -->
-        <a href="/formatters/json-formatter" class="group block p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-lg transition-all duration-200">
+        <a href="/formatters/json-formatter" class="group block p-6 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-200">
           <div class="flex items-center mb-4">
-            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center transition-transform">
+            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center transition-transform">
               <span class="text-2xl">{}</span>
             </div>
             <div class="ml-4">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+              <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600">
                 JSON Formatter
               </h3>
             </div>
           </div>
-          <p class="text-gray-600 dark:text-gray-400 text-sm">
+          <p class="text-gray-600 text-sm">
             Format, validate, and beautify JSON data with syntax highlighting
           </p>
         </a>
 
         <!-- Base64 Encoder -->
-        <a href="/encoders/base64-encoder" class="group block p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-600 hover:shadow-lg transition-all duration-200">
+        <a href="/encoders/base64-encoder" class="group block p-6 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-lg transition-all duration-200">
           <div class="flex items-center mb-4">
-            <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center transition-transform">
+            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center transition-transform">
               <span class="text-2xl">🔒</span>
             </div>
             <div class="ml-4">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400">
+              <h3 class="text-lg font-semibold text-gray-900 group-hover:text-purple-600">
                 Base64 Encoder
               </h3>
             </div>
           </div>
-          <p class="text-gray-600 dark:text-gray-400 text-sm">
+          <p class="text-gray-600 text-sm">
             Encode and decode Base64 strings for data transmission
           </p>
         </a>
 
         <!-- URL Encoder -->
-        <a href="/encoders/url-encoder" class="group block p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-600 hover:shadow-lg transition-all duration-200">
+        <a href="/encoders/url-encoder" class="group block p-6 bg-white rounded-lg border border-gray-200 hover:border-green-300 hover:shadow-lg transition-all duration-200">
           <div class="flex items-center mb-4">
-            <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center transition-transform">
+            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center transition-transform">
               <span class="text-2xl">🔗</span>
             </div>
             <div class="ml-4">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400">
+              <h3 class="text-lg font-semibold text-gray-900 group-hover:text-green-600">
                 URL Encoder
               </h3>
             </div>
           </div>
-          <p class="text-gray-600 dark:text-gray-400 text-sm">
+          <p class="text-gray-600 text-sm">
             Encode and decode URLs and query parameters safely
           </p>
         </a>
 
         <!-- JWT Decoder -->
-        <a href="/encoders/jwt-decoder" class="group block p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-red-300 dark:hover:border-red-600 hover:shadow-lg transition-all duration-200">
+        <a href="/encoders/jwt-decoder" class="group block p-6 bg-white rounded-lg border border-gray-200 hover:border-red-300 hover:shadow-lg transition-all duration-200">
           <div class="flex items-center mb-4">
-            <div class="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center transition-transform">
+            <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center transition-transform">
               <span class="text-2xl">🎫</span>
             </div>
             <div class="ml-4">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400">
+              <h3 class="text-lg font-semibold text-gray-900 group-hover:text-red-600">
                 JWT Decoder
               </h3>
             </div>
           </div>
-          <p class="text-gray-600 dark:text-gray-400 text-sm">
+          <p class="text-gray-600 text-sm">
             Decode and verify JSON Web Tokens securely
           </p>
         </a>
@@ -584,9 +584,9 @@ const jsonLd = {
   </section>
 
   <!-- Tool Categories -->
-  <section class="py-16 bg-gray-50 dark:bg-gray-900">
+  <section class="py-16 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">
         Developer Tool Categories - Formatters, Converters & Validators
       </h2>
 
@@ -597,70 +597,70 @@ const jsonLd = {
   <!-- Features -->
   <section class="py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">
         Why Choose Our Free Data Formatting & Development Tools?
       </h2>
       
       <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         <div class="text-center">
-          <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Instant Data Formatting Results</h3>
-          <p class="text-gray-600 dark:text-gray-400">No loading screens, no sign-ups. Paste your JSON, XML, or CSV data and get formatted results instantly.</p>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">Instant Data Formatting Results</h3>
+          <p class="text-gray-600">No loading screens, no sign-ups. Paste your JSON, XML, or CSV data and get formatted results instantly.</p>
         </div>
 
         <div class="text-center">
-          <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
             </svg>
           </div>
-          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Smart Data Format Detection</h3>
-          <p class="text-gray-600 dark:text-gray-400">Auto-detects JSON, XML, YAML, and other data formats to suggest the perfect formatting tool for your needs.</p>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">Smart Data Format Detection</h3>
+          <p class="text-gray-600">Auto-detects JSON, XML, YAML, and other data formats to suggest the perfect formatting tool for your needs.</p>
         </div>
 
         <div class="text-center">
-          <div class="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
             </svg>
           </div>
-          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">One-Click Actions</h3>
-          <p class="text-gray-600 dark:text-gray-400">Copy, download, or share results with a single click. No extra steps.</p>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">One-Click Actions</h3>
+          <p class="text-gray-600">Copy, download, or share results with a single click. No extra steps.</p>
         </div>
 
         <div class="text-center">
-          <div class="w-16 h-16 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
             </svg>
           </div>
-          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Batch Data Processing Tools</h3>
-          <p class="text-gray-600 dark:text-gray-400">Handle multiple JSON, XML, CSV files and data formats simultaneously for maximum developer productivity.</p>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">Batch Data Processing Tools</h3>
+          <p class="text-gray-600">Handle multiple JSON, XML, CSV files and data formats simultaneously for maximum developer productivity.</p>
         </div>
 
         <div class="text-center">
-          <div class="w-16 h-16 bg-indigo-100 dark:bg-indigo-900 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z" />
             </svg>
           </div>
-          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Keyboard Shortcuts</h3>
-          <p class="text-gray-600 dark:text-gray-400">Power-user features with hotkeys for lightning-fast workflows.</p>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">Keyboard Shortcuts</h3>
+          <p class="text-gray-600">Power-user features with hotkeys for lightning-fast workflows.</p>
         </div>
 
         <div class="text-center">
-          <div class="w-16 h-16 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-teal-600 dark:text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
             </svg>
           </div>
-          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Live Preview</h3>
-          <p class="text-gray-600 dark:text-gray-400">See changes as you type with real-time validation and error highlighting.</p>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">Live Preview</h3>
+          <p class="text-gray-600">See changes as you type with real-time validation and error highlighting.</p>
         </div>
       </div>
     </div>

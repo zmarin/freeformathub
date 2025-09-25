@@ -334,7 +334,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 ${
                 !config.meetingMode
                   ? 'bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500'
-                  : 'bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300 focus:ring-gray-500'
+                  : 'bg-gray-200 hover:bg-gray-300 text-gray-700 focus:ring-gray-500'
               }`}
             >
               Convert Time
@@ -344,7 +344,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 ${
                 config.meetingMode
                   ? 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500'
-                  : 'bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300 focus:ring-gray-500'
+                  : 'bg-gray-200 hover:bg-gray-300 text-gray-700 focus:ring-gray-500'
               }`}
             >
               Meeting Finder
@@ -354,7 +354,7 @@ export function TimezoneConverter({ className = '' }: TimezoneConverterProps) {
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 ${
                 config.useCurrentTime
                   ? 'bg-purple-600 hover:bg-purple-700 text-white focus:ring-purple-500'
-                  : 'bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300 focus:ring-gray-500'
+                  : 'bg-gray-200 hover:bg-gray-300 text-gray-700 focus:ring-gray-500'
               }`}
             >
               {config.useCurrentTime ? 'Use Custom Time' : 'Use Current Time'}

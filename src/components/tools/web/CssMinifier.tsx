@@ -202,17 +202,17 @@ export function CssMinifier({ className = '' }: CssMinifierProps) {
               <div className="flex flex-wrap gap-2 items-center">
                 <button
                   onClick={handleSampleClick}
-                  className="text-xs px-3 py-1 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded border border-blue-200 dark:border-blue-700 transition-colors"
+                  
                 >
                   Try Sample CSS
                 </button>
                 {isProcessing && (
-                  <span className="text-xs text-blue-600 dark:text-blue-400">
+                  <span >
                     Minifying CSS...
                   </span>
                 )}
                 {result?.metadata && (
-                  <span className="text-xs text-gray-600 dark:text-gray-400">
+                  <span >
                     Original: {formatBytes(result.metadata.originalSize)}
                   </span>
                 )}
@@ -249,53 +249,53 @@ export function CssMinifier({ className = '' }: CssMinifierProps) {
           />
 
           {result?.metadata && (
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-              <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
+            <div >
+              <h3 >
                 📊 Minification Results
               </h3>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600 dark:text-gray-400">Size Reduction:</span>
+                  <span >Size Reduction:</span>
                   <span className={`font-medium ${getCompressionColor()}`}>
                     {result.metadata.compressionRatio}%
                   </span>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4 pt-2 border-t border-gray-200 dark:border-gray-700">
+                <div >
                   <div>
-                    <div className="text-gray-600 dark:text-gray-400">Original:</div>
+                    <div >Original:</div>
                     <div className="font-mono">{formatBytes(result.metadata.originalSize)}</div>
                   </div>
                   <div>
-                    <div className="text-gray-600 dark:text-gray-400">Minified:</div>
+                    <div >Minified:</div>
                     <div className="font-mono text-green-600">{formatBytes(result.metadata.minifiedSize)}</div>
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
-                  <div className="text-gray-600 dark:text-gray-400 mb-2">CSS Analysis:</div>
+                <div >
+                  <div >CSS Analysis:</div>
                   <div className="grid grid-cols-3 gap-2 text-xs">
-                    <div className="text-center p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
-                      <div className="font-medium text-blue-900 dark:text-blue-100">{result.metadata.rules}</div>
-                      <div className="text-blue-600 dark:text-blue-300">Rules</div>
+                    <div >
+                      <div >{result.metadata.rules}</div>
+                      <div >Rules</div>
                     </div>
-                    <div className="text-center p-2 bg-green-50 dark:bg-green-900/20 rounded">
-                      <div className="font-medium text-green-900 dark:text-green-100">{result.metadata.selectors}</div>
-                      <div className="text-green-600 dark:text-green-300">Selectors</div>
+                    <div >
+                      <div >{result.metadata.selectors}</div>
+                      <div >Selectors</div>
                     </div>
-                    <div className="text-center p-2 bg-purple-50 dark:bg-purple-900/20 rounded">
-                      <div className="font-medium text-purple-900 dark:text-purple-100">{result.metadata.properties}</div>
-                      <div className="text-purple-600 dark:text-purple-300">Properties</div>
+                    <div >
+                      <div >{result.metadata.properties}</div>
+                      <div >Properties</div>
                     </div>
                   </div>
                 </div>
 
                 {result.metadata.savedBytes > 0 && (
-                  <div className="pt-2 border-t border-gray-200 dark:border-gray-700 text-center">
-                    <div className="text-green-600 dark:text-green-400 font-medium">
+                  <div >
+                    <div >
                       💾 Saved {formatBytes(result.metadata.savedBytes)}
                     </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    <div >
                       Faster loading and reduced bandwidth
                     </div>
                   </div>
@@ -304,11 +304,11 @@ export function CssMinifier({ className = '' }: CssMinifierProps) {
             </div>
           )}
 
-          <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
-            <h3 className="text-sm font-medium text-green-900 dark:text-green-100 mb-2">
+          <div >
+            <h3 >
               🚀 Performance Benefits
             </h3>
-            <ul className="text-sm text-green-800 dark:text-green-200 space-y-1">
+            <ul >
               <li>• Faster page loading times</li>
               <li>• Reduced bandwidth usage</li>
               <li>• Better mobile performance</li>
@@ -317,11 +317,11 @@ export function CssMinifier({ className = '' }: CssMinifierProps) {
             </ul>
           </div>
 
-          <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-4">
-            <h3 className="text-sm font-medium text-amber-900 dark:text-amber-100 mb-2">
+          <div >
+            <h3 >
               💡 Minification Tips
             </h3>
-            <ul className="text-sm text-amber-800 dark:text-amber-200 space-y-1">
+            <ul >
               <li>• Use /*! for important comments</li>
               <li>• Test thoroughly after minification</li>
               <li>• Keep source files for editing</li>

@@ -221,7 +221,7 @@ export function TimestampConverter({ className = '' }: TimestampConverterProps) 
   return (
     <div className={`grid grid-cols-1 lg:grid-cols-2 gap-0 ${className}`}>
       {/* Input Panel */}
-      <div className="border-r border-gray-200 dark:border-gray-700">
+      <div >
         <InputPanel
           value={input}
           onChange={handleInputChange}
@@ -258,7 +258,7 @@ Examples:
         />
 
         {/* Quick Actions */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+        <div >
           <div className="flex flex-wrap gap-2 mb-4">
             <button
               onClick={insertCurrentTimestamp}
@@ -275,11 +275,11 @@ Examples:
           </div>
 
           {/* Format Info */}
-          <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <div >
+            <div >
               Current Settings:
             </div>
-            <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+            <div >
               <div>Input: {config.inputFormat === 'auto' ? 'Auto-detect' : config.inputFormat}</div>
               <div>Output: {config.outputFormat === 'all' ? 'Show all formats' : config.outputFormat}</div>
               <div>Timezone: {config.timezone === 'custom' ? config.customTimezone : config.timezone}</div>
@@ -289,7 +289,7 @@ Examples:
 
           {/* Quick Examples */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label >
               Quick Examples:
             </label>
             <div className="grid grid-cols-1 gap-2">
@@ -297,10 +297,10 @@ Examples:
                 <button
                   key={example.name}
                   onClick={() => insertExample(example)}
-                  className="px-3 py-2 text-sm text-left bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 rounded border transition-colors"
+                  
                 >
                   <div className="font-medium">{example.name}</div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400">
+                  <div >
                     {example.input.length > 50 ? 
                       example.input.substring(0, 50) + '...' : 
                       example.input
@@ -313,28 +313,28 @@ Examples:
 
           {/* Statistics */}
           {stats && (
-            <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div >
+              <div >
                 Conversion Results:
               </div>
               <div className="grid grid-cols-2 gap-4 text-xs">
                 <div className="space-y-1">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Processed:</span>
+                    <span >Processed:</span>
                     <span className="font-mono">{stats.inputCount}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-green-600 dark:text-green-400">Successful:</span>
+                    <span >Successful:</span>
                     <span className="font-mono">{stats.successCount}</span>
                   </div>
                 </div>
                 <div className="space-y-1">
                   <div className="flex justify-between">
-                    <span className="text-red-600 dark:text-red-400">Errors:</span>
+                    <span >Errors:</span>
                     <span className="font-mono">{stats.errorCount}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Timezone:</span>
+                    <span >Timezone:</span>
                     <span className="font-mono">{stats.timezone}</span>
                   </div>
                 </div>

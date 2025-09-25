@@ -70,21 +70,21 @@ const textCategories = [
   <main class="container mx-auto px-4 py-8">
     {/* Hero Section */}
     <div class="text-center mb-12">
-      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
         Free Text Processing Tools
       </h1>
-      <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
         Professional text processing tools for writers, developers, and content creators.
         Analyze, format, convert, and manipulate text with powerful online tools that work offline.
       </p>
       <div class="flex flex-wrap justify-center gap-4">
-        <div class="bg-blue-100 dark:bg-blue-500/20 text-blue-800 dark:text-blue-200 px-4 py-2 rounded-lg border border-blue-200 dark:border-blue-500/40">
+        <div class="bg-blue-100  text-blue-800  px-4 py-2 rounded-lg border border-blue-200">
           <span class="font-semibold">{textTools.length}+</span> Text Tools
         </div>
-        <div class="bg-green-100 dark:bg-green-500/20 text-green-800 dark:text-green-200 px-4 py-2 rounded-lg border border-green-200 dark:border-green-500/40">
+        <div class="bg-green-100  text-green-800  px-4 py-2 rounded-lg border border-green-200">
           Privacy-First Processing
         </div>
-        <div class="bg-purple-100 dark:bg-purple-500/20 text-purple-800 dark:text-purple-200 px-4 py-2 rounded-lg border border-purple-200 dark:border-purple-500/40">
+        <div class="bg-purple-100  text-purple-800  px-4 py-2 rounded-lg border border-purple-200">
           No File Size Limits
         </div>
       </div>
@@ -92,25 +92,25 @@ const textCategories = [
 
     {/* Featured Text Tools */}
     <section class="mb-16">
-      <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+      <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">
         Most Popular Text Tools
       </h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {featuredTools.map((tool) => (
           <a href={`/${tool.category.id}/${tool.slug}`}
-             class="block p-6 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+             class="block p-6 bg-white  border border-gray-200  rounded-lg shadow-sm hover:shadow-md transition-shadow">
             <div class="flex items-center mb-3">
               <span class="text-2xl mr-3">{tool.icon}</span>
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white line-clamp-2">
+              <h3 class="text-lg font-semibold text-gray-900 line-clamp-2">
                 {tool.name.replace(/ - .*$/, '')}
               </h3>
             </div>
-            <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-3 mb-4">
+            <p class="text-gray-600 text-sm line-clamp-3 mb-4">
               {tool.description}
             </p>
             <div class="flex flex-wrap gap-1">
               {tool.keywords && tool.keywords.slice(0, 3).map((keyword) => (
-                <span class="inline-block bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-200 text-xs px-2 py-1 rounded">
+                <span class="inline-block bg-gray-100  text-gray-700  text-xs px-2 py-1 rounded">
                   {keyword}
                 </span>
               ))}
@@ -122,27 +122,27 @@ const textCategories = [
 
     {/* Text Tool Categories */}
     <section class="mb-16">
-      <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+      <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">
         Text Tools by Category
       </h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         {textCategories.map((category) => (
-          <div class="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg p-6">
+          <div class="bg-white  border border-gray-200  rounded-lg p-6">
             <div class="flex items-center mb-4">
               <span class="text-2xl mr-3">{category.icon}</span>
-              <h3 class="text-xl font-semibold text-gray-900 dark:text-white">{category.title}</h3>
+              <h3 class="text-xl font-semibold text-gray-900">{category.title}</h3>
             </div>
             <div class="space-y-3">
               {category.tools.map((tool) => (
                 <a href={`/${tool.category.id}/${tool.slug}`}
-                   class="block p-3 bg-gray-50 dark:bg-slate-800 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
+                   class="block p-3 bg-gray-50  rounded-lg hover:bg-gray-100  transition-colors">
                   <div class="flex items-center">
                     <span class="text-lg mr-3">{tool.icon}</span>
                     <div>
-                      <h4 class="font-medium text-gray-900 dark:text-white">
+                      <h4 class="font-medium text-gray-900">
                         {tool.name.replace(/ - .*$/, '')}
                       </h4>
-                      <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-1">
+                      <p class="text-gray-600 text-sm line-clamp-1">
                         {tool.description}
                       </p>
                     </div>
@@ -156,44 +156,44 @@ const textCategories = [
     </section>
 
     {/* Text Processing Use Cases */}
-    <section class="mb-16 bg-gray-50 dark:bg-slate-900 rounded-lg p-8 border border-gray-200 dark:border-slate-700">
-      <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+    <section class="mb-16 bg-gray-50  rounded-lg p-8 border border-gray-200">
+      <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">
         Who Uses Text Processing Tools?
       </h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="text-center">
-          <div class="w-16 h-16 bg-blue-100 dark:bg-blue-500/20 rounded-lg flex items-center justify-center mx-auto mb-4 border border-blue-200 dark:border-blue-500/40">
+          <div class="w-16 h-16 bg-blue-100  rounded-lg flex items-center justify-center mx-auto mb-4 border border-blue-200">
             <span class="text-2xl">✍️</span>
           </div>
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Writers & Authors</h3>
-          <p class="text-gray-600 dark:text-gray-300 text-sm">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Writers & Authors</h3>
+          <p class="text-gray-600 text-sm">
             Analyze text statistics, count words, check readability, and format content for publishing.
           </p>
         </div>
         <div class="text-center">
-          <div class="w-16 h-16 bg-green-100 dark:bg-green-500/20 rounded-lg flex items-center justify-center mx-auto mb-4 border border-green-200 dark:border-green-500/40">
+          <div class="w-16 h-16 bg-green-100  rounded-lg flex items-center justify-center mx-auto mb-4 border border-green-200">
             <span class="text-2xl">👩‍💻</span>
           </div>
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Developers</h3>
-          <p class="text-gray-600 dark:text-gray-300 text-sm">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Developers</h3>
+          <p class="text-gray-600 text-sm">
             Test regex patterns, compare code versions, format text data, and process strings.
           </p>
         </div>
         <div class="text-center">
-          <div class="w-16 h-16 bg-purple-100 dark:bg-purple-500/20 rounded-lg flex items-center justify-center mx-auto mb-4 border border-purple-200 dark:border-purple-500/40">
+          <div class="w-16 h-16 bg-purple-100  rounded-lg flex items-center justify-center mx-auto mb-4 border border-purple-200">
             <span class="text-2xl">📝</span>
           </div>
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Content Creators</h3>
-          <p class="text-gray-600 dark:text-gray-300 text-sm">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Content Creators</h3>
+          <p class="text-gray-600 text-sm">
             Generate content, format text for social media, and analyze engagement metrics.
           </p>
         </div>
         <div class="text-center">
-          <div class="w-16 h-16 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-4 border border-orange-200 dark:border-orange-500/40 dark:bg-orange-500/20">
+          <div class="w-16 h-16 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-4 border border-orange-200">
             <span class="text-2xl">🎓</span>
           </div>
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Students & Researchers</h3>
-          <p class="text-gray-600 dark:text-gray-300 text-sm">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Students & Researchers</h3>
+          <p class="text-gray-600 text-sm">
             Analyze research papers, format citations, count words for assignments, and organize data.
           </p>
         </div>
@@ -202,34 +202,34 @@ const textCategories = [
 
     {/* Text Processing Features */}
     <section class="mb-16">
-      <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+      <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">
         Advanced Text Processing Features
       </h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-lg border border-gray-200 dark:border-slate-700">
-          <div class="w-12 h-12 bg-blue-100 dark:bg-blue-500/20 rounded-lg flex items-center justify-center mb-4 border border-blue-200 dark:border-blue-500/40">
+        <div class="bg-white  p-6 rounded-lg border border-gray-200">
+          <div class="w-12 h-12 bg-blue-100  rounded-lg flex items-center justify-center mb-4 border border-blue-200">
             <span class="text-xl">📊</span>
           </div>
-          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Real-time Analysis</h3>
-          <p class="text-gray-600 dark:text-gray-300">
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">Real-time Analysis</h3>
+          <p class="text-gray-600">
             Get instant statistics, word counts, character analysis, and readability scores as you type.
           </p>
         </div>
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-lg border border-gray-200 dark:border-slate-700">
-          <div class="w-12 h-12 bg-green-100 dark:bg-green-500/20 rounded-lg flex items-center justify-center mb-4 border border-green-200 dark:border-green-500/40">
+        <div class="bg-white  p-6 rounded-lg border border-gray-200">
+          <div class="w-12 h-12 bg-green-100  rounded-lg flex items-center justify-center mb-4 border border-green-200">
             <span class="text-xl">🔄</span>
           </div>
-          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Batch Processing</h3>
-          <p class="text-gray-600 dark:text-gray-300">
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">Batch Processing</h3>
+          <p class="text-gray-600">
             Process large amounts of text at once with bulk operations for efficiency and productivity.
           </p>
         </div>
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-lg border border-gray-200 dark:border-slate-700">
-          <div class="w-12 h-12 bg-purple-100 dark:bg-purple-500/20 rounded-lg flex items-center justify-center mb-4 border border-purple-200 dark:border-purple-500/40">
+        <div class="bg-white  p-6 rounded-lg border border-gray-200">
+          <div class="w-12 h-12 bg-purple-100  rounded-lg flex items-center justify-center mb-4 border border-purple-200">
             <span class="text-xl">🎯</span>
           </div>
-          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Precision Tools</h3>
-          <p class="text-gray-600 dark:text-gray-300">
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">Precision Tools</h3>
+          <p class="text-gray-600">
             Advanced regex testing, find & replace, diff comparison, and text transformation tools.
           </p>
         </div>
@@ -237,59 +237,59 @@ const textCategories = [
     </section>
 
     {/* FAQ Section */}
-    <section class="bg-gray-50 dark:bg-slate-900 rounded-lg p-8 border border-gray-200 dark:border-slate-700">
-      <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+    <section class="bg-gray-50  rounded-lg p-8 border border-gray-200">
+      <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">
         Text Processing FAQ
       </h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div class="space-y-6">
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">
               Are text processing tools free to use?
             </h3>
-            <p class="text-gray-600 dark:text-gray-300">
+            <p class="text-gray-600">
               Yes, all our text processing tools are completely free with no file size limits or usage restrictions. No registration required.
             </p>
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">
               How secure is text processing?
             </h3>
-            <p class="text-gray-600 dark:text-gray-300">
+            <p class="text-gray-600">
               All text processing happens locally in your browser. Your text never leaves your device, ensuring complete privacy and security.
             </p>
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">
               Can I process large text files?
             </h3>
-            <p class="text-gray-600 dark:text-gray-300">
+            <p class="text-gray-600">
               Yes, our tools can handle large text files efficiently. Processing happens in real-time with no server limitations.
             </p>
           </div>
         </div>
         <div class="space-y-6">
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">
               What text formats are supported?
             </h3>
-            <p class="text-gray-600 dark:text-gray-300">
+            <p class="text-gray-600">
               Our tools support plain text, rich text, markdown, CSV, and various other text-based formats for maximum flexibility.
             </p>
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">
               Do tools work offline?
             </h3>
-            <p class="text-gray-600 dark:text-gray-300">
+            <p class="text-gray-600">
               Yes, once loaded, all text processing tools work offline. Perfect for sensitive documents or unreliable internet connections.
             </p>
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">
               How accurate are text statistics?
             </h3>
-            <p class="text-gray-600 dark:text-gray-300">
+            <p class="text-gray-600">
               Our text analysis tools use industry-standard algorithms for word counting, readability scoring, and statistical analysis.
             </p>
           </div>

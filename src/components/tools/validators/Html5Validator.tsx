@@ -239,13 +239,13 @@ export function Html5Validator({ className = '' }: Html5ValidatorProps) {
       />
 
       <div className="mt-6 grid gap-4 md:grid-cols-2">
-        <div className="flex items-center gap-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-3">
-          <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+        <div >
+          <label >
             <input
               type="checkbox"
               checked={autoValidate}
               onChange={handleToggleAuto}
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded dark:border-gray-600 dark:bg-gray-700"
+              
             />
             Auto-validate
           </label>
@@ -261,7 +261,7 @@ export function Html5Validator({ className = '' }: Html5ValidatorProps) {
           options={OPTIONS as any}
           config={optionsState as any}
           onChange={cfg => handleConfigChange(cfg as Html5ValidatorConfig)}
-          className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
+          
         />
       </div>
 
@@ -277,25 +277,25 @@ export function Html5Validator({ className = '' }: Html5ValidatorProps) {
       </div>
 
       {metadata?.prettified && (
-        <div className="mt-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Prettified HTML</h3>
+        <div >
+          <div >
+            <h3 >Prettified HTML</h3>
             <div className="flex items-center gap-2">
               <button
                 onClick={handleCopyPrettified}
-                className="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded border text-gray-700 dark:text-gray-300 transition-colors"
+                
               >
                 Copy
               </button>
               <button
                 onClick={handleDownloadPrettified}
-                className="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded border text-gray-700 dark:text-gray-300 transition-colors"
+                
               >
                 Download
               </button>
             </div>
           </div>
-          <pre className="overflow-auto p-4 text-sm font-mono text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-900/50 whitespace-pre">
+          <pre >
             <code>{metadata.prettified}</code>
           </pre>
         </div>
@@ -303,21 +303,21 @@ export function Html5Validator({ className = '' }: Html5ValidatorProps) {
 
       {metadata && (
         <div className="mt-6 grid gap-4 md:grid-cols-3">
-          <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800">
-            <p className="text-xs uppercase text-blue-600 dark:text-blue-300 tracking-wide">Status</p>
-            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mt-1">
+          <div >
+            <p >Status</p>
+            <p >
               {metadata.valid ? 'Valid' : 'Invalid'}
             </p>
           </div>
-          <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700">
-            <p className="text-xs uppercase text-gray-500 dark:text-gray-400 tracking-wide">Errors</p>
-            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mt-1">
+          <div >
+            <p >Errors</p>
+            <p >
               {metadata.errorCount}
             </p>
           </div>
-          <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700">
-            <p className="text-xs uppercase text-gray-500 dark:text-gray-400 tracking-wide">Warnings</p>
-            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mt-1">
+          <div >
+            <p >Warnings</p>
+            <p >
               {metadata.warningCount}
             </p>
           </div>

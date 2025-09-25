@@ -254,8 +254,8 @@ export function PerformanceBudgetCalculator({ className = '' }: PerformanceBudge
       <div className="lg:col-span-4 space-y-6">
         {/* Current Configuration */}
         <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Current Configuration</h3>
-          <div className="p-3 bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
+          <h3 >Current Configuration</h3>
+          <div >
             <div className="text-sm space-y-1">
               <div><strong>Type:</strong> {config.budgetType.charAt(0).toUpperCase() + config.budgetType.slice(1)}</div>
               <div><strong>Device:</strong> {config.deviceType.charAt(0).toUpperCase() + config.deviceType.slice(1)}</div>
@@ -270,20 +270,20 @@ export function PerformanceBudgetCalculator({ className = '' }: PerformanceBudge
         {/* Budget Summary */}
         {summary && (
           <div className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Budget Summary</h3>
-            <div className="p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-lg">
+            <h3 >Budget Summary</h3>
+            <div >
               <div className="text-sm space-y-1">
                 <div className="flex justify-between">
                   <span>Core Web Vitals:</span>
-                  <span className="font-semibold text-green-600 dark:text-green-400">{summary.coreVitals}</span>
+                  <span >{summary.coreVitals}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Performance Metrics:</span>
-                  <span className="font-semibold text-blue-600 dark:text-blue-400">{summary.metrics}</span>
+                  <span >{summary.metrics}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Resource Budgets:</span>
-                  <span className="font-semibold text-orange-600 dark:text-orange-400">{summary.resources}</span>
+                  <span >{summary.resources}</span>
                 </div>
               </div>
             </div>
@@ -292,32 +292,32 @@ export function PerformanceBudgetCalculator({ className = '' }: PerformanceBudge
 
         {/* Quick Presets */}
         <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Quick Presets</h3>
+          <h3 >Quick Presets</h3>
           <div className="grid grid-cols-1 gap-2">
             <button
               onClick={() => loadPreset('mobile3g')}
-              className="p-2 text-left text-xs bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded border"
+              
             >
               📱 <strong>Mobile 3G</strong><br/>
               Core Web Vitals for mobile users
             </button>
             <button
               onClick={() => loadPreset('desktop4g')}
-              className="p-2 text-left text-xs bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded border"
+              
             >
               💻 <strong>Desktop 4G</strong><br/>
               Standard desktop performance budget
             </button>
             <button
               onClick={() => loadPreset('pwa')}
-              className="p-2 text-left text-xs bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded border"
+              
             >
               📲 <strong>PWA Optimized</strong><br/>
               Progressive Web App on slow 3G
             </button>
             <button
               onClick={() => loadPreset('ecommerce')}
-              className="p-2 text-left text-xs bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded border"
+              
             >
               🛒 <strong>E-commerce</strong><br/>
               High-conversion user experience focus
@@ -327,15 +327,15 @@ export function PerformanceBudgetCalculator({ className = '' }: PerformanceBudge
 
         {/* Core Web Vitals Info */}
         <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Core Web Vitals</h3>
-          <div className="text-xs text-gray-600 dark:text-gray-400 space-y-2">
-            <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded">
+          <h3 >Core Web Vitals</h3>
+          <div >
+            <div >
               <strong>LCP:</strong> Largest Contentful Paint - Loading performance
             </div>
-            <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
+            <div >
               <strong>FID:</strong> First Input Delay - Interactivity responsiveness
             </div>
-            <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded">
+            <div >
               <strong>CLS:</strong> Cumulative Layout Shift - Visual stability
             </div>
           </div>
@@ -343,8 +343,8 @@ export function PerformanceBudgetCalculator({ className = '' }: PerformanceBudge
 
         {/* Performance Tips */}
         <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Quick Tips</h3>
-          <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+          <h3 >Quick Tips</h3>
+          <div >
             <div>• Prioritize Core Web Vitals for SEO ranking</div>
             <div>• Test on real devices and networks</div>
             <div>• Monitor with RUM and synthetic tools</div>

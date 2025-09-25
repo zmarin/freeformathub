@@ -235,7 +235,7 @@ export function UuidGenerator({ className = '' }: UuidGeneratorProps) {
   return (
     <div className={`flex flex-col ${className}`}>
       {/* Tool Header with Quick Actions */}
-      <div className="flex flex-col sm:flex-row gap-4 p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+      <div >
         {/* Quick Actions */}
         <div className="flex flex-wrap items-center gap-2">
           <button
@@ -266,7 +266,7 @@ export function UuidGenerator({ className = '' }: UuidGeneratorProps) {
 
         {/* Auto-format toggle */}
         <div className="flex items-center gap-2 ml-auto">
-          <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+          <label >
             <input
               type="checkbox"
               checked={autoFormat}
@@ -281,29 +281,29 @@ export function UuidGenerator({ className = '' }: UuidGeneratorProps) {
       {/* Main Content */}
       <div className="flex flex-col lg:flex-row flex-1 min-h-[600px]">
         {/* Control Section */}
-        <div className="flex-1 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700 max-w-full lg:max-w-md">
+        <div >
           {/* Control Header */}
-          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+          <div >
+            <h3 >
               UUID Generator Settings
             </h3>
           </div>
 
           {/* Examples */}
-          <div className="p-4 bg-gray-50 dark:bg-gray-900">
-            <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">Quick Examples</h4>
+          <div >
+            <h4 >Quick Examples</h4>
             <div className="grid gap-2">
               {EXAMPLES.map((example, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleExampleClick(example)}
-                  className="text-left p-3 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-lg transition-colors"
+                  
                   title={example.description}
                 >
-                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
+                  <div >
                     {example.title}
                   </div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400">
+                  <div >
                     {example.description}
                   </div>
                 </button>
@@ -312,20 +312,20 @@ export function UuidGenerator({ className = '' }: UuidGeneratorProps) {
           </div>
 
           {/* Essential Options */}
-          <div className="flex-1 p-4 bg-white dark:bg-gray-800">
-            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-4">Configuration</h4>
+          <div >
+            <h4 >Configuration</h4>
             
             <div className="space-y-4">
               {ESSENTIAL_OPTIONS.map((option) => (
                 <div key={option.key} className="space-y-2">
-                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                  <label >
                     {option.label}
                   </label>
                   {option.type === 'select' ? (
                     <select
                       value={String(config[option.key as keyof UuidGeneratorConfig] ?? option.default)}
                       onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
-                      className="w-full text-sm border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      
                     >
                       {option.options?.map((opt) => (
                         <option key={opt.value} value={opt.value}>
@@ -340,10 +340,10 @@ export function UuidGenerator({ className = '' }: UuidGeneratorProps) {
                       max={100}
                       value={config[option.key as keyof UuidGeneratorConfig] as number}
                       onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
-                      className="w-full text-sm border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      
                     />
                   ) : null}
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                  <p >
                     {option.description}
                   </p>
                 </div>
@@ -352,10 +352,10 @@ export function UuidGenerator({ className = '' }: UuidGeneratorProps) {
 
             {/* Advanced Options Toggle */}
             {ADVANCED_OPTIONS.length > 0 && (
-              <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div >
                 <button
                   onClick={() => setShowAdvanced(!showAdvanced)}
-                  className="flex items-center justify-between w-full text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                  
                 >
                   Advanced Options
                   <span className="text-xs">{showAdvanced ? '△' : '▽'}</span>
@@ -372,11 +372,11 @@ export function UuidGenerator({ className = '' }: UuidGeneratorProps) {
                             onChange={(e) => handleEssentialConfigChange(option.key, e.target.checked)}
                             className="rounded"
                           />
-                          <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                          <span >
                             {option.label}
                           </span>
                         </label>
-                        <p className="text-xs text-gray-600 dark:text-gray-400 ml-6">
+                        <p >
                           {option.description}
                         </p>
                       </div>
@@ -391,16 +391,16 @@ export function UuidGenerator({ className = '' }: UuidGeneratorProps) {
         {/* Output Section */}
         <div className="flex-1 flex flex-col">
           {/* Output Header */}
-          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+          <div >
+            <h3 >
               Generated UUIDs
-              {isLoading && <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">Generating...</span>}
+              {isLoading && <span >Generating...</span>}
               {!error && output && metadata && (
-                <span className="ml-2 text-xs text-green-600 dark:text-green-400">
+                <span >
                   ✓ {metadata.count} UUID{metadata.count > 1 ? 's' : ''} ({metadata.version?.toUpperCase()})
                 </span>
               )}
-              {error && <span className="ml-2 text-xs text-red-600 dark:text-red-400">✗ Error</span>}
+              {error && <span >✗ Error</span>}
             </h3>
             <div className="flex items-center gap-2">
               {output && (
@@ -409,15 +409,15 @@ export function UuidGenerator({ className = '' }: UuidGeneratorProps) {
                     onClick={handleCopy}
                     className={`text-xs px-3 py-1 rounded border transition-colors ${
                       copied 
-                        ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border-green-300 dark:border-green-600'
-                        : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
+                        ? 'bg-green-100 text-green-700 border-green-300'
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300'
                     }`}
                   >
                     {copied ? '✓ Copied' : 'Copy'}
                   </button>
                   <button
                     onClick={handleDownload}
-                    className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded border border-gray-300 dark:border-gray-600 transition-colors"
+                    
                   >
                     Download
                   </button>
@@ -427,12 +427,12 @@ export function UuidGenerator({ className = '' }: UuidGeneratorProps) {
           </div>
 
           {/* Output Content */}
-          <div className="flex-1 bg-white dark:bg-gray-800">
+          <div >
             {error ? (
               <div className="p-4 h-full">
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-                  <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">Generation Error</h4>
-                  <pre className="text-xs text-red-700 dark:text-red-300 whitespace-pre-wrap font-mono">
+                <div >
+                  <h4 >Generation Error</h4>
+                  <pre >
                     {error}
                   </pre>
                 </div>
@@ -443,7 +443,7 @@ export function UuidGenerator({ className = '' }: UuidGeneratorProps) {
                   value={output}
                   readOnly
                   placeholder="Generated UUIDs will appear here..."
-                  className="flex-1 p-4 resize-none bg-transparent text-gray-900 dark:text-gray-100 font-mono text-sm border-none focus:outline-none"
+                  
                   spellCheck={false}
                 />
               </div>
@@ -452,8 +452,8 @@ export function UuidGenerator({ className = '' }: UuidGeneratorProps) {
 
           {/* Metadata */}
           {metadata && !error && output && (
-            <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-              <div className="flex flex-wrap gap-4 text-xs text-gray-600 dark:text-gray-400">
+            <div >
+              <div >
                 <span><strong>Version:</strong> {metadata.version?.toUpperCase()}</span>
                 <span><strong>Count:</strong> {metadata.count}</span>
                 <span><strong>Format:</strong> {metadata.format}</span>
@@ -464,7 +464,7 @@ export function UuidGenerator({ className = '' }: UuidGeneratorProps) {
                   <span><strong>Generated:</strong> {new Date(metadata.generatedAt).toLocaleTimeString()}</span>
                 )}
                 {metadata.validationInfo && (
-                  <span className="text-green-600 dark:text-green-400">
+                  <span >
                     <strong>✓ {metadata.validationInfo}</strong>
                   </span>
                 )}

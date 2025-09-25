@@ -7,39 +7,39 @@ const description = 'View formatted JSON in a distraction‑free full‑page vie
 
 <BaseLayout title={title} description={description}>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-      <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200">
         <div class="flex items-center gap-3">
-          <h1 class="text-lg font-semibold text-gray-900 dark:text-gray-100">JSON Viewer</h1>
-          <span id="meta" class="text-xs text-gray-500 dark:text-gray-400"></span>
+          <h1 class="text-lg font-semibold text-gray-900">JSON Viewer</h1>
+          <span id="meta" class="text-xs text-gray-500"></span>
         </div>
         <div class="flex items-center gap-2">
-          <div class="hidden sm:flex items-center border border-gray-200 dark:border-gray-700 rounded overflow-hidden">
-            <button id="modeRaw" class="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-r border-gray-200 dark:border-gray-700">Raw</button>
-            <button id="modeTree" class="px-3 py-1 text-xs text-gray-700 dark:text-gray-300">Tree</button>
+          <div class="hidden sm:flex items-center border border-gray-200 rounded overflow-hidden">
+            <button id="modeRaw" class="px-3 py-1 text-xs bg-gray-100  text-gray-700  border-r border-gray-200">Raw</button>
+            <button id="modeTree" class="px-3 py-1 text-xs text-gray-700">Tree</button>
           </div>
-          <input id="searchInput" placeholder="Search..." class="text-xs px-2 py-1 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100" />
-          <label class="hidden sm:inline-flex items-center gap-1 text-xs text-gray-600 dark:text-gray-300"><input id="filterToggle" type="checkbox" /> Filter</label>
+          <input id="searchInput" placeholder="Search..." class="text-xs px-2 py-1 border rounded bg-white border-gray-300  text-gray-800" />
+          <label class="hidden sm:inline-flex items-center gap-1 text-xs text-gray-600"><input id="filterToggle" type="checkbox" /> Filter</label>
           <div class="hidden sm:flex items-center gap-1 ml-2">
-            <input id="jpInput" placeholder="$.path[*]" class="text-xs px-2 py-1 border rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100" />
-            <span id="jpCount" class="text-[11px] text-gray-500 dark:text-gray-400">0</span>
-            <label class="inline-flex items-center gap-1 text-xs text-gray-600 dark:text-gray-300"><input id="jpFilterToggle" type="checkbox" /> Path filter</label>
-            <button id="jpCollapseBtn" class="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-2 py-1 rounded border text-gray-700 dark:text-gray-300">Collapse to matches</button>
+            <input id="jpInput" placeholder="$.path[*]" class="text-xs px-2 py-1 border rounded bg-white border-gray-300  text-gray-800" />
+            <span id="jpCount" class="text-[11px] text-gray-500">0</span>
+            <label class="inline-flex items-center gap-1 text-xs text-gray-600"><input id="jpFilterToggle" type="checkbox" /> Path filter</label>
+            <button id="jpCollapseBtn" class="text-xs bg-gray-100  hover:bg-gray-200  px-2 py-1 rounded border text-gray-700">Collapse to matches</button>
           </div>
           <button id="copyBtn" class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">Copy</button>
-          <button id="downloadBtn" class="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded border text-gray-700 dark:text-gray-300">Download</button>
-          <button id="wrapBtn" class="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded border text-gray-700 dark:text-gray-300">Wrap: On</button>
-          <button id="linesBtn" class="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded border text-gray-700 dark:text-gray-300">Lines: On</button>
+          <button id="downloadBtn" class="text-xs bg-gray-100  hover:bg-gray-200  px-3 py-1 rounded border text-gray-700">Download</button>
+          <button id="wrapBtn" class="text-xs bg-gray-100  hover:bg-gray-200  px-3 py-1 rounded border text-gray-700">Wrap: On</button>
+          <button id="linesBtn" class="text-xs bg-gray-100  hover:bg-gray-200  px-3 py-1 rounded border text-gray-700">Lines: On</button>
           <div id="treeButtons" class="hidden sm:flex items-center gap-2">
-            <button id="expandAllBtn" class="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded border text-gray-700 dark:text-gray-300">Expand all</button>
-            <button id="collapseAllBtn" class="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-3 py-1 rounded border text-gray-700 dark:text-gray-300">Collapse all</button>
+            <button id="expandAllBtn" class="text-xs bg-gray-100  hover:bg-gray-200  px-3 py-1 rounded border text-gray-700">Expand all</button>
+            <button id="collapseAllBtn" class="text-xs bg-gray-100  hover:bg-gray-200  px-3 py-1 rounded border text-gray-700">Collapse all</button>
           </div>
         </div>
       </div>
 
       <div class="relative" id="rawPane">
-        <div id="lines" class="absolute left-0 top-0 bottom-0 w-12 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 overflow-hidden"></div>
-        <pre id="content" class="pl-16 p-4 text-sm font-mono text-gray-900 dark:text-gray-100 whitespace-pre-wrap break-words overflow-auto" style="min-height: 60vh"></pre>
+        <div id="lines" class="absolute left-0 top-0 bottom-0 w-12 bg-gray-50 border-r border-gray-200 overflow-hidden"></div>
+        <pre id="content" class="pl-16 p-4 text-sm font-mono text-gray-900  whitespace-pre-wrap break-words overflow-auto" style="min-height: 60vh"></pre>
       </div>
 
       <div id="treePane" class="hidden">
@@ -141,7 +141,7 @@ const description = 'View formatted JSON in a distraction‑free full‑page vie
       linesEl.innerHTML = '';
       for (let i = 1; i <= n; i++) {
         const d = document.createElement('div');
-        d.className = 'px-2 py-0.5 text-xs text-gray-500 dark:text-gray-400 text-right leading-normal select-none';
+        d.className = 'px-2 py-0.5 text-xs text-gray-500 text-right leading-normal select-none';
         d.textContent = String(i);
         frag.appendChild(d);
       }
@@ -217,17 +217,17 @@ const description = 'View formatted JSON in a distraction‑free full‑page vie
         const row = document.createElement('div');
         row.style.paddingLeft = `${level*16}px`;
         const isMatch = matchedPaths.has(path);
-        row.className = `py-0.5 ${isMatch ? 'bg-yellow-50 dark:bg-yellow-900/30' : (show && q ? 'bg-yellow-50 dark:bg-yellow-900/20' : '')}`;
+        row.className = `py-0.5 ${isMatch ? 'bg-yellow-50 ' : (show && q ? 'bg-yellow-50 ' : '')}`;
         const toggle = document.createElement('button');
-        toggle.className = 'mr-1 text-xs w-5 inline-flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300';
+        toggle.className = 'mr-1 text-xs w-5 inline-flex items-center justify-center rounded border border-gray-300  text-gray-600';
         toggle.textContent = collapsed.has(path) ? '+' : '-';
         toggle.addEventListener('click', ()=>{ if (collapsed.has(path)) collapsed.delete(path); else collapsed.add(path); renderTree(); });
         const keySpan = document.createElement('span');
-        keySpan.className = isPrim ? 'text-gray-500' : 'text-blue-700 dark:text-blue-300';
+        keySpan.className = isPrim ? 'text-gray-500' : 'text-blue-700 ';
         keySpan.textContent = key !== undefined ? String(key) : '$';
         const valueSpan = document.createElement('span');
         if (isPrim){
-          valueSpan.innerHTML = `: <span class="${typeof value==='string'?'text-green-700 dark:text-green-400': typeof value==='number'?'text-orange-600': 'text-indigo-600'}">${escapeHtml(JSON.stringify(value))}</span>`;
+          valueSpan.innerHTML = `: <span class="${typeof value==='string'?'text-green-700 ': typeof value==='number'?'text-orange-600': 'text-indigo-600'}">${escapeHtml(JSON.stringify(value))}</span>`;
         }else{
           const size = isArr ? value.length : Object.keys(value).length;
           valueSpan.innerHTML = ` <span class="text-gray-500">${isArr?`[${size}]`:`{${size}}`}</span>`;
@@ -247,8 +247,8 @@ const description = 'View formatted JSON in a distraction‑free full‑page vie
     }
 
     // Mode switching
-    function setModeRaw(){ mode='raw'; rawPane.classList.remove('hidden'); treePane.classList.add('hidden'); treeButtons.classList.add('hidden'); modeRawBtn.classList.add('bg-gray-100','dark:bg-gray-700'); modeTreeBtn.classList.remove('bg-gray-100','dark:bg-gray-700'); renderRaw(text); }
-    function setModeTree(){ if(!parsed){ try{parsed=JSON.parse(text);}catch{}} mode='tree'; rawPane.classList.add('hidden'); treePane.classList.remove('hidden'); treeButtons.classList.remove('hidden'); modeTreeBtn.classList.add('bg-gray-100','dark:bg-gray-700'); modeRawBtn.classList.remove('bg-gray-100','dark:bg-gray-700'); renderTree(); }
+    function setModeRaw(){ mode='raw'; rawPane.classList.remove('hidden'); treePane.classList.add('hidden'); treeButtons.classList.add('hidden'); modeRawBtn.classList.add('bg-gray-100',''); modeTreeBtn.classList.remove('bg-gray-100',''); renderRaw(text); }
+    function setModeTree(){ if(!parsed){ try{parsed=JSON.parse(text);}catch{}} mode='tree'; rawPane.classList.add('hidden'); treePane.classList.remove('hidden'); treeButtons.classList.remove('hidden'); modeTreeBtn.classList.add('bg-gray-100',''); modeRawBtn.classList.remove('bg-gray-100',''); renderTree(); }
 
     modeRawBtn.addEventListener('click', setModeRaw);
     modeTreeBtn.addEventListener('click', setModeTree);

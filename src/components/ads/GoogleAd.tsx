@@ -110,7 +110,7 @@ export function GoogleAd({
     return (
       <div
         ref={adRef}
-        className={`bg-gray-100 dark:bg-gray-800 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center text-gray-500 dark:text-gray-400 text-sm ${className}`}
+        className={`bg-gray-100 border border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-500 text-sm ${className}`}
         style={adStyle}
       >
         {lazy ? 'Ad loading...' : ''}
@@ -144,7 +144,7 @@ export function GoogleAd({
   return (
     <div className={`ad-container ${className}`} ref={adRef}>
       {/* Ad label for transparency */}
-      <div className="text-xs text-gray-500 dark:text-gray-400 mb-1 text-center">
+      <div >
         Advertisement
       </div>
 

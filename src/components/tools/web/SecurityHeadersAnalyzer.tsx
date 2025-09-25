@@ -181,11 +181,11 @@ export function SecurityHeadersAnalyzer({ className = '' }: SecurityHeadersAnaly
   };
 
   const getGradeColor = (grade: string) => {
-    if (grade.startsWith('A')) return 'text-green-600 dark:text-green-400';
-    if (grade.startsWith('B')) return 'text-blue-600 dark:text-blue-400';
-    if (grade.startsWith('C')) return 'text-yellow-600 dark:text-yellow-400';
-    if (grade.startsWith('D')) return 'text-orange-600 dark:text-orange-400';
-    return 'text-red-600 dark:text-red-400';
+    if (grade.startsWith('A')) return 'text-green-600';
+    if (grade.startsWith('B')) return 'text-blue-600';
+    if (grade.startsWith('C')) return 'text-yellow-600';
+    if (grade.startsWith('D')) return 'text-orange-600';
+    return 'text-red-600';
   };
 
   return (
@@ -194,18 +194,18 @@ export function SecurityHeadersAnalyzer({ className = '' }: SecurityHeadersAnaly
         {/* Analysis Status */}
         {result.success && result.metadata && (
           <div className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Security Analysis</h3>
-            <div className="p-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
+            <h3 >Security Analysis</h3>
+            <div >
               <div className={`text-2xl font-bold ${getGradeColor(result.metadata.grade)}`}>
                 Grade: {result.metadata.grade}
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              <div >
                 Score: {result.metadata.score}/100
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-500 mt-2">
+              <div >
                 {result.metadata.headersImplemented}/{result.metadata.headersAnalyzed} headers implemented
                 {result.metadata.criticalIssues > 0 && (
-                  <span className="text-red-600 dark:text-red-400 ml-2">
+                  <span >
                     • {result.metadata.criticalIssues} critical issues
                   </span>
                 )}
@@ -216,32 +216,32 @@ export function SecurityHeadersAnalyzer({ className = '' }: SecurityHeadersAnaly
 
         {/* Sample Headers */}
         <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Sample Headers</h3>
+          <h3 >Sample Headers</h3>
           <div className="grid grid-cols-1 gap-2">
             <button
               onClick={() => loadSample('basic')}
-              className="p-2 text-left text-xs bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded border"
+              
             >
               🛡️ <strong>Basic Security</strong><br/>
               Essential headers for standard protection
             </button>
             <button
               onClick={() => loadSample('advanced')}
-              className="p-2 text-left text-xs bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded border"
+              
             >
               🚀 <strong>Advanced Security</strong><br/>
               Comprehensive modern header set
             </button>
             <button
               onClick={() => loadSample('ecommerce')}
-              className="p-2 text-left text-xs bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded border"
+              
             >
               🛒 <strong>E-commerce</strong><br/>
               Headers for payment processing sites
             </button>
             <button
               onClick={() => loadSample('minimal')}
-              className="p-2 text-left text-xs bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded border"
+              
             >
               ⚠️ <strong>Minimal (Insecure)</strong><br/>
               Example of missing security headers
@@ -251,15 +251,15 @@ export function SecurityHeadersAnalyzer({ className = '' }: SecurityHeadersAnaly
 
         {/* Security Standards */}
         <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Security Standards</h3>
-          <div className="text-xs text-gray-600 dark:text-gray-400 space-y-2">
-            <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
+          <h3 >Security Standards</h3>
+          <div >
+            <div >
               <strong>OWASP:</strong> Open Web Application Security Project guidelines
             </div>
-            <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded">
+            <div >
               <strong>NIST:</strong> National Institute of Standards and Technology
             </div>
-            <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded">
+            <div >
               <strong>CSP:</strong> Content Security Policy best practices
             </div>
           </div>
@@ -267,8 +267,8 @@ export function SecurityHeadersAnalyzer({ className = '' }: SecurityHeadersAnaly
 
         {/* Header Input Guide */}
         <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Input Format</h3>
-          <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+          <h3 >Input Format</h3>
+          <div >
             <div>• Paste response headers from browser dev tools</div>
             <div>• Format: "Header-Name: value"</div>
             <div>• One header per line</div>
@@ -338,11 +338,11 @@ X-Content-Type-Options: nosniff
                 </button>
                 {result.metadata?.grade && (
                   <div className={`px-3 py-1 text-xs rounded ${
-                    result.metadata.grade.startsWith('A') ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                    result.metadata.grade.startsWith('B') ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
-                    result.metadata.grade.startsWith('C') ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
-                    result.metadata.grade.startsWith('D') ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200' :
-                    'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                    result.metadata.grade.startsWith('A') ? 'bg-green-100 text-green-800' :
+                    result.metadata.grade.startsWith('B') ? 'bg-blue-100 text-blue-800' :
+                    result.metadata.grade.startsWith('C') ? 'bg-yellow-100 text-yellow-800' :
+                    result.metadata.grade.startsWith('D') ? 'bg-orange-100 text-orange-800' :
+                    'bg-red-100 text-red-800'
                   }`}>
                     {result.metadata.grade} Grade
                   </div>

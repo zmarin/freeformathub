@@ -279,7 +279,7 @@ export function QrGenerator({ className = '' }: QrGeneratorProps) {
   return (
     <div className={`grid grid-cols-1 lg:grid-cols-2 gap-0 ${className}`}>
       {/* Input Panel */}
-      <div className="border-r border-gray-200 dark:border-gray-700">
+      <div >
         <InputPanel
           value={input}
           onChange={handleInputChange}
@@ -321,7 +321,7 @@ ${getDataTypeHelp()}`}
         />
 
         {/* Quick Actions */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+        <div >
           <div className="flex flex-wrap gap-2 mb-4">
             <button
               onClick={() => generateRandomData('url')}
@@ -351,15 +351,15 @@ ${getDataTypeHelp()}`}
 
           {/* QR Code Preview */}
           {qrCodeDataUrl && !config.batchMode && (
-            <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div >
+              <div >
                 QR Code Preview:
               </div>
               <div className="flex flex-col items-center">
                 <img 
                   src={qrCodeDataUrl} 
                   alt="Generated QR Code" 
-                  className="max-w-32 max-h-32 border border-gray-200 dark:border-gray-600 rounded"
+                  
                 />
                 <button
                   onClick={downloadQRCode}
@@ -372,11 +372,11 @@ ${getDataTypeHelp()}`}
           )}
 
           {/* Configuration Info */}
-          <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <div >
+            <div >
               Current Settings:
             </div>
-            <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+            <div >
               <div>Type: {config.dataType.toUpperCase()}, Size: {config.size}px</div>
               <div>Error Correction: {config.errorCorrectionLevel} ({
                 config.errorCorrectionLevel === 'L' ? '~7%' :
@@ -389,18 +389,18 @@ ${getDataTypeHelp()}`}
           </div>
 
           {/* Data Type Help */}
-          <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-            <div className="text-sm font-medium text-blue-700 dark:text-blue-300 mb-1">
+          <div >
+            <div >
               {config.dataType.charAt(0).toUpperCase() + config.dataType.slice(1)} Format:
             </div>
-            <div className="text-xs text-blue-600 dark:text-blue-400">
+            <div >
               {getDataTypeHelp()}
             </div>
           </div>
 
           {/* Quick Examples */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label >
               Quick Examples:
             </label>
             <div className="grid grid-cols-1 gap-2">
@@ -408,10 +408,10 @@ ${getDataTypeHelp()}`}
                 <button
                   key={example.name}
                   onClick={() => insertExample(example)}
-                  className="px-3 py-2 text-sm text-left bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 rounded border transition-colors"
+                  
                 >
                   <div className="font-medium">{example.name}</div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400">
+                  <div >
                     {example.input.length > 40 ? 
                       example.input.substring(0, 40) + '...' : 
                       example.input
@@ -424,43 +424,43 @@ ${getDataTypeHelp()}`}
 
           {/* Statistics */}
           {stats && (
-            <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div >
+              <div >
                 QR Code Analysis:
               </div>
               <div className="grid grid-cols-2 gap-4 text-xs">
                 <div className="space-y-1">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Data Size:</span>
+                    <span >Data Size:</span>
                     <span className="font-mono">{stats.dataLength} bytes</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">QR Version:</span>
+                    <span >QR Version:</span>
                     <span className="font-mono">{stats.qrVersion}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Modules:</span>
+                    <span >Modules:</span>
                     <span className="font-mono">{stats.moduleCount}×{stats.moduleCount}</span>
                   </div>
                 </div>
                 <div className="space-y-1">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Capacity:</span>
+                    <span >Capacity:</span>
                     <span className="font-mono">{stats.capacity.binary}B</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Used:</span>
+                    <span >Used:</span>
                     <span className="font-mono">{Math.round((stats.dataLength / stats.capacity.binary) * 100)}%</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Est. Size:</span>
+                    <span >Est. Size:</span>
                     <span className="font-mono">{stats.estimatedSize}</span>
                   </div>
                 </div>
               </div>
               
-              <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600">
-                <div className="text-xs text-gray-600 dark:text-gray-400">
+              <div >
+                <div >
                   Encoded: {stats.encodedData.length > 30 ? 
                     stats.encodedData.substring(0, 30) + '...' : 
                     stats.encodedData

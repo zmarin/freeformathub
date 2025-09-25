@@ -84,11 +84,11 @@ const PLATFORM_LABELS: Record<Platform, string> = {
 
 const PLATFORM_BADGES: Record<Platform, string> = {
   'linux':
-    'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-200 border border-green-200 dark:border-green-500/40',
+    'bg-green-100 text-green-800/20 border border-green-200/40',
   'windows':
-    'bg-blue-100 text-blue-800 dark:bg-blue-500/20 dark:text-blue-200 border border-blue-200 dark:border-blue-500/40',
+    'bg-blue-100 text-blue-800/20 border border-blue-200/40',
   'powershell':
-    'bg-purple-100 text-purple-800 dark:bg-purple-500/20 dark:text-purple-200 border border-purple-200 dark:border-purple-500/40',
+    'bg-purple-100 text-purple-800/20 border border-purple-200/40',
 };
 
 const COMMANDS: CommandEntry[] = [
@@ -1031,14 +1031,14 @@ const CommandSearch = () => {
   };
 
   return (
-    <section className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm">
+    <section >
       <div className="p-6 sm:p-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+            <h2 >
               Command explorer
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-300 max-w-2xl">
+            <p >
               Search across Linux, Windows, and PowerShell commands. Filter by
               platform to focus on the environment you are troubleshooting.
             </p>
@@ -1046,7 +1046,7 @@ const CommandSearch = () => {
           <button
             type="button"
             onClick={handleClear}
-            className="self-start sm:self-auto inline-flex items-center gap-2 px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+            
           >
             Reset filters
           </button>
@@ -1054,7 +1054,7 @@ const CommandSearch = () => {
 
         <div className="mt-6 flex flex-col gap-4">
           <label className="block">
-            <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+            <span >
               Search command syntax or descriptions
             </span>
             <input
@@ -1062,7 +1062,7 @@ const CommandSearch = () => {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="e.g. permissions, restart service, open ports"
-              className="mt-2 w-full rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400/50"
+              
             />
           </label>
 
@@ -1082,12 +1082,12 @@ const CommandSearch = () => {
                   className={[
                     'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors',
                     isActive
-                      ? 'border-blue-500 bg-blue-50 text-blue-600 dark:border-blue-400 dark:bg-blue-500/20 dark:text-blue-200'
-                      : 'border-gray-200 bg-white text-gray-600 hover:border-blue-200 hover:text-blue-600 dark:border-slate-600 dark:bg-slate-800 dark:text-gray-300 dark:hover:border-blue-500 dark:hover:text-blue-200',
+                      ? 'border-blue-500 bg-blue-50 text-blue-600/20'
+                      : 'border-gray-200 bg-white text-gray-600 hover:border-blue-200 hover:text-blue-600',
                   ].join(' ')}
                 >
                   <span>{filter.label}</span>
-                  <span className="inline-flex h-6 min-w-[1.5rem] items-center justify-center rounded-full bg-gray-100 px-2 text-xs font-medium text-gray-600 dark:bg-slate-700 dark:text-gray-300">
+                  <span >
                     {countLabel}
                   </span>
                 </button>
@@ -1097,16 +1097,16 @@ const CommandSearch = () => {
         </div>
 
         <div className="mt-8">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p >
             Showing {totalMatches} command{totalMatches === 1 ? '' : 's'} matching
             your filters.
           </p>
         </div>
       </div>
 
-      <div className="divide-y divide-gray-200 dark:divide-slate-700">
+      <div >
         {groupedCommands.length === 0 ? (
-          <div className="p-6 sm:p-8 text-gray-600 dark:text-gray-300">
+          <div >
             <p className="font-medium">No commands matched your search.</p>
             <p className="mt-2 text-sm">
               Try different keywords (for example "port" or "permissions"), or
@@ -1118,14 +1118,14 @@ const CommandSearch = () => {
             <div key={section.id} className="p-6 sm:p-8">
               <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  <h3 >
                     {section.title}
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                  <p >
                     {section.description}
                   </p>
                 </div>
-                <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 dark:bg-slate-800 dark:text-gray-300">
+                <span >
                   {section.commands.length} command
                   {section.commands.length === 1 ? '' : 's'}
                 </span>
@@ -1135,10 +1135,10 @@ const CommandSearch = () => {
                 {section.commands.map((entry) => (
                   <article
                     key={entry.id}
-                    className="h-full rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+                    
                   >
                     <div className="flex items-start justify-between gap-3">
-                      <h4 className="text-base font-semibold text-gray-900 dark:text-white">
+                      <h4 >
                         {entry.command}
                       </h4>
                       <span
@@ -1148,13 +1148,13 @@ const CommandSearch = () => {
                       </span>
                     </div>
 
-                    <p className="mt-3 text-sm text-gray-600 dark:text-gray-300">
+                    <p >
                       {entry.summary}
                     </p>
 
                     {entry.example && (
                       <div className="mt-4">
-                        <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                        <p >
                           Example
                         </p>
                         <pre className="mt-1 overflow-x-auto rounded-lg bg-gray-900/90 px-3 py-2 text-xs text-green-100">
@@ -1164,7 +1164,7 @@ const CommandSearch = () => {
                     )}
 
                     {entry.tip && (
-                      <p className="mt-3 text-xs text-amber-600 dark:text-amber-300">
+                      <p >
                         Tip: {entry.tip}
                       </p>
                     )}
@@ -1174,7 +1174,7 @@ const CommandSearch = () => {
                         {entry.tags.map((tag) => (
                           <span
                             key={`${entry.id}-${tag}`}
-                            className="inline-flex items-center rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600 dark:bg-slate-800 dark:text-gray-300"
+                            
                           >
                             #{tag}
                           </span>

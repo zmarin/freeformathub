@@ -388,9 +388,9 @@ export function LogAnalysisTool() {
             </button>
           </div>
 
-          <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Format Info</h3>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
+          <div >
+            <h3 >Format Info</h3>
+            <p >
               {getLogFormatDescription(config.logFormat)}
             </p>
           </div>
@@ -409,9 +409,9 @@ export function LogAnalysisTool() {
         />
         
         {result?.warnings && result.warnings.length > 0 && (
-          <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-            <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-2">Warnings:</h4>
-            <ul className="text-sm text-yellow-700 dark:text-yellow-300 list-disc list-inside space-y-1">
+          <div >
+            <h4 >Warnings:</h4>
+            <ul >
               {result.warnings.map((warning, index) => (
                 <li key={index}>{warning}</li>
               ))}
@@ -420,15 +420,15 @@ export function LogAnalysisTool() {
         )}
 
         {result?.analysis?.alerts && result.analysis.alerts.length > 0 && (
-          <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-            <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">
+          <div >
+            <h4 >
               🚨 Alerts ({result.analysis.alerts.length})
             </h4>
             <div className="space-y-2">
               {result.analysis.alerts.map((alert, index) => (
                 <div key={index} className="text-sm">
                   <div className="flex items-center justify-between">
-                    <span className="font-medium text-red-700 dark:text-red-300">{alert.type.replace('_', ' ').toUpperCase()}</span>
+                    <span >{alert.type.replace('_', ' ').toUpperCase()}</span>
                     <span className={`px-2 py-1 text-xs rounded ${
                       alert.severity === 'critical' ? 'bg-red-600 text-white' :
                       alert.severity === 'high' ? 'bg-orange-500 text-white' :
@@ -438,7 +438,7 @@ export function LogAnalysisTool() {
                       {alert.severity}
                     </span>
                   </div>
-                  <p className="mt-1 text-red-600 dark:text-red-400">{alert.message}</p>
+                  <p >{alert.message}</p>
                 </div>
               ))}
             </div>
@@ -454,9 +454,9 @@ export function LogAnalysisTool() {
         />
 
         {result?.analysis?.summary && (
-          <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Quick Summary</h3>
-            <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+          <div >
+            <h3 >Quick Summary</h3>
+            <div >
               <div className="flex justify-between">
                 <span>Total Requests:</span>
                 <span className="font-medium">{result.analysis.summary.totalRequests.toLocaleString()}</span>
@@ -504,9 +504,9 @@ export function LogAnalysisTool() {
         )}
 
         {result?.analysis?.security && (
-          <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-            <h3 className="text-sm font-medium text-red-900 dark:text-red-100 mb-3">Security Analysis</h3>
-            <div className="space-y-2 text-sm text-red-700 dark:text-red-300">
+          <div >
+            <h3 >Security Analysis</h3>
+            <div >
               <div className="flex justify-between">
                 <span>Threat Level:</span>
                 <span className={`font-medium px-2 py-1 text-xs rounded ${
@@ -539,11 +539,11 @@ export function LogAnalysisTool() {
         )}
 
         {result?.analysis?.recommendations && result.analysis.recommendations.length > 0 && (
-          <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-            <h4 className="text-sm font-medium text-green-800 dark:text-green-200 mb-2">
+          <div >
+            <h4 >
               💡 Recommendations
             </h4>
-            <ul className="text-sm text-green-700 dark:text-green-300 space-y-1">
+            <ul >
               {result.analysis.recommendations.slice(0, 4).map((rec, index) => (
                 <li key={index} className="flex items-start">
                   <span className="mr-2">•</span>

@@ -10,12 +10,12 @@ const buildTimeGA = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || '(unset)';
   <section class="py-10">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
       <h1 class="text-2xl font-bold mb-4">Analytics Health</h1>
-      <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">
+      <p class="text-sm text-gray-600 mb-6">
         Quick diagnostics for Google Analytics and consent mode.
       </p>
 
       <div class="space-y-4" id="debug-section">
-        <div class="p-4 rounded border border-gray-200 dark:border-gray-700">
+        <div class="p-4 rounded border border-gray-200">
           <h2 class="font-semibold mb-2">Status</h2>
           <ul class="text-sm" id="status-list">
             <li><strong>Build-time GA ID</strong>: <code id="build-ga"></code></li>
@@ -27,7 +27,7 @@ const buildTimeGA = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || '(unset)';
           </ul>
         </div>
 
-        <div class="p-4 rounded border border-gray-200 dark:border-gray-700">
+        <div class="p-4 rounded border border-gray-200">
           <h2 class="font-semibold mb-2">Actions</h2>
           <div class="flex gap-2 flex-wrap">
             <button id="btn-grant-analytics" class="px-3 py-2 bg-blue-600 text-white rounded">Grant Analytics</button>
@@ -38,9 +38,9 @@ const buildTimeGA = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || '(unset)';
           <p class="text-xs text-gray-500 mt-2">Note: These actions update localStorage and trigger consent mode updates.</p>
         </div>
 
-        <div class="p-4 rounded border border-gray-200 dark:border-gray-700">
+        <div class="p-4 rounded border border-gray-200">
           <h2 class="font-semibold mb-2">Last Action</h2>
-          <pre id="log" class="text-xs bg-gray-50 dark:bg-gray-900 p-3 rounded overflow-auto"></pre>
+          <pre id="log" class="text-xs bg-gray-50 p-3 rounded overflow-auto"></pre>
         </div>
       </div>
     </div>

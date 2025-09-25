@@ -316,7 +316,7 @@ export function UrlParser({ className = '' }: UrlParserProps) {
   return (
     <div className={`flex flex-col ${className}`}>
       {/* Tool Header with Quick Actions */}
-      <div className="flex flex-col sm:flex-row gap-4 p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+      <div >
         {/* Quick Actions */}
         <div className="flex flex-wrap items-center gap-2">
           <button
@@ -353,7 +353,7 @@ export function UrlParser({ className = '' }: UrlParserProps) {
 
         {/* Auto-format toggle */}
         <div className="flex items-center gap-2 ml-auto">
-          <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+          <label >
             <input
               type="checkbox"
               checked={autoFormat}
@@ -368,14 +368,14 @@ export function UrlParser({ className = '' }: UrlParserProps) {
       {/* Main Content */}
       <div className="flex flex-col lg:flex-row flex-1 min-h-[600px]">
         {/* Input Section */}
-        <div className="flex-1 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-700">
+        <div >
           {/* Input Header */}
-          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+          <div >
+            <h3 >
               URL Input
             </h3>
             <div className="flex items-center gap-2">
-              <label className="cursor-pointer text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded border transition-colors">
+              <label >
                 📁 Upload
                 <input
                   type="file"
@@ -387,7 +387,7 @@ export function UrlParser({ className = '' }: UrlParserProps) {
               {input && (
                 <button
                   onClick={() => setInput('')}
-                  className="text-xs px-3 py-1 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                  
                   title="Clear input"
                 >
                   🗑️ Clear
@@ -398,7 +398,7 @@ export function UrlParser({ className = '' }: UrlParserProps) {
 
           {/* Input Textarea */}
           <div 
-            className={`flex-1 relative ${dragActive ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+            className={`flex-1 relative ${dragActive ? 'bg-blue-50/20' : ''}`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
@@ -407,12 +407,12 @@ export function UrlParser({ className = '' }: UrlParserProps) {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Paste URLs here or drag & drop a file...\n\nSupported formats:\n- Single URL: https://example.com/path?param=value\n- Multiple URLs (one per line)\n- Text files with URLs (.txt, .csv)"
-              className="w-full h-full p-4 resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-mono text-sm border-none focus:outline-none focus:ring-0"
+              
               spellCheck={false}
             />
             {dragActive && (
-              <div className="absolute inset-0 flex items-center justify-center bg-blue-50/80 dark:bg-blue-900/40 backdrop-blur-sm">
-                <div className="text-blue-600 dark:text-blue-400 text-lg font-medium">
+              <div >
+                <div >
                   Drop URL file here
                 </div>
               </div>
@@ -420,14 +420,14 @@ export function UrlParser({ className = '' }: UrlParserProps) {
           </div>
 
           {/* Example buttons */}
-          <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+          <div >
             <div className="flex flex-wrap gap-2">
-              <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">Examples:</span>
+              <span >Examples:</span>
               {EXAMPLES.map((example, idx) => (
                 <button
                   key={idx}
                   onClick={() => setInput(example.value)}
-                  className="text-xs px-2 py-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-colors"
+                  
                   title={example.title}
                 >
                   {example.title}
@@ -441,26 +441,26 @@ export function UrlParser({ className = '' }: UrlParserProps) {
         <div className="flex-1 flex flex-col">
           {/* Components Display (if URL is valid) */}
           {urlComponents && (
-            <div className="p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-              <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">URL Components</h4>
+            <div >
+              <h4 >URL Components</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                <div><span className="font-medium text-gray-600 dark:text-gray-400">Protocol:</span> <span className="text-blue-600 dark:text-blue-400">{urlComponents.protocol}</span></div>
-                <div><span className="font-medium text-gray-600 dark:text-gray-400">Domain:</span> <span className="text-green-600 dark:text-green-400">{urlComponents.hostname}</span></div>
+                <div><span >Protocol:</span> <span >{urlComponents.protocol}</span></div>
+                <div><span >Domain:</span> <span >{urlComponents.hostname}</span></div>
                 {urlComponents.port && (
-                  <div><span className="font-medium text-gray-600 dark:text-gray-400">Port:</span> <span className="text-purple-600 dark:text-purple-400">{urlComponents.port}</span></div>
+                  <div><span >Port:</span> <span >{urlComponents.port}</span></div>
                 )}
-                <div><span className="font-medium text-gray-600 dark:text-gray-400">Path:</span> <span className="text-orange-600 dark:text-orange-400">{urlComponents.pathname || '/'}</span></div>
+                <div><span >Path:</span> <span >{urlComponents.pathname || '/'}</span></div>
                 {urlComponents.queryParams.length > 0 && (
                   <div className="col-span-full">
-                    <span className="font-medium text-gray-600 dark:text-gray-400">Parameters ({urlComponents.queryParams.length}):</span>
+                    <span >Parameters ({urlComponents.queryParams.length}):</span>
                     <div className="mt-1 space-y-1">
                       {urlComponents.queryParams.slice(0, 5).map(([key, value], idx) => (
-                        <div key={idx} className="text-xs text-gray-700 dark:text-gray-300">
+                        <div key={idx} >
                           <span className="font-medium">{key}:</span> {value}
                         </div>
                       ))}
                       {urlComponents.queryParams.length > 5 && (
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                        <div >
                           ... and {urlComponents.queryParams.length - 5} more
                         </div>
                       )}
@@ -468,19 +468,19 @@ export function UrlParser({ className = '' }: UrlParserProps) {
                   </div>
                 )}
                 {urlComponents.hash && (
-                  <div><span className="font-medium text-gray-600 dark:text-gray-400">Fragment:</span> <span className="text-red-600 dark:text-red-400">{urlComponents.hash}</span></div>
+                  <div><span >Fragment:</span> <span >{urlComponents.hash}</span></div>
                 )}
               </div>
             </div>
           )}
 
           {/* Output Header */}
-          <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+          <div >
+            <h3 >
               URL Analysis
-              {isLoading && <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">Processing...</span>}
-              {!error && output && <span className="ml-2 text-xs text-green-600 dark:text-green-400">✓ Parsed</span>}
-              {error && <span className="ml-2 text-xs text-red-600 dark:text-red-400">✗ Error</span>}
+              {isLoading && <span >Processing...</span>}
+              {!error && output && <span >✓ Parsed</span>}
+              {error && <span >✗ Error</span>}
             </h3>
             <div className="flex items-center gap-2">
               {output && (
@@ -489,15 +489,15 @@ export function UrlParser({ className = '' }: UrlParserProps) {
                     onClick={handleCopy}
                     className={`text-xs px-3 py-1 rounded border transition-colors ${
                       copied 
-                        ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border-green-300 dark:border-green-600'
-                        : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
+                        ? 'bg-green-100 text-green-700 border-green-300'
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300'
                     }`}
                   >
                     {copied ? '✓ Copied' : '📋 Copy'}
                   </button>
                   <button
                     onClick={handleDownload}
-                    className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded border border-gray-300 dark:border-gray-600 transition-colors"
+                    
                   >
                     💾 Download
                   </button>
@@ -507,12 +507,12 @@ export function UrlParser({ className = '' }: UrlParserProps) {
           </div>
 
           {/* Output Content */}
-          <div className="flex-1 bg-white dark:bg-gray-800">
+          <div >
             {error ? (
               <div className="p-4 h-full">
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-                  <h4 className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">URL Parsing Error</h4>
-                  <pre className="text-xs text-red-700 dark:text-red-300 whitespace-pre-wrap font-mono">
+                <div >
+                  <h4 >URL Parsing Error</h4>
+                  <pre >
                     {error}
                   </pre>
                 </div>
@@ -523,7 +523,7 @@ export function UrlParser({ className = '' }: UrlParserProps) {
                   value={output}
                   readOnly
                   placeholder="URL analysis results will appear here...\n\nEnter a URL above to see:\n• URL validation\n• Component breakdown\n• Security analysis\n• Query parameter details"
-                  className="flex-1 p-4 resize-none bg-transparent text-gray-900 dark:text-gray-100 font-mono text-sm border-none focus:outline-none"
+                  
                   spellCheck={false}
                 />
               </div>
@@ -532,8 +532,8 @@ export function UrlParser({ className = '' }: UrlParserProps) {
 
           {/* Metadata */}
           {metadata && !error && output && (
-            <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-              <div className="flex flex-wrap gap-4 text-xs text-gray-600 dark:text-gray-400">
+            <div >
+              <div >
                 {metadata.domain && (
                   <span><strong>Domain:</strong> {metadata.domain}</span>
                 )}
@@ -544,7 +544,7 @@ export function UrlParser({ className = '' }: UrlParserProps) {
                   <span><strong>Protocol:</strong> {metadata.protocol}</span>
                 )}
                 {metadata.isSecure !== undefined && (
-                  <span className={metadata.isSecure ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
+                  <span className={metadata.isSecure ? 'text-green-600' : 'text-red-600'}>
                     <strong>{metadata.isSecure ? '🔒 Secure' : '⚠️ Insecure'}</strong>
                   </span>
                 )}
@@ -558,13 +558,13 @@ export function UrlParser({ className = '' }: UrlParserProps) {
       </div>
 
       {/* Essential Options Panel */}
-      <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+      <div >
         <div className="p-4">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">Options</h4>
+            <h4 >Options</h4>
             <button
               onClick={() => setShowAdvanced(!showAdvanced)}
-              className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+              
             >
               {showAdvanced ? '△ Less' : '▽ More'}
             </button>
@@ -574,7 +574,7 @@ export function UrlParser({ className = '' }: UrlParserProps) {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {ESSENTIAL_OPTIONS.map((option) => (
               <div key={option.key} className="space-y-1">
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                <label >
                   {option.label}
                 </label>
                 {option.type === 'boolean' ? (
@@ -585,7 +585,7 @@ export function UrlParser({ className = '' }: UrlParserProps) {
                       onChange={(e) => handleEssentialConfigChange(option.key, e.target.checked)}
                       className="rounded"
                     />
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                    <span >
                       {option.description}
                     </span>
                   </label>
@@ -593,7 +593,7 @@ export function UrlParser({ className = '' }: UrlParserProps) {
                   <select
                     value={String(config[option.key as keyof UrlParserConfig] ?? option.default)}
                     onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
-                    className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    
                   >
                     {option.options?.map((opt) => (
                       <option key={opt.value} value={opt.value}>
@@ -608,12 +608,12 @@ export function UrlParser({ className = '' }: UrlParserProps) {
 
           {/* Advanced options */}
           {showAdvanced && (
-            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <h5 className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">Advanced Options</h5>
+            <div >
+              <h5 >Advanced Options</h5>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {ADVANCED_OPTIONS.map((option) => (
                   <div key={option.key} className="space-y-1">
-                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                    <label >
                       {option.label}
                     </label>
                     {option.type === 'boolean' ? (
@@ -624,7 +624,7 @@ export function UrlParser({ className = '' }: UrlParserProps) {
                           onChange={(e) => handleEssentialConfigChange(option.key, e.target.checked)}
                           className="rounded"
                         />
-                        <span className="text-xs text-gray-600 dark:text-gray-400">
+                        <span >
                           {option.description}
                         </span>
                       </label>
@@ -632,7 +632,7 @@ export function UrlParser({ className = '' }: UrlParserProps) {
                       <select
                         value={String(config[option.key as keyof UrlParserConfig] ?? option.default)}
                         onChange={(e) => handleEssentialConfigChange(option.key, e.target.value)}
-                        className="w-full text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                        
                       >
                         {option.options?.map((opt) => (
                           <option key={opt.value} value={opt.value}>

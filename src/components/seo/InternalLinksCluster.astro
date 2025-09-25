@@ -159,10 +159,10 @@ if (currentTool && relatedLinks.length < maxLinks) {
   <section class="py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-8">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">
           {currentTool ? 'Related Tools & Resources' : 'Popular Developer Tools'}
         </h2>
-        <p class="text-gray-600 dark:text-gray-300">
+        <p class="text-gray-600">
           Discover more tools to streamline your development workflow
         </p>
       </div>
@@ -171,23 +171,23 @@ if (currentTool && relatedLinks.length < maxLinks) {
         {relatedLinks.map((link, index) => (
           <a
             href={link.href}
-            class="group block p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-lg transition-all duration-200"
+            class="group block p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-200"
             rel={link.href.startsWith('/') ? undefined : 'noopener noreferrer'}
           >
             <div class="flex items-start space-x-3">
               <div class="flex-shrink-0">
-                <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                   <span class="text-lg">{link.icon || '🔧'}</span>
                 </div>
               </div>
               <div class="flex-1 min-w-0">
-                <h3 class="text-sm font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">
+                <h3 class="text-sm font-medium text-gray-900 group-hover:text-blue-600 truncate">
                   {link.title}
                 </h3>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mb-1 truncate">
+                <p class="text-xs text-gray-500 mb-1 truncate">
                   {link.category}
                 </p>
-                <p class="text-xs text-gray-600 dark:text-gray-300 line-clamp-2">
+                <p class="text-xs text-gray-600 line-clamp-2">
                   {link.description}
                 </p>
               </div>
@@ -198,11 +198,11 @@ if (currentTool && relatedLinks.length < maxLinks) {
 
       {/* SEO-friendly text links for crawlers */}
       <div class="mt-8 text-center">
-        <div class="text-sm text-gray-500 dark:text-gray-400">
+        <div class="text-sm text-gray-500">
           <span class="sr-only">Related links: </span>
           {relatedLinks.map((link, index) => (
             <span key={link.href}>
-              <a href={link.href} class="text-blue-600 dark:text-blue-400 hover:underline">
+              <a href={link.href} class="text-blue-600 hover:underline">
                 {link.title}
               </a>
               {index < relatedLinks.length - 1 && <span class="mx-1">•</span>}

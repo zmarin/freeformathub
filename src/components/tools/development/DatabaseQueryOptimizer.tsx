@@ -406,19 +406,19 @@ ORDER BY o.created_at DESC;`);
   }, [result, outputContent]);
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-green-600 dark:text-green-400';
-    if (score >= 60) return 'text-yellow-600 dark:text-yellow-400';
-    if (score >= 40) return 'text-orange-600 dark:text-orange-400';
-    return 'text-red-600 dark:text-red-400';
+    if (score >= 80) return 'text-green-600';
+    if (score >= 60) return 'text-yellow-600';
+    if (score >= 40) return 'text-orange-600';
+    return 'text-red-600';
   };
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 >
           Database Query Optimizer
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+        <p >
           Analyze and optimize SQL queries with performance suggestions, index recommendations, 
           and database-specific best practices.
         </p>
@@ -452,38 +452,38 @@ ORDER BY o.created_at DESC;`);
       </div>
 
       {result && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <div >
+          <h3 >
             Query Analysis Summary
           </h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-              <div className="text-sm text-blue-600 dark:text-blue-400 font-medium">Overall</div>
+            <div >
+              <div >Overall</div>
               <div className={`text-2xl font-bold ${getScoreColor(result.analysis.overall_score)}`}>
                 {result.analysis.overall_score}/100
               </div>
             </div>
-            <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-              <div className="text-sm text-green-600 dark:text-green-400 font-medium">Performance</div>
+            <div >
+              <div >Performance</div>
               <div className={`text-2xl font-bold ${getScoreColor(result.analysis.performance_score)}`}>
                 {result.analysis.performance_score}/100
               </div>
             </div>
-            <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
-              <div className="text-sm text-purple-600 dark:text-purple-400 font-medium">Complexity</div>
+            <div >
+              <div >Complexity</div>
               <div className={`text-2xl font-bold ${getScoreColor(result.analysis.complexity_score)}`}>
                 {result.analysis.complexity_score}/100
               </div>
             </div>
-            <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">
-              <div className="text-sm text-yellow-600 dark:text-yellow-400 font-medium">Maintainability</div>
+            <div >
+              <div >Maintainability</div>
               <div className={`text-2xl font-bold ${getScoreColor(result.analysis.maintainability_score)}`}>
                 {result.analysis.maintainability_score}/100
               </div>
             </div>
-            <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
-              <div className="text-sm text-red-600 dark:text-red-400 font-medium">Security</div>
+            <div >
+              <div >Security</div>
               <div className={`text-2xl font-bold ${getScoreColor(result.analysis.security_score)}`}>
                 {result.analysis.security_score}/100
               </div>
@@ -492,33 +492,33 @@ ORDER BY o.created_at DESC;`);
 
           {result.analysis.issues_found.length > 0 && (
             <div className="mb-6">
-              <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-3">
+              <h4 >
                 Issues Found ({result.analysis.issues_found.length})
               </h4>
               <div className="space-y-2">
                 {result.analysis.issues_found.slice(0, 3).map((issue, index) => {
                   const severityColors = {
-                    critical: 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200',
-                    high: 'bg-orange-100 dark:bg-orange-900/20 text-orange-800 dark:text-orange-200',
-                    medium: 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200',
-                    low: 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200'
+                    critical: 'bg-red-100/20 text-red-800',
+                    high: 'bg-orange-100/20 text-orange-800',
+                    medium: 'bg-yellow-100/20 text-yellow-800',
+                    low: 'bg-green-100/20 text-green-800'
                   };
 
                   return (
                     <div
                       key={index}
-                      className="flex items-start justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                      
                     >
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-1">
                           <span className={`px-2 py-1 text-xs font-medium rounded ${severityColors[issue.severity]}`}>
                             {issue.severity.toUpperCase()}
                           </span>
-                          <span className="font-medium text-gray-900 dark:text-gray-100">
+                          <span >
                             {issue.type.replace('_', ' ').toUpperCase()}
                           </span>
                         </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
+                        <div >
                           {issue.description}
                         </div>
                       </div>
@@ -531,24 +531,24 @@ ORDER BY o.created_at DESC;`);
 
           {result.index_suggestions.length > 0 && (
             <div>
-              <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-3">
+              <h4 >
                 Index Suggestions ({result.index_suggestions.length})
               </h4>
               <div className="space-y-2">
                 {result.index_suggestions.slice(0, 3).map((suggestion, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                    
                   >
                     <div>
-                      <div className="font-medium text-gray-900 dark:text-gray-100">
+                      <div >
                         {suggestion.table} ({suggestion.type.toUpperCase()})
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">
+                      <div >
                         Columns: {suggestion.columns.join(', ')}
                       </div>
                     </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                    <div >
                       {suggestion.expected_improvement}
                     </div>
                   </div>
