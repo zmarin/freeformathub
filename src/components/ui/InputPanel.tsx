@@ -113,77 +113,65 @@ export function InputPanel({
     handleChange('');
   }, [handleChange]);
 
+  const panelClassName = ['tool-panel', className].filter(Boolean).join(' ');
+
   return (
-    <div className={`bg-white dark:bg-gray-800 ${className}`}>
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center space-x-2">
-          <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-            {displayLabel}
-          </h3>
+    <div className={panelClassName}>
+      <div className="tool-panel__header">
+        <div className="tool-panel__title">
+          <span>{displayLabel}</span>
           {resolvedValue && (
-            <span className="text-xs text-gray-500 dark:text-gray-400">
+            <span className="tool-panel__meta">
               {resolvedValue.length} characters
             </span>
           )}
         </div>
-        
-        <div className="flex items-center space-x-2">
-          {/* Examples dropdown */}
+
+        <div className="tool-panel__actions">
           {examples.length > 0 && (
-            <div className="relative">
-              <select
-                className="text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 
-                          bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300
-                          focus:outline-none focus:ring-2 focus:ring-blue-500"
-                onChange={(e) => {
-                  const example = examples[parseInt(e.target.value, 10)];
-                  if (example) loadExample(example);
-                  e.target.value = '';
-                }}
-                defaultValue=""
-              >
-                <option value="">Examples</option>
-                {examples.map((example, index) => (
-                  <option key={index} value={index}>
-                    {example.title}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <select
+              className="tool-panel__select"
+              onChange={(e) => {
+                const example = examples[parseInt(e.target.value, 10)];
+                if (example) loadExample(example);
+                e.target.value = '';
+              }}
+              defaultValue=""
+            >
+              <option value="" disabled>
+                Examples
+              </option>
+              {examples.map((example, index) => (
+                <option key={index} value={index}>
+                  {example.title}
+                </option>
+              ))}
+            </select>
           )}
 
-          {/* File upload */}
-          <label className="cursor-pointer">
+          <label className="btn btn-outline btn-sm" role="button">
             <input
               type="file"
               accept={accept}
               onChange={handleFileSelect}
-              className="hidden"
+              hidden
             />
-            <div className="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 
-                           px-3 py-1 rounded border transition-colors
-                           text-gray-700 dark:text-gray-300">
-              Upload
-            </div>
+            Upload
           </label>
 
-          {/* Paste button */}
           <button
             onClick={handlePaste}
-            className="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 
-                      px-3 py-1 rounded border transition-colors
-                      text-gray-700 dark:text-gray-300"
+            className="btn btn-outline btn-sm"
+            type="button"
           >
             Paste
           </button>
 
-          {/* Clear button */}
           {resolvedValue && (
             <button
               onClick={clear}
-              className="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 
-                        px-2 py-1 rounded transition-colors"
+              className="btn btn-outline btn-sm tool-panel__button-danger"
+              type="button"
             >
               Clear
             </button>
@@ -191,16 +179,14 @@ export function InputPanel({
         </div>
       </div>
 
-      {/* Optional description */}
       {description && (
-        <div className="px-4 pt-3 text-xs text-gray-500 dark:text-gray-400">
+        <div className="tool-panel__description">
           {description}
         </div>
       )}
 
-      {/* Input area */}
       <div
-        className={`relative ${dragActive ? 'bg-blue-50 dark:bg-blue-900/20 border-2 border-dashed border-blue-300 dark:border-blue-600' : ''}`}
+        className={`tool-panel__body${dragActive ? ' tool-panel__body--drag' : ''}`}
         onDrop={handleDrop}
         onDragOver={handleDrag}
         onDragEnter={handleDrag}
@@ -212,35 +198,36 @@ export function InputPanel({
           placeholder={placeholder}
           rows={rows}
           maxLength={maxLength}
-          className="w-full p-4 text-sm font-mono bg-transparent border-none resize-none 
-                    text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500
-                    focus:outline-none focus:ring-0"
+          className="tool-panel__textarea"
           style={{ minHeight: `${rows * 1.5}rem` }}
         />
-        
+
         {dragActive && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="text-blue-600 dark:text-blue-400 text-center">
-              <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="tool-panel__drop-hint">
+            <div>
+              <svg
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                style={{ width: '2.5rem', height: '2.5rem', margin: '0 auto var(--space-sm)' }}
+              >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              <p className="text-sm font-medium">Drop file here</p>
+              <p>Drop file here</p>
             </div>
           </div>
         )}
       </div>
 
-      {/* Status bar */}
       {(maxLength || displaySyntax) && (
-        <div className="flex items-center justify-between px-4 py-2 text-xs text-gray-500 dark:text-gray-400 
-                       border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-          <div className="flex items-center space-x-4">
+        <div className="tool-panel__status">
+          <div className="tool-panel__status-group">
             {displaySyntax && (
               <span>Syntax: {displaySyntax}</span>
             )}
           </div>
           {maxLength && (
-            <span className={resolvedValue.length > maxLength * 0.9 ? 'text-yellow-600 dark:text-yellow-400' : ''}>
+            <span className={resolvedValue.length > maxLength * 0.9 ? 'tool-panel__status-warning' : ''}>
               {resolvedValue.length} / {maxLength}
             </span>
           )}
