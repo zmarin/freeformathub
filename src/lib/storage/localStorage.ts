@@ -138,7 +138,6 @@ export class LocalStorageManager {
 
   private getDefaultPreferences(): UserPreferences {
     return {
-      theme: 'auto',
       defaultConfigs: {},
       favoriteTools: [],
       recentTools: [],

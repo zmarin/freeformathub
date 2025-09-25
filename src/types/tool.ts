@@ -100,7 +100,6 @@ export interface ToolHistory {
 }
 
 export interface UserPreferences {
-  theme: 'light' | 'dark' | 'auto';
   defaultConfigs: Record<string, ToolConfig>;
   favoriteTools: string[];
   recentTools: string[];

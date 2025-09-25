@@ -125,8 +125,8 @@ const getNavLinkClasses = (active: boolean) => [
     <meta name="twitter:site" content={twitterSite} />
     
     <!-- Theme -->
-    <meta name="theme-color" content="#3b82f6" />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#5b7c99" />
+    <meta name="color-scheme" content="light" />
     
     <!-- Core Web Vitals 2025 Optimizations -->
     <!-- Critical Resource Preloads (LCP optimization) -->
@@ -535,34 +535,6 @@ const getNavLinkClasses = (active: boolean) => [
       console.log('🚀 AdSense Auto ads script loaded with consent-aware handling');
     </script>
 
-    <!-- Early theme init to prevent FOUC -->
-    <script>
-      (function() {
-        const html = document.documentElement;
-        const systemDarkQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        const getSaved = () => localStorage.getItem('theme') || 'auto';
-        const applyTheme = (theme) => {
-          const systemPrefersDark = systemDarkQuery.matches;
-          const dark = theme === 'dark' || (theme === 'auto' && systemPrefersDark);
-          html.classList.toggle('dark', dark);
-        };
-        // Apply immediately based on saved/system
-        applyTheme(getSaved());
-        // Bind toggle after DOM is ready
-        window.addEventListener('DOMContentLoaded', () => {
-          const themeToggle = document.getElementById('theme-toggle');
-          themeToggle?.addEventListener('click', () => {
-            const current = html.classList.contains('dark') ? 'light' : 'dark';
-            localStorage.setItem('theme', current);
-            applyTheme(current);
-          });
-        });
-        // React to system changes when in auto
-        systemDarkQuery.addEventListener('change', () => {
-          if (getSaved() === 'auto') applyTheme('auto');
-        });
-      })();
-    </script>
 
     <!-- Core Web Vitals 2025 Performance Monitoring -->
     <script>
@@ -754,21 +726,6 @@ const getNavLinkClasses = (active: boolean) => [
 
             <!-- Actions -->
             <div class="flex items-center gap-3">
-              <!-- Theme toggle -->
-              <button
-                id="theme-toggle"
-                type="button"
-                class="btn btn-outline btn-icon-only"
-                style="padding: var(--space-md); border-radius: var(--radius-lg);"
-                aria-label="Toggle theme"
-              >
-                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                </svg>
-                <span class="btn-text">Theme</span>
-              </button>
-
               <!-- Mobile Menu Button -->
               <button
                 id="mobile-menu-toggle"
@@ -913,7 +870,7 @@ const getNavLinkClasses = (active: boolean) => [
       </main>
 
       <!-- Footer -->
-      <footer class="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+      <footer style="background-color: var(--color-surface-secondary); border-top: 1px solid var(--color-border);">
         <!-- Footer Ad Placement -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <AdPlacement type="footer" lazy={true} />
@@ -922,38 +879,38 @@ const getNavLinkClasses = (active: boolean) => [
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div>
-              <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider">Tools</h3>
-              <ul class="mt-4 space-y-2">
-                <li><a href="/formatters/json-formatter" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">JSON Formatter</a></li>
-                <li><a href="/encoders/base64-encoder" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Base64 Encoder</a></li>
-                <li><a href="/encoders/url-encoder" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">URL Encoder</a></li>
-                <li><a href="/encoders/jwt-decoder" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">JWT Decoder</a></li>
+              <h3 style="font-size: 0.875rem; font-weight: 600; color: var(--color-text-primary); text-transform: uppercase; letter-spacing: 0.05em;">Tools</h3>
+              <ul style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                <li><a href="/formatters/json-formatter" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">JSON Formatter</a></li>
+                <li><a href="/encoders/base64-encoder" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Base64 Encoder</a></li>
+                <li><a href="/encoders/url-encoder" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">URL Encoder</a></li>
+                <li><a href="/encoders/jwt-decoder" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">JWT Decoder</a></li>
               </ul>
             </div>
             <div>
-              <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider">Categories</h3>
-              <ul class="mt-4 space-y-2">
-                <li><a href="/formatters" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Formatters</a></li>
-                <li><a href="/converters" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Converters</a></li>
-                <li><a href="/encoders" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Encoders</a></li>
-                <li><a href="/text" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Text Tools</a></li>
+              <h3 style="font-size: 0.875rem; font-weight: 600; color: var(--color-text-primary); text-transform: uppercase; letter-spacing: 0.05em;">Categories</h3>
+              <ul style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                <li><a href="/formatters" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Formatters</a></li>
+                <li><a href="/converters" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Converters</a></li>
+                <li><a href="/encoders" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Encoders</a></li>
+                <li><a href="/text" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Text Tools</a></li>
               </ul>
             </div>
             <div>
-              <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider">Support</h3>
-              <ul class="mt-4 space-y-2">
-                <li><a href="/about" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">About</a></li>
-                <li><a href="/privacy" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Privacy Policy</a></li>
-                <li><a href="/terms" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Terms of Service</a></li>
-                <li><a href="/contact" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600">Contact</a></li>
+              <h3 style="font-size: 0.875rem; font-weight: 600; color: var(--color-text-primary); text-transform: uppercase; letter-spacing: 0.05em;">Support</h3>
+              <ul style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                <li><a href="/about" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">About</a></li>
+                <li><a href="/privacy" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Privacy Policy</a></li>
+                <li><a href="/terms" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Terms of Service</a></li>
+                <li><a href="/contact" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Contact</a></li>
               </ul>
             </div>
             <div class="flex justify-center items-start">
               <AdPlacement type="sidebar" lazy={true} />
             </div>
           </div>
-          <div class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
-            <p class="text-sm text-gray-600 dark:text-gray-400 text-center">
+          <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--color-border);">
+            <p style="font-size: 0.875rem; color: var(--color-text-secondary); text-align: center;">
               © 2024 zmarin.zmcor. All rights reserved. | Z MARIN, obrt za usluge, Kijevska 5, Split, Croatia, EU, MBS 98472739
             </p>
           </div>

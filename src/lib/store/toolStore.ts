@@ -25,7 +25,6 @@ interface ToolStore {
 const storage = LocalStorageManager.getInstance();
 
 const defaultPreferences: UserPreferences = {
-  theme: 'auto',
   defaultConfigs: {},
   favoriteTools: [],
   recentTools: [],
