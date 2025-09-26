@@ -57,7 +57,7 @@ In Dokploy UI, add these environment variables:
 ```
 NODE_ENV=production
 PUBLIC_GA_MEASUREMENT_ID=G-34Z7YVSEZ2
-PUBLIC_ADSENSE_CLIENT_ID=ca-pub-5745115058807126
+PUBLIC_ADSENSE_CLIENT_ID=pub-5745115058807126
 ```
 
 #### AdSense Configuration

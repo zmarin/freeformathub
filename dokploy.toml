@@ -28,7 +28,7 @@ cpu = "0.5"
 [app.environment]
 # Required environment variables (set these in Dokploy UI)
 # PUBLIC_GA_MEASUREMENT_ID = "G-34Z7YVSEZ2"
-# PUBLIC_ADSENSE_CLIENT_ID = "ca-pub-5745115058807126"
+# PUBLIC_ADSENSE_CLIENT_ID = "pub-5745115058807126"
 # PUBLIC_HEADER_AD_SLOT = "actual-slot-id"
 # PUBLIC_SIDEBAR_AD_SLOT = "actual-slot-id"
 # PUBLIC_CONTENT_AD_SLOT = "actual-slot-id"
