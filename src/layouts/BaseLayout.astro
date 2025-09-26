@@ -176,13 +176,14 @@ const getNavLinkClasses = (active: boolean) => [
     <meta name="robots" content={robots} />
 
     <!-- Google AdSense Site Verification -->
-    <meta name="google-adsense-account" content={import.meta.env.PUBLIC_ADSENSE_CLIENT_ID} />
+    <meta name="google-adsense-account" content={(() => {
+      const rawId = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID || 'pub-5745115058807126';
+      return rawId.startsWith('ca-pub-') ? rawId : 'ca-pub-' + rawId.replace(/^pub-/, '');
+    })()} />
     {import.meta.env.PUBLIC_ADSENSE_VERIFICATION && (
       <meta name="google-site-verification" content={import.meta.env.PUBLIC_ADSENSE_VERIFICATION} />
     )}
 
-    <!-- Google AdSense Account Verification -->
-    <meta name="google-adsense-account" content="ca-pub-5745115058807126">
 
     <!-- Google Search Console Verification (separate from AdSense) -->
     {import.meta.env.PUBLIC_GOOGLE_SEARCH_CONSOLE_VERIFICATION && (
@@ -469,7 +470,10 @@ const getNavLinkClasses = (active: boolean) => [
     </script>
 
     <!-- Google AdSense Auto ads - Required on every page -->
-    <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${import.meta.env.PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-5745115058807126'}`}
+    <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${(() => {
+      const rawId = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID || 'pub-5745115058807126';
+      return rawId.startsWith('ca-pub-') ? rawId : 'ca-pub-' + rawId.replace(/^pub-/, '');
+    })()}`}
          crossorigin="anonymous"></script>
 
     <!-- AdSense initialization and consent handling -->
