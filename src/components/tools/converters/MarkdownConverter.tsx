@@ -282,17 +282,43 @@ export function MarkdownConverter({ className = '' }: MarkdownConverterProps) {
 
   const insertExample = (example: typeof QUICK_EXAMPLES[0]) => {
     setInput(example.input);
-    setConfig(example.config);
+    setConfig({ ...example.config });
   };
 
-  const switchMode = () => {
-    const newMode = config.mode === 'markdown-to-html' ? 'html-to-markdown' : 'markdown-to-html';
-    setConfig({ ...config, mode: newMode });
-    
-    // Optionally swap input/output when switching modes
+  const handleModeSelect = (mode: MarkdownConverterConfig['mode']) => {
+    if (mode === config.mode) {
+      return;
+    }
+
+    setConfig((previous) => ({ ...previous, mode }));
+
     if (output) {
       setInput(output);
     }
+  };
+
+  const handleOutputFormatSelect = (format: MarkdownConverterConfig['outputFormat']) => {
+    if (config.mode !== 'markdown-to-html' || format === config.outputFormat) {
+      return;
+    }
+
+    setConfig((previous) => ({ ...previous, outputFormat: format }));
+  };
+
+  const resetTool = () => {
+    setInput('');
+    setOutput('');
+    setError(undefined);
+    setStats(null);
+    setConfig({ ...DEFAULT_CONFIG });
+  };
+
+  const useOutputAsInput = () => {
+    if (!output) {
+      return;
+    }
+
+    setInput(output);
   };
 
   const generateSampleMarkdown = () => {
@@ -343,19 +369,118 @@ That's the end of our sample document!`;
   const inputSyntax = config.mode === 'markdown-to-html' ? 'markdown' : 'html';
   const outputSyntax = config.mode === 'markdown-to-html' ? 'html' : 'markdown';
   const inputLabel = config.mode === 'markdown-to-html' ? 'Markdown Input' : 'HTML Input';
-  const outputLabel = config.mode === 'markdown-to-html' ? 
+  const outputLabel = config.mode === 'markdown-to-html' ?
     (config.outputFormat === 'full-html' ? 'Complete HTML Document' : 'HTML Fragment') :
     'Markdown Output';
+  const activeFeatures = [
+    config.enableTables && 'Tables',
+    config.enableTaskLists && 'Tasks',
+    config.enableStrikethrough && 'Strikethrough',
+    config.enableAutolinks && 'Autolinks',
+    config.generateToc && 'TOC',
+  ].filter(Boolean) as string[];
 
   return (
-    <div className={`grid grid-cols-1 lg:grid-cols-2 gap-0 ${className}`}>
-      {/* Input Panel */}
-      <div >
-        <InputPanel
-          value={input}
-          onChange={handleInputChange}
-          label={inputLabel}
-          placeholder={config.mode === 'markdown-to-html' ? 
+    <div className={`space-y-6 ${className}`}>
+      <div className="rounded-xl border border-slate-200 bg-white/70 p-6 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900">Markdown & HTML Converter</h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Convert content instantly between Markdown and HTML. Choose the direction, adjust formatting rules, and review detailed document statistics.
+            </p>
+          </div>
+          <div className="flex w-full flex-col gap-4 lg:w-auto">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Mode</span>
+              <div className="flex rounded-lg border border-slate-200 bg-white p-1 shadow-sm">
+                <button
+                  type="button"
+                  onClick={() => handleModeSelect('markdown-to-html')}
+                  className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${config.mode === 'markdown-to-html'
+                    ? 'bg-blue-600 text-white shadow'
+                    : 'text-slate-600 hover:text-blue-600'
+                  }`}
+                >
+                  MD to HTML
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleModeSelect('html-to-markdown')}
+                  className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${config.mode === 'html-to-markdown'
+                    ? 'bg-blue-600 text-white shadow'
+                    : 'text-slate-600 hover:text-blue-600'
+                  }`}
+                >
+                  HTML to MD
+                </button>
+              </div>
+            </div>
+
+            {config.mode === 'markdown-to-html' && (
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Output</span>
+                <div className="flex rounded-lg border border-slate-200 bg-white p-1 shadow-sm">
+                  <button
+                    type="button"
+                    onClick={() => handleOutputFormatSelect('html-fragment')}
+                    className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${config.outputFormat === 'html-fragment'
+                      ? 'bg-emerald-500 text-white shadow'
+                      : 'text-slate-600 hover:text-emerald-600'
+                    }`}
+                  >
+                    HTML Fragment
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleOutputFormatSelect('full-html')}
+                    className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${config.outputFormat === 'full-html'
+                      ? 'bg-emerald-500 text-white shadow'
+                      : 'text-slate-600 hover:text-emerald-600'
+                    }`}
+                  >
+                    Full Document
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          <span className="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600">
+            {config.mode === 'markdown-to-html' ? 'Markdown to HTML' : 'HTML to Markdown'}
+          </span>
+          {config.mode === 'markdown-to-html' && (
+            <span className="inline-flex items-center rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600">
+              {config.outputFormat === 'full-html' ? 'Complete HTML document' : 'HTML fragment output'}
+            </span>
+          )}
+          <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">
+            {config.sanitizeHtml ? 'Sanitize HTML enabled' : 'Raw HTML allowed'}
+          </span>
+          {activeFeatures.length > 0 ? (
+            activeFeatures.map((feature) => (
+              <span
+                key={feature}
+                className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600"
+              >
+                {feature}
+              </span>
+            ))
+          ) : (
+            <span className="text-xs text-slate-500">Basic conversion only</span>
+          )}
+        </div>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)]">
+        <div className="space-y-6">
+          <InputPanel
+            value={input}
+            onChange={handleInputChange}
+            label={inputLabel}
+            placeholder={config.mode === 'markdown-to-html' ? 
             `Enter Markdown content:
 
 # Heading
@@ -402,153 +527,149 @@ console.log('Hello, World!');
                 '<ul>\n  <li>Item 1</li>\n  <li>Item 2</li>\n</ul>',
             },
           ]}
+          className="shadow-sm"
         />
-
-        {/* Quick Actions */}
-        <div >
-          <div className="flex flex-wrap gap-2 mb-4">
-            <button
-              onClick={switchMode}
-              className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors"
-            >
-              Switch to {config.mode === 'markdown-to-html' ? 'HTML→MD' : 'MD→HTML'}
-            </button>
-            {config.mode === 'markdown-to-html' && (
-              <button
-                onClick={generateSampleMarkdown}
-                className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded transition-colors"
-              >
-                Sample Markdown
-              </button>
-            )}
-            <button
-              onClick={() => setConfig({ ...config, outputFormat: config.outputFormat === 'full-html' ? 'html-fragment' : 'full-html' })}
-              className="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded transition-colors"
-              disabled={config.mode !== 'markdown-to-html'}
-            >
-              {config.outputFormat === 'full-html' ? 'Fragment' : 'Full Doc'}
-            </button>
-          </div>
-
-          {/* Conversion Info */}
-          <div >
-            <div >
-              Current Settings:
-            </div>
-            <div >
-              <div>Mode: {config.mode === 'markdown-to-html' ? 'Markdown → HTML' : 'HTML → Markdown'}</div>
-              {config.mode === 'markdown-to-html' && (
-                <div>Output: {config.outputFormat === 'full-html' ? 'Complete HTML document' : 'HTML fragment'}</div>
-              )}
-              <div>
-                Features: {[
-                  config.enableTables && 'Tables',
-                  config.enableTaskLists && 'Tasks',
-                  config.enableStrikethrough && 'Strikethrough',
-                  config.enableAutolinks && 'Autolinks',
-                  config.generateToc && 'TOC'
-                ].filter(Boolean).join(', ') || 'Basic only'}
+          <div className="grid gap-4">
+            <div className="rounded-lg border border-slate-200 bg-white/70 p-4 shadow-sm">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">Quick actions</p>
+                  <p className="text-xs text-slate-500">Jump-start conversions with handy presets.</p>
+                </div>
               </div>
-            </div>
-          </div>
-
-          {/* Quick Examples */}
-          <div className="mb-4">
-            <label >
-              Quick Examples:
-            </label>
-            <div className="grid grid-cols-1 gap-2">
-              {QUICK_EXAMPLES.map((example) => (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {config.mode === 'markdown-to-html' && (
+                  <button
+                    type="button"
+                    onClick={generateSampleMarkdown}
+                    className="inline-flex items-center rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-green-700"
+                  >
+                    Sample Markdown
+                  </button>
+                )}
                 <button
-                  key={example.name}
-                  onClick={() => insertExample(example)}
-                  
+                  type="button"
+                  onClick={useOutputAsInput}
+                  disabled={!output}
+                  className={`inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium transition ${output
+                    ? 'bg-blue-600 text-white hover:bg-blue-700'
+                    : 'cursor-not-allowed bg-slate-200 text-slate-500'
+                  }`}
                 >
-                  <div className="font-medium">{example.name}</div>
-                  <div >
-                    {example.input.length > 40 ? 
-                      example.input.substring(0, 40) + '...' : 
-                      example.input
-                    }
-                  </div>
+                  Use output as input
                 </button>
-              ))}
+                <button
+                  type="button"
+                  onClick={resetTool}
+                  className="inline-flex items-center rounded-md border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:border-red-300 hover:text-red-600"
+                >
+                  Reset tool
+                </button>
+              </div>
+            </div>
+
+            {stats && (
+              <div className="rounded-lg border border-slate-200 bg-white/70 p-4 shadow-sm">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">Document stats</p>
+                    <p className="text-xs text-slate-500">Review structure, counts, and size differences.</p>
+                  </div>
+                  <div className="rounded-md border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600">
+                    Size {stats.originalSize} → {stats.processedSize}
+                  </div>
+                </div>
+                <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  {[{
+                    label: 'Words',
+                    value: stats.wordCount,
+                  }, {
+                    label: 'Characters',
+                    value: stats.characterCount,
+                  }, {
+                    label: 'Lines',
+                    value: stats.lineCount,
+                  }, {
+                    label: 'Headings',
+                    value: stats.headingCount,
+                  }, {
+                    label: 'Links',
+                    value: stats.linkCount,
+                  }, {
+                    label: 'Images',
+                    value: stats.imageCount,
+                  }, {
+                    label: 'Code blocks',
+                    value: stats.codeBlockCount,
+                  }, {
+                    label: 'Tables',
+                    value: stats.tableCount,
+                  }, {
+                    label: 'Lists',
+                    value: stats.listCount,
+                  }].map((metric) => (
+                    <div key={metric.label} className="rounded-md border border-slate-200 bg-white/80 p-3">
+                      <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{metric.label}</div>
+                      <div className="mt-1 text-base font-semibold text-slate-900">{metric.value}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="rounded-lg border border-slate-200 bg-white/70 p-4 shadow-sm">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">Quick examples</p>
+                  <p className="text-xs text-slate-500">Load ready-made content to explore converter behavior.</p>
+                </div>
+              </div>
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                {QUICK_EXAMPLES.map((example) => {
+                  const preview = example.input.replace(/\s+/g, ' ').trim();
+                  const previewText = preview.length > 80 ? `${preview.slice(0, 80)}...` : preview;
+                  const isActive = input.trim() === example.input.trim() && config.mode === example.config.mode;
+
+                  return (
+                    <button
+                      key={example.name}
+                      type="button"
+                      onClick={() => insertExample(example)}
+                      className={`rounded-lg border px-4 py-3 text-left transition ${isActive
+                        ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-inner'
+                        : 'border-slate-200 bg-white/70 text-slate-600 hover:border-blue-300 hover:text-slate-800 hover:shadow-sm'
+                      }`}
+                    >
+                      <div className="text-sm font-semibold">{example.name}</div>
+                      <p className="mt-1 text-xs leading-5">{previewText}</p>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
-          {/* Statistics */}
-          {stats && (
-            <div >
-              <div >
-                Document Statistics:
-              </div>
-              <div className="grid grid-cols-2 gap-4 text-xs">
-                <div className="space-y-1">
-                  <div className="flex justify-between">
-                    <span >Words:</span>
-                    <span className="font-mono">{stats.wordCount}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span >Characters:</span>
-                    <span className="font-mono">{stats.characterCount}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span >Lines:</span>
-                    <span className="font-mono">{stats.lineCount}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span >Headings:</span>
-                    <span className="font-mono">{stats.headingCount}</span>
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <div className="flex justify-between">
-                    <span >Links:</span>
-                    <span className="font-mono">{stats.linkCount}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span >Images:</span>
-                    <span className="font-mono">{stats.imageCount}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span >Code Blocks:</span>
-                    <span className="font-mono">{stats.codeBlockCount}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span >Tables:</span>
-                    <span className="font-mono">{stats.tableCount}</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div >
-                <div className="flex justify-between text-xs">
-                  <span >Size Change:</span>
-                  <span className="font-mono">{stats.originalSize} → {stats.processedSize}</span>
-                </div>
-              </div>
-            </div>
-          )}
+          <OptionsPanel
+            options={OPTIONS}
+            config={config}
+            onChange={handleConfigChange}
+            className="shadow-sm"
+          />
         </div>
 
-        {/* Options */}
-        <OptionsPanel
-          options={OPTIONS}
-          config={config}
-          onChange={handleConfigChange}
-        />
+        <div className="space-y-6">
+          <OutputPanel
+            value={output}
+            error={error}
+            isLoading={isLoading}
+            label={outputLabel}
+            syntax={outputSyntax}
+            downloadFilename={`converted.${config.mode === 'markdown-to-html' ? 'html' : 'md'}`}
+            downloadContentType={config.mode === 'markdown-to-html' ? 'text/html' : 'text/markdown'}
+            className="shadow-sm"
+          />
+        </div>
       </div>
-
-      {/* Output Panel */}
-      <OutputPanel
-        value={output}
-        error={error}
-        isLoading={isLoading}
-        label={outputLabel}
-        syntax={outputSyntax}
-        downloadFilename={`converted.${config.mode === 'markdown-to-html' ? 'html' : 'md'}`}
-        downloadContentType={config.mode === 'markdown-to-html' ? 'text/html' : 'text/markdown'}
-      />
     </div>
   );
 }
