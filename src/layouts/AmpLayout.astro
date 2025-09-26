@@ -1,4 +1,6 @@
 ---
+import { getAdSenseClientId } from '../lib/adsense';
+
 export interface Props {
   title: string;
   description: string;
@@ -17,7 +19,7 @@ const {
 
 const siteUrl = Astro.site?.href || 'https://freeformathub.com';
 const canonicalUrl = canonical || new URL(canonicalPath, siteUrl).href;
-const adClient = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-PLACEHOLDER';
+const adClient = getAdSenseClientId();
 
 const baseStyles = `
   :root {

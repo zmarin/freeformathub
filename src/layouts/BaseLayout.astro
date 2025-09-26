@@ -4,6 +4,7 @@ import ToolSearch from '../components/ui/ToolSearch.tsx';
 import CookieConsent from '../components/CookieConsent.tsx';
 import AdPlacement from '../components/ads/AdPlacement.astro';
 import { LogoLink } from '../components/ui/Logo.tsx';
+import { getAdSenseClientId } from '../lib/adsense';
 
 export interface Props {
   title: string;
@@ -43,6 +44,7 @@ const twitterSite = '@freeformathub';
 const robots = robotsContent || 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
 // Google Analytics ID (from env with fallback)
 const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID || 'G-34Z7YVSEZ2';
+const AD_SENSE_CLIENT_ID = getAdSenseClientId();
 
 interface NavLink {
   href: string;
@@ -176,10 +178,7 @@ const getNavLinkClasses = (active: boolean) => [
     <meta name="robots" content={robots} />
 
     <!-- Google AdSense Site Verification -->
-    <meta name="google-adsense-account" content={(() => {
-      const rawId = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID || 'pub-5745115058807126';
-      return rawId.startsWith('ca-pub-') ? rawId : 'ca-pub-' + rawId.replace(/^pub-/, '');
-    })()} />
+    <meta name="google-adsense-account" content={AD_SENSE_CLIENT_ID} />
     {import.meta.env.PUBLIC_ADSENSE_VERIFICATION && (
       <meta name="google-site-verification" content={import.meta.env.PUBLIC_ADSENSE_VERIFICATION} />
     )}
@@ -470,10 +469,7 @@ const getNavLinkClasses = (active: boolean) => [
     </script>
 
     <!-- Google AdSense Auto ads - Required on every page -->
-    <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${(() => {
-      const rawId = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID || 'pub-5745115058807126';
-      return rawId.startsWith('ca-pub-') ? rawId : 'ca-pub-' + rawId.replace(/^pub-/, '');
-    })()}`}
+    <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${AD_SENSE_CLIENT_ID}`}
          crossorigin="anonymous"></script>
 
     <!-- AdSense initialization and consent handling -->

@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { hasConsentForMarketing, consentManager } from '../../lib/consent';
+import { getAdSenseClientId } from '../../lib/adsense';
+
+const AD_CLIENT_ID = getAdSenseClientId();
 
 export interface GoogleAdProps {
   adSlot: string;
@@ -151,7 +154,7 @@ export function GoogleAd({
       <ins
         className="adsbygoogle"
         style={getAdStyle()}
-        data-ad-client={import.meta.env.PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-PLACEHOLDER'}
+        data-ad-client={AD_CLIENT_ID}
         data-ad-slot={adSlot}
         data-ad-format={adFormat}
         data-ad-test={testMode ? 'on' : undefined}
