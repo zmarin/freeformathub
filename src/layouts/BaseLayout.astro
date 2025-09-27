@@ -228,18 +228,7 @@ const getNavLinkClasses = (active: boolean) => [
     <!-- Facebook Domain Verification -->
     <meta name="facebook-domain-verification" content={import.meta.env.PUBLIC_FACEBOOK_DOMAIN_VERIFICATION} />
 
-    <!-- Google Tag Manager (optional - loads if GTM_ID is set) -->
-    {import.meta.env.PUBLIC_GTM_ID && (
-      <>
-        <script define:vars={{GTM_ID: import.meta.env.PUBLIC_GTM_ID}}>
-          (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-          })(window,document,'script','dataLayer',GTM_ID);
-        </script>
-      </>
-    )}
+    <!-- Google Tag Manager removed to avoid conflicts with GA4 direct implementation -->
 
     <!-- Google Consent Mode v2 (must load before gtag) -->
     <script>
@@ -274,7 +263,7 @@ const getNavLinkClasses = (active: boolean) => [
         console.log('🔧 Initializing GA4 configuration...');
 
         gtag('js', new Date());
-        gtag('config', GA_ID_VALUE, {
+        gtag('config', GA_ID, {
           // Transport method for better reliability
           transport_type: 'beacon',
           // Enable debug mode for development
@@ -306,7 +295,7 @@ const getNavLinkClasses = (active: boolean) => [
         }
 
         gtag('event', 'page_view', {
-          send_to: GA_ID_VALUE,
+          send_to: GA_ID,
           page_title: document.title,
           page_location: window.location.href,
           page_path: window.location.pathname,
@@ -357,7 +346,7 @@ const getNavLinkClasses = (active: boolean) => [
         function trackEngagement() {
           if (typeof gtag === 'function') {
             gtag('event', 'user_engagement', {
-              send_to: GA_ID_VALUE,
+              send_to: GA_ID,
               engagement_time_msec: 15000
             });
           }
@@ -374,7 +363,7 @@ const getNavLinkClasses = (active: boolean) => [
           if (currentScroll > scrollDepth && currentScroll % 25 === 0 && typeof gtag === 'function') {
             scrollDepth = currentScroll;
             gtag('event', 'scroll', {
-              send_to: GA_ID_VALUE,
+              send_to: GA_ID,
               percent_scrolled: scrollDepth
             });
           }
@@ -385,6 +374,17 @@ const getNavLinkClasses = (active: boolean) => [
 
       // Initialize GA4 immediately
       initializeGA4();
+
+      // Send basic page view (no personal data) immediately for tag detection
+      gtag('event', 'page_view', {
+        send_to: GA_ID,
+        page_title: document.title,
+        page_location: window.location.href,
+        page_path: window.location.pathname,
+        consent_state: 'none',
+        user_data_collection: false
+      });
+      console.log('📊 Basic page view sent (no personal data)');
 
       // Check consent after DOM is ready
       if (document.readyState === 'loading') {
@@ -434,7 +434,7 @@ const getNavLinkClasses = (active: boolean) => [
           if (navigation) {
             setTimeout(() => {
               window.gtag('event', 'performance', {
-                send_to: GA_ID_VALUE,
+                send_to: GA_ID,
                 metric_name: 'page_load_time',
                 metric_value: navigation.loadEventEnd - navigation.fetchStart,
                 custom_parameter_1: (navigator?.connection?.effectiveType || 'unknown')
@@ -445,7 +445,7 @@ const getNavLinkClasses = (active: boolean) => [
 
         // Track device and viewport info
         window.gtag('event', 'device_info', {
-          send_to: GA_ID_VALUE,
+          send_to: GA_ID,
           screen_resolution: `${screen.width}x${screen.height}`,
           viewport_size: `${window.innerWidth}x${window.innerHeight}`,
           color_depth: screen.colorDepth,
@@ -681,17 +681,7 @@ const getNavLinkClasses = (active: boolean) => [
   </head>
   
   <body style="background-color: var(--color-background); color: var(--color-text-primary);">
-    <!-- Google Tag Manager (noscript) -->
-    {import.meta.env.PUBLIC_GTM_ID && (
-      <noscript>
-        <iframe
-          src={`https://www.googletagmanager.com/ns.html?id=${import.meta.env.PUBLIC_GTM_ID}`}
-          height="0"
-          width="0"
-          style="display:none;visibility:hidden">
-        </iframe>
-      </noscript>
-    )}
+    <!-- GTM noscript removed (using GA4 direct implementation) -->
 
     <!-- Skip to main content -->
     <a
@@ -991,7 +981,7 @@ const getNavLinkClasses = (active: boolean) => [
 
           if (acceptAll) {
             window.gtag('event', 'page_view', {
-              send_to: GA_ID_VALUE,
+              send_to: GA_ID,
               page_title: document.title,
               page_location: window.location.href
             });

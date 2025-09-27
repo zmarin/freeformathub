@@ -80,20 +80,20 @@ export function CookieConsent({ className = '' }: CookieConsentProps) {
 
   return (
     <div className={`fixed inset-x-0 bottom-0 z-50 ${className}`}>
-      <div >
+      <div className="bg-white shadow-2xl border-t-4 border-blue-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {!showDetails ? (
             // Simple consent banner
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="flex-1">
-                <h3 >
-                  🍪 We use cookies
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  🍪 Help Us Improve Your Experience
                 </h3>
-                <p >
-                  We use cookies to improve your experience, analyze site usage, and serve personalized ads.
-                  You can choose which types of cookies to accept.{' '}
-                  <a href="/privacy" className="text-blue-600 hover:text-blue-500 underline">
-                    Learn more
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  We use <strong>analytics cookies</strong> to understand how you use our tools and improve them.
+                  <strong> No personal data</strong> is collected - just anonymous usage statistics.{' '}
+                  <a href="/privacy" className="text-blue-600 hover:text-blue-500 underline font-medium">
+                    Privacy details
                   </a>
                 </p>
               </div>
@@ -116,10 +116,11 @@ export function CookieConsent({ className = '' }: CookieConsentProps) {
                 </button>
                 <button
                   onClick={handleAcceptAll}
-                  className="px-4 py-2 text-sm font-medium text-white
-                           bg-blue-600 hover:bg-blue-500 rounded-md transition-colors"
+                  className="px-6 py-3 text-sm font-semibold text-white
+                           bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors
+                           shadow-lg hover:shadow-xl transform hover:scale-105"
                 >
-                  Accept all
+                  ✅ Enable Analytics
                 </button>
               </div>
             </div>
@@ -127,12 +128,12 @@ export function CookieConsent({ className = '' }: CookieConsentProps) {
             // Detailed consent preferences
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <h3 >
+                <h3 className="text-lg font-semibold text-gray-900">
                   Cookie Preferences
                 </h3>
                 <button
                   onClick={() => setShowDetails(false)}
-                  
+                  className="text-gray-500 hover:text-gray-700 transition-colors"
                   aria-label="Close detailed settings"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -143,10 +144,10 @@ export function CookieConsent({ className = '' }: CookieConsentProps) {
 
               <div className="space-y-4">
                 {/* Necessary Cookies */}
-                <div >
+                <div className="flex items-start justify-between bg-gray-50 p-4 rounded-lg">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h4 >
+                      <h4 className="font-medium text-gray-900">
                         Necessary Cookies
                       </h4>
                       <span className="text-xs bg-green-100 text-green-800
@@ -154,7 +155,7 @@ export function CookieConsent({ className = '' }: CookieConsentProps) {
                         Always Active
                       </span>
                     </div>
-                    <p >
+                    <p className="text-sm text-gray-600">
                       Required for basic site functionality, user preferences, and security.
                     </p>
                   </div>
@@ -166,12 +167,12 @@ export function CookieConsent({ className = '' }: CookieConsentProps) {
                 </div>
 
                 {/* Analytics Cookies */}
-                <div >
+                <div className="flex items-start justify-between bg-blue-50 p-4 rounded-lg">
                   <div className="flex-1">
-                    <h4 >
+                    <h4 className="font-medium text-gray-900">
                       Analytics Cookies
                     </h4>
-                    <p >
+                    <p className="text-sm text-gray-600 mt-1">
                       Help us understand how visitors use our site to improve user experience.
                       Uses Google Analytics.
                     </p>
@@ -192,12 +193,12 @@ export function CookieConsent({ className = '' }: CookieConsentProps) {
                 </div>
 
                 {/* Marketing Cookies */}
-                <div >
+                <div className="flex items-start justify-between bg-orange-50 p-4 rounded-lg">
                   <div className="flex-1">
-                    <h4 >
+                    <h4 className="font-medium text-gray-900">
                       Marketing Cookies
                     </h4>
-                    <p >
+                    <p className="text-sm text-gray-600 mt-1">
                       Used to display relevant advertisements and measure ad performance.
                       Uses Google AdSense.
                     </p>
@@ -218,8 +219,8 @@ export function CookieConsent({ className = '' }: CookieConsentProps) {
                 </div>
               </div>
 
-              <div >
-                <p >
+              <div className="border-t pt-4">
+                <p className="text-sm text-gray-600 mb-4">
                   You can change these settings anytime in your browser or on our{' '}
                   <a href="/privacy" className="text-blue-600 hover:text-blue-500 underline">
                     privacy page
