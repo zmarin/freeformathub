@@ -19,7 +19,7 @@ export interface JwtParts {
 export const JWT_DECODER_TOOL: Tool = {
   id: 'jwt-decoder',
   name: 'JWT Decoder & Validator',
-  description: 'Decode JSON Web Token (JWT) with instant jwt token analysis, jwt get functionality for extracting claims, headers, and payloads. Validate JWT tokens with signature verification — secure in-browser processing.',
+  description: 'Need to sanity‑check an auth issue quickly? This JWT decoder unpacks header and payload instantly so you can confirm alg, iss, aud, exp, and custom claims. Decode tokens safely in‑browser, view raw segments or pretty JSON, and use the JWT validator hints to spot expired or malformed tokens without sharing secrets.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'encoders')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'encoders')!.subcategories!.find(sub => sub.id === 'crypto-encoding')!,
   slug: 'jwt-decoder',

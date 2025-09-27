@@ -37,6 +37,26 @@ export function renderCategoryMarkdown(data: CategoryData): string {
   lines.push('');
   lines.push(`> ${data.summary}`);
   lines.push('');
+  // Conversational developer perspective tailored to category
+  const catId = data.id;
+  if (catId === 'json-tools') {
+    lines.push(
+      'If you work with APIs, you already know the drill: paste the payload into a JSON formatter for readability, run a JSON validator to catch stray commas, then convert JSON to CSV or XML when someone asks for a spreadsheet. These tools keep that loop fast and local.'
+    );
+  } else if (catId === 'data-converters') {
+    lines.push(
+      'Real-world conversions rarely happen once. I often bounce between JSON ⇄ CSV for analysis, or XML ⇄ JSON when bridging older systems. Keeping it client-side avoids uploads, keeps things private, and makes quick checks painless.'
+    );
+  } else if (catId === 'text-tools') {
+    lines.push(
+      'From quick regex sanity checks to side-by-side diffs before a PR, these text tools handle the everyday cleanup and comparisons you don’t want to open an IDE for.'
+    );
+  } else if (catId === 'password-tools') {
+    lines.push(
+      'Security chores pop up mid‑sprint: generate a strong password, verify a hash, or double‑check a token — all safely in the browser with zero uploads.'
+    );
+  }
+  lines.push('');
   lines.push(`- **HTML:** ${data.htmlUrl}`);
   lines.push(`- **Markdown:** ${data.mdUrl}`);
   lines.push('');
@@ -100,6 +120,42 @@ function formatOptionalToolList(ids: string[] | undefined): string {
   return formatToolsList(resolved);
 }
 
+function pickSeoPhrases(tool: Tool): string[] {
+  const phrases: string[] = [];
+  const id = tool.id.toLowerCase();
+  const name = tool.name.toLowerCase();
+  const kws = (tool.keywords || []).map(k => k.toLowerCase());
+
+  const has = (token: string) =>
+    id.includes(token) || name.includes(token) || kws.some(k => k.includes(token));
+
+  // JSON
+  if ((has('json') && has('validator')) || has('json-validator') || has('json schema')) {
+    phrases.push('JSON validator');
+  }
+  if ((has('json') && has('formatter')) || has('json-formatter') || has('beautifier')) {
+    phrases.push('JSON formatter');
+  }
+
+  // XML
+  if ((has('xml') && has('validator')) || has('xml-validator')) {
+    phrases.push('XML validator');
+  }
+  if ((has('xml') && has('formatter')) || has('xml-formatter')) {
+    phrases.push('XML formatter');
+  }
+
+  // Base64
+  if ((has('base64') && has('encoder')) || has('base64-encoder')) {
+    phrases.push('Base64 encoder');
+  }
+  if ((has('base64') && has('decoder')) || has('base64-decoder')) {
+    phrases.push('Base64 decoder');
+  }
+
+  return Array.from(new Set(phrases));
+}
+
 export function renderToolMarkdown(tool: Tool): string {
   const lines: string[] = [];
   lines.push(`# ${tool.name}`);
@@ -111,6 +167,21 @@ export function renderToolMarkdown(tool: Tool): string {
   lines.push(`- **Markdown:** ${getToolMarkdownUrl(tool)}`);
   lines.push(`- **Keywords:** ${tool.keywords.join(', ')}`);
   lines.push('');
+
+  // Conversational developer note with relevant SEO phrases when applicable
+  const phrases = pickSeoPhrases(tool);
+  if (phrases.length) {
+    const mention = phrases.slice(0, 2).join(' and ');
+    lines.push(
+      `As a practical workflow, I start with a ${mention} to catch the easy mistakes, then iterate quickly in the same tab. Keeping processing client‑side means you can debug sensitive payloads without leaving the browser.`
+    );
+    lines.push('');
+  } else {
+    lines.push(
+      'Tip from experience: keep data local while you iterate. Pasting a sample, tweaking options, and seeing results instantly beats context switching to heavier tooling.'
+    );
+    lines.push('');
+  }
 
   if (tool.useCases.length) {
     lines.push('## Key use cases');

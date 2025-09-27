@@ -11,7 +11,7 @@ export interface UrlEncoderConfig extends ToolConfig {
 export const URL_ENCODER_TOOL: Tool = {
   id: 'url-encoder',
   name: 'URL Encoder & Decoder',
-  description: 'Encode or decode full URLs and URI components with precise control over reserved characters, space handling, and percent encoding — perfect for debugging query strings and APIs.',
+  description: 'For query strings, webhooks, and callback URLs, this URL encoder and decoder prevents the classic “why did that space break my request?” moment. Choose full URL vs component mode, pick + or %20 for spaces, and keep percent‑encoding RFC‑compliant while you debug APIs and redirects — all locally in your browser.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'encoders')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'encoders')!.subcategories!.find(sub => sub.id === 'url-encoding')!,
   slug: 'url-encoder',

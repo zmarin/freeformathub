@@ -714,11 +714,122 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
   }
 ];
 
+// --- Description humanizer -------------------------------------------------
+
+function lowerIncludes(haystack: string, needle: string): boolean {
+  return haystack.toLowerCase().includes(needle.toLowerCase());
+}
+
+function hasToken(tool: Tool, token: string): boolean {
+  const name = tool.name.toLowerCase();
+  const id = tool.id.toLowerCase();
+  const slug = tool.slug.toLowerCase();
+  const kw = (tool.keywords || []).map(k => k.toLowerCase());
+  return (
+    name.includes(token) || id.includes(token) || slug.includes(token) || kw.some(k => k.includes(token))
+  );
+}
+
+function computeSeoPhrases(tool: Tool): string[] {
+  const phrases: string[] = [];
+  const t = (s: string) => hasToken(tool, s);
+
+  // JSON
+  if ((t('json') && (t('validate') || t('validator'))) || t('json-validator')) {
+    phrases.push('JSON validator');
+  }
+  if ((t('json') && (t('format') || t('formatter') || t('beautifier'))) || t('json-formatter')) {
+    phrases.push('JSON formatter');
+  }
+
+  // XML
+  if ((t('xml') && (t('validate') || t('validator'))) || t('xml-validator')) {
+    phrases.push('XML validator');
+  }
+  if ((t('xml') && (t('format') || t('formatter') || t('beautifier'))) || t('xml-formatter')) {
+    phrases.push('XML formatter');
+  }
+
+  // Base64
+  if (t('base64') && (t('encode') || t('encoder') || t('base64-encoder'))) {
+    phrases.push('Base64 encoder');
+  }
+  if (t('base64') && (t('decode') || t('decoder') || t('base64-decoder'))) {
+    phrases.push('Base64 decoder');
+  }
+
+  // URL
+  if (t('url') && (t('encode') || t('encoder') || t('url-encoder'))) {
+    phrases.push('URL encoder');
+  }
+  if (t('url') && (t('decode') || t('decoder') || t('url-decoder'))) {
+    phrases.push('URL decoder');
+  }
+
+  // YAML / HTML / CSV / SQL / CSS
+  if (t('yaml') && (t('format') || t('formatter') || t('beautifier') || t('yaml-formatter'))) {
+    phrases.push('YAML formatter');
+  }
+  if (t('html') && (t('format') || t('formatter') || t('beautifier') || t('html-formatter') || t('html-beautifier'))) {
+    phrases.push('HTML formatter');
+  }
+  if (t('csv') && (t('format') || t('formatter') || t('beautifier') || t('csv-formatter'))) {
+    phrases.push('CSV formatter');
+  }
+  if (t('sql') && (t('format') || t('formatter') || t('beautifier') || t('sql-formatter'))) {
+    phrases.push('SQL formatter');
+  }
+  if (t('css') && (t('format') || t('formatter') || t('beautifier') || t('css-beautifier'))) {
+    phrases.push('CSS beautifier');
+  }
+
+  // JWT
+  if (t('jwt') && (t('decode') || t('decoder') || t('jwt-decoder'))) {
+    phrases.push('JWT decoder');
+  }
+  if (t('jwt') && (t('generate') || t('generator') || t('jwt-generator'))) {
+    phrases.push('JWT generator');
+  }
+
+  return Array.from(new Set(phrases));
+}
+
+function humanizeDescription(tool: Tool): string {
+  const original = tool.description || '';
+  const phrases = computeSeoPhrases(tool);
+  // If description already includes any of the phrases, avoid duplication
+  const missing = phrases.filter(p => !lowerIncludes(original, p));
+  if (!missing.length) {
+    return original;
+  }
+  const joined = missing.slice(0, 2).join(' and ');
+  const lowered = joined.toLowerCase();
+  // Handle common initialisms more precisely for article selection
+  let article: 'a' | 'an' = 'a';
+  if (lowered.startsWith('xml ') || lowered.startsWith('html ') || lowered.startsWith('sql ')) {
+    article = 'an';
+  } else if (lowered.startsWith('url ') || lowered.startsWith('jwt ')) {
+    article = 'a';
+  } else {
+    const first = lowered.charAt(0);
+    article = 'aeioux'.includes(first) ? 'an' : 'a';
+  }
+  const tip = ` Tip from practice: I start with ${article} ${joined} to catch easy issues, then iterate in the same tab. Everything runs locally in your browser for privacy.`;
+  return `${original} ${tip}`.trim();
+}
+
 // Tool registry - will be populated as we add tools
 export const TOOL_REGISTRY: Record<string, Tool> = {};
 
 export function registerTool(tool: Tool): void {
-  TOOL_REGISTRY[tool.id] = tool;
+  // Humanize description while preserving SEO phrases, non-destructive
+  try {
+    const enhanced: Tool = { ...tool, description: humanizeDescription(tool) };
+    TOOL_REGISTRY[tool.id] = enhanced;
+  } catch {
+    // Fallback to raw tool on any unexpected error
+    TOOL_REGISTRY[tool.id] = tool;
+  }
 }
 
 export function getTool(id: string): Tool | undefined {

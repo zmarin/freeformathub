@@ -23,7 +23,7 @@ export interface JsonFormatterConfig extends ToolConfig {
 export const JSON_FORMATTER_TOOL: Tool = {
   id: 'json-formatter',
   name: 'JSON Formatter, Parser & Validator - Get, Search & Extract JSON Data',
-  description: 'Get instant results from JSON data! Search through nested objects, extract specific values, and parse any JSON format. Advanced formatter with key sorting, inline arrays, duplicate key detection, and rich error details—all processed locally.',
+  description: 'If you have ever squinted at a one-line API response at 2am, this JSON formatter online is the reset button. It pretty‑prints messy payloads and the built‑in JSON validator pinpoints missing quotes, trailing commas, or duplicate keys with clear line numbers. Use it as a fast json beautifier or json parser for JSON/JSONC: sort keys, keep short arrays inline, and get readable structure instantly — all processed locally in your browser.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!.subcategories!.find(sub => sub.id === 'json-formatting')!,
   slug: 'json-formatter',

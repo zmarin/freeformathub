@@ -13,7 +13,7 @@ export interface XmlFormatterConfig extends ToolConfig {
 export const XML_FORMATTER_TOOL: Tool = {
   id: 'xml-formatter',
   name: 'XML Formatter & Validator',
-  description: 'Format, validate, minify, and convert XML with namespace-aware parsing, attribute sorting, JSON export, and instant error diagnostics — purpose-built for SOAP, RSS, and config workflows.',
+  description: 'When logs or SOAP responses show up as one long line, this XML formatter makes them readable fast. Pretty‑print, validate, minify, or convert to JSON with namespace‑aware parsing. Sort attributes, strip comments or empty nodes, and get precise error diagnostics — quick XML parsing in the browser, no uploads.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!.subcategories!.find(sub => sub.id === 'xml-formatting')!,
   slug: 'xml-formatter',

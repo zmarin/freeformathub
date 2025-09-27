@@ -10,7 +10,7 @@ export interface Base64EncoderConfig extends ToolConfig {
 export const BASE64_ENCODER_TOOL: Tool = {
   id: 'base64-encoder',
   name: 'Base64 Encoder & Decoder',
-  description: 'Encode, decode, and inspect Base64 payloads with URL-safe mode, line-break control, drag-and-drop input, and instant validation — all in your browser.',
+  description: 'When I’m testing APIs or building data URIs, a Base64 encoder and Base64 decoder save time. Paste text, JSON, or drop a file and convert it on the spot. Toggle URL‑safe mode, control line breaks, and validate input as you type — the Base64 converter runs entirely in your browser, so nothing leaves your machine.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'encoders')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'encoders')!.subcategories!.find(sub => sub.id === 'base-encoding')!,
   slug: 'base64-encoder',

@@ -17,6 +17,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <a href="/" class="inline-flex items-center px-5 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Go home</a>
       <a href="/search" class="inline-flex items-center px-5 py-3 rounded-lg border border-gray-300  text-gray-700  hover:bg-gray-50">Search tools</a>
     </div>
+    <div class="mt-8 text-sm text-gray-600">
+      <p class="mb-2">Or jump straight to a popular tool:</p>
+      <div class="flex items-center justify-center gap-3 flex-wrap">
+        <a href="/formatters/json-formatter" class="underline text-blue-600 hover:text-blue-700">JSON formatter</a>
+        <span>·</span>
+        <a href="/formatters/xml-formatter" class="underline text-blue-600 hover:text-blue-700">XML formatter</a>
+        <span>·</span>
+        <a href="/encoders/base64-encoder" class="underline text-blue-600 hover:text-blue-700">Base64 encoder</a>
+      </div>
+    </div>
   </div>
 </BaseLayout>
-
