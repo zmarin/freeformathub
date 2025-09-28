@@ -3,7 +3,7 @@ import { formatJson, type JsonFormatterConfig } from '../../../tools/formatters/
 import { useToolStore } from '../../../lib/store';
 import { debounce, copyToClipboard, downloadFile } from '../../../lib/utils';
 import { openFormatterInNewWindow } from '../../../lib/utils/window-manager';
-import { JsonTreeView, JsonPathBreadcrumb, JsonSearchBar } from '../../ui';
+import { JsonTreeView, JsonPathBreadcrumb, JsonSearchBar, ResizablePanel, ResizablePanelGroup, ToolHandoff, ErrorHighlightTextarea } from '../../ui';
 
 interface JsonFormatterProps {
   className?: string;
@@ -31,14 +31,17 @@ const EXAMPLES = [
   {
     title: 'Simple Object',
     value: '{"name": "John", "age": 30, "city": "New York"}',
+    category: 'basic'
   },
   {
     title: 'Nested Structure',
     value: '{"user":{"profile":{"name":"Jane","settings":{"theme":"dark","notifications":true}},"posts":[{"id":1,"title":"Hello World"},{"id":2,"title":"Getting Started"}]}}',
+    category: 'basic'
   },
   {
     title: 'Array of Objects',
     value: '[{"id":1,"name":"Item 1","active":true},{"id":2,"name":"Item 2","active":false}]',
+    category: 'basic'
   },
   {
     title: 'With Comments (JSONC)',
@@ -48,7 +51,28 @@ const EXAMPLES = [
   "age": 30, // Age in years
   "city": "New York"
 }`,
+    category: 'basic'
   },
+  {
+    title: 'API Response Example',
+    value: '{"status":"success","data":{"users":[{"id":123,"email":"user@example.com","created_at":"2024-01-15T10:30:00Z","profile":{"name":"John Doe","avatar":"https://api.example.com/avatars/123.jpg"}}],"pagination":{"page":1,"limit":20,"total":156}},"meta":{"request_id":"req_abc123","timestamp":"2024-01-15T10:30:00Z"}}',
+    category: 'advanced'
+  },
+  {
+    title: 'Broken JSON - Missing Comma',
+    value: '{"name": "John" "age": 30, "city": "New York"}',
+    category: 'broken'
+  },
+  {
+    title: 'Broken JSON - Single Quotes',
+    value: "{'name': 'John', 'age': 30, 'city': 'New York'}",
+    category: 'broken'
+  },
+  {
+    title: 'Large Dataset Example',
+    value: '{"products":[' + Array.from({length: 10}, (_, i) => `{"id":${i+1},"name":"Product ${i+1}","price":${(Math.random() * 100).toFixed(2)},"inStock":${Math.random() > 0.5},"categories":["${i % 2 === 0 ? 'electronics' : 'clothing'}","featured"]}`).join(',') + '],"metadata":{"total":10,"generated":"' + new Date().toISOString() + '"}}',
+    category: 'advanced'
+  }
 ];
 
 export function JsonFormatter({ className = '' }: JsonFormatterProps) {
@@ -67,18 +91,89 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
   const [searchMatches, setSearchMatches] = useState<Array<{ path: string; key: string; value: any; type: 'key' | 'value' }>>([]);
   const [viewMode, setViewMode] = useState<'tree' | 'text'>('tree');
   const [parsedData, setParsedData] = useState<any>(null);
+  const [layoutMode, setLayoutMode] = useState<'resizable' | 'stacked' | 'tabs'>('resizable');
+  const [selectedExampleCategory, setSelectedExampleCategory] = useState<'basic' | 'advanced' | 'broken'>('basic');
+  const [panelSizes, setPanelSizes] = useState({ input: '50%', output: '50%' });
 
   const { addToHistory, getConfig: getSavedConfig, updateConfig: updateSavedConfig } = useToolStore();
 
-  // Load saved config once on mount
+  // Related tools for tool handoff
+  const relatedTools = [
+    {
+      id: 'json-path-extractor',
+      name: 'JSONPath Extractor',
+      url: '/web/json-path-extractor',
+      description: 'Extract specific data using JSONPath queries',
+      icon: '🔍'
+    },
+    {
+      id: 'json-to-csv',
+      name: 'JSON to CSV',
+      url: '/converters/json-to-csv',
+      description: 'Convert JSON data to CSV format',
+      icon: '📊'
+    },
+    {
+      id: 'json-schema-validator',
+      name: 'JSON Schema Validator',
+      url: '/validators/json-schema-validator',
+      description: 'Validate JSON against a schema',
+      icon: '✅'
+    },
+    {
+      id: 'json-to-xml-converter',
+      name: 'JSON to XML',
+      url: '/converters/json-to-xml-converter',
+      description: 'Convert JSON to XML format',
+      icon: '🔄'
+    },
+    {
+      id: 'json-to-typescript',
+      name: 'JSON to TypeScript',
+      url: '/generators/json-to-typescript',
+      description: 'Generate TypeScript interfaces from JSON',
+      icon: '📝'
+    }
+  ];
+
+  // Load saved config and check for tool handoff data on mount
   useEffect(() => {
     try {
       const saved = (getSavedConfig?.('json-formatter') as Partial<JsonFormatterConfig>) || {};
       if (saved && Object.keys(saved).length > 0) {
         setConfig((prev) => ({ ...prev, ...saved }));
       }
+
+      // Check for tool handoff data
+      const handoffData = localStorage.getItem('tool-handoff-data');
+      const handoffSource = localStorage.getItem('tool-handoff-source');
+      const handoffTimestamp = localStorage.getItem('tool-handoff-timestamp');
+
+      if (handoffData && handoffTimestamp) {
+        const timestamp = parseInt(handoffTimestamp);
+        const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
+
+        // Only use handoff data if it's less than 5 minutes old
+        if (timestamp > fiveMinutesAgo) {
+          setInput(handoffData);
+          // Note: processJson will be called automatically via the autoFormat effect
+
+          // Clean up handoff data
+          localStorage.removeItem('tool-handoff-data');
+          localStorage.removeItem('tool-handoff-source');
+          localStorage.removeItem('tool-handoff-timestamp');
+        }
+      }
     } catch {}
   }, [getSavedConfig]);
+
+  // Load layout mode preference
+  useEffect(() => {
+    const savedLayoutMode = localStorage.getItem('json-formatter-layout-mode') as 'resizable' | 'stacked' | 'tabs';
+    if (savedLayoutMode) {
+      setLayoutMode(savedLayoutMode);
+    }
+  }, []);
 
   // Convert string values from select to numbers for indent
   const processedConfig = useMemo(() => ({
@@ -229,6 +324,33 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
     setViewMode(prev => prev === 'tree' ? 'text' : 'tree');
   }, []);
 
+  const handleLayoutModeChange = useCallback((mode: 'resizable' | 'stacked' | 'tabs') => {
+    setLayoutMode(mode);
+    localStorage.setItem('json-formatter-layout-mode', mode);
+  }, []);
+
+  const handlePanelResize = useCallback((size: number) => {
+    setPanelSizes(prev => ({
+      ...prev,
+      input: `${size}px`,
+      output: `calc(100% - ${size}px - 4px)` // Account for gap
+    }));
+  }, []);
+
+  const handleQuickAction = useCallback((action: 'prettify' | 'minify' | 'validate') => {
+    switch (action) {
+      case 'prettify':
+        handleFormat();
+        break;
+      case 'minify':
+        handleMinify();
+        break;
+      case 'validate':
+        handleValidate();
+        break;
+    }
+  }, [handleFormat, handleMinify, handleValidate]);
+
   // File upload handler
   const handleFileUpload = useCallback(async (file: File) => {
     try {
@@ -341,282 +463,426 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
   }, [handleFormat, handleMinify, handleClear, handleToggleViewMode, viewMode]);
 
   return (
-    <div className={`${className}`}>
-      {/* Sticky Controls Bar */}
-      <div className="sticky-top" style={{
+    <div className={`json-formatter ${className}`}>
+      {/* Enhanced Header with Layout Controls */}
+      <div style={{
         backgroundColor: 'var(--color-surface-secondary)',
         borderBottom: '1px solid var(--color-border)',
-        padding: 'var(--space-xl)',
+        padding: 'var(--space-lg)',
+        position: 'sticky',
+        top: 0,
         zIndex: 10
       }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-lg)', alignItems: 'center' }}>
-          {/* Primary Actions */}
-          <div style={{ display: 'flex', gap: 'var(--space-md)', flexWrap: 'wrap' }}>
-            <button onClick={handleFormat} className="btn btn-primary" title="Format JSON (Ctrl+Enter)">
-              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
-              </svg>
-              Format JSON
-            </button>
-
-            <button onClick={handleValidate} className="btn btn-secondary" title="Validate JSON">
-              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4"/>
-              </svg>
-              Validate
-            </button>
-
-            <button onClick={handleMinify} className="btn btn-outline" title="Minify JSON (Ctrl+M)">
-              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-              </svg>
-              Minify
-            </button>
-
-            <button onClick={handleClear} className="btn btn-outline" title="Clear all (Ctrl+L)">
-              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-              </svg>
-              Clear
-            </button>
-
-            <button onClick={handleToggleViewMode} className="btn btn-secondary" title={`Switch to ${viewMode === 'tree' ? 'text' : 'tree'} view`}>
-              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {viewMode === 'tree' ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z M3 7l9 6 9-6"/>
-                )}
-              </svg>
-              {viewMode === 'tree' ? 'Text View' : 'Tree View'}
-            </button>
-          </div>
-
-          {/* Stats & Settings */}
-          <div style={{ marginLeft: 'auto', display: 'flex', gap: 'var(--space-xl)', alignItems: 'center' }}>
-            <div style={{ display: 'flex', gap: 'var(--space-lg)', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
-              <span>Size: <strong>{new Blob([input]).size.toLocaleString()} B</strong></span>
-              <span>Lines: <strong>{input.split('\n').length}</strong></span>
-              {metadata?.processingTimeMs && (
-                <span>Time: <strong>{Math.round(metadata.processingTimeMs)}ms</strong></span>
-              )}
-              {error ? (
-                <span className="status-indicator status-invalid">✗ Invalid</span>
-              ) : output ? (
-                <span className="status-indicator status-valid">✓ Valid</span>
-              ) : null}
-            </div>
-
-            <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', fontSize: '0.875rem' }}>
-              <input
-                type="checkbox"
-                checked={autoFormat}
-                onChange={(e) => setAutoFormat(e.target.checked)}
-                style={{ accentColor: 'var(--color-primary)' }}
-              />
-              Auto-format
-            </label>
-          </div>
-        </div>
-      </div>
-
-      {/* Editor Layout */}
-      <div className="grid-responsive" style={{
-        minHeight: '500px'
-      }}>
-        {/* Input Panel */}
-        <div style={{ position: 'relative' }} className="grid-responsive-item"
-             data-mobile-border="bottom"
-             data-desktop-border="right">
-          {/* Input Header */}
-          <div style={{
-            backgroundColor: 'var(--color-surface-secondary)',
-            borderBottom: '1px solid var(--color-border)',
-            padding: 'var(--space-lg)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
-              Input JSON
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--space-lg)' }}>
+          {/* Layout Mode Switcher */}
+          <div style={{ display: 'flex', gap: 'var(--space-sm)', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', marginRight: 'var(--space-sm)' }}>
+              Layout:
             </span>
-            <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
-              <button onClick={handlePaste} className="btn btn-outline btn-icon-only btn-mobile">
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                </svg>
-                <span className="btn-text">Paste</span>
-              </button>
-              <label className="btn btn-outline btn-icon-only btn-mobile" style={{ cursor: 'pointer' }}>
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                </svg>
-                <span className="btn-text">Upload</span>
-                <input
-                  type="file"
-                  accept=".json,.txt"
-                  style={{ display: 'none' }}
-                  onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
-                />
-              </label>
-            </div>
-          </div>
-
-          {/* Input Textarea */}
-          <div
-            style={{ position: 'relative', height: '500px' }}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-          >
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Paste your JSON here or drag & drop a file..."
-              className="form-textarea"
-              style={{
-                width: '100%',
-                height: '100%',
-                border: 'none',
-                borderRadius: 0,
-                fontFamily: 'var(--font-family-mono)',
-                fontSize: '14px',
-                lineHeight: '1.5',
-                resize: 'none',
-                padding: 'var(--space-lg)'
-              }}
-              spellCheck={false}
-            />
-            {dragActive && (
-              <div style={{
-                position: 'absolute',
-                inset: 0,
-                backgroundColor: 'var(--color-primary-light)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '1.125rem',
-                fontWeight: 600,
-                color: 'var(--color-primary)'
-              }}>
-                Drop JSON file here
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Output Panel */}
-        <div style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
-          {/* Output Header */}
-          <div style={{
-            backgroundColor: 'var(--color-surface-secondary)',
-            borderBottom: '1px solid var(--color-border)',
-            padding: 'var(--space-lg)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
-              {viewMode === 'tree' ? 'JSON Tree View' : 'Formatted Output'}
-            </span>
-            {output && (
-              <div style={{ display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap' }}>
-                <button
-                  onClick={handleCopy}
-                  className={`${copied ? 'btn btn-secondary' : 'btn btn-outline'} btn-icon-only btn-mobile`}
-                >
-                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={copied ? "M9 12l2 2 4-4" : "M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"}/>
-                  </svg>
-                  <span className="btn-text">{copied ? 'Copied!' : 'Copy'}</span>
-                </button>
-                <button onClick={handleDownload} className="btn btn-outline btn-icon-only btn-mobile">
-                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-                  </svg>
-                  <span className="btn-text">Download</span>
-                </button>
-                <button onClick={handleOpenInNewWindow} className="btn btn-outline btn-icon-only btn-mobile">
-                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                  </svg>
-                  <span className="btn-text">Open in New Window</span>
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Search Bar (Tree View Only) */}
-          {viewMode === 'tree' && parsedData && (
-            <JsonSearchBar
-              data={parsedData}
-              onSearch={handleSearch}
-              onNavigateToMatch={handleNavigateToMatch}
-              style={{ borderBottom: '1px solid var(--color-border)' }}
-            />
-          )}
-
-          {/* Path Breadcrumb (Tree View Only) */}
-          {viewMode === 'tree' && currentPath && currentPath !== '$' && (
-            <JsonPathBreadcrumb
-              path={currentPath}
-              onPathClick={handlePathClick}
-              style={{ borderBottom: '1px solid var(--color-border)' }}
-            />
-          )}
-
-          {/* Output Content */}
-          <div style={{ flex: 1, minHeight: '400px', position: 'relative' }}>
-            {error ? (
-              <div style={{
-                padding: 'var(--space-lg)',
-                backgroundColor: 'var(--color-danger-light)',
-                color: 'var(--color-danger)',
-                borderRadius: 'var(--radius-lg)',
-                margin: 'var(--space-lg)',
-                fontFamily: 'var(--font-family-mono)',
-                fontSize: '0.875rem',
-                whiteSpace: 'pre-wrap'
-              }}>
-                <strong>JSON Error:</strong><br />
-                {error}
-              </div>
-            ) : viewMode === 'tree' && parsedData ? (
-              <JsonTreeView
-                data={parsedData}
-                searchTerm={searchTerm}
-                currentMatchPath={currentMatchPath}
-                onPathClick={handlePathClick}
-                onValueCopy={handleValueCopy}
-                maxDepth={3}
-                style={{ height: '100%' }}
-              />
-            ) : (
-              <textarea
-                value={output}
-                readOnly
-                placeholder="Formatted JSON will appear here..."
-                className="form-textarea"
+            {(['resizable', 'stacked', 'tabs'] as const).map((mode) => (
+              <button
+                key={mode}
+                onClick={() => handleLayoutModeChange(mode)}
+                className={`btn ${layoutMode === mode ? 'btn-primary' : 'btn-outline'}`}
                 style={{
-                  width: '100%',
-                  height: '100%',
-                  border: 'none',
-                  borderRadius: 0,
-                  fontFamily: 'var(--font-family-mono)',
-                  fontSize: '14px',
-                  lineHeight: '1.5',
-                  resize: 'none',
-                  padding: 'var(--space-lg)',
-                  backgroundColor: 'var(--color-surface)'
+                  fontSize: '0.75rem',
+                  padding: 'var(--space-sm) var(--space-md)',
+                  textTransform: 'capitalize'
                 }}
-                spellCheck={false}
-              />
+              >
+                {mode === 'resizable' ? 'Side-by-Side' : mode}
+              </button>
+            ))}
+          </div>
+
+          {/* Stats Display */}
+          <div style={{ display: 'flex', gap: 'var(--space-lg)', alignItems: 'center', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
+            <span>Size: <strong>{new Blob([input]).size.toLocaleString()} B</strong></span>
+            <span>Lines: <strong>{input.split('\n').length}</strong></span>
+            {metadata?.processingTimeMs && (
+              <span>Time: <strong>{Math.round(metadata.processingTimeMs)}ms</strong></span>
             )}
+            {error ? (
+              <span style={{ color: 'var(--color-danger)', fontWeight: 600 }}>✗ Invalid JSON</span>
+            ) : output ? (
+              <span style={{ color: 'var(--color-secondary)', fontWeight: 600 }}>✓ Valid JSON</span>
+            ) : null}
           </div>
         </div>
       </div>
 
-      {/* Quick Examples - Collapsible */}
+      {/* Quick Action Bar */}
+      <div style={{
+        backgroundColor: 'var(--color-surface)',
+        borderBottom: '1px solid var(--color-border)',
+        padding: 'var(--space-md) var(--space-lg)',
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: 'var(--space-md)',
+        alignItems: 'center'
+      }}>
+        {/* Primary Actions */}
+        <div style={{ display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => handleQuickAction('prettify')}
+            className="btn btn-primary"
+            title="Prettify JSON (Ctrl+Enter)"
+          >
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4"/>
+            </svg>
+            Prettify
+          </button>
+
+          <button
+            onClick={() => handleQuickAction('minify')}
+            className="btn btn-secondary"
+            title="Minify JSON (Ctrl+M)"
+          >
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+            </svg>
+            Minify
+          </button>
+
+          <button
+            onClick={() => handleQuickAction('validate')}
+            className="btn btn-outline"
+            title="Validate JSON only"
+          >
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M9 12l2 2 4-4"/>
+            </svg>
+            Validate
+          </button>
+
+          <button onClick={handleClear} className="btn btn-outline" title="Clear all (Ctrl+L)">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7"/>
+            </svg>
+            Clear
+          </button>
+
+          <button onClick={handleToggleViewMode} className="btn btn-secondary" title={`Switch to ${viewMode === 'tree' ? 'text' : 'tree'} view (Ctrl+T)`}>
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {viewMode === 'tree' ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6"/>
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
+              )}
+            </svg>
+            {viewMode === 'tree' ? 'Text View' : 'Tree View'}
+          </button>
+        </div>
+
+        {/* Auto-format Toggle */}
+        <label style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 'var(--space-sm)',
+          fontSize: '0.875rem',
+          cursor: 'pointer',
+          marginLeft: 'auto'
+        }}>
+          <input
+            type="checkbox"
+            checked={autoFormat}
+            onChange={(e) => setAutoFormat(e.target.checked)}
+            style={{ accentColor: 'var(--color-primary)' }}
+          />
+          <span>Auto-format</span>
+          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" title="Automatically format JSON as you type">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+        </label>
+      </div>
+
+      {/* Main Editor Layout */}
+      <div style={{ minHeight: '600px', position: 'relative' }}>
+        {layoutMode === 'resizable' ? (
+          <ResizablePanelGroup direction="horizontal">
+            <ResizablePanel
+              initialWidth="50%"
+              minWidth={300}
+              onResize={handlePanelResize}
+            >
+              {/* Input Panel */}
+              <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                {/* Input Header with Always-Visible Actions */}
+                <div style={{
+                  backgroundColor: 'var(--color-surface-secondary)',
+                  borderBottom: '1px solid var(--color-border)',
+                  padding: 'var(--space-md) var(--space-lg)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                    Input JSON
+                  </span>
+                  <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+                    <button onClick={handlePaste} className="btn btn-outline btn-sm">
+                      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+                      </svg>
+                      Paste
+                    </button>
+                    <label className="btn btn-outline btn-sm" style={{ cursor: 'pointer', margin: 0 }}>
+                      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                      </svg>
+                      Upload
+                      <input
+                        type="file"
+                        accept=".json,.txt"
+                        style={{ display: 'none' }}
+                        onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                {/* Enhanced Input with Error Highlighting */}
+                <div
+                  style={{ flex: 1, position: 'relative' }}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
+                  <ErrorHighlightTextarea
+                    value={input}
+                    onChange={setInput}
+                    error={error}
+                    placeholder="Paste your JSON here or drag & drop a file..."
+                    style={{ height: '100%' }}
+                  />
+                  {dragActive && (
+                    <div style={{
+                      position: 'absolute',
+                      inset: 0,
+                      backgroundColor: 'var(--color-primary-light)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '1.125rem',
+                      fontWeight: 600,
+                      color: 'var(--color-primary)',
+                      zIndex: 5
+                    }}>
+                      Drop JSON file here
+                    </div>
+                  )}
+                </div>
+              </div>
+            </ResizablePanel>
+
+            <ResizablePanel initialWidth="50%" minWidth={300}>
+              {/* Output Panel */}
+              <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                {/* Output Header with Actions and Tool Handoff */}
+                <div style={{
+                  backgroundColor: 'var(--color-surface-secondary)',
+                  borderBottom: '1px solid var(--color-border)',
+                  padding: 'var(--space-md) var(--space-lg)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                    {viewMode === 'tree' ? 'JSON Tree View' : 'Formatted Output'}
+                  </span>
+                  <div style={{ display: 'flex', gap: 'var(--space-sm)', alignItems: 'center' }}>
+                    {output && (
+                      <>
+                        <button
+                          onClick={handleCopy}
+                          className={`btn ${copied ? 'btn-secondary' : 'btn-outline'} btn-sm`}
+                        >
+                          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={copied ? "M9 12l2 2 4-4" : "M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"}/>
+                          </svg>
+                          {copied ? 'Copied!' : 'Copy'}
+                        </button>
+                        <button onClick={handleDownload} className="btn btn-outline btn-sm">
+                          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3"/>
+                          </svg>
+                          Download
+                        </button>
+                        <ToolHandoff
+                          currentToolId="json-formatter"
+                          outputData={output}
+                          relatedTools={relatedTools}
+                        />
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Search Bar (Tree View Only) */}
+                {viewMode === 'tree' && parsedData && (
+                  <JsonSearchBar
+                    data={parsedData}
+                    onSearch={handleSearch}
+                    onNavigateToMatch={handleNavigateToMatch}
+                    style={{ borderBottom: '1px solid var(--color-border)' }}
+                  />
+                )}
+
+                {/* Path Breadcrumb (Tree View Only) */}
+                {viewMode === 'tree' && currentPath && currentPath !== '$' && (
+                  <JsonPathBreadcrumb
+                    path={currentPath}
+                    onPathClick={handlePathClick}
+                    style={{ borderBottom: '1px solid var(--color-border)' }}
+                  />
+                )}
+
+                {/* Output Content */}
+                <div style={{ flex: 1, position: 'relative', overflow: 'auto' }}>
+                  {error ? (
+                    <div style={{
+                      padding: 'var(--space-lg)',
+                      backgroundColor: 'var(--color-danger-light)',
+                      color: 'var(--color-danger)',
+                      borderRadius: 'var(--radius-lg)',
+                      margin: 'var(--space-lg)',
+                      fontFamily: 'var(--font-family-mono)',
+                      fontSize: '0.875rem',
+                      whiteSpace: 'pre-wrap',
+                      border: '1px solid var(--color-danger)'
+                    }}>
+                      <div style={{ fontWeight: 600, marginBottom: 'var(--space-sm)' }}>JSON Error:</div>
+                      {error}
+                    </div>
+                  ) : viewMode === 'tree' && parsedData ? (
+                    <JsonTreeView
+                      data={parsedData}
+                      searchTerm={searchTerm}
+                      currentMatchPath={currentMatchPath}
+                      onPathClick={handlePathClick}
+                      onValueCopy={handleValueCopy}
+                      maxDepth={3}
+                      style={{ height: '100%' }}
+                    />
+                  ) : (
+                    <textarea
+                      value={output}
+                      readOnly
+                      placeholder="Formatted JSON will appear here..."
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        border: 'none',
+                        borderRadius: 0,
+                        fontFamily: 'var(--font-family-mono)',
+                        fontSize: '14px',
+                        lineHeight: '1.5',
+                        resize: 'none',
+                        padding: 'var(--space-lg)',
+                        backgroundColor: 'transparent',
+                        color: 'var(--color-text-primary)'
+                      }}
+                      spellCheck={false}
+                    />
+                  )}
+                </div>
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        ) : (
+          /* Stacked/Tabs Layout for other modes */
+          <div style={{ display: 'flex', flexDirection: layoutMode === 'stacked' ? 'column' : 'row', height: '100%' }}>
+            {/* Input Section */}
+            <div style={{ flex: 1, borderRight: layoutMode === 'tabs' ? '1px solid var(--color-border)' : 'none' }}>
+              <div style={{
+                backgroundColor: 'var(--color-surface-secondary)',
+                borderBottom: '1px solid var(--color-border)',
+                padding: 'var(--space-md) var(--space-lg)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}>
+                <span style={{ fontWeight: 600 }}>Input JSON</span>
+                <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+                  <button onClick={handlePaste} className="btn btn-outline btn-sm">Paste</button>
+                  <label className="btn btn-outline btn-sm" style={{ cursor: 'pointer', margin: 0 }}>
+                    Upload
+                    <input type="file" accept=".json,.txt" style={{ display: 'none' }} onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])} />
+                  </label>
+                </div>
+              </div>
+              <ErrorHighlightTextarea
+                value={input}
+                onChange={setInput}
+                error={error}
+                placeholder="Paste your JSON here..."
+                style={{ height: layoutMode === 'stacked' ? '300px' : 'calc(100vh - 400px)' }}
+              />
+            </div>
+
+            {/* Output Section */}
+            <div style={{ flex: 1 }}>
+              <div style={{
+                backgroundColor: 'var(--color-surface-secondary)',
+                borderBottom: '1px solid var(--color-border)',
+                padding: 'var(--space-md) var(--space-lg)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}>
+                <span style={{ fontWeight: 600 }}>
+                  {viewMode === 'tree' ? 'JSON Tree View' : 'Formatted Output'}
+                </span>
+                {output && (
+                  <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+                    <button onClick={handleCopy} className={`btn ${copied ? 'btn-secondary' : 'btn-outline'} btn-sm`}>
+                      {copied ? 'Copied!' : 'Copy'}
+                    </button>
+                    <ToolHandoff currentToolId="json-formatter" outputData={output} relatedTools={relatedTools} />
+                  </div>
+                )}
+              </div>
+              <div style={{ height: layoutMode === 'stacked' ? '300px' : 'calc(100vh - 400px)', overflow: 'auto' }}>
+                {error ? (
+                  <div style={{ padding: 'var(--space-lg)', color: 'var(--color-danger)' }}>
+                    <strong>JSON Error:</strong><br />{error}
+                  </div>
+                ) : viewMode === 'tree' && parsedData ? (
+                  <JsonTreeView
+                    data={parsedData}
+                    searchTerm={searchTerm}
+                    currentMatchPath={currentMatchPath}
+                    onPathClick={handlePathClick}
+                    onValueCopy={handleValueCopy}
+                    maxDepth={3}
+                    style={{ height: '100%' }}
+                  />
+                ) : (
+                  <textarea
+                    value={output}
+                    readOnly
+                    placeholder="Formatted JSON will appear here..."
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      border: 'none',
+                      fontFamily: 'var(--font-family-mono)',
+                      fontSize: '14px',
+                      padding: 'var(--space-lg)',
+                      backgroundColor: 'transparent'
+                    }}
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Enhanced Examples Section with Categories */}
       <div style={{
         borderTop: '1px solid var(--color-border)',
         backgroundColor: 'var(--color-surface)'
@@ -627,27 +893,76 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
             justifyContent: 'space-between',
             alignItems: 'center',
             cursor: 'pointer',
-            padding: 'var(--space-xl)',
+            padding: 'var(--space-lg)',
             fontWeight: 600,
             color: 'var(--color-text-primary)',
             backgroundColor: 'var(--color-surface-secondary)'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
               <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--color-primary)' }}>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707"/>
               </svg>
-              Quick Examples
+              Quick Examples & Practice
             </div>
-            <svg className="w-5 h-5 group-open:rotate-180 transition-transform" style={{ color: 'var(--color-text-secondary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
             </svg>
           </summary>
 
-          <div style={{ padding: 'var(--space-xl)' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'var(--space-lg)' }}>
-              {EXAMPLES.map((example, idx) => (
-                <div key={idx} className="card" style={{ padding: 'var(--space-lg)' }}>
-                  <div style={{ fontWeight: 600, marginBottom: 'var(--space-md)', color: 'var(--color-text-primary)' }}>
+          <div style={{ padding: 'var(--space-lg)' }}>
+            {/* Category Tabs */}
+            <div style={{ marginBottom: 'var(--space-lg)' }}>
+              <div style={{ display: 'flex', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
+                {(['basic', 'advanced', 'broken'] as const).map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => setSelectedExampleCategory(category)}
+                    className={`btn ${selectedExampleCategory === category ? 'btn-primary' : 'btn-outline'} btn-sm`}
+                    style={{ textTransform: 'capitalize' }}
+                  >
+                    {category === 'broken' ? '🐛 Fix These' : category === 'advanced' ? '🚀 Advanced' : '📝 Basic'}
+                  </button>
+                ))}
+              </div>
+              <p style={{
+                fontSize: '0.875rem',
+                color: 'var(--color-text-secondary)',
+                margin: 0
+              }}>
+                {selectedExampleCategory === 'broken'
+                  ? 'Practice fixing common JSON syntax errors'
+                  : selectedExampleCategory === 'advanced'
+                  ? 'Real-world API responses and complex structures'
+                  : 'Simple examples to get started with JSON formatting'
+                }
+              </p>
+            </div>
+
+            {/* Examples Grid */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+              gap: 'var(--space-lg)'
+            }}>
+              {EXAMPLES
+                .filter(example => example.category === selectedExampleCategory)
+                .map((example, idx) => (
+                <div key={idx} style={{
+                  backgroundColor: 'var(--color-surface)',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: 'var(--radius-lg)',
+                  padding: 'var(--space-lg)',
+                  transition: 'box-shadow 0.2s'
+                }}>
+                  <div style={{
+                    fontWeight: 600,
+                    marginBottom: 'var(--space-md)',
+                    color: 'var(--color-text-primary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 'var(--space-sm)'
+                  }}>
+                    {example.category === 'broken' && '🔧'}
                     {example.title}
                   </div>
                   <div style={{
@@ -657,19 +972,25 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
                     fontFamily: 'var(--font-family-mono)',
                     fontSize: '0.75rem',
                     marginBottom: 'var(--space-md)',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    color: 'var(--color-text-secondary)'
+                    maxHeight: '120px',
+                    overflow: 'auto',
+                    border: '1px solid var(--color-border-light)',
+                    color: 'var(--color-text-secondary)',
+                    whiteSpace: 'pre-wrap'
                   }}>
-                    {example.value.substring(0, 50)}...
+                    {example.value.substring(0, 200)}{example.value.length > 200 ? '...' : ''}
                   </div>
                   <button
-                    onClick={() => setInput(example.value)}
-                    className="btn btn-primary"
+                    onClick={() => {
+                      setInput(example.value);
+                      if (autoFormat) {
+                        processJson(example.value, processedConfig);
+                      }
+                    }}
+                    className={`btn ${example.category === 'broken' ? 'btn-secondary' : 'btn-primary'}`}
                     style={{ width: '100%', fontSize: '0.875rem' }}
                   >
-                    Try This Example
+                    {example.category === 'broken' ? 'Try to Fix This' : 'Use This Example'}
                   </button>
                 </div>
               ))}

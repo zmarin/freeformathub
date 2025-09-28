@@ -218,6 +218,112 @@ body {
   box-shadow: var(--shadow-md);
 }
 
+/* Small button variant */
+.btn-sm {
+  padding: var(--space-sm) var(--space-md);
+  font-size: 0.75rem;
+  line-height: 1.2;
+  border-radius: var(--radius-md);
+}
+
+/* Icon-only button styles */
+.btn-icon-only {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  min-width: auto;
+}
+
+.btn-icon-only svg {
+  flex-shrink: 0;
+}
+
+/* Mobile responsive button text */
+.btn-text {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .btn-text {
+    display: inline;
+  }
+}
+
+/* Tool-specific styles */
+.json-formatter {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.resizable-panel-container {
+  position: relative;
+  display: flex;
+  height: 100%;
+}
+
+.resizable-panel {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+
+.resize-handle {
+  position: absolute;
+  z-index: 10;
+  transition: background-color 0.2s ease;
+}
+
+.resize-handle:hover {
+  background-color: var(--color-primary) !important;
+}
+
+/* Status indicators */
+.status-indicator {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.status-valid {
+  background-color: var(--color-secondary-light);
+  color: var(--color-secondary);
+}
+
+.status-invalid {
+  background-color: var(--color-danger-light);
+  color: var(--color-danger);
+}
+
+/* Enhanced form elements */
+.form-textarea {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+/* Error highlighting */
+.error-highlight {
+  position: relative;
+  background-color: var(--color-danger-light) !important;
+  color: var(--color-danger) !important;
+  border-bottom: 2px solid var(--color-danger) !important;
+  border-radius: 2px;
+}
+
 /* Modern Card Component */
 .card {
   background-color: var(--color-surface);

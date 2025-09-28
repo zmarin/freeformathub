@@ -4,3 +4,7 @@ export { OptionsPanel } from './OptionsPanel';
 export { JsonTreeView } from './JsonTreeView';
 export { JsonPathBreadcrumb } from './JsonPathBreadcrumb';
 export { JsonSearchBar } from './JsonSearchBar';
+export { ResizablePanel, ResizablePanelGroup } from './ResizablePanel';
+export { ThemeToggle } from './ThemeToggle';
+export { ToolHandoff } from './ToolHandoff';
+export { ErrorHighlightTextarea } from './ErrorHighlightTextarea';
