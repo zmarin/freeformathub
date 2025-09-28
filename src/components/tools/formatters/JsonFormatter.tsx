@@ -3,7 +3,7 @@ import { formatJson, type JsonFormatterConfig } from '../../../tools/formatters/
 import { useToolStore } from '../../../lib/store';
 import { debounce, copyToClipboard, downloadFile } from '../../../lib/utils';
 import { openFormatterInNewWindow } from '../../../lib/utils/window-manager';
-import { JsonTreeView, JsonPathBreadcrumb, JsonSearchBar, ResizablePanel, ResizablePanelGroup, ToolHandoff, ErrorHighlightTextarea } from '../../ui';
+import { JsonTreeView, JsonPathBreadcrumb, JsonSearchBar, ToolHandoff, ErrorHighlightTextarea } from '../../ui';
 
 interface JsonFormatterProps {
   className?: string;
@@ -91,7 +91,7 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
   const [searchMatches, setSearchMatches] = useState<Array<{ path: string; key: string; value: any; type: 'key' | 'value' }>>([]);
   const [viewMode, setViewMode] = useState<'tree' | 'text'>('tree');
   const [parsedData, setParsedData] = useState<any>(null);
-  const [layoutMode, setLayoutMode] = useState<'resizable' | 'stacked' | 'tabs'>('resizable');
+  const [layoutMode, setLayoutMode] = useState<'tabs'>('tabs');
   const [selectedExampleCategory, setSelectedExampleCategory] = useState<'basic' | 'advanced' | 'broken'>('basic');
   const [panelSizes, setPanelSizes] = useState({ input: '50%', output: '50%' });
 
@@ -167,12 +167,9 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
     } catch {}
   }, [getSavedConfig]);
 
-  // Load layout mode preference
+  // Layout mode is now fixed to tabs
   useEffect(() => {
-    const savedLayoutMode = localStorage.getItem('json-formatter-layout-mode') as 'resizable' | 'stacked' | 'tabs';
-    if (savedLayoutMode) {
-      setLayoutMode(savedLayoutMode);
-    }
+    setLayoutMode('tabs');
   }, []);
 
   // Convert string values from select to numbers for indent
@@ -324,10 +321,7 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
     setViewMode(prev => prev === 'tree' ? 'text' : 'tree');
   }, []);
 
-  const handleLayoutModeChange = useCallback((mode: 'resizable' | 'stacked' | 'tabs') => {
-    setLayoutMode(mode);
-    localStorage.setItem('json-formatter-layout-mode', mode);
-  }, []);
+  // Layout mode is now fixed to tabs - removed switcher function
 
   const handlePanelResize = useCallback((size: number) => {
     setPanelSizes(prev => ({
@@ -464,7 +458,7 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
 
   return (
     <div className={`json-formatter ${className}`}>
-      {/* Enhanced Header with Layout Controls */}
+      {/* Enhanced Header with Stats */}
       <div style={{
         backgroundColor: 'var(--color-surface-secondary)',
         borderBottom: '1px solid var(--color-border)',
@@ -474,25 +468,11 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
         zIndex: 10
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--space-lg)' }}>
-          {/* Layout Mode Switcher */}
+          {/* Layout Info */}
           <div style={{ display: 'flex', gap: 'var(--space-sm)', alignItems: 'center' }}>
             <span style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', marginRight: 'var(--space-sm)' }}>
-              Layout:
+              Layout: <strong>Tabs</strong>
             </span>
-            {(['resizable', 'stacked', 'tabs'] as const).map((mode) => (
-              <button
-                key={mode}
-                onClick={() => handleLayoutModeChange(mode)}
-                className={`btn ${layoutMode === mode ? 'btn-primary' : 'btn-outline'}`}
-                style={{
-                  fontSize: '0.75rem',
-                  padding: 'var(--space-sm) var(--space-md)',
-                  textTransform: 'capitalize'
-                }}
-              >
-                {mode === 'resizable' ? 'Side-by-Side' : mode}
-              </button>
-            ))}
           </div>
 
           {/* Stats Display */}
@@ -599,87 +579,71 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
         </label>
       </div>
 
-      {/* Main Editor Layout */}
+      {/* Main Editor Layout - Tabs Only */}
       <div style={{ minHeight: '600px', position: 'relative' }}>
-        {layoutMode === 'resizable' ? (
-          <ResizablePanelGroup direction="horizontal">
-            <ResizablePanel
-              initialWidth="50%"
-              minWidth={300}
-              onResize={handlePanelResize}
-            >
-              {/* Input Panel */}
-              <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                {/* Input Header with Always-Visible Actions */}
-                <div style={{
-                  backgroundColor: 'var(--color-surface-secondary)',
-                  borderBottom: '1px solid var(--color-border)',
-                  padding: 'var(--space-md) var(--space-lg)',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}>
-                  <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                    Input JSON
-                  </span>
-                  <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
-                    <button onClick={handlePaste} className="btn btn-outline btn-sm">
-                      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
-                      </svg>
-                      Paste
-                    </button>
-                    <label className="btn btn-outline btn-sm" style={{ cursor: 'pointer', margin: 0 }}>
-                      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                      </svg>
-                      Upload
-                      <input
-                        type="file"
-                        accept=".json,.txt"
-                        style={{ display: 'none' }}
-                        onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
-                      />
-                    </label>
-                  </div>
-                </div>
-
-                {/* Enhanced Input with Error Highlighting */}
-                <div
-                  style={{ flex: 1, position: 'relative' }}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                >
-                  <ErrorHighlightTextarea
-                    value={input}
-                    onChange={setInput}
-                    error={error}
-                    placeholder="Paste your JSON here or drag & drop a file..."
-                    style={{ height: '100%' }}
-                  />
-                  {dragActive && (
-                    <div style={{
-                      position: 'absolute',
-                      inset: 0,
-                      backgroundColor: 'var(--color-primary-light)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '1.125rem',
-                      fontWeight: 600,
-                      color: 'var(--color-primary)',
-                      zIndex: 5
-                    }}>
-                      Drop JSON file here
-                    </div>
-                  )}
-                </div>
+        {/* Tabs Layout */}
+        <div style={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
+          {/* Input Section */}
+          <div style={{ flex: 1, borderRight: '1px solid var(--color-border)' }}>
+            <div style={{
+              backgroundColor: 'var(--color-surface-secondary)',
+              borderBottom: '1px solid var(--color-border)',
+              padding: 'var(--space-md) var(--space-lg)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>Input JSON</span>
+              <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+                <button onClick={handlePaste} className="btn btn-outline btn-sm">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+                  </svg>
+                  Paste
+                </button>
+                <label className="btn btn-outline btn-sm" style={{ cursor: 'pointer', margin: 0 }}>
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                  </svg>
+                  Upload
+                  <input type="file" accept=".json,.txt" style={{ display: 'none' }} onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])} />
+                </label>
               </div>
-            </ResizablePanel>
+            </div>
+            <div
+              style={{ height: 'calc(100vh - 400px)', position: 'relative' }}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
+              <ErrorHighlightTextarea
+                value={input}
+                onChange={setInput}
+                error={error}
+                placeholder="Paste your JSON here or drag & drop a file..."
+                style={{ height: '100%' }}
+              />
+              {dragActive && (
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  backgroundColor: 'var(--color-primary-light)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '1.125rem',
+                  fontWeight: 600,
+                  color: 'var(--color-primary)',
+                  zIndex: 5
+                }}>
+                  Drop JSON file here
+                </div>
+              )}
+            </div>
+          </div>
 
-            <ResizablePanel initialWidth="50%" minWidth={300}>
-              {/* Output Panel */}
+          {/* Output Section */}
+          <div style={{ flex: 1 }}>
               <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                 {/* Output Header with Actions and Tool Handoff */}
                 <div style={{
@@ -790,37 +754,6 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
                   )}
                 </div>
               </div>
-            </ResizablePanel>
-          </ResizablePanelGroup>
-        ) : (
-          /* Stacked/Tabs Layout for other modes */
-          <div style={{ display: 'flex', flexDirection: layoutMode === 'stacked' ? 'column' : 'row', height: '100%' }}>
-            {/* Input Section */}
-            <div style={{ flex: 1, borderRight: layoutMode === 'tabs' ? '1px solid var(--color-border)' : 'none' }}>
-              <div style={{
-                backgroundColor: 'var(--color-surface-secondary)',
-                borderBottom: '1px solid var(--color-border)',
-                padding: 'var(--space-md) var(--space-lg)',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-              }}>
-                <span style={{ fontWeight: 600 }}>Input JSON</span>
-                <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
-                  <button onClick={handlePaste} className="btn btn-outline btn-sm">Paste</button>
-                  <label className="btn btn-outline btn-sm" style={{ cursor: 'pointer', margin: 0 }}>
-                    Upload
-                    <input type="file" accept=".json,.txt" style={{ display: 'none' }} onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])} />
-                  </label>
-                </div>
-              </div>
-              <ErrorHighlightTextarea
-                value={input}
-                onChange={setInput}
-                error={error}
-                placeholder="Paste your JSON here..."
-                style={{ height: layoutMode === 'stacked' ? '300px' : 'calc(100vh - 400px)' }}
-              />
             </div>
 
             {/* Output Section */}
@@ -841,11 +774,12 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
                     <button onClick={handleCopy} className={`btn ${copied ? 'btn-secondary' : 'btn-outline'} btn-sm`}>
                       {copied ? 'Copied!' : 'Copy'}
                     </button>
+{/* Temporarily removed Open in New Tab button */}
                     <ToolHandoff currentToolId="json-formatter" outputData={output} relatedTools={relatedTools} />
                   </div>
                 )}
               </div>
-              <div style={{ height: layoutMode === 'stacked' ? '300px' : 'calc(100vh - 400px)', overflow: 'auto' }}>
+              <div style={{ height: 'calc(100vh - 400px)', overflow: 'auto' }}>
                 {error ? (
                   <div style={{ padding: 'var(--space-lg)', color: 'var(--color-danger)' }}>
                     <strong>JSON Error:</strong><br />{error}
@@ -879,125 +813,9 @@ export function JsonFormatter({ className = '' }: JsonFormatterProps) {
               </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
 
-      {/* Enhanced Examples Section with Categories */}
-      <div style={{
-        borderTop: '1px solid var(--color-border)',
-        backgroundColor: 'var(--color-surface)'
-      }}>
-        <details className="group">
-          <summary style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            cursor: 'pointer',
-            padding: 'var(--space-lg)',
-            fontWeight: 600,
-            color: 'var(--color-text-primary)',
-            backgroundColor: 'var(--color-surface-secondary)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
-              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--color-primary)' }}>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707"/>
-              </svg>
-              Quick Examples & Practice
-            </div>
-            <svg className="w-5 h-5 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          </summary>
-
-          <div style={{ padding: 'var(--space-lg)' }}>
-            {/* Category Tabs */}
-            <div style={{ marginBottom: 'var(--space-lg)' }}>
-              <div style={{ display: 'flex', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
-                {(['basic', 'advanced', 'broken'] as const).map((category) => (
-                  <button
-                    key={category}
-                    onClick={() => setSelectedExampleCategory(category)}
-                    className={`btn ${selectedExampleCategory === category ? 'btn-primary' : 'btn-outline'} btn-sm`}
-                    style={{ textTransform: 'capitalize' }}
-                  >
-                    {category === 'broken' ? '🐛 Fix These' : category === 'advanced' ? '🚀 Advanced' : '📝 Basic'}
-                  </button>
-                ))}
-              </div>
-              <p style={{
-                fontSize: '0.875rem',
-                color: 'var(--color-text-secondary)',
-                margin: 0
-              }}>
-                {selectedExampleCategory === 'broken'
-                  ? 'Practice fixing common JSON syntax errors'
-                  : selectedExampleCategory === 'advanced'
-                  ? 'Real-world API responses and complex structures'
-                  : 'Simple examples to get started with JSON formatting'
-                }
-              </p>
-            </div>
-
-            {/* Examples Grid */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: 'var(--space-lg)'
-            }}>
-              {EXAMPLES
-                .filter(example => example.category === selectedExampleCategory)
-                .map((example, idx) => (
-                <div key={idx} style={{
-                  backgroundColor: 'var(--color-surface)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius-lg)',
-                  padding: 'var(--space-lg)',
-                  transition: 'box-shadow 0.2s'
-                }}>
-                  <div style={{
-                    fontWeight: 600,
-                    marginBottom: 'var(--space-md)',
-                    color: 'var(--color-text-primary)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 'var(--space-sm)'
-                  }}>
-                    {example.category === 'broken' && '🔧'}
-                    {example.title}
-                  </div>
-                  <div style={{
-                    backgroundColor: 'var(--color-surface-secondary)',
-                    padding: 'var(--space-md)',
-                    borderRadius: 'var(--radius-md)',
-                    fontFamily: 'var(--font-family-mono)',
-                    fontSize: '0.75rem',
-                    marginBottom: 'var(--space-md)',
-                    maxHeight: '120px',
-                    overflow: 'auto',
-                    border: '1px solid var(--color-border-light)',
-                    color: 'var(--color-text-secondary)',
-                    whiteSpace: 'pre-wrap'
-                  }}>
-                    {example.value.substring(0, 200)}{example.value.length > 200 ? '...' : ''}
-                  </div>
-                  <button
-                    onClick={() => {
-                      setInput(example.value);
-                      if (autoFormat) {
-                        processJson(example.value, processedConfig);
-                      }
-                    }}
-                    className={`btn ${example.category === 'broken' ? 'btn-secondary' : 'btn-primary'}`}
-                    style={{ width: '100%', fontSize: '0.875rem' }}
-                  >
-                    {example.category === 'broken' ? 'Try to Fix This' : 'Use This Example'}
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </details>
-      </div>
     </div>
   );
 }
