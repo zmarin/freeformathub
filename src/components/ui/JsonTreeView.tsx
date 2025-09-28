@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { copyToClipboard } from '../../lib/utils';
+import { InlineCopyButton } from './CopyButton';
 
 export interface JsonTreeViewProps {
   data: any;
@@ -110,22 +111,9 @@ const TreeNode: React.FC<TreeNodeProps> = ({
   const isExpandable = dataType === 'object' || dataType === 'array';
   const isExpanded = expandedNodes.has(path);
 
-  const [copied, setCopied] = useState<string | null>(null);
-
-  const handleCopy = useCallback(async (value: any, copyPath: string, type: 'value' | 'path') => {
-    try {
-      const textToCopy = type === 'path' ? copyPath :
-                        typeof value === 'string' ? value :
-                        JSON.stringify(value, null, 2);
-
-      await copyToClipboard(textToCopy);
-      setCopied(type);
-      onValueCopy?.(value, copyPath);
-      setTimeout(() => setCopied(null), 1500);
-    } catch (error) {
-      console.error('Failed to copy:', error);
-    }
-  }, [onValueCopy]);
+  const handleCopyComplete = useCallback((value: any, copyPath?: string) => {
+    onValueCopy?.(value, copyPath || path);
+  }, [onValueCopy, path]);
 
   const renderValue = () => {
     if (isExpandable) {
@@ -312,64 +300,66 @@ const TreeNode: React.FC<TreeNodeProps> = ({
         {/* Value */}
         <span>{renderValue()}</span>
 
-        {/* Action Buttons */}
+        {/* Enhanced Action Buttons */}
         <div style={{
           marginLeft: 'auto',
           display: 'flex',
-          gap: '0.25rem',
-          opacity: 0,
-          transition: 'opacity 0.2s'
+          gap: '0.375rem',
+          opacity: 1, // Always visible now
+          transition: 'all 0.2s ease',
+          transform: 'translateX(0)',
+          alignItems: 'center'
         }}
         className="tree-node-actions"
         >
           {/* Copy Path */}
-          <button
-            onClick={() => handleCopy(data, path, 'path')}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '0.125rem 0.25rem',
-              borderRadius: '3px',
-              color: 'var(--color-text-secondary)',
-              fontSize: '0.75rem'
-            }}
-            title="Copy path"
-          >
-            {copied === 'path' ? '✓' : '📋'}
-          </button>
+          <InlineCopyButton
+            value={data}
+            path={path}
+            type="path"
+            onCopy={handleCopyComplete}
+          />
 
           {/* Copy Value */}
-          <button
-            onClick={() => handleCopy(data, path, 'value')}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '0.125rem 0.25rem',
-              borderRadius: '3px',
-              color: 'var(--color-text-secondary)',
-              fontSize: '0.75rem'
-            }}
-            title="Copy value"
-          >
-            {copied === 'value' ? '✓' : '📄'}
-          </button>
+          <InlineCopyButton
+            value={data}
+            path={path}
+            type="value"
+            onCopy={handleCopyComplete}
+          />
 
           {/* Navigate to Path */}
           {onPathClick && (
             <button
               onClick={() => onPathClick(path)}
               style={{
-                background: 'none',
+                width: '20px',
+                height: '20px',
+                padding: '4px',
                 border: 'none',
+                borderRadius: '6px',
                 cursor: 'pointer',
-                padding: '0.125rem 0.25rem',
-                borderRadius: '3px',
-                color: 'var(--color-text-secondary)',
-                fontSize: '0.75rem'
+                background: 'rgba(139, 92, 246, 0.1)',
+                color: '#8b5cf6',
+                opacity: 0.7,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s ease',
+                fontSize: '0.75rem',
+                fontWeight: 'bold'
               }}
               title="Navigate to path"
+              onMouseEnter={(e) => {
+                (e.target as HTMLElement).style.opacity = '1';
+                (e.target as HTMLElement).style.transform = 'scale(1.15)';
+                (e.target as HTMLElement).style.background = 'rgba(139, 92, 246, 0.2)';
+              }}
+              onMouseLeave={(e) => {
+                (e.target as HTMLElement).style.opacity = '0.7';
+                (e.target as HTMLElement).style.transform = 'scale(1)';
+                (e.target as HTMLElement).style.background = 'rgba(139, 92, 246, 0.1)';
+              }}
             >
               →
             </button>

@@ -8,3 +8,4 @@ export { ResizablePanel, ResizablePanelGroup } from './ResizablePanel';
 export { ThemeToggle } from './ThemeToggle';
 export { ToolHandoff } from './ToolHandoff';
 export { ErrorHighlightTextarea } from './ErrorHighlightTextarea';
+export { CopyButton, InlineCopyButton } from './CopyButton';
