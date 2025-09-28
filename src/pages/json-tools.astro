@@ -2,8 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getAllTools } from '../lib/tools/registry';
 
-const title = 'Free JSON Tools Online - Format, Validate & Convert JSON Data';
-const description = 'Comprehensive collection of free JSON tools for developers. Format, validate, convert, and manipulate JSON data online. No downloads required, works offline.';
+const title = 'JSON Tools - Format, Fix, and Convert JSON Data';
+const description = 'JSON formatter, validator, and converter tools that actually work. Fix broken JSON, convert to CSV, search nested objects. No signup, works offline.';
 
 // Get all JSON-related tools
 const jsonTools = getAllTools().filter(tool =>
@@ -37,20 +37,17 @@ const otherJsonTools = jsonTools.filter(tool =>
     {/* Hero Section */}
     <div class="text-center mb-12">
       <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-        Free JSON Tools for Developers
+        JSON Tools That Don't Make You Suffer
       </h1>
       <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-        When an API dumps a wall of text, I open a JSON formatter and a JSON validator to make sense of it.
-        This set covers everyday jobs: pretty‑print or minify, search nested objects, and jump between json to csv,
-        csv to json, or json to xml without leaving the page. Everything runs locally in your browser — fast,
-        private, and reliable.
+        When an API dumps a wall of unreadable text at you, these tools turn it into something human-readable. Format messy JSON, catch syntax errors, convert between JSON and CSV, search through nested objects - all the stuff you need when APIs decide to be difficult.
       </p>
       <div class="flex flex-wrap justify-center gap-4">
         <div class="bg-blue-100  text-blue-800  px-4 py-2 rounded-lg border border-blue-200">
-          <span class="font-semibold">{jsonTools.length}+</span> JSON Tools
+          <span class="font-semibold">{jsonTools.length}</span> Tools
         </div>
         <div class="bg-green-100  text-green-800  px-4 py-2 rounded-lg border border-green-200">
-          100% Free & Private
+          No Signup Required
         </div>
         <div class="bg-purple-100  text-purple-800  px-4 py-2 rounded-lg border border-purple-200">
           Works Offline
@@ -61,7 +58,7 @@ const otherJsonTools = jsonTools.filter(tool =>
     {/* Featured JSON Tools */}
     <section class="mb-16">
       <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">
-        Most Popular JSON Tools
+        Essential JSON Tools
       </h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {featuredTools.map((tool) => (

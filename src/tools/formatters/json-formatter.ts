@@ -22,15 +22,15 @@ export interface JsonFormatterConfig extends ToolConfig {
 
 export const JSON_FORMATTER_TOOL: Tool = {
   id: 'json-formatter',
-  name: 'JSON Formatter, Parser & Validator - Get, Search & Extract JSON Data',
-  description: 'If you have ever squinted at a one-line API response at 2am, this JSON formatter online is the reset button. It pretty‑prints messy payloads and the built‑in JSON validator pinpoints missing quotes, trailing commas, or duplicate keys with clear line numbers. Use it as a fast json beautifier or json parser for JSON/JSONC: sort keys, keep short arrays inline, and get readable structure instantly — all processed locally in your browser.',
+  name: 'JSON Formatter & Validator',
+  description: 'Turn that wall of unreadable JSON into something a human can actually parse. This tool catches the usual suspects: missing quotes, trailing commas, weird Unicode characters that break everything. Works with regular JSON and JSONC (the one with comments). Your API responses become readable, your config files make sense, and you stop wondering why that POST request keeps failing.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'formatters')!.subcategories!.find(sub => sub.id === 'json-formatting')!,
   slug: 'json-formatter',
   icon: '{}',
   keywords: ['json get values', 'json get data', 'json search keys', 'json search nested objects', 'json extract data', 'json parsing online', 'JSON file format validator', 'json get array elements', 'json formatter online', 'json validator', 'json beautifier', 'json minifier', 'jsonc formatter', 'json pretty print', 'validate json online', 'json parser', 'json viewer', 'json editor', 'format json free', 'json get specific values', 'json search through data', 'json extract nested values'],
-  seoTitle: 'Free JSON Formatter, Parser & Validator - Get, Search & Extract JSON Data Online',
-  seoDescription: 'Quickly get JSON values, search through nested objects, extract specific data, and parse JSON files with our advanced formatter. Get instant results from complex JSON structures. Format, validate, beautify, and extract data from JSON/JSONC files. 100% private - all processing happens locally in your browser.',
+  seoTitle: 'JSON Formatter & Validator - Fix Broken JSON Online',
+  seoDescription: 'Format messy JSON, catch syntax errors, and make API responses readable. Works with JSON and JSONC files. No sign-up, runs in your browser, your data stays private.',
   examples: [
     {
       title: 'Get Clean JSON Output from Raw Data',

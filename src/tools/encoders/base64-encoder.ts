@@ -10,14 +10,14 @@ export interface Base64EncoderConfig extends ToolConfig {
 export const BASE64_ENCODER_TOOL: Tool = {
   id: 'base64-encoder',
   name: 'Base64 Encoder & Decoder',
-  description: 'When I’m testing APIs or building data URIs, a Base64 encoder and Base64 decoder save time. Paste text, JSON, or drop a file and convert it on the spot. Toggle URL‑safe mode, control line breaks, and validate input as you type — the Base64 converter runs entirely in your browser, so nothing leaves your machine.',
+  description: 'Need to encode binary data for an API, or decode that mysterious Base64 string someone sent you? This tool handles both directions. Supports regular and URL-safe encoding (the kind that will not break when used in URLs). Drop in files, text, whatever - it just works.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'encoders')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'encoders')!.subcategories!.find(sub => sub.id === 'base-encoding')!,
   slug: 'base64-encoder',
   icon: '🔒',
   keywords: ['base64 encoder online', 'base64 decoder free', 'base64 encode decode', 'url safe base64', 'binary to base64', 'text to base64', 'base64 converter', 'base64 tool', 'encode decode online'],
-  seoTitle: 'Free Base64 Encoder & Decoder Online - Encode & Decode Base64',
-  seoDescription: 'Free online Base64 encoder and decoder tool. Convert text, JSON, or binary data to Base64 encoding and back. Features URL-safe mode, drag & drop file support, line break control, and real-time validation. 100% private processing in your browser.',
+  seoTitle: 'Base64 Encoder & Decoder - Convert Text and Files',
+  seoDescription: 'Encode and decode Base64 data instantly. Supports files, text, and URL-safe encoding. Works in your browser, no uploads required.',
   examples: [
     {
       title: 'Basic Text Encoding',

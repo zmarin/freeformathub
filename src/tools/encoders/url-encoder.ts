@@ -11,14 +11,14 @@ export interface UrlEncoderConfig extends ToolConfig {
 export const URL_ENCODER_TOOL: Tool = {
   id: 'url-encoder',
   name: 'URL Encoder & Decoder',
-  description: 'For query strings, webhooks, and callback URLs, this URL encoder and decoder prevents the classic “why did that space break my request?” moment. Choose full URL vs component mode, pick + or %20 for spaces, and keep percent‑encoding RFC‑compliant while you debug APIs and redirects — all locally in your browser.',
+  description: 'Stop debugging broken URLs because of unescaped spaces and special characters. This tool properly encodes URLs and query parameters so they actually work in browsers and APIs. Handles the space encoding choice (+ vs %20) and knows the difference between full URLs and URL components.',
   category: TOOL_CATEGORIES.find(cat => cat.id === 'encoders')!,
   subcategory: TOOL_CATEGORIES.find(cat => cat.id === 'encoders')!.subcategories!.find(sub => sub.id === 'url-encoding')!,
   slug: 'url-encoder',
   icon: '🔗',
   keywords: ['url encoder online', 'url decoder free', 'percent encoding tool', 'uri encoder', 'url encode decode', 'query string encoder', 'web url tool', 'encode url parameters', 'decode percent encoding'],
-  seoTitle: 'Free URL Encoder & Decoder Online - Encode & Decode URLs',
-  seoDescription: 'Free online URL encoder and decoder tool. Encode or decode URLs, query strings, and URI components with percent encoding. Features full URL and component modes, space handling options (+/%20), and reserved character control. Perfect for web developers working with APIs and query parameters.',
+  seoTitle: 'URL Encoder & Decoder - Fix Broken URLs and Query Strings',
+  seoDescription: 'Encode URLs and query parameters to prevent broken links and API errors. Handles spaces, special characters, and URL components properly.',
   examples: [
     {
       title: 'Basic URL Encoding',

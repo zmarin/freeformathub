@@ -907,7 +907,7 @@ export const MARKDOWN_CONVERTER_TOOL: Tool = {
   keywords: ['markdown', 'html', 'convert', 'md'],
   seoTitle: 'Markdown HTML Converter - Convert MD to HTML Online | FreeFormatHub',
   seoDescription: 'Convert Markdown to HTML or HTML to Markdown online. Support for tables, task lists, syntax highlighting, and custom formatting.',
-  description: 'Professional bidirectional Markdown ↔ HTML converter with comprehensive support for tables, task lists, nested lists, syntax highlighting, and complex HTML structures. True round-trip conversion preserving document structure and formatting.',
+  description: 'Convert Markdown to HTML or go the other way around. Handles the usual stuff like tables, task lists, code blocks, and keeps formatting intact when converting back and forth.',
   
   examples: [
     {
