@@ -5,6 +5,7 @@ import { getTool } from '../../lib/tools/registry';
 import { getToolUrl } from '../../lib/routing/category-routes';
 import AdPlacement from '../ads/AdPlacement.astro';
 import InternalLinksCluster from '../seo/InternalLinksCluster.astro';
+import { MarkdownExportButton } from '../ui/MarkdownExportButton';
 
 export interface Props {
   tool: Tool;
@@ -599,6 +600,11 @@ const jsonLd = {
             ">
               {tool.description}
             </p>
+          </div>
+
+          <!-- Markdown Export Button -->
+          <div style="margin-left: auto;">
+            <MarkdownExportButton tool={tool} client:load />
           </div>
         </div>
       </header>

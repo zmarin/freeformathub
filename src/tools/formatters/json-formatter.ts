@@ -31,6 +31,48 @@ export const JSON_FORMATTER_TOOL: Tool = {
   keywords: ['json get values', 'json get data', 'json search keys', 'json search nested objects', 'json extract data', 'json parsing online', 'JSON file format validator', 'json get array elements', 'json formatter online', 'json validator', 'json beautifier', 'json minifier', 'jsonc formatter', 'json pretty print', 'validate json online', 'json parser', 'json viewer', 'json editor', 'format json free', 'json get specific values', 'json search through data', 'json extract nested values'],
   seoTitle: 'JSON Formatter & Validator - Fix Broken JSON Online',
   seoDescription: 'Format messy JSON, catch syntax errors, and make API responses readable. Works with JSON and JSONC files. No sign-up, runs in your browser, your data stays private.',
+  features: [
+    'Format and beautify JSON with custom indentation',
+    'Validate JSON syntax and detect errors',
+    'Support JSONC (comments, trailing commas, single quotes)',
+    'Minify JSON for production',
+    'Sort object keys alphabetically',
+    'Tree view for exploring nested data',
+    'Search within JSON structure'
+  ],
+  configOptions: [
+    {
+      name: 'indent',
+      type: 'number',
+      default: 2,
+      required: true,
+      description: 'Number of spaces per indentation level (0 for minified)'
+    },
+    {
+      name: 'sortKeys',
+      type: 'boolean',
+      default: false,
+      description: 'Sort object keys alphabetically'
+    },
+    {
+      name: 'removeComments',
+      type: 'boolean',
+      default: true,
+      description: 'Strip JSONC comments from output'
+    },
+    {
+      name: 'useTabs',
+      type: 'boolean',
+      default: false,
+      description: 'Use tabs instead of spaces for indentation'
+    },
+    {
+      name: 'escapeUnicode',
+      type: 'boolean',
+      default: false,
+      description: 'Convert non-ASCII characters to \\uXXXX escape sequences'
+    }
+  ],
   examples: [
     {
       title: 'Get Clean JSON Output from Raw Data',

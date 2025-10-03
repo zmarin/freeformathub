@@ -38,6 +38,8 @@ export interface Tool {
   howItWorks?: HowItWorksStep[];
   problemsSolved?: ProblemSolution[];
   whyChoose?: ToolBenefit[];
+  features?: string[];
+  configOptions?: ConfigOption[];
 }
 
 export interface ToolExample {
@@ -50,6 +52,15 @@ export interface ToolExample {
 export interface FAQ {
   question: string;
   answer: string;
+}
+
+export interface ConfigOption {
+  name: string;
+  type: 'string' | 'number' | 'boolean' | 'select';
+  default: any;
+  required?: boolean;
+  description: string;
+  options?: { value: string; label: string }[];
 }
 
 export interface ToolSubcategory {

@@ -12,3 +12,4 @@ export { CopyButton, InlineCopyButton } from './CopyButton';
 export { SplitPanelLayout } from './SplitPanelLayout';
 export { DevToolbar } from './DevToolbar';
 export { EscapeStatisticsPanel } from './EscapeStatisticsPanel';
+export { MarkdownExportButton } from './MarkdownExportButton';
