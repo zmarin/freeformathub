@@ -57,6 +57,17 @@ export class LocalStorageManager {
     }
   }
 
+  getSidebarExpandedCategories(): string[] {
+    const preferences = this.getPreferences();
+    return preferences.sidebarExpandedCategories || [];
+  }
+
+  saveSidebarExpandedCategories(categoryIds: string[]): void {
+    this.savePreferences({
+      sidebarExpandedCategories: Array.from(new Set(categoryIds))
+    });
+  }
+
   addToHistory(entry: Omit<ToolHistory, 'id'>): void {
     if (!this.isStorageAvailable()) return;
 
@@ -136,12 +147,17 @@ export class LocalStorageManager {
     this.savePreferences(updated);
   }
 
+  markToolAsRecent(toolId: string): void {
+    this.updateRecentTools(toolId);
+  }
+
   private getDefaultPreferences(): UserPreferences {
     return {
       defaultConfigs: {},
       favoriteTools: [],
       recentTools: [],
       history: [],
+      sidebarExpandedCategories: [],
     };
   }
 

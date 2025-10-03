@@ -325,5 +325,67 @@ Markdown is a lightweight markup language...
       answer: 'Yes! The tool automatically detects and preserves code blocks, converting <pre><code> tags to Markdown code fences. Perfect for API documentation like Zoho, Stripe, or GitHub docs.'
     }
   ],
-  relatedTools: []
+  relatedTools: [
+    'html-beautifier',
+    'markdown-converter',
+    'html-entity-decoder',
+    'json-formatter',
+    'markdown-table-generator'
+  ],
+  howItWorks: [
+    {
+      icon: '🔗',
+      title: 'Enter URL',
+      description: 'Paste the webpage URL you want to convert to Markdown'
+    },
+    {
+      icon: '⬇️',
+      title: 'Fetch Content',
+      description: 'Browser fetches the HTML content directly (CORS-aware)'
+    },
+    {
+      icon: '🔄',
+      title: 'Convert to Markdown',
+      description: 'HTML is parsed and converted to clean Markdown syntax'
+    },
+    {
+      icon: '📋',
+      title: 'Copy or Download',
+      description: 'Get standard Markdown or AI-friendly structured format'
+    }
+  ],
+  problemsSolved: [
+    {
+      icon: '🧹',
+      problem: 'Cluttered Copy-Paste',
+      solution: 'Automatically removes ads, navigation, and formatting noise while preserving semantic structure'
+    },
+    {
+      icon: '🤖',
+      problem: 'AI Context Optimization',
+      solution: 'AI-friendly format uses structured labels (URL:, TITLE:) to reduce token usage and improve LLM comprehension'
+    },
+    {
+      icon: '📚',
+      problem: 'Documentation Archiving',
+      solution: 'Convert API docs, tutorials, and articles to portable Markdown for offline access and version control'
+    }
+  ],
+  whyChoose: [
+    {
+      icon: '🔒',
+      title: 'Privacy-First',
+      description: 'All conversion happens in your browser - no data sent to servers'
+    },
+    {
+      icon: '⚡',
+      title: 'Dual-Format Support',
+      description: 'Choose between human-readable Markdown or token-optimized AI-friendly format'
+    },
+    {
+      icon: '🎯',
+      title: 'Smart Parsing',
+      description: 'Preserves code blocks, tables, links, and semantic structure that gets lost with copy-paste'
+    }
+  ]
 };

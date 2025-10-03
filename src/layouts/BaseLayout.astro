@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import ToolSearch from '../components/ui/ToolSearch.tsx';
+import ToolSidebar from '../components/ui/ToolSidebar.tsx';
 import CookieConsent from '../components/CookieConsent.tsx';
 import AdPlacement from '../components/ads/AdPlacement.astro';
 import { LogoLink } from '../components/ui/Logo.tsx';
@@ -14,6 +15,8 @@ export interface Props {
   ogImage?: string;
   jsonLd?: Record<string, any>;
   robotsContent?: string;
+  showSidebar?: boolean;
+  fullWidth?: boolean;
 }
 
 const {
@@ -23,8 +26,18 @@ const {
   canonical,
   ogImage,
   jsonLd,
-  robotsContent
+  robotsContent,
+  showSidebar = true,
+  fullWidth = false
 } = Astro.props;
+
+const layoutContainerClass = [
+  fullWidth ? '' : 'mx-auto max-w-7xl',
+  'w-full px-4 sm:px-6 lg:px-8',
+  showSidebar ? 'xl:grid xl:grid-cols-[260px,minmax(0,1fr)] xl:items-start xl:gap-6' : ''
+].filter(Boolean).join(' ');
+
+const contentWrapperClass = ['min-w-0', showSidebar ? 'xl:pl-4' : ''].filter(Boolean).join(' ');
 
 // Ensure keywords is always an array
 const keywordsArray = Array.isArray(keywords) ? keywords : (typeof keywords === 'string' ? keywords.split(',').map(k => k.trim()) : []);
@@ -856,7 +869,21 @@ const getNavLinkClasses = (active: boolean) => [
 
       <!-- Main content -->
       <main id="main-content" class="flex-1">
-        <slot />
+        <div class={layoutContainerClass}>
+          {showSidebar && (
+            <aside
+              class="hidden xl:block sticky top-28 h-[calc(100vh-7rem)] overflow-hidden"
+              aria-label="Tool navigation sidebar"
+            >
+              <div class="h-full rounded-xl border border-[color:var(--color-border-light)] bg-[color:var(--color-surface)] px-3 py-4 shadow-sm">
+                <ToolSidebar currentPath={currentPath} client:load />
+              </div>
+            </aside>
+          )}
+          <div class={contentWrapperClass}>
+            <slot />
+          </div>
+        </div>
       </main>
 
       <!-- Footer -->

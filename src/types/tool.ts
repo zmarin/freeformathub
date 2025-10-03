@@ -115,4 +115,5 @@ export interface UserPreferences {
   favoriteTools: string[];
   recentTools: string[];
   history: ToolHistory[];
+  sidebarExpandedCategories?: string[];
 }
