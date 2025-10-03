@@ -1,8 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
-import { InputPanel, OutputPanel, OptionsPanel } from '../../ui';
-import { processTimestampFormatter, type TimestampFormatterConfig, TIMESTAMP_FORMATS, COMMON_TIMEZONES, LOCALES } from '../../../tools/datetime/timestamp-formatter';
+import { useState, useEffect, useCallback } from 'react';
+import { processTimestampFormatter, type TimestampFormatterConfig, COMMON_TIMEZONES } from '../../../tools/datetime/timestamp-formatter';
 import { useToolStore } from '../../../lib/store';
-import { debounce } from '../../../lib/utils';
+import { copyToClipboard } from '../../../lib/utils';
 
 interface TimestampFormatterProps {
   className?: string;
@@ -11,7 +10,7 @@ interface TimestampFormatterProps {
 const DEFAULT_CONFIG: TimestampFormatterConfig = {
   mode: 'format',
   inputFormat: 'auto',
-  outputFormat: 'iso8601',
+  outputFormat: 'all',
   inputTimezone: 'UTC',
   outputTimezone: 'UTC',
   customInputFormat: '',
@@ -19,479 +18,350 @@ const DEFAULT_CONFIG: TimestampFormatterConfig = {
   locale: 'en-US',
   includeMilliseconds: false,
   useUtc: true,
-  showRelativeTime: false,
+  showRelativeTime: true,
   batchProcessing: false,
 };
 
-const MODE_OPTIONS = [
-  {
-    key: 'mode',
-    label: 'Mode',
-    type: 'select' as const,
-    default: 'format',
-    options: [
-      { value: 'format', label: '🔄 Format - Convert timestamp formats' },
-      { value: 'convert', label: '🌍 Convert - Change timezones' },
-      { value: 'calculate', label: '🧮 Calculate - Time calculations' },
-    ],
-    description: 'Operation mode for timestamp processing',
-  },
-] as const;
-
-const INPUT_OPTIONS = [
-  {
-    key: 'inputFormat',
-    label: 'Input Format',
-    type: 'select' as const,
-    default: 'auto',
-    options: [
-      { value: 'auto', label: '🔍 Auto-detect format' },
-      { value: 'unix', label: '📅 Unix timestamp (seconds)' },
-      { value: 'unix-ms', label: '⏱️ Unix timestamp (milliseconds)' },
-      { value: 'iso8601', label: '📋 ISO 8601 (2023-11-29T12:36:07Z)' },
-      { value: 'rfc2822', label: '📧 RFC 2822 (Wed, 29 Nov 2023)' },
-      { value: 'custom', label: '⚙️ Custom format' },
-    ],
-    description: 'Format of the input timestamp',
-  },
-  {
-    key: 'outputFormat',
-    label: 'Output Format',
-    type: 'select' as const,
-    default: 'iso8601',
-    options: [
-      { value: 'unix', label: '📅 Unix timestamp (seconds)' },
-      { value: 'unix-ms', label: '⏱️ Unix timestamp (milliseconds)' },
-      { value: 'iso8601', label: '📋 ISO 8601' },
-      { value: 'rfc2822', label: '📧 RFC 2822' },
-      { value: 'relative', label: '⏰ Relative time (2 hours ago)' },
-      { value: 'custom', label: '⚙️ Custom format' },
-      { value: 'all', label: '📊 All formats' },
-    ],
-    description: 'Format for the output timestamp',
-  },
-] as const;
-
-const TIMEZONE_OPTIONS = [
-  {
-    key: 'inputTimezone',
-    label: 'Input Timezone',
-    type: 'select' as const,
-    default: 'UTC',
-    options: COMMON_TIMEZONES.map(tz => ({
-      value: tz.id,
-      label: `${tz.name} (${tz.offset})`
-    })),
-    description: 'Timezone of the input timestamp',
-  },
-  {
-    key: 'outputTimezone',
-    label: 'Output Timezone',
-    type: 'select' as const,
-    default: 'UTC',
-    options: [
-      { value: 'local', label: 'Local timezone' },
-      ...COMMON_TIMEZONES.map(tz => ({
-        value: tz.id,
-        label: `${tz.name} (${tz.offset})`
-      }))
-    ],
-    description: 'Timezone for the output timestamp',
-  },
-] as const;
-
-const FORMATTING_OPTIONS = [
-  {
-    key: 'locale',
-    label: 'Locale',
-    type: 'select' as const,
-    default: 'en-US',
-    options: LOCALES.map(locale => ({
-      value: locale.id,
-      label: locale.name
-    })),
-    description: 'Locale for date formatting',
-  },
-  {
-    key: 'includeMilliseconds',
-    label: 'Include Milliseconds',
-    type: 'checkbox' as const,
-    default: false,
-    description: 'Show milliseconds in formatted output',
-  },
-  {
-    key: 'useUtc',
-    label: 'Use UTC',
-    type: 'checkbox' as const,
-    default: true,
-    description: 'Display times in UTC when possible',
-  },
-  {
-    key: 'showRelativeTime',
-    label: 'Show Relative Time',
-    type: 'checkbox' as const,
-    default: false,
-    description: 'Display relative time information',
-  },
-  {
-    key: 'batchProcessing',
-    label: 'Batch Processing',
-    type: 'checkbox' as const,
-    default: false,
-    description: 'Process multiple timestamps (one per line)',
-  },
-] as const;
-
 export function TimestampFormatter({ className = '' }: TimestampFormatterProps) {
-  const [input, setInput] = useState('');
-  const [output, setOutput] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [info, setInfo] = useState<any>(null);
-  const [currentTime, setCurrentTime] = useState<string>('');
-  
-  const { setCurrentTool, addToHistory } = useToolStore();
-  const [config, setConfig] = useState<TimestampFormatterConfig>(DEFAULT_CONFIG);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [inputValue, setInputValue] = useState('');
+  const [inputType, setInputType] = useState<'unix' | 'iso' | 'rfc' | 'auto'>('auto');
+  const [timezone, setTimezone] = useState('UTC');
+  const [parsedDate, setParsedDate] = useState<Date | null>(null);
+  const [error, setError] = useState('');
+  const [copiedField, setCopiedField] = useState('');
+
+  const { addToHistory } = useToolStore();
 
   // Update current time every second
   useEffect(() => {
-    const updateCurrentTime = () => {
-      const now = new Date();
-      const timestamp = Math.floor(now.getTime() / 1000);
-      const formatted = now.toISOString();
-      setCurrentTime(`Unix: ${timestamp} | ISO: ${formatted}`);
-    };
-
-    updateCurrentTime();
-    const interval = setInterval(updateCurrentTime, 1000);
-    return () => clearInterval(interval);
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
   }, []);
 
-  const processInput = useMemo(
-    () => debounce((currentInput: string, currentConfig: TimestampFormatterConfig) => {
-      setIsProcessing(true);
-      setError(null);
+  // Get list of common timezones
+  const timezones = COMMON_TIMEZONES.map(tz => tz.id);
 
-      try {
-        const result = processTimestampFormatter(currentInput, currentConfig);
-        
-        if (result.success && result.output !== undefined) {
-          setOutput(result.output);
-          setInfo(result.info);
-          
-          // Add to history
-          addToHistory({
-            toolId: 'timestamp-formatter',
-            input: currentInput || 'Current timestamp',
-            output: result.output.substring(0, 200) + (result.output.length > 200 ? '...' : ''),
-            config: currentConfig,
-            timestamp: Date.now(),
-          });
-        } else {
-          setError(result.error || 'Failed to process timestamp');
-          setOutput('');
-          setInfo(null);
-        }
-      } catch (err) {
-        setError('An unexpected error occurred while processing timestamp');
-        setOutput('');
-        setInfo(null);
-      } finally {
-        setIsProcessing(false);
+  const parseInput = useCallback((value: string, type: string) => {
+    setError('');
+    if (!value) {
+      setParsedDate(null);
+      return;
+    }
+
+    try {
+      let date: Date;
+
+      switch (type) {
+        case 'unix':
+          const timestamp = parseInt(value);
+          // Handle both seconds and milliseconds
+          date = new Date(timestamp > 9999999999 ? timestamp : timestamp * 1000);
+          break;
+        case 'iso':
+          date = new Date(value);
+          break;
+        case 'rfc':
+          date = new Date(value);
+          break;
+        case 'auto':
+        default:
+          // Auto-detect format
+          if (/^\d+$/.test(value)) {
+            // Numeric - treat as Unix
+            const ts = parseInt(value);
+            date = new Date(ts > 9999999999 ? ts : ts * 1000);
+          } else {
+            date = new Date(value);
+          }
       }
-    }, 300),
-    [addToHistory]
+
+      if (isNaN(date.getTime())) {
+        setError('Invalid timestamp format');
+        setParsedDate(null);
+      } else {
+        setParsedDate(date);
+
+        // Add to history
+        addToHistory({
+          toolId: 'timestamp-formatter',
+          input: value,
+          output: date.toISOString(),
+          timestamp: Date.now(),
+        });
+      }
+    } catch (e) {
+      setError('Error parsing timestamp');
+      setParsedDate(null);
+    }
+  }, [addToHistory]);
+
+  useEffect(() => {
+    parseInput(inputValue, inputType);
+  }, [inputValue, inputType, parseInput]);
+
+  const formatToTimezone = (date: Date, tz: string) => {
+    try {
+      return date.toLocaleString('en-US', {
+        timeZone: tz,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+    } catch (e) {
+      return 'Invalid timezone';
+    }
+  };
+
+  const getRelativeTime = (date: Date) => {
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHour = Math.floor(diffMin / 60);
+    const diffDay = Math.floor(diffHour / 24);
+    const diffMonth = Math.floor(diffDay / 30);
+    const diffYear = Math.floor(diffDay / 365);
+
+    if (diffSec < 60) return `${diffSec} seconds ago`;
+    if (diffMin < 60) return `${diffMin} minutes ago`;
+    if (diffHour < 24) return `${diffHour} hours ago`;
+    if (diffDay < 30) return `${diffDay} days ago`;
+    if (diffMonth < 12) return `${diffMonth} months ago`;
+    return `${diffYear} years ago`;
+  };
+
+  const handleCopy = async (text: string, field: string) => {
+    try {
+      await copyToClipboard(text);
+      setCopiedField(field);
+      setTimeout(() => setCopiedField(''), 2000);
+    } catch (error) {
+      console.error('Failed to copy:', error);
+    }
+  };
+
+  const displayDate = parsedDate || currentTime;
+
+  const unixSeconds = Math.floor(displayDate.getTime() / 1000);
+  const unixMilliseconds = displayDate.getTime();
+  const isoString = displayDate.toISOString();
+  const rfcString = displayDate.toUTCString();
+  const localString = formatToTimezone(displayDate, timezone);
+  const relativeTime = parsedDate ? getRelativeTime(parsedDate) : 'Current time';
+
+  const ResultRow = ({ label, value, field }: { label: string; value: string; field: string }) => (
+    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+      <div className="flex-1">
+        <div className="text-sm font-medium text-gray-600 mb-1">{label}</div>
+        <div className="text-sm font-mono text-gray-900 break-all">{value}</div>
+      </div>
+      <button
+        onClick={() => handleCopy(value, field)}
+        className="ml-3 p-2 text-gray-500 hover:text-blue-600 hover:bg-white rounded transition-colors"
+        title="Copy to clipboard"
+      >
+        {copiedField === field ? (
+          <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4" />
+          </svg>
+        ) : (
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
+        )}
+      </button>
+    </div>
   );
 
-  useEffect(() => {
-    setCurrentTool('timestamp-formatter');
-  }, [setCurrentTool]);
-
-  useEffect(() => {
-    processInput(input, config);
-  }, [input, config, processInput]);
-
-  const handleConfigChange = (key: string, value: any) => {
-    setConfig(prev => ({ ...prev, [key]: value }));
-  };
-
-  const handleQuickExample = (type: 'current' | 'unix' | 'iso' | 'rfc' | 'batch') => {
-    const examples = {
-      current: { input: '', config: { outputFormat: 'all' as const } },
-      unix: { input: '1701234567', config: { inputFormat: 'unix' as const, outputFormat: 'iso8601' as const } },
-      iso: { input: '2023-11-29T12:36:07.890Z', config: { inputFormat: 'iso8601' as const, outputFormat: 'relative' as const } },
-      rfc: { input: 'Wed, 29 Nov 2023 12:36:07 GMT', config: { inputFormat: 'rfc2822' as const, outputFormat: 'unix' as const } },
-      batch: { 
-        input: '1701234567\n2023-11-29T12:36:07Z\nWed, 29 Nov 2023 12:36:07 GMT', 
-        config: { batchProcessing: true, outputFormat: 'iso8601' as const } 
-      }
-    };
-    
-    const example = examples[type];
-    setInput(example.input);
-    setConfig(prev => ({ ...prev, ...example.config }));
-  };
-
-  const handleInsertCurrentTimestamp = (format: 'unix' | 'unix-ms' | 'iso') => {
-    const now = Date.now();
-    const timestamps = {
-      unix: Math.floor(now / 1000).toString(),
-      'unix-ms': now.toString(),
-      iso: new Date(now).toISOString()
-    };
-    
-    setInput(timestamps[format]);
-    setConfig(prev => ({ 
-      ...prev, 
-      inputFormat: format === 'iso' ? 'iso8601' : (format === 'unix-ms' ? 'unix' : 'unix')
-    }));
-  };
-
-  const handleTimezoneQuickSelect = (timezone: string) => {
-    setConfig(prev => ({ ...prev, outputTimezone: timezone }));
-  };
-
-  // Build conditional options
-  const allOptions = [
-    ...MODE_OPTIONS,
-    ...INPUT_OPTIONS.filter(opt => {
-      // Show input format only when there's input or not showing current time
-      if (opt.key === 'inputFormat') return input.trim() || config.outputFormat !== 'all';
-      return true;
-    }),
-    ...TIMEZONE_OPTIONS,
-    ...FORMATTING_OPTIONS,
-  ];
-
-  const inputPlaceholder = config.batchProcessing 
-    ? 'Enter multiple timestamps (one per line):\n1701234567\n2023-11-29T12:36:07Z\nWed, 29 Nov 2023 12:36:07 GMT'
-    : 'Enter timestamp to convert or leave empty for current time...';
-
   return (
-    <div className={`grid gap-6 lg:grid-cols-12 ${className}`}>
-      <div className="lg:col-span-4 space-y-6">
-        {/* Current Time Display */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700">Current Time</h3>
-          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="text-xs font-mono text-blue-800">
-              {currentTime}
-            </div>
-            <div className="mt-2 flex gap-1">
-              <button
-                onClick={() => handleInsertCurrentTimestamp('unix')}
-                className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-              >
-                Insert Unix
-              </button>
-              <button
-                onClick={() => handleInsertCurrentTimestamp('unix-ms')}
-                className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-              >
-                Insert Unix (ms)
-              </button>
-              <button
-                onClick={() => handleInsertCurrentTimestamp('iso')}
-                className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-              >
-                Insert ISO
-              </button>
-            </div>
-          </div>
+    <div className={`${className}`}>
+      <div style={{
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        borderRadius: 'var(--radius-lg)',
+        padding: 'var(--space-xl)',
+        marginBottom: 'var(--space-lg)',
+        color: 'white'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)', marginBottom: 'var(--space-lg)' }}>
+          <svg style={{ width: '32px', height: '32px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', margin: 0 }}>Timestamp Formatter</h1>
         </div>
 
-        {/* Quick Examples */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700">Quick Examples</h3>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => handleQuickExample('current')}
-              className="px-3 py-2 text-xs bg-green-100 text-green-800 rounded hover:bg-green-200 transition-colors"
-            >
-              ⏰ Current Time
-            </button>
-            <button
-              onClick={() => handleQuickExample('unix')}
-              className="px-3 py-2 text-xs bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition-colors"
-            >
-              📅 Unix → ISO
-            </button>
-            <button
-              onClick={() => handleQuickExample('iso')}
-              className="px-3 py-2 text-xs bg-purple-100 text-purple-800 rounded hover:bg-purple-200 transition-colors"
-            >
-              ⏰ ISO → Relative
-            </button>
-            <button
-              onClick={() => handleQuickExample('batch')}
-              className="px-3 py-2 text-xs bg-orange-100 text-orange-800 rounded hover:bg-orange-200 transition-colors"
-            >
-              📊 Batch Mode
-            </button>
+        <div style={{
+          padding: 'var(--space-lg)',
+          backgroundColor: 'rgba(255, 255, 255, 0.15)',
+          borderRadius: 'var(--radius-lg)',
+          border: '1px solid rgba(255, 255, 255, 0.3)',
+          backdropFilter: 'blur(10px)'
+        }}>
+          <div style={{ fontSize: '0.875rem', fontWeight: 500, marginBottom: 'var(--space-sm)', opacity: 0.9 }}>
+            Current Time
           </div>
-        </div>
-
-        {/* Quick Timezone Selection */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700">Common Timezones</h3>
-          <div className="grid grid-cols-1 gap-1">
-            {COMMON_TIMEZONES.slice(0, 6).map(tz => (
-              <button
-                key={tz.id}
-                onClick={() => handleTimezoneQuickSelect(tz.id)}
-                className={`px-2 py-1 text-xs rounded transition-colors text-left ${
-                  config.outputTimezone === tz.id
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {tz.name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <OptionsPanel
-          title="Timestamp Options"
-          options={allOptions}
-          values={config}
-          onChange={handleConfigChange}
-        />
-
-        {/* Timestamp Information */}
-        {info && (
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-700">Timestamp Info</h3>
-            <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-xs">
-              <div className="grid gap-1">
-                <div>
-                  <span className="text-green-600">Format:</span>
-                  <span className="ml-1 font-medium text-green-800">{info.inputFormat}</span>
-                </div>
-                <div>
-                  <span className="text-green-600">Day:</span>
-                  <span className="ml-1 font-medium text-green-800">{info.dayOfWeek}</span>
-                </div>
-                <div>
-                  <span className="text-green-600">Relative:</span>
-                  <span className="ml-1 font-medium text-green-800">{info.relativeTime}</span>
-                </div>
-                <div>
-                  <span className="text-green-600">Timezone:</span>
-                  <span className="ml-1 font-medium text-green-800">{info.timezone}</span>
-                </div>
-                <div>
-                  <span className="text-green-600">Valid:</span>
-                  <span className="ml-1 font-medium text-green-800">
-                    {info.isValid ? '✅ Yes' : '❌ No'}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Format Reference */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-medium text-gray-700">Format Reference</h3>
-          <div className="space-y-2 max-h-48 overflow-y-auto">
-            {TIMESTAMP_FORMATS.map(format => (
-              <div key={format.id} className="p-2 bg-gray-50 rounded text-xs">
-                <div className="font-medium text-gray-800">{format.name}</div>
-                <div className="text-gray-600 mt-1">{format.description}</div>
-                <code className="block mt-1 text-blue-600 bg-white px-1 rounded">
-                  {format.example}
-                </code>
-              </div>
-            ))}
+          <div style={{ fontSize: '1.5rem', fontFamily: 'var(--font-family-mono)', fontWeight: 600 }}>
+            {currentTime.toISOString()}
           </div>
         </div>
       </div>
 
-      <div className="lg:col-span-8 space-y-6">
-        <InputPanel
-          title="Timestamp Input"
-          value={input}
-          onChange={setInput}
-          placeholder={inputPlaceholder}
-          language="text"
-        />
+      <div className="card" style={{ padding: 'var(--space-xl)' }}>
+        <div style={{ display: 'grid', gap: 'var(--space-lg)', marginBottom: 'var(--space-xl)' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-text-primary)', marginBottom: 'var(--space-sm)' }}>
+              Input Type
+            </label>
+            <select
+              value={inputType}
+              onChange={(e) => setInputType(e.target.value as any)}
+              className="form-select"
+              style={{ width: '100%' }}
+            >
+              <option value="auto">Auto-detect format</option>
+              <option value="unix">Unix Timestamp (seconds or milliseconds)</option>
+              <option value="iso">ISO 8601</option>
+              <option value="rfc">RFC 2822</option>
+            </select>
+          </div>
 
-        <OutputPanel
-          title="Formatted Timestamp"
-          value={output}
-          error={error}
-          isProcessing={isProcessing}
-          language="text"
-          placeholder="Enter timestamp or leave empty for current time..."
-          processingMessage="Processing timestamp..."
-          customActions={
-            output ? (
-              <div className="flex gap-2">
-                <button
-                  onClick={() => navigator.clipboard?.writeText(output)}
-                  className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                >
-                  📋 Copy Result
-                </button>
-                <button
-                  onClick={() => {
-                    const blob = new Blob([output], { type: 'text/plain' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'timestamps.txt';
-                    a.click();
-                    URL.revokeObjectURL(url);
-                  }}
-                  className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
-                >
-                  💾 Download File
-                </button>
-                {info && (
-                  <button
-                    onClick={() => {
-                      const infoText = `Timestamp Information:
-                      
-Original Input: ${info.originalInput}
-Parsed Timestamp: ${info.parsedTimestamp}
-Input Format: ${info.inputFormat}
-Output Format: ${info.outputFormat}
-Timezone: ${info.timezone}
-Day of Week: ${info.dayOfWeek}
-Relative Time: ${info.relativeTime}
-Valid: ${info.isValid ? 'Yes' : 'No'}`;
-                      
-                      navigator.clipboard?.writeText(infoText);
-                    }}
-                    className="px-3 py-1 text-xs bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
-                  >
-                    📊 Copy Info
-                  </button>
-                )}
-                <button
-                  onClick={() => {
-                    const reverseConfig = {
-                      ...config,
-                      inputFormat: config.outputFormat === 'unix' ? 'unix' as const :
-                                  config.outputFormat === 'unix-ms' ? 'unix' as const :
-                                  config.outputFormat === 'iso8601' ? 'iso8601' as const :
-                                  config.outputFormat === 'rfc2822' ? 'rfc2822' as const : 'auto' as const,
-                      outputFormat: config.inputFormat === 'unix' ? 'unix' as const :
-                                   config.inputFormat === 'iso8601' ? 'iso8601' as const :
-                                   config.inputFormat === 'rfc2822' ? 'rfc2822' as const : 'iso8601' as const
-                    };
-                    setInput(output);
-                    setConfig(reverseConfig);
-                  }}
-                  className="px-3 py-1 text-xs bg-orange-600 text-white rounded hover:bg-orange-700 transition-colors"
-                >
-                  🔄 Reverse
-                </button>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-text-primary)', marginBottom: 'var(--space-sm)' }}>
+              Input Timestamp
+            </label>
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder={
+                inputType === 'unix'
+                  ? '1609459200 or 1609459200000'
+                  : inputType === 'iso'
+                  ? '2021-01-01T00:00:00Z'
+                  : inputType === 'rfc'
+                  ? 'Fri, 01 Jan 2021 00:00:00 GMT'
+                  : 'Enter timestamp or leave empty for current time'
+              }
+              className="form-input"
+              style={{ width: '100%', fontFamily: 'var(--font-family-mono)' }}
+            />
+            {error && (
+              <div style={{ marginTop: 'var(--space-sm)', fontSize: '0.875rem', color: 'var(--color-danger)' }}>
+                {error}
               </div>
-            ) : undefined
-          }
-        />
+            )}
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-text-primary)', marginBottom: 'var(--space-sm)' }}>
+              Display Timezone
+            </label>
+            <select
+              value={timezone}
+              onChange={(e) => setTimezone(e.target.value)}
+              className="form-select"
+              style={{ width: '100%' }}
+            >
+              {timezones.map((tz) => (
+                <option key={tz} value={tz}>
+                  {tz}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: 'var(--space-lg)' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 'var(--space-lg)' }}>
+            {parsedDate ? 'Converted Formats' : 'Current Time Formats'}
+          </h2>
+          <div style={{ display: 'grid', gap: 'var(--space-md)' }}>
+            <ResultRow
+              label="Unix Timestamp (seconds)"
+              value={unixSeconds.toString()}
+              field="unix-sec"
+            />
+            <ResultRow
+              label="Unix Timestamp (milliseconds)"
+              value={unixMilliseconds.toString()}
+              field="unix-ms"
+            />
+            <ResultRow
+              label="ISO 8601"
+              value={isoString}
+              field="iso"
+            />
+            <ResultRow
+              label="RFC 2822"
+              value={rfcString}
+              field="rfc"
+            />
+            <ResultRow
+              label={`Local Time (${timezone})`}
+              value={localString}
+              field="local"
+            />
+            <ResultRow
+              label="Relative Time"
+              value={relativeTime}
+              field="relative"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="card" style={{ padding: 'var(--space-lg)', marginTop: 'var(--space-lg)' }}>
+        <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: 'var(--space-md)' }}>Quick Actions</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--space-md)' }}>
+          <button
+            onClick={() => {
+              setInputValue(unixSeconds.toString());
+              setInputType('unix');
+            }}
+            className="btn btn-outline"
+            style={{ justifyContent: 'center' }}
+          >
+            Use Unix (seconds)
+          </button>
+          <button
+            onClick={() => {
+              setInputValue(unixMilliseconds.toString());
+              setInputType('unix');
+            }}
+            className="btn btn-outline"
+            style={{ justifyContent: 'center' }}
+          >
+            Use Unix (ms)
+          </button>
+          <button
+            onClick={() => {
+              setInputValue(isoString);
+              setInputType('iso');
+            }}
+            className="btn btn-outline"
+            style={{ justifyContent: 'center' }}
+          >
+            Use ISO 8601
+          </button>
+          <button
+            onClick={() => {
+              setInputValue('');
+              setParsedDate(null);
+              setError('');
+            }}
+            className="btn btn-outline"
+            style={{ justifyContent: 'center' }}
+          >
+            Clear Input
+          </button>
+        </div>
       </div>
     </div>
   );
