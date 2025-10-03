@@ -1,6 +1,8 @@
 # Nixpacks configuration for Node.js version
 [variables]
 NODE_VERSION = "20.17.0"
+HOST = "0.0.0.0"
+PORT = "3000"
 
 [phases.setup]
 nixPkgs = ["nodejs_20"]
@@ -12,4 +14,5 @@ cmd = "npm install"
 cmd = "npm run build"
 
 [start]
-cmd = "npx serve dist -p 3000"
+# Run Astro hybrid build with Node.js server (supports API endpoints)
+cmd = "node dist/server/entry.mjs"

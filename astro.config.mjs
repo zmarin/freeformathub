@@ -3,9 +3,17 @@ import { defineConfig } from 'astro/config';
 
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
+import node from '@astrojs/node';
 
 // https://astro.build/config
 export default defineConfig({
+  // Server output mode with Node.js adapter for API endpoints
+  // Pages will be prerendered by default using the prerender directive
+  output: 'server',
+  adapter: node({
+    mode: 'standalone'
+  }),
+
   integrations: [react()],
 
   vite: {
