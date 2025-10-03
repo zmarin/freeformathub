@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { Calculator, Code, Settings, Eye, EyeOff, Copy, Zap, TrendingUp } from 'lucide-react';
+import { Calculator, Code, Settings, Eye, EyeOff, Copy, Zap, TrendingUp, RotateCcw } from 'lucide-react';
 import { processMathExpressionEvaluator, MathEvaluatorConfig } from '../../../tools/math/math-expression-evaluator';
 import { InputPanel, OutputPanel, OptionsPanel } from '../../ui';
 import { debounce } from '../../../lib/utils';

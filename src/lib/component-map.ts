@@ -63,6 +63,9 @@ import { YamlValidator } from '../components/tools/development/YamlValidator';
 import CliCommandsReference from '../components/tools/development/CliCommandsReference';
 import AiCliAssistant from '../components/tools/development/AiCliAssistant';
 import EmojiReference from '../components/tools/development/EmojiReference';
+import { ConfigFileValidator } from '../components/tools/development/ConfigFileValidator';
+import JSONFlattener from '../components/tools/development/JSONFlattener';
+import { LogAnalysisTool } from '../components/tools/development/LogAnalysisTool';
 
 // Encoder components
 import Base32Encoder from '../components/tools/encoders/Base32Encoder';
@@ -94,11 +97,15 @@ import { QrCodeGenerator } from '../components/tools/generators/QrCodeGenerator'
 import { QrGenerator } from '../components/tools/generators/QrGenerator';
 import { UuidGenerator } from '../components/tools/generators/UuidGenerator';
 
+// Math components
+import MathExpressionEvaluator from '../components/tools/math/MathExpressionEvaluator';
+
 // Network components
 import { ApiRateLimiterCalculator } from '../components/tools/network/ApiRateLimiterCalculator';
 import { DnsLookup } from '../components/tools/network/DnsLookup';
 import { IpRangeCalculator } from '../components/tools/network/IpRangeCalculator';
 import { IpSubnetCalculator } from '../components/tools/network/IpSubnetCalculator';
+import { NetworkMonitoringTool } from '../components/tools/network/NetworkMonitoringTool';
 import { PortScanner } from '../components/tools/network/PortScanner';
 import { WhoisLookup } from '../components/tools/network/WhoisLookup';
 
@@ -213,6 +220,9 @@ export const TOOL_COMPONENTS: Record<string, ToolComponent> = {
   'cli-commands-reference': CliCommandsReference,
   'ai-cli-assistant': AiCliAssistant,
   'emoji-reference': EmojiReference,
+  'config-file-validator': ConfigFileValidator,
+  'json-flattener': JSONFlattener,
+  'log-analysis-tool': LogAnalysisTool,
 
   // Encoder tools
   'base32-encoder': Base32Encoder,
@@ -244,11 +254,15 @@ export const TOOL_COMPONENTS: Record<string, ToolComponent> = {
   'qr-generator': QrGenerator,
   'uuid-generator': UuidGenerator,
 
+  // Math tools
+  'math-expression-evaluator': MathExpressionEvaluator,
+
   // Network tools
   'api-rate-limiter-calculator': ApiRateLimiterCalculator,
   'dns-lookup': DnsLookup,
   'ip-range-calculator': IpRangeCalculator,
   'ip-subnet-calculator': IpSubnetCalculator,
+  'network-monitoring-tool': NetworkMonitoringTool,
   'port-scanner': PortScanner,
   'whois-lookup': WhoisLookup,
 
