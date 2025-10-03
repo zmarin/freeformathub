@@ -19,6 +19,7 @@ import { JsonToXmlConverter } from '../components/tools/converters/JsonToXmlConv
 import { MarkdownConverter } from '../components/tools/converters/MarkdownConverter';
 import { NumberBaseConverter } from '../components/tools/converters/NumberBaseConverter';
 import { UnitConverter } from '../components/tools/converters/UnitConverter';
+import { UrlToMarkdown } from '../components/tools/converters/UrlToMarkdown';
 import { WebPConverter } from '../components/tools/converters/WebPConverter';
 import { XmlToJsonConverter } from '../components/tools/converters/XmlToJsonConverter';
 import PdfTextExtractor from '../components/tools/converters/PdfTextExtractor';
@@ -164,6 +165,7 @@ export const TOOL_COMPONENTS: Record<string, ToolComponent> = {
   'currency-converter': CurrencyConverter,
   'number-base-converter': NumberBaseConverter,
   'unit-converter': UnitConverter,
+  'url-to-markdown': UrlToMarkdown,
   'css-to-tailwind-converter': CssToTailwindConverter,
   'data-format-transformer': DataFormatTransformer,
   'data-uri-converter': DataUriConverter,

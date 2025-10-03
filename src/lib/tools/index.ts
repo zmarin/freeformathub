@@ -27,6 +27,7 @@ import { UNIT_CONVERTER_TOOL } from '../../tools/converters/unit-converter';
 import { NUMBER_BASE_CONVERTER_TOOL } from '../../tools/converters/number-base-converter';
 import { COLOR_CONVERTER_TOOL } from '../../tools/converters/color-converter';
 import { CURRENCY_CONVERTER_TOOL } from '../../tools/converters/currency-converter';
+import { URL_TO_MARKDOWN_TOOL } from '../../tools/converters/url-to-markdown';
 
 // Encoder/Decoder tools
 import { BASE64_ENCODER_TOOL } from '../../tools/encoders/base64-encoder';
@@ -184,6 +185,7 @@ registerTool(UNIT_CONVERTER_TOOL);
 registerTool(NUMBER_BASE_CONVERTER_TOOL);
 registerTool(COLOR_CONVERTER_TOOL);
 registerTool(CURRENCY_CONVERTER_TOOL);
+registerTool(URL_TO_MARKDOWN_TOOL);
 registerTool(PDF_TEXT_EXTRACTOR_TOOL);
 registerTool(EXCEL_TO_JSON_TOOL);
 registerTool(JSON_TO_EXCEL_TOOL);
