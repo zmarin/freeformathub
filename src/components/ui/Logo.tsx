@@ -5,13 +5,15 @@ interface LogoProps {
   size?: 'small' | 'medium' | 'large';
   className?: string;
   showText?: boolean;
+  theme?: 'light' | 'dark';
 }
 
 export default function Logo({
   variant = 'horizontal',
   size = 'medium',
   className,
-  showText = true
+  showText = true,
+  theme = 'light'
 }: LogoProps) {
   const sizeClasses = {
     small: {
@@ -63,7 +65,11 @@ export default function Logo({
 
       {/* Text */}
       {showText && (
-        <div className={`font-semibold ${classes.text} tracking-tight text-gray-900`}>
+        <div
+          className={`font-semibold ${classes.text} tracking-tight ${
+            theme === 'dark' ? 'text-white' : 'text-gray-900'
+          }`}
+        >
           FreeFormatHub
         </div>
       )}
@@ -76,7 +82,9 @@ export function LogoLink({
   href = '/',
   variant = 'horizontal',
   size = 'medium',
-  className
+  className,
+  showText,
+  theme
 }: LogoProps & { href?: string }) {
   return (
     <a
@@ -86,7 +94,12 @@ export function LogoLink({
         className
       )}
     >
-      <Logo variant={variant} size={size} />
+      <Logo
+        variant={variant}
+        size={size}
+        showText={showText}
+        theme={theme}
+      />
     </a>
   );
 }

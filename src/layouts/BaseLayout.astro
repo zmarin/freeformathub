@@ -32,12 +32,9 @@ const {
 } = Astro.props;
 
 const layoutContainerClass = [
-  fullWidth ? '' : 'mx-auto max-w-7xl',
-  'w-full px-4 sm:px-6 lg:px-8',
-  showSidebar ? 'xl:grid xl:grid-cols-[260px,minmax(0,1fr)] xl:items-start xl:gap-6' : ''
+  'w-full',
+  fullWidth ? 'px-4 sm:px-6 lg:px-10' : 'mx-auto max-w-5xl px-4 sm:px-6 lg:px-8'
 ].filter(Boolean).join(' ');
-
-const contentWrapperClass = ['min-w-0', showSidebar ? 'xl:pl-4' : ''].filter(Boolean).join(' ');
 
 // Ensure keywords is always an array
 const keywordsArray = Array.isArray(keywords) ? keywords : (typeof keywords === 'string' ? keywords.split(',').map(k => k.trim()) : []);
@@ -706,56 +703,78 @@ const getNavLinkClasses = (active: boolean) => [
       Skip to main content
     </a>
 
-    <div class="min-h-full flex flex-col">
-      <!-- Modern Header -->
-      <header class="sticky-top" style="background-color: var(--color-surface); border-bottom: 1px solid var(--color-border); box-shadow: var(--shadow-sm);">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="flex justify-between items-center h-20">
-            <!-- Logo -->
-            <div class="flex items-center">
-              <LogoLink href="/" size="small" client:load />
-            </div>
+    <div class="min-h-screen w-full bg-[color:var(--color-background)] text-[color:var(--color-text-primary)] flex">
+      {showSidebar && (
+        <aside
+          class="hidden lg:flex lg:w-72 xl:w-80 flex-col border-r border-[color:var(--color-border)] bg-[#0f172a] text-white"
+          aria-label="Primary tool navigation"
+        >
+          <div class="flex items-center justify-between border-b border-white/10 px-6 py-5">
+            <LogoLink href="/" size="small" theme="dark" client:load />
+            <span class="text-xs uppercase tracking-[0.35em] text-white/50">Tools</span>
+          </div>
+          <div class="flex-1 overflow-y-auto px-4 py-4">
+            <ToolSidebar currentPath={currentPath} theme="dark" client:load />
+          </div>
+        </aside>
+      )}
 
-            <!-- Centered Search (Desktop) -->
-            <div class="hidden md:flex flex-1 max-w-2xl mx-12">
-              <div style="background-color: var(--color-surface-secondary); border-radius: var(--radius-xl); padding: var(--space-sm); width: 100%;">
-                <ToolSearch
-                  placeholder="Search 100+ developer tools..."
-                  size="large"
-                  client:load
-                />
-              </div>
-            </div>
-
-            <!-- Actions -->
-            <div class="flex items-center gap-3">
-              <!-- Mobile Menu Button -->
+      <div class="flex min-h-screen flex-1 flex-col">
+        <!-- Top bar -->
+        <header class="border-b border-[#1f2a41] bg-[#152238] text-white shadow-sm">
+          <div class="px-4 py-5 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-center gap-3">
               <button
                 id="mobile-menu-toggle"
                 type="button"
-                class="md:hidden btn btn-outline btn-icon-only"
-                style="padding: var(--space-md); border-radius: var(--radius-lg);"
+                class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/10 text-white transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/40 lg:hidden"
                 aria-label="Open menu"
               >
                 <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
+              <LogoLink href="/" size="small" theme="dark" client:load />
+              <span class="hidden lg:inline text-[0.65rem] uppercase tracking-[0.4em] text-white/60">
+                Free Online Tools For Developers
+              </span>
+              <div class="ml-auto flex items-center gap-3">
+                <a
+                  href="https://www.buymeacoffee.com/freeformathub"
+                  class="hidden sm:inline-flex items-center gap-2 rounded-full bg-yellow-400 px-4 py-2 text-sm font-semibold text-[#152238] shadow hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-[#152238]"
+                >
+                  <span aria-hidden="true">☕</span>
+                  Buy me a coffee
+                </a>
+              </div>
             </div>
-          </div>
 
-          <!-- Secondary Navigation (Desktop) -->
-          <div class="hidden md:block pb-4">
-            <div
-              style="background-color: var(--color-surface-secondary); border-radius: var(--radius-xl); padding: var(--space-sm); border: 1px solid var(--color-border-light); margin-top: var(--space-sm);"
-            >
+            <div class="mt-5">
+              <div class="rounded-2xl border border-white/10 bg-white/10 p-2 backdrop-blur">
+                <ToolSearch
+                  placeholder="Search 100+ developer tools..."
+                  size="large"
+                  className="text-left"
+                  client:load
+                />
+              </div>
+            </div>
+
+            <div class="mt-5 hidden xl:block">
               <nav aria-label="Popular tool collections">
-                <ul class="flex flex-wrap items-center gap-2">
+                <ul class="flex flex-wrap items-center gap-3">
                   {secondaryNavLinks.map((link) => {
                     const active = isActiveLink(link.href);
                     return (
                       <li key={link.href}>
-                        <a href={link.href} class={getNavLinkClasses(active)}>
+                        <a
+                          href={link.href}
+                          class={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition ${
+                            active
+                              ? 'border-white/40 bg-white/20 text-white shadow-sm'
+                              : 'border-white/10 bg-white/5 text-white/80 hover:border-white/30 hover:bg-white/10'
+                          }`}
+                        >
                           {link.label}
                         </a>
                       </li>
@@ -765,174 +784,151 @@ const getNavLinkClasses = (active: boolean) => [
               </nav>
             </div>
           </div>
+        </header>
 
-          <!-- Mobile Search (below header on mobile) -->
-          <div class="md:hidden pb-4">
-            <div style="background-color: var(--color-surface-secondary); border-radius: var(--radius-xl); padding: var(--space-sm);">
-              <ToolSearch
-                placeholder="Search tools..."
-                size="small"
-                client:load
-              />
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu-overlay" class="mobile-menu-overlay"></div>
+
+        <!-- Mobile Menu -->
+        <nav id="mobile-menu" class="mobile-menu">
+          <div style="padding: var(--space-xl);">
+            <!-- Mobile Menu Header -->
+            <div class="mb-8 flex items-center justify-between">
+              <LogoLink href="/" size="small" client:load />
+              <button
+                id="mobile-menu-close"
+                type="button"
+                class="btn btn-outline btn-icon-only"
+                aria-label="Close menu"
+              >
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
-          </div>
-        </div>
-      </header>
 
-      <!-- Mobile Menu Overlay -->
-      <div id="mobile-menu-overlay" class="mobile-menu-overlay"></div>
+            <!-- Mobile Navigation Links -->
+            <div style="display: flex; flex-direction: column; gap: var(--space-lg);">
+              <a href="/" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                Home
+              </a>
+              <a href="/tools" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                </svg>
+                Tools
+              </a>
+              <a href="/formatters" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                </svg>
+                Formatters
+              </a>
+              <a href="/converters" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
+                Converters
+              </a>
+              <a href="/encoders" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                Encoders
+              </a>
 
-      <!-- Mobile Menu -->
-      <nav id="mobile-menu" class="mobile-menu">
-        <div style="padding: var(--space-xl);">
-          <!-- Mobile Menu Header -->
-          <div class="flex justify-between items-center mb-8">
-            <LogoLink href="/" size="small" client:load />
-            <button
-              id="mobile-menu-close"
-              type="button"
-              class="btn btn-outline btn-icon-only"
-              aria-label="Close menu"
-            >
-              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          <!-- Mobile Navigation Links -->
-          <div style="display: flex; flex-direction: column; gap: var(--space-lg);">
-            <a href="/" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
-              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-              Home
-            </a>
-            <a href="/tools" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
-              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-              </svg>
-              Tools
-            </a>
-            <a href="/formatters" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
-              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-              </svg>
-              Formatters
-            </a>
-            <a href="/converters" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
-              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-              </svg>
-              Converters
-            </a>
-            <a href="/encoders" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
-              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-              Encoders
-            </a>
-
-            <!-- Business Tools Section -->
-            <div style="margin-top: var(--space-lg); padding-top: var(--space-lg); border-top: 1px solid var(--color-border);">
-              <h4 style="font-size: 0.875rem; font-weight: 600; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--space-md);">Business Tools</h4>
-              <div style="display: flex; flex-direction: column; gap: var(--space-sm);">
-                <a href="/json-tools" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
-                  <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  JSON Tools
-                </a>
-                <a href="/data-converters" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
-                  <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                  </svg>
-                  Data Converters
-                </a>
-                <a href="/text-tools" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
-                  <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
-                  </svg>
-                  Text Tools
-                </a>
-                <a href="/password-tools" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
-                  <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                  Security Tools
-                </a>
+              <!-- Business Tools Section -->
+              <div style="margin-top: var(--space-lg); padding-top: var(--space-lg); border-top: 1px solid var(--color-border);">
+                <h4 style="font-size: 0.875rem; font-weight: 600; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--space-md);">Business Tools</h4>
+                <div style="display: flex; flex-direction: column; gap: var(--space-sm);">
+                  <a href="/json-tools" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    JSON Tools
+                  </a>
+                  <a href="/data-converters" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                    Data Converters
+                  </a>
+                  <a href="/text-tools" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" />
+                    </svg>
+                    Text Tools
+                  </a>
+                  <a href="/password-tools" class="btn btn-outline" style="justify-content: flex-start; font-weight: 500;">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    Security Tools
+                  </a>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </nav>
+        </nav>
 
-      <!-- Main content -->
-      <main id="main-content" class="flex-1">
-        <div class={layoutContainerClass}>
-          {showSidebar && (
-            <aside
-              class="hidden xl:block sticky top-28 h-[calc(100vh-7rem)] overflow-hidden"
-              aria-label="Tool navigation sidebar"
-            >
-              <div class="h-full rounded-xl border border-[color:var(--color-border-light)] bg-[color:var(--color-surface)] px-3 py-4 shadow-sm">
-                <ToolSidebar currentPath={currentPath} client:load />
-              </div>
-            </aside>
-          )}
-          <div class={contentWrapperClass}>
+        <!-- Main content -->
+        <main id="main-content" class="flex-1 py-10">
+          <div class={layoutContainerClass}>
             <slot />
           </div>
-        </div>
-      </main>
+        </main>
 
-      <!-- Footer -->
-      <footer style="background-color: var(--color-surface-secondary); border-top: 1px solid var(--color-border);">
-        <!-- Footer Ad Placement -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <AdPlacement type="footer" lazy={true} />
-        </div>
+        <!-- Footer -->
+        <footer style="background-color: var(--color-surface-secondary); border-top: 1px solid var(--color-border);">
+          <!-- Footer Ad Placement -->
+          <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-6">
+            <AdPlacement type="footer" lazy={true} />
+          </div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div>
-              <h3 style="font-size: 0.875rem; font-weight: 600; color: var(--color-text-primary); text-transform: uppercase; letter-spacing: 0.05em;">Tools</h3>
-              <ul style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
-                <li><a href="/formatters/json-formatter" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">JSON Formatter</a></li>
-                <li><a href="/encoders/base64-encoder" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Base64 Encoder</a></li>
-                <li><a href="/encoders/url-encoder" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">URL Encoder</a></li>
-                <li><a href="/encoders/jwt-decoder" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">JWT Decoder</a></li>
-              </ul>
+          <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-2 gap-8 md:grid-cols-4">
+              <div>
+                <h3 style="font-size: 0.875rem; font-weight: 600; color: var(--color-text-primary); text-transform: uppercase; letter-spacing: 0.05em;">Tools</h3>
+                <ul style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                  <li><a href="/formatters/json-formatter" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">JSON Formatter</a></li>
+                  <li><a href="/encoders/base64-encoder" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Base64 Encoder</a></li>
+                  <li><a href="/encoders/url-encoder" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">URL Encoder</a></li>
+                  <li><a href="/encoders/jwt-decoder" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">JWT Decoder</a></li>
+                </ul>
+              </div>
+              <div>
+                <h3 style="font-size: 0.875rem; font-weight: 600; color: var(--color-text-primary); text-transform: uppercase; letter-spacing: 0.05em;">Categories</h3>
+                <ul style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                  <li><a href="/formatters" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Formatters</a></li>
+                  <li><a href="/converters" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Converters</a></li>
+                  <li><a href="/encoders" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Encoders</a></li>
+                  <li><a href="/text" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Text Tools</a></li>
+                </ul>
+              </div>
+              <div>
+                <h3 style="font-size: 0.875rem; font-weight: 600; color: var(--color-text-primary); text-transform: uppercase; letter-spacing: 0.05em;">Support</h3>
+                <ul style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                  <li><a href="/about" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">About</a></li>
+                  <li><a href="/privacy" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Privacy Policy</a></li>
+                  <li><a href="/terms" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Terms of Service</a></li>
+                  <li><a href="/contact" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Contact</a></li>
+                </ul>
+              </div>
+              <div class="flex items-start justify-center">
+                <AdPlacement type="sidebar" lazy={true} />
+              </div>
             </div>
-            <div>
-              <h3 style="font-size: 0.875rem; font-weight: 600; color: var(--color-text-primary); text-transform: uppercase; letter-spacing: 0.05em;">Categories</h3>
-              <ul style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
-                <li><a href="/formatters" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Formatters</a></li>
-                <li><a href="/converters" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Converters</a></li>
-                <li><a href="/encoders" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Encoders</a></li>
-                <li><a href="/text" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Text Tools</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3 style="font-size: 0.875rem; font-weight: 600; color: var(--color-text-primary); text-transform: uppercase; letter-spacing: 0.05em;">Support</h3>
-              <ul style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
-                <li><a href="/about" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">About</a></li>
-                <li><a href="/privacy" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Privacy Policy</a></li>
-                <li><a href="/terms" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Terms of Service</a></li>
-                <li><a href="/contact" style="font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='var(--color-text-secondary)'">Contact</a></li>
-              </ul>
-            </div>
-            <div class="flex justify-center items-start">
-              <AdPlacement type="sidebar" lazy={true} />
+            <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--color-border);">
+              <p style="font-size: 0.875rem; color: var(--color-text-secondary); text-align: center;">
+                © 2024 zmarin.zmcor. All rights reserved. | Z MARIN, obrt za usluge, Kijevska 5, Split, Croatia, EU, MBS 98472739
+              </p>
             </div>
           </div>
-          <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--color-border);">
-            <p style="font-size: 0.875rem; color: var(--color-text-secondary); text-align: center;">
-              © 2024 zmarin.zmcor. All rights reserved. | Z MARIN, obrt za usluge, Kijevska 5, Split, Croatia, EU, MBS 98472739
-            </p>
-          </div>
-        </div>
-      </footer>
+        </footer>
+      </div>
     </div>
 
     <!-- Cookie Consent Banner -->

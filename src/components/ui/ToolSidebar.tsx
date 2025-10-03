@@ -39,6 +39,7 @@ interface SidebarCategory {
 
 interface ToolSidebarProps {
   currentPath?: string;
+  theme?: 'light' | 'dark';
 }
 
 const SEARCH_DELAY_MS = 250;
@@ -121,7 +122,7 @@ function toolMatchesQuery(tool: SidebarTool, query: string): boolean {
   return haystack.includes(query);
 }
 
-const ToolSidebar: React.FC<ToolSidebarProps> = ({ currentPath = '/' }) => {
+const ToolSidebar: React.FC<ToolSidebarProps> = ({ currentPath = '/', theme = 'light' }) => {
   const sidebarData = useMemo(buildSidebarData, []);
   const storage = useMemo(() => LocalStorageManager.getInstance(), []);
 
@@ -134,6 +135,43 @@ const ToolSidebar: React.FC<ToolSidebarProps> = ({ currentPath = '/' }) => {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [initialized, setInitialized] = useState(false);
   const lastTrackedToolRef = useRef<string | null>(null);
+
+  const isDark = theme === 'dark';
+
+  const searchInputClass = isDark
+    ? 'w-full rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-sm text-white placeholder-white/60 focus:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/30'
+    : 'w-full rounded-lg border border-[color:var(--color-border-light)] bg-[color:var(--color-surface-secondary)] px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40';
+
+  const ctrlKClass = isDark
+    ? 'pointer-events-none absolute inset-y-0 right-3 flex items-center text-white/40'
+    : 'pointer-events-none absolute inset-y-0 right-3 flex items-center text-[color:var(--color-text-secondary)]';
+
+  const sectionHeadingClass = isDark
+    ? 'mb-2 text-xs font-semibold uppercase tracking-wide text-white/50'
+    : 'mb-2 text-xs font-semibold uppercase tracking-wide text-[color:var(--color-text-secondary)]';
+
+  const subcategoryHeadingClass = isDark
+    ? 'flex items-center justify-between text-xs font-semibold uppercase tracking-wide text-white/40'
+    : 'flex items-center justify-between text-xs font-semibold uppercase tracking-wide text-[color:var(--color-text-secondary)]';
+
+  const uncategorizedHeadingClass = isDark
+    ? 'text-xs font-semibold uppercase tracking-wide text-white/40'
+    : 'text-xs font-semibold uppercase tracking-wide text-[color:var(--color-text-secondary)]';
+
+  const emptyStateClass = isDark
+    ? 'rounded-md border border-dashed border-white/10 bg-white/5 px-3 py-4 text-sm text-white/60'
+    : 'rounded-md border border-dashed border-[color:var(--color-border)] bg-[color:var(--color-surface-secondary)] px-3 py-4 text-sm text-[color:var(--color-text-secondary)]';
+
+  const getCategoryButtonClass = (isActiveCategory: boolean) => [
+    'flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left text-sm transition-colors',
+    isActiveCategory
+      ? isDark
+        ? 'border-white/30 bg-white/15 text-white shadow-sm'
+        : 'border-blue-500 bg-blue-50 text-blue-700'
+      : isDark
+        ? 'border-transparent bg-white/5 text-white/80 hover:border-white/20 hover:bg-white/10'
+        : 'border-transparent bg-[color:var(--color-surface-secondary)] text-[color:var(--color-text-primary)] hover:border-[color:var(--color-border)] hover:bg-[color:var(--color-surface)]'
+  ].join(' ');
 
   useEffect(() => {
     const handle = window.setTimeout(() => {
@@ -391,16 +429,35 @@ const ToolSidebar: React.FC<ToolSidebarProps> = ({ currentPath = '/' }) => {
     const isActiveTool = tool.slug === activeToolSlug;
     const isFavorite = favoriteToolIds.includes(tool.id);
 
+    const rowClass = isDark
+      ? 'flex items-center justify-between gap-2 rounded-lg border border-white/5 bg-white/5 px-3 py-2 text-sm transition-colors hover:border-white/15 hover:bg-white/10'
+      : 'flex items-center justify-between gap-2 rounded-lg border border-transparent bg-[color:var(--color-surface-secondary)] px-3 py-2 text-sm transition-colors hover:border-[color:var(--color-border)] hover:bg-[color:var(--color-surface)]';
+
+    const linkClass = [
+      'flex-1 rounded-md px-2 py-1 text-left transition-colors focus:outline-none focus:ring-2',
+      isActiveTool
+        ? isDark
+          ? 'bg-blue-500/20 text-white focus:ring-white/30'
+          : 'bg-blue-50 text-blue-600 focus:ring-blue-200'
+        : isDark
+          ? 'text-white/80 hover:bg-white/10 hover:text-white focus:ring-white/20'
+          : 'text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface)] hover:text-[color:var(--color-text-primary)] focus:ring-blue-200'
+    ].join(' ');
+
+    const favoriteButtonClass = `h-6 w-6 rounded-md text-sm transition-colors ${
+      isFavorite
+        ? 'text-yellow-400 hover:text-yellow-300'
+        : isDark
+          ? 'text-white/40 hover:text-yellow-300'
+          : 'text-[color:var(--color-text-muted)] hover:text-blue-500'
+    }`;
+
     return (
       <li key={tool.id}>
-        <div className="flex items-center justify-between gap-2">
+        <div className={rowClass}>
           <a
             href={tool.url}
-            className={`block flex-1 rounded-md px-2 py-1 text-left text-sm transition-colors ${
-              isActiveTool
-                ? 'bg-blue-500/10 text-blue-600'
-                : 'text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-secondary)] hover:text-[color:var(--color-text-primary)]'
-            }`}
+            className={linkClass}
             onClick={() => recordRecentTool(tool.id)}
           >
             {tool.name}
@@ -413,26 +470,22 @@ const ToolSidebar: React.FC<ToolSidebarProps> = ({ currentPath = '/' }) => {
               handleToggleFavorite(tool.id);
             }}
             aria-label={isFavorite ? `Remove ${tool.name} from favorites` : `Add ${tool.name} to favorites`}
-            className={`h-6 w-6 rounded-md text-sm transition-colors ${
-              isFavorite
-                ? 'text-yellow-500 hover:text-yellow-600'
-                : 'text-[color:var(--color-text-muted)] hover:text-blue-500'
-            }`}
+            className={favoriteButtonClass}
           >
             {isFavorite ? '★' : '☆'}
           </button>
         </div>
       </li>
     );
-  }, [activeToolSlug, favoriteToolIds, handleToggleFavorite, recordRecentTool]);
+  }, [activeToolSlug, favoriteToolIds, handleToggleFavorite, isDark, recordRecentTool]);
 
   if (sidebarData.length === 0) {
     return null;
   }
 
   return (
-    <div className="flex h-full flex-col gap-4">
-      <div className="sticky top-24 z-10 bg-[var(--color-surface)] pb-2">
+    <div className={`flex h-full flex-col ${isDark ? 'gap-5 text-white/80' : 'gap-4'}`}>
+      <div className={`sticky top-0 z-10 pb-3 ${isDark ? 'bg-[#0f172a]' : 'bg-[var(--color-surface)]'}`}>
         <label className="sr-only" htmlFor="tool-sidebar-search">
           Search tools
         </label>
@@ -443,18 +496,18 @@ const ToolSidebar: React.FC<ToolSidebarProps> = ({ currentPath = '/' }) => {
             placeholder="Search tools"
             value={query}
             onChange={({ target }) => setQuery(target.value)}
-            className="w-full rounded-lg border border-[color:var(--color-border-light)] bg-[color:var(--color-surface-secondary)] px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+            className={searchInputClass}
           />
-          <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-[color:var(--color-text-secondary)]">
+          <span className={ctrlKClass}>
             Ctrl K
           </span>
         </div>
       </div>
 
-      <nav aria-label="Tool directory" className="grow overflow-y-auto pr-2">
+      <nav aria-label="Tool directory" className="grow overflow-y-auto pr-1">
         {favoriteTools.length > 0 && (
           <section className="mb-4">
-            <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-[color:var(--color-text-secondary)]">
+            <h2 className={sectionHeadingClass}>
               Favorites
             </h2>
             <ul className="flex flex-col gap-1">
@@ -465,7 +518,7 @@ const ToolSidebar: React.FC<ToolSidebarProps> = ({ currentPath = '/' }) => {
 
         {recentTools.length > 0 && (
           <section className="mb-4">
-            <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-[color:var(--color-text-secondary)]">
+            <h2 className={sectionHeadingClass}>
               Recently used
             </h2>
             <ul className="flex flex-col gap-1">
@@ -484,30 +537,40 @@ const ToolSidebar: React.FC<ToolSidebarProps> = ({ currentPath = '/' }) => {
                 <button
                   type="button"
                   onClick={() => handleToggleCategory(category.id)}
-                  className={`flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
-                    isActiveCategory
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-transparent bg-[color:var(--color-surface-secondary)] text-[color:var(--color-text-primary)] hover:border-[color:var(--color-border)] hover:bg-[color:var(--color-surface)]'
-                  }`}
+                  className={getCategoryButtonClass(isActiveCategory)}
                   aria-expanded={isExpanded}
                 >
                   <span className="flex items-center gap-2">
-                    <Icon name={category.icon} className="h-4 w-4" size={16} />
+                    <Icon
+                      name={category.icon}
+                      className={`h-4 w-4 ${isDark ? 'text-white/70' : ''}`}
+                      size={16}
+                    />
                     <span className="font-medium">{category.name}</span>
-                    <span className="rounded-full bg-[color:var(--color-surface)] px-2 py-0.5 text-xs text-[color:var(--color-text-secondary)]">
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-xs ${
+                        isDark
+                          ? 'bg-white/10 text-white/60'
+                          : 'bg-[color:var(--color-surface)] text-[color:var(--color-text-secondary)]'
+                      }`}
+                    >
                       {category.totalToolCount}
                     </span>
                   </span>
-                  <span aria-hidden="true" className="ml-2 text-xs text-[color:var(--color-text-secondary)]">
+                  <span aria-hidden="true" className={`ml-2 text-xs ${isDark ? 'text-white/50' : 'text-[color:var(--color-text-secondary)]'}`}>
                     {isExpanded ? '−' : '+'}
                   </span>
                 </button>
 
                 {isExpanded && (
-                  <div className="mt-2 space-y-2 border-l border-[color:var(--color-border-light)] pl-3">
+                  <div
+                    className={`mt-2 space-y-2 border-l pl-3 ${
+                      isDark ? 'border-white/10' : 'border-[color:var(--color-border-light)]'
+                    }`}
+                  >
                     {category.subcategories.map(subcategory => (
                       <div key={subcategory.id}>
-                        <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wide text-[color:var(--color-text-secondary)]">
+                        <div className={subcategoryHeadingClass}>
                           <span className="flex items-center gap-2">
                             <span aria-hidden="true">{subcategory.icon}</span>
                             {subcategory.name}
@@ -522,7 +585,7 @@ const ToolSidebar: React.FC<ToolSidebarProps> = ({ currentPath = '/' }) => {
 
                     {category.uncategorizedTools.length > 0 && (
                       <div>
-                        <div className="text-xs font-semibold uppercase tracking-wide text-[color:var(--color-text-secondary)]">
+                        <div className={uncategorizedHeadingClass}>
                           Other tools
                         </div>
                         <ul className="mt-1 flex flex-col gap-1">
@@ -537,7 +600,7 @@ const ToolSidebar: React.FC<ToolSidebarProps> = ({ currentPath = '/' }) => {
           })}
 
           {categoriesToRender.length === 0 && (
-            <li className="rounded-md border border-dashed border-[color:var(--color-border)] bg-[color:var(--color-surface-secondary)] px-3 py-4 text-sm text-[color:var(--color-text-secondary)]">
+            <li className={emptyStateClass}>
               No tools matched your search. Try a different keyword.
             </li>
           )}

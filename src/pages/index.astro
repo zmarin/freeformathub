@@ -4,7 +4,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import '../lib/tools/index';
 import { TOOL_CATEGORIES, getToolsByCategory, getCategory, getTool } from '../lib/tools/registry';
 import ToolCategories from '../components/ui/ToolCategories.tsx';
-import ToolSearch from '../components/ui/ToolSearch.tsx';
 import AdPlacement from '../components/ads/AdPlacement.astro';
 import InternalLinksCluster from '../components/seo/InternalLinksCluster.astro';
 
@@ -37,6 +36,42 @@ const trendingTools = trendingIds
   .map((id) => getTool(id))
   .filter((t) => !!t)
   .slice(0, 8);
+
+type ToolSummary = ReturnType<typeof getToolsByCategory>[number];
+
+interface CuratedCollection {
+  id: string;
+  name: string;
+  description: string;
+  tools: ToolSummary[];
+}
+
+const curatedCollections: CuratedCollection[] = [
+  curatedCategory && curatedTools.length > 0
+    ? {
+        id: curatedCategory.id,
+        name: curatedCategory.name,
+        description: curatedCategory.description,
+        tools: curatedTools
+      }
+    : null,
+  curatedEncoders && curatedEncodersTools.length > 0
+    ? {
+        id: curatedEncoders.id,
+        name: curatedEncoders.name,
+        description: curatedEncoders.description,
+        tools: curatedEncodersTools
+      }
+    : null,
+  curatedConverters && curatedConvertersTools.length > 0
+    ? {
+        id: curatedConverters.id,
+        name: curatedConverters.name,
+        description: curatedConverters.description,
+        tools: curatedConvertersTools
+      }
+    : null
+].filter((collection): collection is CuratedCollection => collection !== null);
 
 // Enhanced structured data for homepage SEO
 const baseUrl = 'https://freeformathub.com';
@@ -294,341 +329,271 @@ const jsonLd = {
   <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-lg z-50 transition-all">
     Skip to main content
   </a>
-  <a href="#tool-search" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-32 bg-blue-600 text-white px-4 py-2 rounded-lg z-50 transition-all">
-    Skip to tool search
+  <a href="#browse-all-heading" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-32 bg-blue-600 text-white px-4 py-2 rounded-lg z-50 transition-all">
+    Skip to tool directory
   </a>
 
-  <!-- Hero Section - Primary Landing Area -->
+  <!-- Main Content -->
   <main role="main" id="main-content" tabindex="-1">
-    <header style="background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%); padding: 5rem 0;" role="banner">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h1 class="text-4xl md:text-6xl font-bold mb-6" style="color: var(--color-text-primary);" id="page-title">
-          119 Developer Tools. Zero Friction.
-        </h1>
-        <p class="text-lg md:text-xl mb-8 max-w-3xl mx-auto" style="color: var(--color-text-secondary);" role="doc-subtitle" aria-describedby="page-title">
-          Format JSON, encode Base64, convert data formats - all in your browser, no signup required.
+  <div class="space-y-12 py-10">
+    <section class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+      <header class="space-y-4">
+        <p class="text-xs uppercase tracking-[0.4em] text-slate-500">FreeFormatHub</p>
+        <h1 class="text-4xl font-bold text-slate-900 md:text-5xl">Free Online Tools For Developers</h1>
+        <p class="max-w-3xl text-lg text-slate-600">
+          Format JSON, validate XML, convert CSV files, and automate everyday data cleanup in a single workspace.
+          Every tool runs in your browser — no accounts, no limits, no data leaves your machine.
         </p>
-
-        <!-- Tool Search Region -->
-        <section class="max-w-2xl mx-auto" role="search" aria-labelledby="search-heading">
-          <h2 id="search-heading" class="sr-only">Search Developer Tools</h2>
-          <div id="tool-search" tabindex="-1">
-            <ToolSearch
-              placeholder="Search tools..."
-              size="large"
-              client:visible
-              aria-label="Search developer tools by name or functionality"
-              role="searchbox"
-            />
-          </div>
-        </section>
+      </header>
+      <div class="mt-8 grid gap-4 md:grid-cols-2">
+        <div class="flex items-start gap-3">
+          <span class="mt-1 inline-flex h-2 w-2 flex-none rounded-full bg-blue-500"></span>
+          <p class="text-sm text-slate-600">
+            119+ formatters, validators, converters, encoders, generators, and productivity helpers.
+          </p>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="mt-1 inline-flex h-2 w-2 flex-none rounded-full bg-blue-500"></span>
+          <p class="text-sm text-slate-600">
+            Privacy-first: all processing happens locally with no uploads or background requests.
+          </p>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="mt-1 inline-flex h-2 w-2 flex-none rounded-full bg-blue-500"></span>
+          <p class="text-sm text-slate-600">
+            Keyboard-centric search, favorites, and history for instant access to your go-to utilities.
+          </p>
+        </div>
+        <div class="flex items-start gap-3">
+          <span class="mt-1 inline-flex h-2 w-2 flex-none rounded-full bg-blue-500"></span>
+          <p class="text-sm text-slate-600">
+            Built for speed — perfect for QA engineers, data analysts, support teams, and developers.
+          </p>
+        </div>
       </div>
-    </header>
+      <div class="mt-10 flex flex-wrap gap-3">
+        <a
+          href="/search"
+          class="inline-flex items-center gap-2 rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
+          Browse all tools
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H7" />
+          </svg>
+        </a>
+        <a
+          href="/blog"
+          class="inline-flex items-center gap-2 rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:ring-offset-2"
+        >
+          Read latest guides
+        </a>
+      </div>
+    </section>
 
-    <!-- Trending Tools Section -->
+    <section aria-label="Sponsored placement" class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <AdPlacement type="content" lazy={true} />
+    </section>
+
     {trendingTools.length > 0 && (
-      <section class="py-16" aria-labelledby="trending-tools-heading" role="region">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <header class="flex items-center justify-between mb-8">
-            <h2 id="trending-tools-heading" class="text-3xl font-bold text-gray-900">
-              Most Used Tools
-            </h2>
-            <nav aria-label="Tool navigation">
-              <a href="/search" class="text-blue-600 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded" aria-label="Search all developer tools">
-                View all tools
-              </a>
-            </nav>
-          </header>
-          <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" role="grid" aria-label="Trending developer tools">
-            {trendingTools.map((tool, index) => (
-              <article class="group" role="gridcell" aria-rowindex={Math.floor(index / 4) + 1} aria-colindex={(index % 4) + 1}>
-                <a
-                  href={`/${tool.category.id}/${tool.slug}`}
-                  class="block p-6 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                  aria-labelledby={`tool-${tool.id}-title`}
-                  aria-describedby={`tool-${tool.id}-description`}
-                >
-                  <header class="flex items-center mb-4">
-                    <div class={`w-12 h-12 bg-${tool.category.color}-100 rounded-lg flex items-center justify-center transition-transform`} aria-hidden="true">
-                      <span class="text-2xl" role="img" aria-label={`${tool.name} icon`}>{tool.icon}</span>
+      <section
+        class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm"
+        aria-labelledby="trending-tools-heading"
+      >
+        <header class="space-y-2 text-center">
+          <p class="text-xs uppercase tracking-[0.4em] text-slate-500">Featured</p>
+          <h2 id="trending-tools-heading" class="text-2xl font-semibold text-slate-800 md:text-3xl">
+            –List of tools–
+          </h2>
+          <p class="text-sm text-slate-500">
+            Quick links to the utilities developers open every day.
+          </p>
+        </header>
+
+        <div class="mt-10 space-y-6">
+          {trendingTools.map((tool) => {
+            const features = Array.isArray(tool.features) ? tool.features.slice(0, 4) : [];
+            return (
+              <article
+                class="rounded-2xl border border-slate-100 bg-slate-50 p-6 transition hover:border-blue-200 hover:bg-white"
+                aria-labelledby={`tool-${tool.id}-title`}
+              >
+                <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                  <div class="flex items-center gap-4">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-blue-100 text-2xl">
+                      <span aria-hidden="true">{tool.icon}</span>
                     </div>
-                    <div class="ml-4">
-                      <h3 id={`tool-${tool.id}-title`} class="text-lg font-semibold text-gray-900 group-hover:text-blue-600">
+                    <div>
+                      <a
+                        href={`/${tool.category.id}/${tool.slug}`}
+                        id={`tool-${tool.id}-title`}
+                        class="text-xl font-semibold text-slate-900 hover:text-blue-600 focus:outline-none focus-visible:underline"
+                      >
                         {tool.name}
-                      </h3>
-                      <p class="text-xs text-gray-500" aria-label={`Category: ${tool.category.name}`}>
+                      </a>
+                      <p class="text-xs uppercase tracking-wide text-slate-500">
                         {tool.category.name}
                       </p>
                     </div>
-                  </header>
-                  <p id={`tool-${tool.id}-description`} class="text-gray-600 text-sm">
-                    {tool.description}
-                  </p>
-                </a>
+                  </div>
+                  <a
+                    href={`/${tool.category.id}/${tool.slug}`}
+                    class="inline-flex items-center gap-2 self-start rounded-full border border-blue-200 px-4 py-2 text-sm font-semibold text-blue-600 transition hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-200 md:self-center"
+                  >
+                    Launch tool
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H7" />
+                    </svg>
+                  </a>
+                </div>
+                <p class="mt-4 text-sm text-slate-600">
+                  {tool.description}
+                </p>
+                {features.length > 0 && (
+                  <ul class="mt-4 grid gap-2 sm:grid-cols-2">
+                    {features.map((feature) => (
+                      <li class="flex items-start gap-2 text-sm text-slate-600">
+                        <span class="mt-1 inline-flex h-2 w-2 flex-none rounded-full bg-blue-400"></span>
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </article>
-            ))}
+            );
+          })}
         </div>
-      </div>
-    </section>
-  )}
+      </section>
+    )}
 
-  <!-- In-Content Ad 1 -->
-  <section class="py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <AdPlacement type="content" lazy={true} />
-    </div>
-  </section>
-
-    <!-- Curated Data Formatters Section -->
-    {curatedCategory && curatedTools.length > 0 && (
-      <section class="py-16 bg-gray-50" aria-labelledby="formatters-heading" role="region">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <header class="flex items-center justify-between mb-8">
-            <h2 id="formatters-heading" class="text-3xl font-bold text-gray-900">
-              Explore {curatedCategory.name}
-            </h2>
-            <nav aria-label="Formatters navigation">
-              <a
-                href={`/${curatedCategory.id}`}
-                class="text-blue-600 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
-                aria-label={`View all ${curatedCategory.name} tools`}
-              >
-                View all {curatedCategory.name}
-              </a>
-            </nav>
-          </header>
-          <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" role="list" aria-label="Data formatting tools">
-            {curatedTools.map((tool, index) => (
-            <a href={`/${tool.category.id}/${tool.slug}`} class="group block p-6 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-200">
-              <div class="flex items-center mb-4">
-                <div class={`w-12 h-12 bg-${tool.category.color}-100 rounded-lg flex items-center justify-center transition-transform`}>
-                  <span class="text-2xl">{tool.icon}</span>
-                </div>
-                <div class="ml-4">
-                  <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600">
-                    {tool.name}
-                  </h3>
-                  <p class="text-xs text-gray-500">{tool.category.name}</p>
-                </div>
-              </div>
-              <p class="text-gray-600 text-sm">
-                {tool.description}
-              </p>
-            </a>
-          ))}
-        </div>
-      </div>
-    </section>
-  )}
-
-  {curatedEncoders && curatedEncodersTools.length > 0 && (
-    <section class="py-16">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between mb-8">
-          <h2 class="text-3xl font-bold text-gray-900">
-            Explore {curatedEncoders.name}
+    {curatedCollections.length > 0 && (
+      <section
+        class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm"
+        aria-labelledby="collections-heading"
+      >
+        <header class="space-y-2 text-center">
+          <p class="text-xs uppercase tracking-[0.4em] text-slate-500">Collections</p>
+          <h2 id="collections-heading" class="text-2xl font-semibold text-slate-800 md:text-3xl">
+            Explore by category
           </h2>
-          <a href={`/${curatedEncoders.id}`} class="text-blue-600 hover:underline">
-            View all {curatedEncoders.name}
-          </a>
-        </div>
-        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {curatedEncodersTools.map(tool => (
-            <a href={`/${tool.category.id}/${tool.slug}`} class="group block p-6 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-200">
-              <div class="flex items-center mb-4">
-                <div class={`w-12 h-12 bg-${tool.category.color}-100 rounded-lg flex items-center justify-center transition-transform`}>
-                  <span class="text-2xl">{tool.icon}</span>
-                </div>
-                <div class="ml-4">
-                  <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600">
-                    {tool.name}
-                  </h3>
-                  <p class="text-xs text-gray-500">{tool.category.name}
-                  </p>
-                </div>
+          <p class="text-sm text-slate-500">
+            Jump into the toolkits that keep your workflows moving.
+          </p>
+        </header>
+
+        <div class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {curatedCollections.map((collection) => (
+            <article
+              class="rounded-2xl border border-slate-100 bg-slate-50 p-6 text-left transition hover:border-blue-200 hover:bg-white"
+              aria-labelledby={`collection-${collection.id}`}
+            >
+              <header class="space-y-2">
+                <a
+                  href={`/${collection.id}`}
+                  id={`collection-${collection.id}`}
+                  class="text-lg font-semibold text-slate-900 hover:text-blue-600 focus:outline-none focus-visible:underline"
+                >
+                  {collection.name}
+                </a>
+                <p class="text-sm text-slate-600">{collection.description}</p>
+              </header>
+              <ul class="mt-4 space-y-2">
+                {collection.tools.slice(0, 5).map((tool) => (
+                  <li key={tool.id}>
+                    <a
+                      href={`/${tool.category.id}/${tool.slug}`}
+                      class="group flex items-center justify-between rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                    >
+                      <span>{tool.name}</span>
+                      <span class="text-xs text-slate-400 group-hover:text-blue-500">Open</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+              <div class="mt-6">
+                <a
+                  href={`/${collection.id}`}
+                  class="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-700"
+                >
+                  View all {collection.tools.length} tools
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H7" />
+                  </svg>
+                </a>
               </div>
-              <p class="text-gray-600 text-sm">{tool.description}</p>
-            </a>
+            </article>
           ))}
         </div>
-      </div>
-    </section>
-  )}
+      </section>
+    )}
 
-  {curatedConverters && curatedConvertersTools.length > 0 && (
-    <section class="py-16 bg-gray-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between mb-8">
-          <h2 class="text-3xl font-bold text-gray-900">
-            Explore {curatedConverters.name}
-          </h2>
-          <a href={`/${curatedConverters.id}`} class="text-blue-600 hover:underline">
-            View all {curatedConverters.name}
-          </a>
-        </div>
-        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {curatedConvertersTools.map(tool => (
-            <a href={`/${tool.category.id}/${tool.slug}`} class="group block p-6 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-200">
-              <div class="flex items-center mb-4">
-                <div class={`w-12 h-12 bg-${tool.category.color}-100 rounded-lg flex items-center justify-center transition-transform`}>
-                  <span class="text-2xl">{tool.icon}</span>
-                </div>
-                <div class="ml-4">
-                  <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600">
-                    {tool.name}
-                  </h3>
-                  <p class="text-xs text-gray-500">{tool.category.name}
-                  </p>
-                </div>
-              </div>
-              <p class="text-gray-600 text-sm">{tool.description}</p>
-            </a>
-          ))}
-        </div>
-      </div>
-    </section>
-  )}
+    <section
+      class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm"
+      aria-labelledby="features-heading"
+    >
+      <header class="space-y-2 text-center">
+        <p class="text-xs uppercase tracking-[0.4em] text-slate-500">Why FreeFormatHub</p>
+        <h2 id="features-heading" class="text-2xl font-semibold text-slate-800 md:text-3xl">
+          Built for flow, trusted for privacy
+        </h2>
+      </header>
 
-  <!-- Featured Tools -->
-  <section class="py-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">
-        Essential Tools for Every Developer
-      </h2>
-      
-      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        <!-- JSON Formatter -->
-        <a href="/formatters/json-formatter" class="group block p-6 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-200">
-          <div class="flex items-center mb-4">
-            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center transition-transform">
-              <span class="text-2xl">{}</span>
-            </div>
-            <div class="ml-4">
-              <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600">
-                JSON Formatter
-              </h3>
-            </div>
-          </div>
-          <p class="text-gray-600 text-sm">
-            Format, validate, and beautify JSON data with syntax highlighting
-          </p>
-        </a>
-
-        <!-- Base64 Encoder -->
-        <a href="/encoders/base64-encoder" class="group block p-6 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-lg transition-all duration-200">
-          <div class="flex items-center mb-4">
-            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center transition-transform">
-              <span class="text-2xl">🔒</span>
-            </div>
-            <div class="ml-4">
-              <h3 class="text-lg font-semibold text-gray-900 group-hover:text-purple-600">
-                Base64 Encoder
-              </h3>
-            </div>
-          </div>
-          <p class="text-gray-600 text-sm">
-            Encode and decode Base64 strings for data transmission
-          </p>
-        </a>
-
-        <!-- URL Encoder -->
-        <a href="/encoders/url-encoder" class="group block p-6 bg-white rounded-lg border border-gray-200 hover:border-green-300 hover:shadow-lg transition-all duration-200">
-          <div class="flex items-center mb-4">
-            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center transition-transform">
-              <span class="text-2xl">🔗</span>
-            </div>
-            <div class="ml-4">
-              <h3 class="text-lg font-semibold text-gray-900 group-hover:text-green-600">
-                URL Encoder
-              </h3>
-            </div>
-          </div>
-          <p class="text-gray-600 text-sm">
-            Encode and decode URLs and query parameters safely
-          </p>
-        </a>
-
-        <!-- JWT Decoder -->
-        <a href="/encoders/jwt-decoder" class="group block p-6 bg-white rounded-lg border border-gray-200 hover:border-red-300 hover:shadow-lg transition-all duration-200">
-          <div class="flex items-center mb-4">
-            <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center transition-transform">
-              <span class="text-2xl">🎫</span>
-            </div>
-            <div class="ml-4">
-              <h3 class="text-lg font-semibold text-gray-900 group-hover:text-red-600">
-                JWT Decoder
-              </h3>
-            </div>
-          </div>
-          <p class="text-gray-600 text-sm">
-            Decode and verify JSON Web Tokens securely
-          </p>
-        </a>
-      </div>
-
-      <div class="text-center mt-8">
-        <a href="/search" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" aria-label="View all data formatting and developer tools">
-          View All Developer Tools
-          <svg class="ml-2 -mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-          </svg>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Tool Categories -->
-  <section class="py-16 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">
-        Browse Tools by Category
-      </h2>
-
-      <ToolCategories categories={TOOL_CATEGORIES} client:load />
-    </div>
-  </section>
-
-  <!-- Features -->
-  <section class="py-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">
-        Key Features
-      </h2>
-
-      <div class="grid gap-8 md:grid-cols-3">
-        <div class="text-center">
-          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="mt-8 grid gap-6 md:grid-cols-3">
+        <article class="rounded-2xl border border-slate-100 bg-slate-50 p-6 text-left">
+          <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-blue-600">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h3 class="text-xl font-semibold text-gray-900 mb-2">Client-Side Processing</h3>
-          <p class="text-gray-600">Your data never leaves your browser. Complete privacy and security for sensitive information.</p>
-        </div>
+          <h3 class="text-lg font-semibold text-slate-900">Client-side processing</h3>
+          <p class="mt-2 text-sm text-slate-600">
+            Sensitive inputs stay on your device. Nothing is uploaded, stored, or shared — ideal for corporate and regulated environments.
+          </p>
+        </article>
 
-        <div class="text-center">
-          <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <article class="rounded-2xl border border-slate-100 bg-slate-50 p-6 text-left">
+          <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <h3 class="text-xl font-semibold text-gray-900 mb-2">No Account Required</h3>
-          <p class="text-gray-600">Start working immediately. No registration, no email verification, no premium tiers.</p>
-        </div>
+          <h3 class="text-lg font-semibold text-slate-900">Instant access</h3>
+          <p class="mt-2 text-sm text-slate-600">
+            No sign-ups, no paywalls, no surprise limitations. Open a tool, paste your data, and move on with your day.
+          </p>
+        </article>
 
-        <div class="text-center">
-          <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <article class="rounded-2xl border border-slate-100 bg-slate-50 p-6 text-left">
+          <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100 text-purple-600">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h3 class="text-xl font-semibold text-gray-900 mb-2">Works Offline</h3>
-          <p class="text-gray-600">Full functionality without internet connection. Perfect for restricted environments.</p>
-        </div>
+          <h3 class="text-lg font-semibold text-slate-900">Offline friendly</h3>
+          <p class="mt-2 text-sm text-slate-600">
+            Works flawlessly without an internet connection, perfect for air-gapped teams and on-the-go problem solving.
+          </p>
+        </article>
       </div>
-    </div>
-  </section>
-  </main>
+    </section>
+
+    <section
+      class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+      aria-labelledby="browse-all-heading"
+    >
+      <header class="space-y-2 text-center">
+        <h2 id="browse-all-heading" class="text-xl font-semibold text-slate-800">
+          Browse the full catalog
+        </h2>
+        <p class="text-sm text-slate-500">
+          Search by category, tag, or recent history — everything is one keystroke away.
+        </p>
+      </header>
+      <div class="mt-6">
+        <ToolCategories categories={TOOL_CATEGORIES} client:load />
+      </div>
+    </section>
+  </div>
+</main>
 
   <!-- Internal Links for SEO -->
   <InternalLinksCluster />
