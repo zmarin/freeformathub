@@ -1,4 +1,4 @@
-import type { Tool, ToolResult, ToolExample } from '../types';
+import type { Tool, ToolResult as BaseToolResult } from '../../types';
 import { TOOL_CATEGORIES } from '../../lib/tools/registry';
 
 export interface StringEscapeConfig {
@@ -8,10 +8,7 @@ export interface StringEscapeConfig {
   escapeUnicode: boolean;
 }
 
-export interface ToolResult {
-  success: boolean;
-  output?: string;
-  error?: string;
+export interface ToolResult extends BaseToolResult {
   stats?: {
     originalLength: number;
     processedLength: number;
