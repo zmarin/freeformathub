@@ -44,26 +44,63 @@ export function UrlToMarkdown({ className = '' }: UrlToMarkdownProps) {
     setOutput('');
 
     try {
-      // Use WebFetch to get the HTML content
-      // Since we're in the browser, we'll use a simple fetch first
-      // If CORS blocks it, we'll show an appropriate message
+      let html: string;
+      let pageTitle: string | undefined;
+      let usedProxy = false;
 
-      const response = await fetch(url, {
-        mode: 'cors',
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (compatible; FreeFormatHub/1.0)'
+      // Strategy: Try direct fetch first (faster for CORS-enabled sites)
+      // If CORS error, automatically fallback to proxy
+      try {
+        const response = await fetch(url, {
+          mode: 'cors',
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (compatible; FreeFormatHub/1.0)'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
-      });
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        html = await response.text();
+
+        // Extract title from HTML
+        const titleMatch = html.match(/<title[^>]*>(.*?)<\/title>/i);
+        pageTitle = titleMatch ? titleMatch[1].trim() : undefined;
+
+      } catch (directError) {
+        // Check if it's a CORS error
+        const errorMessage = directError instanceof Error ? directError.message : '';
+        const isCorsError = errorMessage.includes('CORS') ||
+                           errorMessage.includes('Failed to fetch') ||
+                           errorMessage.includes('NetworkError');
+
+        if (isCorsError) {
+          // Retry using server-side proxy
+          console.log('CORS blocked - using server-side proxy');
+          usedProxy = true;
+
+          const proxyUrl = `/api/fetch-url?url=${encodeURIComponent(url)}`;
+          const proxyResponse = await fetch(proxyUrl);
+
+          if (!proxyResponse.ok) {
+            const errorData = await proxyResponse.json();
+            throw new Error(errorData.error || `Proxy error: ${proxyResponse.status}`);
+          }
+
+          const proxyData = await proxyResponse.json();
+
+          if (!proxyData.success) {
+            throw new Error(proxyData.error || 'Failed to fetch URL through proxy');
+          }
+
+          html = proxyData.html;
+          pageTitle = proxyData.title;
+        } else {
+          // Not a CORS error, re-throw
+          throw directError;
+        }
       }
-
-      const html = await response.text();
-
-      // Extract title from HTML
-      const titleMatch = html.match(/<title[^>]*>(.*?)<\/title>/i);
-      const pageTitle = titleMatch ? titleMatch[1].trim() : undefined;
 
       // Convert HTML to Markdown
       let markdown = htmlToMarkdown(html, config);
@@ -75,6 +112,7 @@ export function UrlToMarkdown({ className = '' }: UrlToMarkdownProps) {
           `url: ${url}`,
           pageTitle ? `title: ${pageTitle}` : null,
           `converted: ${new Date().toISOString()}`,
+          usedProxy ? 'method: server-proxy' : 'method: direct',
           '---',
           ''
         ].filter(Boolean).join('\n');
@@ -100,13 +138,7 @@ export function UrlToMarkdown({ className = '' }: UrlToMarkdownProps) {
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch URL';
-
-      // Check if it's a CORS error
-      if (errorMessage.includes('CORS') || errorMessage.includes('Failed to fetch')) {
-        setError('⚠️ CORS Error: This website blocks cross-origin requests. Try using the browser extension or server-side proxy option.');
-      } else {
-        setError(`Error: ${errorMessage}`);
-      }
+      setError(`Error: ${errorMessage}`);
       setOutput('');
     } finally {
       setIsLoading(false);
@@ -318,8 +350,7 @@ export function UrlToMarkdown({ className = '' }: UrlToMarkdownProps) {
               fontSize: '0.75rem',
               color: 'var(--color-text-muted)'
             }}>
-              <strong>Note:</strong> Some websites may block cross-origin requests (CORS).
-              Static content converts best. JavaScript-heavy sites may not render completely.
+              <strong>✓ CORS Protected:</strong> This tool automatically handles websites that block cross-origin requests using a secure server-side proxy. Works with most public websites!
             </div>
           </div>
         </div>
