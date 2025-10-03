@@ -280,7 +280,7 @@ function convertSingleEntry(input: string, config: TimeDecimalConfig): TimeConve
     minutes = Math.floor(fractionalHours * 60);
     seconds = config.includeSeconds ? Math.floor((fractionalHours * 3600) % 60) : 0;
   } else {
-    // Parse time format
+    // Parse time format and preserve original parsed values
     const parsed = parseTimeString(trimmed);
     hours = parsed.hours;
     minutes = parsed.minutes;
@@ -289,7 +289,7 @@ function convertSingleEntry(input: string, config: TimeDecimalConfig): TimeConve
     decimal = hours + (minutes / 60) + (seconds / 3600);
   }
 
-  // Apply rounding based on mode (but preserve precision for seconds in standard mode)
+  // Apply rounding to decimal only (preserve original time components)
   if (config.roundingMode === 'standard' && config.includeSeconds) {
     // Don't round when including seconds in standard mode to preserve precision
     decimal = parseFloat(decimal.toFixed(4)); // Use higher precision for seconds
@@ -297,11 +297,14 @@ function convertSingleEntry(input: string, config: TimeDecimalConfig): TimeConve
     decimal = applyRounding(decimal, config.roundingMode, config.decimalPrecision);
   }
 
-  // Recalculate components after rounding
-  hours = Math.floor(decimal);
-  const fractionalHours = decimal - hours;
-  minutes = Math.floor(fractionalHours * 60);
-  seconds = config.includeSeconds ? Math.floor((fractionalHours * 3600) % 60) : 0;
+  // Only recalculate time components if input was decimal
+  // For time input, keep the original parsed values to avoid precision loss
+  if (actualInputFormat === 'decimal') {
+    hours = Math.floor(decimal);
+    const fractionalHours = decimal - hours;
+    minutes = Math.floor(fractionalHours * 60);
+    seconds = config.includeSeconds ? Math.floor((fractionalHours * 3600) % 60) : 0;
+  }
 
   const formatted = formatTime(hours, minutes, seconds, config.timeFormat, config.includeSeconds);
   const totalMinutes = Math.floor(decimal * 60);
